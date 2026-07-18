@@ -138,7 +138,7 @@ pub fn draw(
     y += 6.0;
 
     draw_ui_text_ex(
-        "F1 / F10 toggle this panel and the CRT effect.",
+        "F1 panel · F2 help · F10 CRT · ESC closes.",
         content.x,
         y + 12.0,
         TextStyle::new(13.0, term::faint()).params(),

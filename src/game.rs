@@ -62,6 +62,8 @@ pub struct Game {
     delegation_defaults: crate::state::sim::DelegationSettings,
     /// Whether the F1 display-settings overlay is open.
     settings_open: bool,
+    /// Whether the F2 help/controls overlay is open.
+    help_open: bool,
     /// Terminal typewriter reveal for blocking modals: which modal is showing
     /// and when it appeared, so its body text streams in. Purely cosmetic —
     /// never touches the deterministic sim.
@@ -115,6 +117,7 @@ impl Game {
             display,
             delegation_defaults,
             settings_open: false,
+            help_open: false,
             modal_key: None,
             modal_started: 0.0,
             log_len: 0,
@@ -150,6 +153,10 @@ impl Game {
                 self.delegation_defaults.mission_milestone = true;
                 self.state = GameState::Menu(MenuState::new(true));
                 self.settings_open = true;
+            }
+            "help" => {
+                self.state = GameState::Menu(MenuState::new(true));
+                self.help_open = true;
             }
             "heritage" => {
                 // Seed a storied Chronicle so the menu heritage line shows.
@@ -307,6 +314,19 @@ impl Game {
         }
         if self.boot.is_done() && is_key_pressed(KeyCode::F1) {
             self.settings_open = !self.settings_open;
+            self.help_open = false;
+        }
+        if self.boot.is_done() && is_key_pressed(KeyCode::F2) {
+            self.help_open = !self.help_open;
+            self.settings_open = false;
+        }
+        // Esc closes whichever panel is open (help first, then settings).
+        if is_key_pressed(KeyCode::Escape) {
+            if self.help_open {
+                self.help_open = false;
+            } else if self.settings_open {
+                self.settings_open = false;
+            }
         }
 
         // Boot log plays once before the menu; any input skips it. Capture mode
@@ -341,7 +361,7 @@ impl Game {
         let GameState::Gameplay(gameplay) = &self.state else {
             return;
         };
-        if self.settings_open {
+        if self.settings_open || self.help_open {
             return;
         }
         let sim = &gameplay.sim;
@@ -412,7 +432,7 @@ impl Game {
             }
         };
 
-        // The display panel floats above everything and captures its input.
+        // The F1/F2 panels float above everything and capture their own input.
         let display_actions = if self.settings_open {
             ui::settings::draw(
                 &self.display,
@@ -422,16 +442,20 @@ impl Game {
         } else {
             Vec::new()
         };
+        let help_close = self.help_open && ui::help::draw(virtual_ui.mouse_position());
         end_virtual_ui_frame();
 
-        // While the panel is open, swallow the underlying screen's intents.
-        if !self.settings_open {
+        // While a panel is open, swallow the underlying screen's intents.
+        if !self.settings_open && !self.help_open {
             for action in actions {
                 self.events.push(action);
             }
         }
         for action in display_actions {
             self.apply_display_action(action);
+        }
+        if help_close {
+            self.help_open = false;
         }
 
         self.notifications

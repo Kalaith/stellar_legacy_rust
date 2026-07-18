@@ -211,8 +211,12 @@ Ordered roughly by milestone (GDD §13):
    the modal claiming the digits from the tabs; suppressed while the settings
    panel is up). Tabs read `1 DASHBOARD` … `6 CHRONICLE`, the advance button
    reads `[SPACE]`, and modal option buttons are prefixed `[1]`/`[2]` to teach
-   the hotkeys. Still to do: ko-fi/index.html screenshots (marketing artifact —
-   human-gated).
+   the hotkeys. ~~help overlay~~ **DONE (2026-07-19)** — **F2** opens a
+   `HELP // CONTROLS` overlay (`src/ui/help.rs`) listing every key; **Esc**
+   closes whichever panel is open (help, then settings); F1/F2 are mutually
+   exclusive. New `help` capture scene; settings hint updated to
+   `F1 panel · F2 help · F10 CRT · ESC closes`. Still to do: ko-fi/index.html
+   screenshots (marketing artifact — human-gated).
 10. ~~Consider `achievements` for Chronicle milestones (GDD §10 "maybe").~~
     **DONE (2026-07-19).** `src/achievements.rs` defines six milestones (first
     charter, flawless voyage, full registry, fifth generation, year 100, 250
