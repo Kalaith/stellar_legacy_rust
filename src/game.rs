@@ -41,6 +41,8 @@ pub struct Game {
     crt_style: CrtStyle,
     /// Persisted CRT display preferences.
     display: DisplaySettings,
+    /// Persisted default council delegation applied to each new voyage (§5.4).
+    delegation_defaults: crate::state::sim::DelegationSettings,
     /// Whether the F1 display-settings overlay is open.
     settings_open: bool,
     /// Terminal typewriter reveal for blocking modals: which modal is showing
@@ -74,6 +76,7 @@ impl Game {
         let display = DisplaySettings::load(&data.config.game_name);
         let crt_style = display.crt_style();
         ui::term::set_phosphor(display.phosphor);
+        let delegation_defaults = crate::settings::load_delegation(&data.config.game_name);
 
         let mut assets = AssetManager::new();
         let _ = assets.load_asset_pack("assets.zip").await;
@@ -93,6 +96,7 @@ impl Game {
             crt: CrtOverlay::new(),
             crt_style,
             display,
+            delegation_defaults,
             settings_open: false,
             modal_key: None,
             modal_started: 0.0,
@@ -114,6 +118,7 @@ impl Game {
         self.display = DisplaySettings::default();
         self.crt_style = self.display.crt_style();
         ui::term::set_phosphor(self.display.phosphor);
+        self.delegation_defaults = crate::state::sim::DelegationSettings::default();
         match scene {
             "menu" => self.state = GameState::Menu(MenuState::new(false)),
             "green" => {
@@ -124,6 +129,8 @@ impl Game {
                 self.state = GameState::Menu(MenuState::new(true));
             }
             "settings" => {
+                // Delegate one category so the capture shows both toggle states.
+                self.delegation_defaults.mission_milestone = true;
                 self.state = GameState::Menu(MenuState::new(true));
                 self.settings_open = true;
             }
@@ -345,7 +352,11 @@ impl Game {
 
         // The display panel floats above everything and captures its input.
         let display_actions = if self.settings_open {
-            ui::settings::draw(&self.display, virtual_ui.mouse_position())
+            ui::settings::draw(
+                &self.display,
+                &self.delegation_defaults,
+                virtual_ui.mouse_position(),
+            )
         } else {
             Vec::new()
         };
@@ -391,6 +402,17 @@ impl Game {
             DisplayAction::ToggleScanlines => self.display.scanlines = !self.display.scanlines,
             DisplayAction::ToggleFlicker => self.display.flicker = !self.display.flicker,
             DisplayAction::SetPhosphor(p) => self.display.phosphor = p,
+            DisplayAction::ToggleDelegationDefault(category) => {
+                self.delegation_defaults.toggle(category);
+                if let Err(err) = crate::settings::save_delegation(
+                    &self.delegation_defaults,
+                    &self.data.config.game_name,
+                ) {
+                    self.notifications
+                        .warning(format!("Delegation defaults not saved: {err}"));
+                }
+                return; // no CRT re-derive needed
+            }
             DisplayAction::Close => self.settings_open = false,
         }
         self.persist_display();
@@ -448,7 +470,9 @@ impl Game {
         match transition {
             StateTransition::NewCampaign { legacy_id, seed } => {
                 let mut sim = SimState::new_campaign(&self.data, &legacy_id, seed);
-                // A new dynasty inherits a head start from the Chronicle (§7).
+                // A new dynasty inherits a head start from the Chronicle (§7)
+                // and the player's default council delegation (§5.4).
+                sim.delegation = self.delegation_defaults;
                 let heritage = crate::heritage::derive(&self.chronicle, &self.data.config.heritage);
                 crate::heritage::apply(&mut sim, &heritage);
                 self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));

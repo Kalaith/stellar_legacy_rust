@@ -197,8 +197,14 @@ Ordered roughly by milestone (GDD §13):
    frozen `log` capture scene added. **Monospace font DEFERRED** —
    the toolkit font API (`set_default_ui_font_from_bytes`) is ready, but no
    monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
-   sourcing one is a licensing decision for a human. Still to do: fold
-   delegation defaults into the settings overlay, ko-fi/index.html screenshots.
+   sourcing one is a licensing decision for a human. ~~delegation defaults in
+   the settings overlay~~ **DONE (2026-07-19)** — the F1 `DISPLAY // CRT
+   MONITOR` overlay gained a `DELEGATION DEFAULTS // NEW VOYAGES` section with a
+   per-category COUNCIL/DELEGATED toggle; the choice persists under a
+   `delegation` key (`settings::load_delegation`/`save_delegation` over the
+   sim's `DelegationSettings`) and is applied to `sim.delegation` in the
+   `NewCampaign` transition. Panel grown to fit; `settings` capture updated.
+   Still to do: ko-fi/index.html screenshots.
 10. ~~Consider `achievements` for Chronicle milestones (GDD §10 "maybe").~~
     **DONE (2026-07-19).** `src/achievements.rs` defines six milestones (first
     charter, flawless voyage, full registry, fifth generation, year 100, 250

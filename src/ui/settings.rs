@@ -2,7 +2,9 @@
 //! Reachable from any screen (F1). Returns [`DisplayAction`] intents the game
 //! applies to its `DisplaySettings`; it never mutates state here.
 
+use crate::data::events::EventCategory;
 use crate::settings::{DisplaySettings, Phosphor};
+use crate::state::sim::DelegationSettings;
 use crate::ui::{term, term_button, term_panel, LOGICAL_HEIGHT, LOGICAL_WIDTH};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
@@ -15,10 +17,16 @@ pub enum DisplayAction {
     ToggleScanlines,
     ToggleFlicker,
     SetPhosphor(Phosphor),
+    /// Flip whether this category is delegated by default in new voyages.
+    ToggleDelegationDefault(EventCategory),
     Close,
 }
 
-pub fn draw(display: &DisplaySettings, mouse: Vec2) -> Vec<DisplayAction> {
+pub fn draw(
+    display: &DisplaySettings,
+    delegation: &DelegationSettings,
+    mouse: Vec2,
+) -> Vec<DisplayAction> {
     let mut actions = Vec::new();
 
     draw_rectangle(
@@ -30,10 +38,10 @@ pub fn draw(display: &DisplaySettings, mouse: Vec2) -> Vec<DisplayAction> {
     );
 
     let panel = Rect::new(
-        LOGICAL_WIDTH / 2.0 - 240.0,
-        LOGICAL_HEIGHT / 2.0 - 190.0,
-        480.0,
-        380.0,
+        LOGICAL_WIDTH / 2.0 - 250.0,
+        LOGICAL_HEIGHT / 2.0 - 280.0,
+        500.0,
+        560.0,
     );
     term_panel(panel, Some("DISPLAY // CRT MONITOR"));
     let content = panel.inset(28.0);
@@ -98,12 +106,41 @@ pub fn draw(display: &DisplaySettings, mouse: Vec2) -> Vec<DisplayAction> {
     ) {
         actions.push(DisplayAction::SetPhosphor(Phosphor::Green));
     }
-    y += 58.0;
+    y += 62.0;
+
+    // Delegation defaults: which council categories auto-resolve in new voyages.
+    draw_ui_text_ex(
+        "DELEGATION DEFAULTS // NEW VOYAGES",
+        content.x,
+        y,
+        TextStyle::new(14.0, term::primary()).params(),
+    );
+    y += 24.0;
+    for category in EventCategory::ALL {
+        let delegated = delegation.is_delegated(category);
+        draw_ui_text_ex(
+            &category.label().to_uppercase(),
+            content.x,
+            y + 21.0,
+            TextStyle::new(15.0, term::dim()).params(),
+        );
+        let bw = 120.0;
+        if choice_button(
+            Rect::new(content.right() - bw, y, bw, 32.0),
+            if delegated { "DELEGATED" } else { "COUNCIL" },
+            delegated,
+            mouse,
+        ) {
+            actions.push(DisplayAction::ToggleDelegationDefault(category));
+        }
+        y += 40.0;
+    }
+    y += 6.0;
 
     draw_ui_text_ex(
         "F1 / F10 toggle this panel and the CRT effect.",
         content.x,
-        y + 14.0,
+        y + 12.0,
         TextStyle::new(13.0, term::faint()).params(),
     );
 

@@ -6,8 +6,24 @@ use macroquad_toolkit::fx::CrtStyle;
 use macroquad_toolkit::persistence::{load_json_key, save_json_key};
 use serde::{Deserialize, Serialize};
 
+use crate::state::sim::DelegationSettings;
+
 /// Persistence key, separate from the campaign save slot.
 pub const DISPLAY_KEY: &str = "display";
+/// Persistence key for the default per-category council delegation (GDD §5.4)
+/// applied to each new voyage.
+pub const DELEGATION_KEY: &str = "delegation";
+
+/// Load the persisted default delegation for new campaigns (all-council if
+/// never set).
+pub fn load_delegation(game_name: &str) -> DelegationSettings {
+    load_json_key(game_name, DELEGATION_KEY).unwrap_or_default()
+}
+
+/// Persist the default delegation preferences.
+pub fn save_delegation(delegation: &DelegationSettings, game_name: &str) -> Result<(), String> {
+    save_json_key(game_name, DELEGATION_KEY, delegation)
+}
 
 /// Phosphor tube color for the CRT overlay.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
