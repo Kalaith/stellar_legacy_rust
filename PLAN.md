@@ -10,7 +10,7 @@ should build, in order.*
 snapshot; the numbered log below records what shipped since).* Every numbered item
 (1–10) and all three cosmetic nits are **done**; the one open thread is the
 ko-fi/index.html marketing screenshots (item 9, human-gated). The game is
-content-complete against GDD §8 (and past several minimums) — 38 events, 5/5/5
+content-complete against GDD §8 (and past several minimums) — 46 events, 5/5/5
 components, 6 contracts, 8 dilemmas per legacy, doubled name pools.
 
 Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
@@ -144,12 +144,14 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
    applied once at creation). New `heritage` capture scene; 3 unit tests. This
    closes the Chronicle "Partial" status.
 8. ~~**Content targets from §8**~~ **DONE (2026-07-19)** — all §8 bulk-content
-   targets met, several exceeded. **30+ events DONE** (**38 total**, 9-10 per
-   category; passed the §8 minimum of 30 then a further depth pass added
-   `debris_lattice`, `power_cascade`, `the_prodigy`, `aging_infrastructure`,
-   `the_named_star`, `course_ratification`, `returning_signal`,
-   `last_photograph` for more variety across long campaigns; data-load test
-   asserts ≥38 / ≥9 per category), **5/5/5
+   targets met, several exceeded. **30+ events DONE** (**46 total**, 11-12 per
+   category; passed the §8 minimum of 30 across successive depth passes —
+   `debris_lattice`/`power_cascade`/`the_prodigy`/`aging_infrastructure`/
+   `the_named_star`/`course_ratification`/`returning_signal`/`last_photograph`,
+   then `coolant_freeze`/`water_bloom`/`the_slowdown`/`berth_lottery`/
+   `scout_returns`/`midpoint_census`/`founders_ledger`/`the_renaming` — for
+   much less repetition across long campaigns; data-load test asserts ≥46 / ≥11
+   per category), **5/5/5
    components DONE (2026-07-19)** — added `habitat_ring`/`armored_prow` (hulls),
    `solar_sail`/`warp_coil` (engines), `flak_screen`/`spinal_railgun` (weapons),
    each with real stat tradeoffs that feed the item-3 hooks; the Ship Builder
@@ -169,8 +171,11 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
    10→20 per legacy, specializations 10→20, traits 5→10 per legacy (matched to
    each legacy's flavor); data-load test asserts the doubled counts. Pure
    `assets/*.json`; schemas unchanged. **Item 8 complete — all §8 content
-   targets met, several since exceeded (38 events / 5-5-5 components /
-   6 contracts / 8 dilemmas per legacy / doubled name pools).**
+   targets met, several since exceeded (46 events / 5-5-5 components /
+   6 contracts / 8 dilemmas per legacy / doubled name pools). Contracts are
+   currently UI-capped at 6 by the available-charters list (78px cards fit ~6;
+   growing past that needs a scrollable charter list — a future UI task, not a
+   content one).**
 9. **Terminal polish**: monospace bitmap font (default font is close but not
    monospace), ~~flicker fx~~ **CRT overlay DONE (2026-07-18)** —
    `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module

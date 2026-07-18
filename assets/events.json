@@ -1223,5 +1223,257 @@
         "log": "The last photograph of an open sky was allowed to finish fading. The ship's children will never miss what they cannot picture."
       }
     ]
+  },
+  {
+    "id": "coolant_freeze",
+    "category": "immediate_crisis",
+    "title": "The Freeze",
+    "description": "A coolant line froze and split where the ship runs coldest. If the crack spreads to the main loop, a whole section goes dark.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "bleed_the_line",
+        "label": "Bleed the line",
+        "description": "Purge and reroute before it spreads. Costs power and hours.",
+        "resource_delta": {
+          "energy": -180
+        },
+        "population_delta": {
+          "stability": 0.03
+        },
+        "log": "The frozen line was bled and rerouted before the crack could reach the main loop. Cold work, cleanly done."
+      },
+      {
+        "id": "seal_the_section",
+        "label": "Seal the section",
+        "description": "Close it off and lose the deck rather than risk the loop.",
+        "ship_delta": {
+          "life_support": -0.03
+        },
+        "population_delta": {
+          "morale": -0.04
+        },
+        "log": "The frozen section was sealed off and abandoned. The main loop is safe; the ship is one deck smaller."
+      }
+    ]
+  },
+  {
+    "id": "water_bloom",
+    "category": "immediate_crisis",
+    "title": "The Bloom",
+    "description": "Something is growing in the water reclamation tanks that the ship's biology was not designed to host. It is spreading faster than the filters can name it.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "sterilize_hard",
+        "label": "Sterilize the tanks",
+        "description": "Flush and burn the system clean. Wasteful, and thorough.",
+        "resource_delta": {
+          "energy": -150,
+          "food": -100
+        },
+        "population_delta": {
+          "stability": 0.03
+        },
+        "log": "The reclamation tanks were sterilized to bare metal. The bloom is gone, and so is a season's margin of water and food."
+      },
+      {
+        "id": "quarantine_wait",
+        "label": "Quarantine and study",
+        "description": "Isolate it and hope the filters catch up. Cheaper, and a gamble.",
+        "population_delta": {
+          "morale": -0.04,
+          "stability": -0.03
+        },
+        "long_term_consequences": [
+          "tank_bloom"
+        ],
+        "log": "The bloom was quarantined and studied rather than burned out. It is contained, for now, and the crew drink boiled water and worry."
+      }
+    ]
+  },
+  {
+    "id": "the_slowdown",
+    "category": "generational_challenge",
+    "title": "The Slowdown",
+    "description": "The maintenance cohort has stopped working to the letter of a contract the founders wrote for a different ship. Nothing is broken yet. Everything is slower.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "concede_terms",
+        "label": "Concede the terms",
+        "description": "Rewrite the cohort's terms in their favor.",
+        "resource_delta": {
+          "credits": -300
+        },
+        "population_delta": {
+          "morale": 0.05,
+          "stability": 0.03
+        },
+        "log": "The council conceded the cohort's terms. The work resumed at full speed, and every cohort now knows the council can be moved."
+      },
+      {
+        "id": "hold_the_line",
+        "label": "Hold the line",
+        "description": "The contract stands. Wait them out.",
+        "population_delta": {
+          "morale": -0.04,
+          "unity": -0.04,
+          "stability": 0.03
+        },
+        "log": "The council held the founders' terms. The slowdown ended in sullen compliance, and something between the decks did not fully mend."
+      }
+    ]
+  },
+  {
+    "id": "berth_lottery",
+    "category": "generational_challenge",
+    "title": "The Berth Lottery",
+    "description": "This generation was born larger than the last, and there are more people than private berths. Someone decides who sleeps in the open decks.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "expand_quarters",
+        "label": "Expand the quarters",
+        "description": "Convert cargo and hold space into homes.",
+        "resource_delta": {
+          "minerals": -400,
+          "credits": -200
+        },
+        "population_delta": {
+          "morale": 0.04,
+          "unity": 0.03
+        },
+        "log": "Cargo space was cut open and rebuilt into berths. The ship carries less and shelters more."
+      },
+      {
+        "id": "run_the_lottery",
+        "label": "Run the lottery",
+        "description": "Assign the open decks by lot. Fair, and resented.",
+        "population_delta": {
+          "morale": -0.05,
+          "unity": -0.03,
+          "stability": 0.03
+        },
+        "log": "Private berths were assigned by lottery. The ship called it fair, and the losers of the draw learned to sleep in the light."
+      }
+    ]
+  },
+  {
+    "id": "scout_returns",
+    "category": "mission_milestone",
+    "title": "The Scout Returns",
+    "description": "A probe the founders flung ahead a lifetime ago has finally answered — a thin stream of data about the place the ship is aimed at. Some of it does not match the charts the voyage was planned around.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "adaptors": 1.2
+    },
+    "outcomes": [
+      {
+        "id": "trust_the_scout",
+        "label": "Trust the new data",
+        "description": "Revise the plan around what the probe actually found.",
+        "population_delta": {
+          "adaptation": 0.06,
+          "cultural_drift": 0.03,
+          "stability": 0.02
+        },
+        "log": "The probe's data was trusted over the founders' charts, and the approach was quietly rebuilt around a world no one had promised."
+      },
+      {
+        "id": "keep_the_charts",
+        "label": "Keep the founders' charts",
+        "description": "One probe is one probe. Trust the plan that got you here.",
+        "population_delta": {
+          "legacy_loyalty": 0.05,
+          "cultural_drift": -0.03
+        },
+        "log": "The council kept faith with the founders' charts. The probe's warnings were filed, and the ship held the course it was given."
+      }
+    ]
+  },
+  {
+    "id": "midpoint_census",
+    "category": "mission_milestone",
+    "title": "The Midpoint Census",
+    "description": "The ship takes a full census at the mathematical midpoint of the voyage — every name aboard, living and remembered, counted once against the founders' manifest.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "count_them_all",
+        "label": "Count them all",
+        "description": "Read the whole manifest aloud.",
+        "population_delta": {
+          "unity": 0.05,
+          "legacy_loyalty": 0.03,
+          "stability": 0.02
+        },
+        "log": "The midpoint census was read aloud over three days, every name from the founders' manifest to the newest birth. The ship felt, briefly, like one thing."
+      }
+    ]
+  },
+  {
+    "id": "founders_ledger",
+    "category": "legacy_moment",
+    "title": "The Founder's Ledger",
+    "description": "A founder's private ledger surfaces in the archives — not the official record, but the doubts, the debts, and the compromises behind the mission's clean origin story.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "preservers": 1.2
+    },
+    "outcomes": [
+      {
+        "id": "publish_the_ledger",
+        "label": "Publish the ledger",
+        "description": "Let the ship see its founders whole.",
+        "population_delta": {
+          "cultural_drift": 0.04,
+          "adaptation": 0.04,
+          "legacy_loyalty": -0.03
+        },
+        "log": "The founder's private ledger was published entire. The founders are smaller now, and truer, and harder to worship."
+      },
+      {
+        "id": "seal_the_ledger",
+        "label": "Seal the ledger",
+        "description": "Some myths hold a ship together. Let this one stand.",
+        "population_delta": {
+          "legacy_loyalty": 0.05,
+          "unity": 0.03,
+          "cultural_drift": -0.03
+        },
+        "log": "The ledger was sealed back into the archive. The founders keep their clean story, and the ship keeps the myth it steers by."
+      }
+    ]
+  },
+  {
+    "id": "the_renaming",
+    "category": "legacy_moment",
+    "title": "The Renaming",
+    "description": "A movement has grown to rename the ship — not for the world it left, which no one aboard remembers, but for the corridors that are the only home its people have known.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "rename_the_ship",
+        "label": "Rename the ship",
+        "description": "Let the ship be named by those who live in it.",
+        "population_delta": {
+          "adaptation": 0.06,
+          "cultural_drift": 0.04,
+          "legacy_loyalty": -0.04
+        },
+        "log": "The ship was renamed by the generation that lives in it, over the objections of the archive. The old name is a footnote now, and the corridors answer to their own."
+      },
+      {
+        "id": "keep_the_name",
+        "label": "Keep the founders' name",
+        "description": "The name is a promise to a place. Keep it.",
+        "population_delta": {
+          "legacy_loyalty": 0.05,
+          "cultural_drift": -0.03
+        },
+        "log": "The founders' name was kept. The ship still carries the word for a world none of its people will ever walk, because the founders asked it to."
+      }
+    ]
   }
 ]
