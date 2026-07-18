@@ -9,6 +9,7 @@ pub mod contract_systems;
 pub mod crew_dynasty;
 pub mod dashboard;
 pub mod event_modal;
+pub mod game_over;
 pub mod market;
 pub mod settings;
 pub mod ship_builder;
@@ -152,6 +153,7 @@ pub enum UiAction {
     // Global
     SaveGame,
     ToMenu,
+    RetireVoyage,
     SelectScreen(Screen),
     // Gameplay verbs (GDD §4)
     AdvanceYear,
@@ -406,6 +408,13 @@ pub struct GameplayCtx<'a> {
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
     let mut actions = Vec::new();
     let mouse = ctx.ui.mouse_position();
+
+    // Extinction halts the voyage: a full-screen terminal takeover replaces the
+    // normal screens (GDD §7).
+    if ctx.sim.dynasty.extinct {
+        game_over::draw(&ctx, mouse, &mut actions);
+        return actions;
+    }
 
     draw_header(&ctx);
     draw_tabs(&ctx, mouse, &mut actions);

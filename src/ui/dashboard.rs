@@ -79,20 +79,8 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
     );
     y += 44.0;
 
-    if sim.dynasty.extinct {
-        draw_text_block(
-            "THE DYNASTY IS EXTINCT. The ship sails on, unmanned by any bloodline. Retire this voyage from the CHRONICLE screen.",
-            content.x,
-            y,
-            content.w,
-            60.0,
-            14.0,
-            3.0,
-            term::alert(),
-        );
-        y += 70.0;
-    }
-
+    // Extinction is handled by the full-screen game-over takeover
+    // (`ui::game_over`), so the dashboard never renders in that state.
     let advance = Rect::new(content.x, content.bottom() - 56.0, content.w, 48.0);
     let can_advance = sim.pending_event.is_none() && !sim.dynasty.extinct;
     if term_button(advance, "ADVANCE ONE YEAR >>", can_advance, mouse) {

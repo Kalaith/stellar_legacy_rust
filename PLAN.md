@@ -65,9 +65,16 @@ Ordered roughly by milestone (GDD §13):
    grant production deltas. The Ship Builder purchase currently only swaps the
    loadout id; make component stats matter (speed → contract progress, cargo →
    market lots, combat → wanderer dilemma odds).
-4. **Game-over / retirement flow.** Dynasty extinction sets a flag and blocks
-   time; the Chronicle screen should take over with a playthrough summary and a
-   "retire voyage" path (GDD §7 progression table).
+4. ~~**Game-over / retirement flow.**~~ **DONE (2026-07-18).** Dynasty
+   extinction now triggers a full-screen `VOYAGE TERMINATED` terminal takeover
+   (`src/ui/game_over.rs`, intercepts `draw_gameplay` before header/tabs) with a
+   playthrough summary readout (years, generations, final population, tradition,
+   contracts logged for the legacy, last commander) and a blinking
+   `> RETIRE VOYAGE` prompt. `UiAction::RetireVoyage` clears the dead campaign
+   save (no autosave) and returns to the menu; the Chronicle persists
+   separately. New `gameover` capture scene; the dashboard's old inline extinct
+   message was removed (now unreachable). Heritage modifiers from the retired
+   run remain item 7.
 5. **Event content.** 4 templates exist (original parity). M2 target is 12 across
    the 4 categories (§8). Pure `assets/events.json` work; the resolver needs no
    changes. Use `consequences` (already tracked on the sim) to gate/weight

@@ -158,6 +158,14 @@ impl Game {
                 });
                 self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
+            "gameover" => {
+                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                sim.year = 148;
+                sim.dynasty.generation = 6;
+                sim.legacy.tradition_points = 210;
+                sim.dynasty.extinct = true;
+                self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
+            }
             // "gameplay" and anything else: a fresh campaign on the dashboard.
             _ => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
@@ -413,6 +421,20 @@ impl Game {
                 None
             }
             UiAction::ToMenu => Some(StateTransition::ToMenu),
+            UiAction::RetireVoyage => {
+                // Clear the dead campaign so it can't be resumed (no autosave),
+                // then return to the menu. The Chronicle persists separately.
+                if let Err(err) =
+                    delete_slot(&self.data.config.game_name, &self.data.config.save_slot)
+                {
+                    self.notifications
+                        .warning(format!("Save clear failed: {err}"));
+                }
+                self.state = GameState::Menu(MenuState::new(save::save_exists(&self.data.config)));
+                self.notifications
+                    .info("Voyage retired. The Chronicle remembers.");
+                None
+            }
             UiAction::SelectScreen(screen) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     gameplay.screen = screen;
