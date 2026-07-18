@@ -6,7 +6,7 @@
 
 use crate::data::{GameData, ResourceDelta};
 use crate::simulation::contract::{score_success, SuccessLevel};
-use crate::simulation::{contract, event_resolver, legacy, market, succession};
+use crate::simulation::{contract, crew, event_resolver, legacy, market, succession};
 use crate::state::sim::SimState;
 
 /// Everything a single year produced that the caller (game.rs) must react
@@ -31,28 +31,38 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
 
     sim.year += 1;
 
-    // Production (GDD §5.1: floor(rate * years), one year per tick).
+    // Production (GDD §5.1: floor(rate * years), one year per tick),
+    // multiplied by the serving crew's skills (PLAN item 2).
+    let crew_mult = crew::production_multipliers(sim, data);
     let produced = ResourceDelta {
-        credits: sim.production.credits.floor() as i64,
-        energy: sim.production.energy.floor() as i64,
-        minerals: sim.production.minerals.floor() as i64,
-        food: sim.production.food.floor() as i64,
-        influence: sim.production.influence.floor() as i64,
+        credits: (sim.production.credits * crew_mult.credits).floor() as i64,
+        energy: (sim.production.energy * crew_mult.energy).floor() as i64,
+        minerals: (sim.production.minerals * crew_mult.minerals).floor() as i64,
+        food: (sim.production.food * crew_mult.food).floor() as i64,
+        influence: (sim.production.influence * crew_mult.influence).floor() as i64,
     };
     sim.resources.apply(&produced);
 
-    // Food upkeep; famine bleeds morale and people.
+    // Food upkeep; famine bleeds morale and people. A serving medic keeps
+    // some of the starving alive.
     let upkeep = (sim.population.count as f32 * config.food_per_person_per_year).ceil() as i64;
     if sim.resources.food >= upkeep {
         sim.resources.food -= upkeep;
     } else {
         sim.resources.food = 0;
-        let losses = (sim.population.count as f32 * 0.02).ceil() as u32;
+        let mitigation = 1.0 - crew::famine_loss_reduction(sim, data);
+        let losses = (sim.population.count as f32 * 0.02 * mitigation).ceil() as u32;
         sim.population.count = sim.population.count.saturating_sub(losses);
         sim.population.morale = (sim.population.morale - 0.05).max(0.0);
         sim.push_log(format!(
             "Rations ran out. The population diminished by {losses}."
         ));
+    }
+
+    // A skilled security chief slowly steadies a fractious ship.
+    let recovery = crew::unity_recovery(sim, data);
+    if recovery > 0.0 {
+        sim.population.unity = (sim.population.unity + recovery).min(1.0);
     }
 
     // Ship wear.
@@ -62,6 +72,9 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
     // Generational tick (GDD §5.3).
     sim.dynasty.years_since_generation += 1;
     if sim.dynasty.years_since_generation >= config.generation_interval_years {
+        for name in crew::process_generation(sim, data) {
+            sim.push_log(format!("{name} stood down from their post."));
+        }
         let generation = succession::process_generation(sim, data);
         for name in &generation.deaths {
             sim.push_log(format!("{name} was laid to rest among the stars."));
@@ -164,6 +177,7 @@ mod tests {
         let credits_before = sim.resources.credits;
         sim.pending_event = None;
 
+        let crew_mult = crate::simulation::crew::production_multipliers(&sim, &data);
         advance_year(&mut sim, &data);
 
         assert_eq!(sim.year, 1);
@@ -171,8 +185,10 @@ mod tests {
             (sim.population.count as f32 * data.config.food_per_person_per_year).ceil() as i64;
         assert_eq!(
             sim.resources.food,
-            food_before + data.config.base_production.food.floor() as i64 - upkeep
+            food_before + (data.config.base_production.food * crew_mult.food).floor() as i64
+                - upkeep
         );
+        assert!(crew_mult.food > 1.0, "founding agronomist boosts food");
         assert!(sim.resources.credits >= credits_before);
         assert!(sim.ship.hull_integrity < 1.0);
     }

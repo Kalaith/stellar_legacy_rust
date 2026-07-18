@@ -4,7 +4,7 @@ use crate::chronicle::{ChronicleEntry, ChronicleStore};
 use crate::data::ship_components::ComponentKind;
 use crate::data::GameData;
 use crate::save;
-use crate::simulation::{contract, event_resolver, legacy, market, tick};
+use crate::simulation::{contract, crew, event_resolver, legacy, market, tick};
 use crate::state::{GameState, GameplayState, MenuState, SimState, StateTransition};
 use crate::ui::{self, UiAction};
 use macroquad::prelude::*;
@@ -68,6 +68,12 @@ impl Game {
                     rolled_year: 0,
                 });
                 self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
+            }
+            "crew" => {
+                let sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = crate::state::Screen::CrewDynasty;
+                self.state = GameState::Gameplay(Box::new(gameplay));
             }
             "dilemma" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
@@ -241,6 +247,43 @@ impl Game {
             UiAction::ResolveDilemma(index) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     legacy::resolve_dilemma(&mut gameplay.sim, &self.data, index);
+                }
+                None
+            }
+            UiAction::RecruitCrew(archetype_id) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crew::recruit(&mut gameplay.sim, &self.data, &archetype_id) {
+                        Ok(name) => self.notifications.success(format!("{name} signed on.")),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
+            UiAction::TrainCrew(archetype_id) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crew::train(&mut gameplay.sim, &self.data, &archetype_id) {
+                        Ok(name) => self
+                            .notifications
+                            .success(format!("{name} completed training.")),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
+            UiAction::SelectHeir(member_id) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    let sim = &mut gameplay.sim;
+                    let name = sim
+                        .dynasty
+                        .members
+                        .iter()
+                        .find(|m| m.id == member_id && !m.is_leader)
+                        .map(|m| m.name.clone());
+                    if let Some(name) = name {
+                        sim.dynasty.designated_heir = Some(member_id);
+                        sim.push_log(format!("The council named {name} heir designate."));
+                        self.notifications.success(format!("{name} named heir."));
+                    }
                 }
                 None
             }

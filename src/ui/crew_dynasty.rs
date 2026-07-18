@@ -1,10 +1,8 @@
-//! Crew & Dynasty: roster, succession outlook, delegation toggles.
-//!
-//! TODO(next agent, M2): recruit/train crew actions, heir designation
-//! (UiAction::SelectHeir), and the ~5-6 real dynasty actions replacing the
-//! original's cosmetic no-ops (GDD §0).
+//! Crew & Dynasty: dynasty roster with heir designation, ship posts with
+//! recruit/train, succession outlook, delegation toggles, failure risk.
 
 use crate::data::events::EventCategory;
+use crate::simulation::crew::post_holder;
 use crate::simulation::legacy::failure_risk;
 use crate::ui::{stat_line, term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
@@ -14,12 +12,20 @@ use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.55, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
+    let roster = Rect::new(left.x, left.y, left.w, left.h * 0.52);
+    let posts = Rect::new(
+        left.x,
+        roster.bottom() + 10.0,
+        left.w,
+        left.h - roster.h - 10.0,
+    );
 
-    draw_roster(ctx, left);
+    draw_roster(ctx, roster, mouse, actions);
+    draw_posts(ctx, posts, mouse, actions);
     draw_council(ctx, right, mouse, actions);
 }
 
-fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect) {
+fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     term_panel(rect, Some("DYNASTY ROSTER"));
     let content = rect.inset(18.0);
     let mut y = content.y + 42.0;
@@ -28,8 +34,10 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect) {
     let mut members: Vec<_> = ctx.sim.dynasty.members.iter().collect();
     members.sort_by(|a, b| b.is_leader.cmp(&a.is_leader).then(b.age.cmp(&a.age)));
 
-    for member in members.iter().take(12) {
+    let visible = ((content.h - 42.0) / 38.0).floor() as usize;
+    for member in members.iter().take(visible) {
         let heir_eligible = member.age >= config.heir_min_age && member.age <= config.heir_max_age;
+        let designated = ctx.sim.dynasty.designated_heir == Some(member.id);
         let color = if member.is_leader {
             term::GREEN
         } else if heir_eligible {
@@ -39,8 +47,8 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect) {
         };
         let role = if member.is_leader {
             " [LEADER]"
-        } else if heir_eligible {
-            " [heir-eligible]"
+        } else if designated {
+            " [HEIR DESIGNATE]"
         } else {
             ""
         };
@@ -59,37 +67,82 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect) {
             y + 16.0,
             TextStyle::new(12.0, term::AMBER_FAINT).params(),
         );
+        if heir_eligible
+            && !member.is_leader
+            && !designated
+            && term_button(
+                Rect::new(content.right() - 96.0, y - 14.0, 90.0, 26.0),
+                "NAME HEIR",
+                true,
+                mouse,
+            )
+        {
+            actions.push(UiAction::SelectHeir(member.id));
+        }
         y += 38.0;
     }
 
-    if ctx.sim.dynasty.members.len() > 12 {
+    if ctx.sim.dynasty.members.len() > visible {
         draw_ui_text_ex(
-            &format!("... and {} more", ctx.sim.dynasty.members.len() - 12),
+            &format!("... and {} more", ctx.sim.dynasty.members.len() - visible),
             content.x,
             y,
             TextStyle::new(13.0, term::AMBER_FAINT).params(),
         );
-        y += 24.0;
     }
+}
 
-    // Crew posts the roster will eventually fill (recruit/train lands in M2).
-    y = y.max(content.bottom() - 54.0);
-    let posts: Vec<&str> = ctx
-        .data
-        .crew_archetypes
-        .iter()
-        .map(|a| a.name.as_str())
-        .collect();
-    draw_text_block(
-        &format!("SHIP POSTS AWAITING ASSIGNMENT: {}", posts.join(", ")),
-        content.x,
-        y,
-        content.w,
-        44.0,
-        12.0,
-        3.0,
-        term::AMBER_FAINT,
-    );
+fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    term_panel(rect, Some("SHIP POSTS"));
+    let content = rect.inset(18.0);
+    let mut y = content.y + 40.0;
+
+    let crew_cfg = &ctx.data.config.crew;
+    for archetype in &ctx.data.crew_archetypes {
+        match post_holder(ctx.sim, &archetype.id) {
+            Some(holder) => {
+                draw_ui_text_ex(
+                    &format!(
+                        "{} — {} ({}) · SK {}",
+                        archetype.name, holder.name, holder.age, holder.skill
+                    ),
+                    content.x,
+                    y,
+                    TextStyle::new(13.0, term::GREEN).params(),
+                );
+                let maxed = holder.skill >= archetype.skill_max;
+                if term_button(
+                    Rect::new(content.right() - 150.0, y - 14.0, 144.0, 24.0),
+                    &if maxed {
+                        "MASTERED".to_owned()
+                    } else {
+                        format!("TRAIN ({} CR)", crew_cfg.train_cost_credits)
+                    },
+                    !maxed,
+                    mouse,
+                ) {
+                    actions.push(UiAction::TrainCrew(archetype.id.clone()));
+                }
+            }
+            None => {
+                draw_ui_text_ex(
+                    &format!("{} — POST VACANT", archetype.name),
+                    content.x,
+                    y,
+                    TextStyle::new(13.0, term::AMBER_DIM).params(),
+                );
+                if term_button(
+                    Rect::new(content.right() - 150.0, y - 14.0, 144.0, 24.0),
+                    &format!("RECRUIT ({} CR)", crew_cfg.recruit_cost_credits),
+                    ctx.sim.resources.credits >= crew_cfg.recruit_cost_credits,
+                    mouse,
+                ) {
+                    actions.push(UiAction::RecruitCrew(archetype.id.clone()));
+                }
+            }
+        }
+        y += 27.0;
+    }
 }
 
 fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {

@@ -50,10 +50,16 @@ Ordered roughly by milestone (GDD §13):
    counter terms only their own legacy) and is surfaced with its contributing
    factors on the Crew & Dynasty screen. New capture scene: `dilemma`. Note:
    dilemma content is still 1 per legacy — M3 target is 6 per legacy (§8).
-2. **Crew management.** `crew_archetypes.json` is loaded and displayed as
-   placeholder text. Add a crew roster to `SimState`, recruit/train actions
-   (`UiAction` variants exist as a pattern; add `SelectHeir` etc.), and let crew
-   skills modify production/event outcomes.
+2. ~~**Crew management.**~~ **DONE (2026-07-18).** One post per archetype:
+   `SimState.crew` roster, `simulation/crew.rs` (recruit/train verbs, costs in
+   config → `crew` block), crew age out on generation boundaries. Skill effects
+   are data-driven on `crew_archetypes.json`: `production_per_skill` multipliers
+   (applied in the tick), medic `famine_loss_reduction_per_skill`, security-chief
+   `unity_recovery_per_skill` (below a config ceiling). `SelectHeir` designates a
+   successor stored on `Dynasty.designated_heir`, honored by succession over the
+   best-leadership fallback. Crew UI lives on the Crew & Dynasty screen (`crew`
+   capture scene). Event-outcome hooks (navigator/combat) intentionally deferred
+   to item 3 where ship component stats land.
 3. **Production bonuses.** `ProductionRates` is pre-keyed (the GDD §5.1 bug fix),
    but nothing modifies it yet — ship components and contract milestones should
    grant production deltas. The Ship Builder purchase currently only swaps the

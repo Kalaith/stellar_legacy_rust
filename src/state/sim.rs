@@ -106,6 +106,10 @@ pub struct Dynasty {
     pub years_since_generation: u32,
     pub next_member_id: u32,
     pub members: Vec<DynastyMember>,
+    /// Council-designated successor (GDD §4 Select Heir). Honored at the
+    /// next succession if still living and age-eligible.
+    #[serde(default)]
+    pub designated_heir: Option<u32>,
     /// Set when a generation tick finds no leader and no eligible heir.
     pub extinct: bool,
 }
@@ -114,6 +118,18 @@ impl Dynasty {
     pub fn leader(&self) -> Option<&DynastyMember> {
         self.members.iter().find(|m| m.is_leader)
     }
+}
+
+/// One serving officer holding a ship post (GDD §4 Recruit/Train). At most
+/// one crew member per archetype post; posts fall vacant on retirement.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrewMember {
+    pub id: u32,
+    pub name: String,
+    pub archetype_id: String,
+    pub age: u32,
+    /// 0-100, capped by the archetype's skill_max.
+    pub skill: u32,
 }
 
 /// Per-legacy tracked inputs to the failure-risk formula (GDD §5.5). These
@@ -278,6 +294,10 @@ pub struct SimState {
     pub ship: ShipState,
     pub population: PopulationState,
     pub dynasty: Dynasty,
+    #[serde(default)]
+    pub crew: Vec<CrewMember>,
+    #[serde(default)]
+    pub next_crew_id: u32,
     pub legacy: LegacyTrack,
     pub contract: Option<ActiveContract>,
     pub market: MarketState,
@@ -337,6 +357,8 @@ impl SimState {
                 cultural_drift: 0.1,
             },
             dynasty,
+            crew: Vec::new(),
+            next_crew_id: 0,
             legacy: LegacyTrack {
                 legacy_id: legacy_id.to_owned(),
                 tradition_points: 50,
@@ -352,6 +374,21 @@ impl SimState {
             consequences: Vec::new(),
             log: Vec::new(),
         };
+        // Founding senior staff fill the configured starting posts.
+        for archetype_id in &config.crew.starting_posts {
+            let age_span = config.crew.recruit_age_max - config.crew.recruit_age_min + 1;
+            let age = config.crew.recruit_age_min + sim.rng.below(age_span as usize) as u32;
+            if let Some(member) = generate_crew_member(
+                data,
+                legacy_id,
+                archetype_id,
+                age,
+                &mut sim.rng,
+                &mut sim.next_crew_id,
+            ) {
+                sim.crew.push(member);
+            }
+        }
         sim.push_log("The founding council convenes. The voyage begins with a choice of contract.");
         sim
     }
@@ -393,6 +430,7 @@ fn founding_dynasty(data: &GameData, legacy_id: &str, rng: &mut SeededRng) -> Dy
         years_since_generation: 0,
         next_member_id: 0,
         members: Vec::new(),
+        designated_heir: None,
         extinct: false,
     };
 
@@ -438,6 +476,38 @@ pub fn generate_member(
         trait_name,
         is_leader: false,
     }
+}
+
+/// Generate a named officer for a post, skill rolled within the archetype's
+/// range. Returns None for an unknown archetype id.
+pub fn generate_crew_member(
+    data: &GameData,
+    legacy_id: &str,
+    archetype_id: &str,
+    age: u32,
+    rng: &mut SeededRng,
+    next_id: &mut u32,
+) -> Option<CrewMember> {
+    let archetype = data.crew_archetypes.iter().find(|a| a.id == archetype_id)?;
+    let pools = &data.dynasty_names;
+    let given = pick(&pools.given_names, rng);
+    let surname = pools
+        .surnames_by_legacy
+        .get(legacy_id)
+        .map(|names| pick(names, rng))
+        .unwrap_or_else(|| "Voyager".to_owned());
+    let skill_span = (archetype.skill_max - archetype.skill_min + 1) as usize;
+    let skill = archetype.skill_min + rng.below(skill_span) as u32;
+
+    let id = *next_id;
+    *next_id += 1;
+    Some(CrewMember {
+        id,
+        name: format!("{given} {surname}"),
+        archetype_id: archetype.id.clone(),
+        age,
+        skill,
+    })
 }
 
 fn pick(pool: &[String], rng: &mut SeededRng) -> String {

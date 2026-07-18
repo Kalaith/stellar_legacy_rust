@@ -101,8 +101,25 @@ pub struct GameConfig {
     pub event_chance_cap: f32,
     /// Chance a legacy dilemma confronts each new generation (GDD §5.5).
     pub dilemma_chance_per_generation: f32,
+    pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub log_limit: usize,
+}
+
+/// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per
+/// archetype; recruiting fills a vacancy, training raises the holder's
+/// skill toward the archetype cap.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrewConfig {
+    pub starting_posts: Vec<String>,
+    pub recruit_cost_credits: i64,
+    pub train_cost_credits: i64,
+    pub train_skill_gain: u32,
+    pub recruit_age_min: u32,
+    pub recruit_age_max: u32,
+    pub retirement_age: u32,
+    /// Security-chief unity recovery only applies below this ceiling.
+    pub unity_recovery_ceiling: f32,
 }
 
 /// Thresholds and point values for the §5.5 failure-risk formula. Drift and

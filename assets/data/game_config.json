@@ -34,6 +34,16 @@
   "event_chance_base": 0.3,
   "event_chance_cap": 0.8,
   "dilemma_chance_per_generation": 0.65,
+  "crew": {
+    "starting_posts": ["commander", "engineer", "agronomist"],
+    "recruit_cost_credits": 800,
+    "train_cost_credits": 400,
+    "train_skill_gain": 6,
+    "recruit_age_min": 25,
+    "recruit_age_max": 40,
+    "retirement_age": 68,
+    "unity_recovery_ceiling": 0.6
+  },
   "failure_risk": {
     "drift_threshold": 0.7,
     "drift_points": 30,

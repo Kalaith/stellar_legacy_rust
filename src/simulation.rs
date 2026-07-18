@@ -2,6 +2,7 @@
 //! returns results; none of them touch UI or rendering.
 
 pub mod contract;
+pub mod crew;
 pub mod event_resolver;
 pub mod legacy;
 pub mod market;

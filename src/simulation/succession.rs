@@ -61,13 +61,29 @@ fn run_generation(
         for member in &mut dynasty.members {
             member.is_leader = false;
         }
+        let eligible = |m: &crate::state::sim::DynastyMember| {
+            m.age >= config.heir_min_age && m.age <= config.heir_max_age
+        };
+        // A council-designated heir takes precedence if still living and
+        // age-eligible (GDD §4 Select Heir); otherwise best leadership wins.
         let heir_index = dynasty
-            .members
-            .iter()
-            .enumerate()
-            .filter(|(_, m)| m.age >= config.heir_min_age && m.age <= config.heir_max_age)
-            .max_by_key(|(_, m)| m.leadership)
-            .map(|(i, _)| i);
+            .designated_heir
+            .and_then(|id| {
+                dynasty
+                    .members
+                    .iter()
+                    .position(|m| m.id == id && eligible(m))
+            })
+            .or_else(|| {
+                dynasty
+                    .members
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, m)| eligible(m))
+                    .max_by_key(|(_, m)| m.leadership)
+                    .map(|(i, _)| i)
+            });
+        dynasty.designated_heir = None;
         match heir_index {
             Some(i) => {
                 dynasty.members[i].is_leader = true;
@@ -120,6 +136,42 @@ mod tests {
             // Legitimate outcome: no member landed in the eligible band.
             assert!(!sim.dynasty.members.is_empty() || sim.dynasty.extinct);
         }
+    }
+
+    #[test]
+    fn designated_heir_takes_precedence_over_best_leadership() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 12);
+
+        // Force a succession: leader far past retirement, and designate the
+        // weakest eligible member instead of the strongest.
+        for member in &mut sim.dynasty.members {
+            if member.is_leader {
+                member.age = 80;
+            }
+        }
+        let eligible_after_aging: Vec<(u32, u32)> = sim
+            .dynasty
+            .members
+            .iter()
+            .filter(|m| !m.is_leader && (5..=25).contains(&m.age))
+            .map(|m| (m.id, m.leadership))
+            .collect();
+        let weakest = eligible_after_aging
+            .iter()
+            .min_by_key(|(_, leadership)| *leadership)
+            .map(|(id, _)| *id)
+            .expect("founding dynasty has members aging into eligibility");
+        sim.dynasty.designated_heir = Some(weakest);
+
+        let report = process_generation(&mut sim, &data);
+        assert!(report.new_leader.is_some());
+        assert_eq!(
+            sim.dynasty.leader().map(|l| l.id),
+            Some(weakest),
+            "the designated heir must inherit even with lower leadership"
+        );
+        assert!(sim.dynasty.designated_heir.is_none(), "consumed on use");
     }
 
     #[test]
