@@ -33,5 +33,21 @@
   "member_max_age": 90,
   "event_chance_base": 0.3,
   "event_chance_cap": 0.8,
+  "dilemma_chance_per_generation": 0.65,
+  "failure_risk": {
+    "drift_threshold": 0.7,
+    "drift_points": 30,
+    "unity_threshold": 0.3,
+    "unity_points": 25,
+    "tradition_threshold": 20,
+    "tradition_points": 35,
+    "body_horror_threshold": 3,
+    "body_horror_points": 30,
+    "dread_threshold": 0.6,
+    "dread_points": 25,
+    "piracy_threshold": 0.7,
+    "piracy_points": 25,
+    "at_risk_threshold": 50
+  },
   "log_limit": 200
 }

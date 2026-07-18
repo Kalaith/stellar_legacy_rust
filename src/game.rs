@@ -4,7 +4,7 @@ use crate::chronicle::{ChronicleEntry, ChronicleStore};
 use crate::data::ship_components::ComponentKind;
 use crate::data::GameData;
 use crate::save;
-use crate::simulation::{contract, event_resolver, market, tick};
+use crate::simulation::{contract, event_resolver, legacy, market, tick};
 use crate::state::{GameState, GameplayState, MenuState, SimState, StateTransition};
 use crate::ui::{self, UiAction};
 use macroquad::prelude::*;
@@ -65,6 +65,14 @@ impl Game {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.pending_event = Some(crate::state::sim::PendingEvent {
                     template_id: "cultural_schism".to_owned(),
+                    rolled_year: 0,
+                });
+                self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
+            }
+            "dilemma" => {
+                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {
+                    dilemma_id: "archive_purge".to_owned(),
                     rolled_year: 0,
                 });
                 self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
@@ -230,6 +238,12 @@ impl Game {
                 }
                 None
             }
+            UiAction::ResolveDilemma(index) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    legacy::resolve_dilemma(&mut gameplay.sim, &self.data, index);
+                }
+                None
+            }
             UiAction::AcceptContract(id) => {
                 if let (GameState::Gameplay(gameplay), Some(template)) =
                     (&mut self.state, self.data.contracts.get(&id))
@@ -283,7 +297,7 @@ impl Game {
             return;
         };
         let sim = &mut gameplay.sim;
-        if sim.pending_event.is_some() || sim.dynasty.extinct {
+        if sim.has_pending_decision() || sim.dynasty.extinct {
             return;
         }
 

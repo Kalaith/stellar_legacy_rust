@@ -10,8 +10,8 @@ The project is a fully compiling, tested skeleton with the GDD §11 architecture
 place. Verified: `cargo test` (18 tests green), `cargo clippy --all-targets
 --all-features -- -D warnings` (clean), `cargo fmt` (applied), WASM target checks
 (`cargo check --release --target wasm32-unknown-unknown`), and headless UI captures
-for three scenes (`docs/verification/ui_{menu,gameplay,event}.png`, regenerate with
-`.\scripts\capture_ui.ps1 -Scenes menu,gameplay,event`).
+for four scenes (`docs/verification/ui_{menu,gameplay,event,dilemma}.png`, regenerate
+with `.\scripts\capture_ui.ps1 -Scenes menu,gameplay,event,dilemma`).
 
 A campaign is already playable end-to-end in skeleton form: pick a legacy → accept a
 charter → advance years → resolve council events → generations turn over → contract
@@ -40,14 +40,16 @@ Ordered roughly by milestone (GDD §13):
 
 ### Finish M1 → M2 (playable prototype)
 
-1. **Legacy dilemmas are loaded but never fire.** `assets/legacies.json` ships one
-   dilemma per legacy with full success/failure effects, and `LegacyTrack` holds the
-   real counters (`tradition_points`, `body_horror_events`, `piracy_reputation`,
-   `existential_dread`) — but nothing rolls a dilemma yet. Wire them into the tick
-   (e.g. as part of `legacy_moment` events or on generation boundaries) and apply
-   `DilemmaEffect` including the legacy counters. Then implement the **failure-risk
-   formula** (§5.5: drift > 0.7 → +30, unity < 0.3 → +25, tradition < 20 → +35,
-   at-risk > 50) and surface it on the Crew & Dynasty screen.
+1. ~~**Legacy dilemmas are loaded but never fire.**~~ **DONE (2026-07-18).**
+   Dilemmas roll on generation boundaries (`simulation/legacy.rs::roll_dilemma`,
+   wired in `tick.rs`; chance in `game_config.json` →
+   `dilemma_chance_per_generation`), always block (never delegated), suppress the
+   same year's event roll, and apply `DilemmaEffect` including the legacy counters.
+   The §5.5 failure-risk formula lives in `simulation/legacy.rs::failure_risk`
+   (thresholds in config → `failure_risk` block; drift/unity threaten all legacies,
+   counter terms only their own legacy) and is surfaced with its contributing
+   factors on the Crew & Dynasty screen. New capture scene: `dilemma`. Note:
+   dilemma content is still 1 per legacy — M3 target is 6 per legacy (§8).
 2. **Crew management.** `crew_archetypes.json` is loaded and displayed as
    placeholder text. Add a crew roster to `SimState`, recruit/train actions
    (`UiAction` variants exist as a pattern; add `SelectHeir` etc.), and let crew

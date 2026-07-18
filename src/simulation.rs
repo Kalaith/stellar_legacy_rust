@@ -3,6 +3,7 @@
 
 pub mod contract;
 pub mod event_resolver;
+pub mod legacy;
 pub mod market;
 pub mod succession;
 pub mod tick;

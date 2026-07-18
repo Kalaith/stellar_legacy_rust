@@ -5,6 +5,7 @@
 //! original's cosmetic no-ops (GDD §0).
 
 use crate::data::events::EventCategory;
+use crate::simulation::legacy::failure_risk;
 use crate::ui::{stat_line, term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
@@ -150,27 +151,52 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
 
     y += 10.0;
     let legacy = &ctx.sim.legacy;
+    let counters: [(&str, String); 4] = [
+        ("TRADITION POINTS", legacy.tradition_points.to_string()),
+        ("BODY-HORROR EVENTS", legacy.body_horror_events.to_string()),
+        (
+            "EXISTENTIAL DREAD",
+            format!("{:.2}", legacy.existential_dread),
+        ),
+        (
+            "PIRACY REPUTATION",
+            format!("{:.2}", legacy.piracy_reputation),
+        ),
+    ];
+    for (label, value) in &counters {
+        stat_line(content.x, y, label, value, term::AMBER);
+        y += 22.0;
+    }
+
+    // Failure risk (GDD §5.5), with its contributing factors spelled out.
+    y += 12.0;
+    let risk = failure_risk(ctx.sim, &ctx.data.config);
+    let risk_name = ctx
+        .data
+        .legacies
+        .get(&legacy.legacy_id)
+        .map(|l| l.failure_risk.replace('_', " ").to_uppercase())
+        .unwrap_or_default();
+    let (status, color) = if risk.at_risk {
+        ("AT RISK", term::RED)
+    } else {
+        ("STABLE", term::GREEN)
+    };
     stat_line(
         content.x,
         y,
-        "TRADITION POINTS",
-        &legacy.tradition_points.to_string(),
-        term::AMBER,
+        &format!("RISK: {risk_name}"),
+        &format!("{} ({status})", risk.total),
+        color,
     );
     y += 22.0;
-    stat_line(
-        content.x,
-        y,
-        "BODY-HORROR EVENTS",
-        &legacy.body_horror_events.to_string(),
-        term::AMBER,
-    );
-    y += 22.0;
-    stat_line(
-        content.x,
-        y,
-        "PIRACY REPUTATION",
-        &format!("{:.2}", legacy.piracy_reputation),
-        term::AMBER,
-    );
+    for factor in &risk.factors {
+        draw_ui_text_ex(
+            &format!("  + {} ({})", factor.label, factor.points),
+            content.x,
+            y,
+            TextStyle::new(13.0, term::RED).params(),
+        );
+        y += 18.0;
+    }
 }

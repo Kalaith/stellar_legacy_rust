@@ -6,7 +6,7 @@
 
 use crate::data::{GameData, ResourceDelta};
 use crate::simulation::contract::{score_success, SuccessLevel};
-use crate::simulation::{contract, event_resolver, market, succession};
+use crate::simulation::{contract, event_resolver, legacy, market, succession};
 use crate::state::sim::SimState;
 
 /// Everything a single year produced that the caller (game.rs) must react
@@ -23,8 +23,8 @@ pub struct TickReport {
 
 pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
     debug_assert!(
-        sim.pending_event.is_none(),
-        "caller must resolve the pending event before advancing time"
+        !sim.has_pending_decision(),
+        "caller must resolve the pending event/dilemma before advancing time"
     );
     let config = &data.config;
     let mut report = TickReport::default();
@@ -79,6 +79,25 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
             sim.push_log("The dynasty has no heirs. The line ends here.");
             report.dynasty_extinct = true;
         }
+
+        // Each new generation may confront its legacy's defining dilemma
+        // (GDD §5.5). Dilemmas always block — they are never delegated.
+        if !generation.extinct {
+            if let Some(pending) = legacy::roll_dilemma(sim, data) {
+                if let Some(dilemma) = data
+                    .legacies
+                    .get(&sim.legacy.legacy_id)
+                    .and_then(|l| l.dilemmas.iter().find(|d| d.id == pending.dilemma_id))
+                {
+                    sim.push_log(format!(
+                        "The new generation faces a reckoning: {}",
+                        dilemma.title
+                    ));
+                }
+                sim.pending_dilemma = Some(pending);
+                report.decision_required = true;
+            }
+        }
     }
 
     // Contract progress and completion (GDD §5.2).
@@ -95,7 +114,17 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
     market::drift_prices(sim);
 
     // Event roll (GDD §5.4). Delegated or no-decision events resolve
-    // immediately but still log their outcome (GDD §3 step 4).
+    // immediately but still log their outcome (GDD §3 step 4). A dilemma
+    // rolled this year already blocks the council — one decision per year.
+    if sim.pending_dilemma.is_none() {
+        roll_yearly_event(sim, data, &mut report);
+    }
+
+    sim.trim_log(config.log_limit);
+    report
+}
+
+fn roll_yearly_event(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
     if let Some(pending) = event_resolver::roll_event(sim, data) {
         if let Some(template) = data.events.get(&pending.template_id).cloned() {
             let delegated = sim.delegation.is_delegated(template.category);
@@ -114,9 +143,6 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
             }
         }
     }
-
-    sim.trim_log(config.log_limit);
-    report
 }
 
 #[cfg(test)]
@@ -157,7 +183,9 @@ mod tests {
         let (_, mut b) = fresh(77);
         for _ in 0..10 {
             a.pending_event = None;
+            a.pending_dilemma = None;
             b.pending_event = None;
+            b.pending_dilemma = None;
             advance_year(&mut a, &data);
             advance_year(&mut b, &data);
         }
@@ -181,6 +209,7 @@ mod tests {
         let mut completed = None;
         for _ in 0..template.target_duration_years {
             sim.pending_event = None;
+            sim.pending_dilemma = None;
             let report = advance_year(&mut sim, &data);
             if report.contract_completed.is_some() {
                 completed = report.contract_completed;
@@ -191,5 +220,26 @@ mod tests {
         assert!(score > 0.0);
         let active = sim.contract.as_ref().unwrap();
         assert!(active.milestones.iter().all(|m| m.reached));
+    }
+
+    #[test]
+    fn a_certain_dilemma_fires_on_the_generation_boundary() {
+        let mut data = GameData::load().unwrap();
+        data.config.dilemma_chance_per_generation = 1.0;
+        let mut sim = SimState::new_campaign(&data, "preservers", 11);
+        sim.resources.food = 1_000_000;
+
+        for _ in 0..data.config.generation_interval_years {
+            sim.pending_event = None;
+            sim.pending_dilemma = None;
+            advance_year(&mut sim, &data);
+        }
+        let pending = sim
+            .pending_dilemma
+            .as_ref()
+            .expect("a dilemma must confront the new generation at 100% chance");
+        assert_eq!(pending.rolled_year, sim.year);
+        // The dilemma blocks the year's event roll — one decision at a time.
+        assert!(sim.pending_event.is_none());
     }
 }

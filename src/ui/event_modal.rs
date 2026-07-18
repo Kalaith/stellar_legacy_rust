@@ -1,5 +1,7 @@
-//! Blocking council-decision modal (GDD §9 step 4).
+//! Blocking council-decision modals: events (GDD §9 step 4) and legacy
+//! dilemmas (GDD §5.5).
 
+use crate::simulation::legacy::pending_dilemma_def;
 use crate::ui::{term, term_button, GameplayCtx, UiAction, LOGICAL_HEIGHT, LOGICAL_WIDTH};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
@@ -13,31 +15,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         return;
     };
 
-    // Dim the world behind the decision.
-    draw_rectangle(
-        0.0,
-        0.0,
-        LOGICAL_WIDTH,
-        LOGICAL_HEIGHT,
-        Color::new(0.0, 0.0, 0.0, 0.75),
-    );
-
-    let height = 240.0 + template.outcomes.len() as f32 * 96.0;
-    let rect = Rect::new(
-        LOGICAL_WIDTH / 2.0 - 330.0,
-        (LOGICAL_HEIGHT - height) / 2.0,
-        660.0,
-        height,
-    );
-    draw_surface(
-        rect,
-        &SurfaceStyle::new(Color::new(0.06, 0.05, 0.012, 1.0))
-            .with_border(2.0, term::RED)
-            .with_header(40.0, term::PANEL_HEADER)
-            .with_header_divider(1.0, term::RED),
-    );
-
-    let content = rect.inset(26.0);
+    let content = modal_frame(template.outcomes.len(), term::RED);
     let mut y = content.y + 22.0;
     draw_ui_text_ex(
         &format!(
@@ -95,4 +73,107 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         }
         y += 96.0;
     }
+}
+
+/// Blocking legacy-dilemma modal. Options show their success odds up front —
+/// the roll is honest, so the interface is too (Pillar 3).
+pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    let Some(dilemma) = pending_dilemma_def(ctx.sim, ctx.data) else {
+        return;
+    };
+    let legacy_name = ctx
+        .data
+        .legacies
+        .get(&ctx.sim.legacy.legacy_id)
+        .map(|l| l.name.clone())
+        .unwrap_or_default();
+
+    let content = modal_frame(dilemma.options.len(), term::AMBER);
+    let mut y = content.y + 22.0;
+    draw_ui_text_ex(
+        &format!("LEGACY DILEMMA — {}", legacy_name.to_uppercase()),
+        content.x,
+        y,
+        TextStyle::new(14.0, term::AMBER).params(),
+    );
+    y += 30.0;
+    draw_ui_text_ex(
+        &dilemma.title,
+        content.x,
+        y,
+        TextStyle::new(22.0, term::AMBER).params(),
+    );
+    y += 20.0;
+    draw_text_block(
+        &dilemma.description,
+        content.x,
+        y,
+        content.w,
+        70.0,
+        14.0,
+        4.0,
+        term::AMBER_DIM,
+    );
+    y += 84.0;
+
+    for (i, option) in dilemma.options.iter().enumerate() {
+        let card = Rect::new(content.x, y, content.w, 84.0);
+        draw_surface(
+            card,
+            &SurfaceStyle::new(Color::new(0.08, 0.065, 0.015, 1.0))
+                .with_border(1.0, term::AMBER_FAINT),
+        );
+        draw_ui_text_ex(
+            &format!("Success odds: {:.0}%", option.success_chance * 100.0),
+            card.x + 14.0,
+            card.y + 24.0,
+            TextStyle::new(13.0, term::GREEN).params(),
+        );
+        draw_text_block(
+            &option.success.log,
+            card.x + 14.0,
+            card.y + 34.0,
+            card.w - 200.0,
+            40.0,
+            12.0,
+            3.0,
+            term::AMBER_FAINT,
+        );
+        if term_button(
+            Rect::new(card.right() - 178.0, card.y + 24.0, 164.0, 36.0),
+            &option.label.to_uppercase(),
+            true,
+            mouse,
+        ) {
+            actions.push(UiAction::ResolveDilemma(i));
+        }
+        y += 96.0;
+    }
+}
+
+/// Dim the world and draw the modal surface; returns the content rect.
+fn modal_frame(option_count: usize, accent: Color) -> Rect {
+    draw_rectangle(
+        0.0,
+        0.0,
+        LOGICAL_WIDTH,
+        LOGICAL_HEIGHT,
+        Color::new(0.0, 0.0, 0.0, 0.75),
+    );
+
+    let height = 240.0 + option_count as f32 * 96.0;
+    let rect = Rect::new(
+        LOGICAL_WIDTH / 2.0 - 330.0,
+        (LOGICAL_HEIGHT - height) / 2.0,
+        660.0,
+        height,
+    );
+    draw_surface(
+        rect,
+        &SurfaceStyle::new(Color::new(0.06, 0.05, 0.012, 1.0))
+            .with_border(2.0, accent)
+            .with_header(40.0, term::PANEL_HEADER)
+            .with_header_divider(1.0, accent),
+    );
+    rect.inset(26.0)
 }

@@ -251,6 +251,14 @@ pub struct PendingEvent {
     pub rolled_year: u32,
 }
 
+/// A legacy dilemma waiting for a council decision (GDD §5.5). Stores the
+/// dilemma id; the definition lives on the sim's legacy in `GameData`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PendingDilemma {
+    pub dilemma_id: String,
+    pub rolled_year: u32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LogEntry {
     pub year: u32,
@@ -275,6 +283,8 @@ pub struct SimState {
     pub market: MarketState,
     pub delegation: DelegationSettings,
     pub pending_event: Option<PendingEvent>,
+    #[serde(default)]
+    pub pending_dilemma: Option<PendingDilemma>,
     /// Accumulated named consequences from past outcomes (Pillar 2). Read by
     /// future event weighting; append-only from outcome application.
     pub consequences: Vec<String>,
@@ -338,11 +348,17 @@ impl SimState {
             market,
             delegation: DelegationSettings::default(),
             pending_event: None,
+            pending_dilemma: None,
             consequences: Vec::new(),
             log: Vec::new(),
         };
         sim.push_log("The founding council convenes. The voyage begins with a choice of contract.");
         sim
+    }
+
+    /// True while any council decision (event or dilemma) blocks the tick.
+    pub fn has_pending_decision(&self) -> bool {
+        self.pending_event.is_some() || self.pending_dilemma.is_some()
     }
 
     pub fn push_log(&mut self, text: impl Into<String>) {

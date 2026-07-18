@@ -99,7 +99,30 @@ pub struct GameConfig {
     pub member_max_age: u32,
     pub event_chance_base: f32,
     pub event_chance_cap: f32,
+    /// Chance a legacy dilemma confronts each new generation (GDD §5.5).
+    pub dilemma_chance_per_generation: f32,
+    pub failure_risk: FailureRiskConfig,
     pub log_limit: usize,
+}
+
+/// Thresholds and point values for the §5.5 failure-risk formula. Drift and
+/// unity apply to every legacy; the rest gate on the matching legacy's
+/// tracked counters (see `simulation::legacy::failure_risk`).
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct FailureRiskConfig {
+    pub drift_threshold: f32,
+    pub drift_points: i32,
+    pub unity_threshold: f32,
+    pub unity_points: i32,
+    pub tradition_threshold: i32,
+    pub tradition_points: i32,
+    pub body_horror_threshold: u32,
+    pub body_horror_points: i32,
+    pub dread_threshold: f32,
+    pub dread_points: i32,
+    pub piracy_threshold: f32,
+    pub piracy_points: i32,
+    pub at_risk_threshold: i32,
 }
 
 #[derive(Debug, Clone)]

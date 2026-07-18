@@ -58,6 +58,7 @@ pub enum UiAction {
     // Gameplay verbs (GDD §4)
     AdvanceYear,
     ResolveEvent(usize),
+    ResolveDilemma(usize),
     AcceptContract(String),
     PurchaseComponent(ComponentKind, String),
     Buy(TradeResource, i64),
@@ -282,6 +283,9 @@ pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
     if ctx.sim.pending_event.is_some() {
         actions.clear();
         event_modal::draw(&ctx, mouse, &mut actions);
+    } else if ctx.sim.pending_dilemma.is_some() {
+        actions.clear();
+        event_modal::draw_dilemma(&ctx, mouse, &mut actions);
     }
 
     actions
