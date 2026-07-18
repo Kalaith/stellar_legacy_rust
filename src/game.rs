@@ -121,6 +121,22 @@ impl Game {
                 self.state = GameState::Menu(MenuState::new(true));
                 self.settings_open = true;
             }
+            "heritage" => {
+                // Seed a storied Chronicle so the menu heritage line shows.
+                for i in 0..6 {
+                    self.chronicle.record(crate::chronicle::ChronicleEntry {
+                        completed_year: 60,
+                        contract_name: "Founding Charter: Meridian Reach".to_owned(),
+                        objective: "Colonization".to_owned(),
+                        legacy_id: "preservers".to_owned(),
+                        leader_name: "Boro Chartwright".to_owned(),
+                        generation: i + 1,
+                        score: 0.95,
+                        outcome: "Complete".to_owned(),
+                    });
+                }
+                self.state = GameState::Menu(MenuState::new(true));
+            }
             "boot" => {
                 // Freeze the boot log mid-stream for a screenshot.
                 self.boot.seek(1.4);
@@ -244,6 +260,7 @@ impl Game {
                     data: &self.data,
                     menu,
                     legacy_ids: &self.legacy_ids,
+                    chronicle: &self.chronicle,
                     ui: &virtual_ui,
                 }),
                 GameState::Gameplay(gameplay) => ui::draw_gameplay(ui::GameplayCtx {
@@ -362,10 +379,20 @@ impl Game {
     fn transition(&mut self, transition: StateTransition) {
         match transition {
             StateTransition::NewCampaign { legacy_id, seed } => {
-                let sim = SimState::new_campaign(&self.data, &legacy_id, seed);
+                let mut sim = SimState::new_campaign(&self.data, &legacy_id, seed);
+                // A new dynasty inherits a head start from the Chronicle (§7).
+                let heritage = crate::heritage::derive(&self.chronicle, &self.data.config.heritage);
+                crate::heritage::apply(&mut sim, &heritage);
                 self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
-                self.notifications
-                    .success("The founding generation takes its oath.");
+                if heritage.has_bonus() {
+                    self.notifications.success(format!(
+                        "The {} heritage steadies the founding oath.",
+                        heritage.tier_name
+                    ));
+                } else {
+                    self.notifications
+                        .success("The founding generation takes its oath.");
+                }
             }
             StateTransition::LoadCampaign => match save::load_campaign(&self.data.config) {
                 Ok(sim) => {

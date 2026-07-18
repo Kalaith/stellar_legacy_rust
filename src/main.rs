@@ -7,6 +7,7 @@ mod boot;
 mod chronicle;
 mod data;
 mod game;
+mod heritage;
 mod save;
 mod settings;
 mod simulation;

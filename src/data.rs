@@ -104,7 +104,24 @@ pub struct GameConfig {
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
+    /// Heritage tiers (GDD §7), ascending by `min_renown`. The highest tier a
+    /// new dynasty's accumulated Chronicle renown clears grants its bonus.
+    pub heritage: Vec<HeritageTier>,
     pub log_limit: usize,
+}
+
+/// One heritage tier: the renown needed to reach it and the head start it
+/// grants a new campaign (`simulation`/`heritage`).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HeritageTier {
+    pub min_renown: i64,
+    pub name: String,
+    #[serde(default)]
+    pub credits: i64,
+    #[serde(default)]
+    pub influence: i64,
+    #[serde(default)]
+    pub tradition: i32,
 }
 
 /// Ship-loadout tunables (PLAN item 3). The installed components' aggregated

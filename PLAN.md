@@ -29,7 +29,7 @@ completes → Chronicle entry recorded and persisted across saves.
 | Event roll/scoring/resolution (§5.4) | `src/simulation/event_resolver.rs` | **Done** — chance formula (capped), distress-scaled category weights, legacy-weighted template pick, outcome auto-scoring, delegation-aware resolution |
 | Market (§5.1) | `src/simulation/market.rs` | **Done** — buy/sell validation, bounded yearly price walk |
 | Save/load (§7) | `src/save.rs` | **Done** — toolkit slots, migration hook stubbed for future versions |
-| Chronicle (§7) | `src/chronicle.rs` | **Partial** — persistent cross-playthrough contract log works; **Heritage modifiers not started** |
+| Chronicle (§7) | `src/chronicle.rs` + `src/heritage.rs` | **Done** — persistent cross-playthrough contract log + Heritage modifiers (renown → tier → new-campaign bonus) |
 | State machine (§11) | `src/state.rs`, `src/game.rs` | **Done** — Menu/Gameplay, explicit `StateTransition`, `UiAction` dispatch via `EventBus` |
 | Terminal UI shell (§9) | `src/ui.rs` + `src/ui/*` | **Done as skeleton** — all 6 screens + blocking event modal, amber/green/red phosphor palette |
 | Capture harness | `src/main.rs` (`STELLAR_LEGACY` prefix) | **Done** — scenes: `menu`, `gameplay`, `event` |
@@ -100,8 +100,16 @@ Ordered roughly by milestone (GDD §13):
 
 ### M3 (content-complete)
 
-7. **Heritage modifiers** (§7): on retirement/extinction, derive small starting
-   bonuses from `ChronicleStore` entries for the next campaign; 4 tiers (§8).
+7. ~~**Heritage modifiers** (§7)~~ **DONE (2026-07-18).** `src/heritage.rs`
+   derives a *renown* total from the `ChronicleStore` (each completed contract's
+   success score ×100) and places a new dynasty in a heritage tier
+   (`game_config.json → heritage`: Founding / Remembered / Storied / Renowned /
+   Mythic — base + 4 bonus tiers, §8) granting starting credits/influence/
+   tradition. Applied in the `NewCampaign` transition (`heritage::apply`, with a
+   founding log line) and surfaced on the menu ("HERITAGE: {tier} · renown N ·
+   +cr/+inf/+tradition"). Deterministic (derived from the persisted Chronicle,
+   applied once at creation). New `heritage` capture scene; 3 unit tests. This
+   closes the Chronicle "Partial" status.
 8. Content targets from §8: 30+ events, 5/5/5 components, 6-8 contracts, 6 dilemmas
    per legacy, doubled name pools.
 9. **Terminal polish**: monospace bitmap font (default font is close but not

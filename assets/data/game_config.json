@@ -64,5 +64,12 @@
     "minerals_per_cargo": 0.1,
     "fuel_regen_per_point": 0.05
   },
+  "heritage": [
+    { "min_renown": 0, "name": "Founding" },
+    { "min_renown": 100, "name": "Remembered", "credits": 500, "tradition": 5 },
+    { "min_renown": 250, "name": "Storied", "credits": 1500, "influence": 100, "tradition": 15 },
+    { "min_renown": 500, "name": "Renowned", "credits": 3000, "influence": 200, "tradition": 30 },
+    { "min_renown": 900, "name": "Mythic", "credits": 6000, "influence": 400, "tradition": 50 }
+  ],
   "log_limit": 200
 }

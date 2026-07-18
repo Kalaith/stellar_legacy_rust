@@ -270,6 +270,7 @@ pub struct MenuCtx<'a> {
     pub data: &'a GameData,
     pub menu: &'a MenuState,
     pub legacy_ids: &'a [String],
+    pub chronicle: &'a ChronicleStore,
     pub ui: &'a VirtualUi,
 }
 
@@ -291,6 +292,24 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         165.0,
         TextStyle::new(17.0, term::dim()).params(),
     );
+
+    // A dynasty inheriting a storied Chronicle begins with a head start (§7).
+    let heritage = crate::heritage::derive(ctx.chronicle, &ctx.data.config.heritage);
+    if heritage.has_bonus() {
+        draw_text_centered(
+            &format!(
+                "HERITAGE: {} · renown {} · +{} cr / +{} inf / +{} tradition",
+                heritage.tier_name,
+                heritage.renown,
+                heritage.credits,
+                heritage.influence,
+                heritage.tradition
+            ),
+            LOGICAL_WIDTH / 2.0,
+            193.0,
+            TextStyle::new(14.0, term::accent()),
+        );
+    }
 
     let panel = Rect::new(LOGICAL_WIDTH / 2.0 - 320.0, 210.0, 640.0, 420.0);
     term_panel(panel, Some("FOUNDING CHARTER"));
