@@ -90,7 +90,16 @@ impl Game {
             &data.config.chronicle_slot,
             &data.config.version,
         );
-        let legacy_ids = GameData::sorted_ids(&data.legacies);
+        // Menu display order: Preservers first — the founders' path reads as
+        // the intuitive default — then the rest in stable sorted-id order.
+        // Purely cosmetic: legacy choice is the player's, never RNG-driven.
+        let mut legacy_ids = GameData::sorted_ids(&data.legacies);
+        legacy_ids.sort_by_key(|id| match id.as_str() {
+            "preservers" => 0,
+            "adaptors" => 1,
+            "wanderers" => 2,
+            _ => 3,
+        });
         let save_exists = save::save_exists(&data.config);
         let display = DisplaySettings::load(&data.config.game_name);
         let crt_style = display.crt_style();

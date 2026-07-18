@@ -275,5 +275,8 @@ commit before starting M2 work (every sibling game is its own repo).
 - ~~The event modal header band is empty~~ **FIXED (2026-07-18)** — the
   category/legacy line now renders centered in the header band; the title leads
   the body.
-- Menu lists legacies in sorted-id order (Adaptors first); GDD implies no order,
-  but Preservers-first might read better.
+- ~~Menu lists legacies in sorted-id order (Adaptors first); Preservers-first
+  might read better~~ **FIXED (2026-07-19)** — `Game::new` reorders the menu's
+  `legacy_ids` to Preservers → Adaptors → Wanderers (cosmetic; legacy choice is
+  the player's, never RNG-driven), so the founders' path leads and is the
+  default selection.
