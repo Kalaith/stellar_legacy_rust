@@ -1,0 +1,96 @@
+[
+  {
+    "id": "system_failure",
+    "category": "immediate_crisis",
+    "title": "System Failure",
+    "description": "A primary subsystem has failed mid-voyage. Engineering wants parts and power; the council wants a plan.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": { "adaptors": 1.2 },
+    "outcomes": [
+      {
+        "id": "emergency_repair",
+        "label": "Emergency repair",
+        "description": "Spend minerals and credits to restore the system fully.",
+        "resource_delta": { "minerals": -150, "credits": -200 },
+        "ship_delta": { "hull_integrity": 0.05 },
+        "log": "Engineering crews restored the failed system at material cost."
+      },
+      {
+        "id": "reroute_power",
+        "label": "Reroute power",
+        "description": "Bypass the failure. Cheap now, a debt for later.",
+        "resource_delta": { "energy": -400 },
+        "ship_delta": { "life_support": -0.05 },
+        "long_term_consequences": ["deferred_maintenance"],
+        "log": "Power was rerouted around the failure. The bypass will outlive its welcome."
+      }
+    ]
+  },
+  {
+    "id": "population_growth",
+    "category": "generational_challenge",
+    "title": "Population Growth",
+    "description": "A healthy cohort of births strains food planning but promises a stronger next generation.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "expand_rations",
+        "label": "Expand rations",
+        "description": "Feed the boom.",
+        "resource_delta": { "food": -300 },
+        "population_delta": { "count": 60, "morale": 0.05 },
+        "log": "The ship's population grew, and the galley budget grew with it."
+      },
+      {
+        "id": "ration_strictly",
+        "label": "Hold rations steady",
+        "description": "No new allocations. The nursery decks will remember.",
+        "population_delta": { "count": 30, "morale": -0.05, "unity": -0.03 },
+        "log": "Rations held steady through the birth cohort. Some decks kept score."
+      }
+    ]
+  },
+  {
+    "id": "arrival_at_target",
+    "category": "mission_milestone",
+    "title": "Arrival Burn",
+    "description": "The destination system resolves from a bright dot into a place. Final approach requires a heavy deceleration burn.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "textbook_burn",
+        "label": "Textbook burn",
+        "description": "By the book, on the fuel budget.",
+        "resource_delta": { "energy": -600 },
+        "population_delta": { "morale": 0.1 },
+        "log": "The arrival burn went by the book. The observation decks were crowded for a week."
+      }
+    ]
+  },
+  {
+    "id": "cultural_schism",
+    "category": "legacy_moment",
+    "title": "Cultural Schism",
+    "description": "Two decks now keep different calendars. The disagreement has stopped being polite.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": { "preservers": 1.3 },
+    "outcomes": [
+      {
+        "id": "mediate",
+        "label": "Council mediation",
+        "description": "Spend influence to reconcile the factions.",
+        "resource_delta": { "influence": -30 },
+        "population_delta": { "unity": 0.08, "cultural_drift": -0.05 },
+        "log": "The council brokered a settlement between the divided decks."
+      },
+      {
+        "id": "let_it_run",
+        "label": "Let it run its course",
+        "description": "Cultures drift. Intervening has costs too.",
+        "population_delta": { "unity": -0.08, "cultural_drift": 0.1, "adaptation": 0.05 },
+        "long_term_consequences": ["deck_rivalry"],
+        "log": "The schism was left to run its course. The ship is quieter, and colder."
+      }
+    ]
+  }
+]

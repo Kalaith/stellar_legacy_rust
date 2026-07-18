@@ -1,0 +1,30 @@
+{
+  "given_names": [
+    "Aster", "Boro", "Cass", "Dama", "Eron", "Fenna", "Galen", "Hale",
+    "Ines", "Joram", "Kes", "Lira", "Marek", "Noor", "Oleth", "Pria",
+    "Quill", "Rho", "Senna", "Tovan", "Ursa", "Vale", "Wren", "Yara", "Zeph"
+  ],
+  "surnames_by_legacy": {
+    "preservers": [
+      "Archivald", "Firstlight", "Vaultkeep", "Oldhollow", "Chartwright",
+      "Steadfast", "Lorewarden", "Kinsworth", "Hearthline", "Founder"
+    ],
+    "adaptors": [
+      "Splice", "Newflesh", "Helix", "Graftmore", "Chimer",
+      "Vantablack", "Reweave", "Mutare", "Fluxborn", "Tessell"
+    ],
+    "wanderers": [
+      "Farrider", "Nomansky", "Driftwell", "Blackwake", "Loosestar",
+      "Vagrant", "Freehold", "Skimmer", "Corsair", "Longroad"
+    ]
+  },
+  "specializations": [
+    "Navigation", "Engineering", "Agronomy", "Medicine", "Diplomacy",
+    "Logistics", "Security", "Archives", "Fabrication", "Astrogation"
+  ],
+  "traits_by_legacy": {
+    "preservers": ["Devout", "Meticulous", "Unbending", "Custodial", "Nostalgic"],
+    "adaptors": ["Restless", "Clinical", "Visionary", "Unsentimental", "Curious"],
+    "wanderers": ["Opportunist", "Charming", "Ruthless", "Restive", "Lucky"]
+  }
+}

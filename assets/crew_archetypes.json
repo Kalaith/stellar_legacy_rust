@@ -1,0 +1,9 @@
+[
+  { "id": "commander", "name": "Commander", "description": "Runs the watch rotation and the chain of command.", "skill_min": 50, "skill_max": 90 },
+  { "id": "engineer", "name": "Engineer", "description": "Keeps the reactor lit and the hull honest.", "skill_min": 40, "skill_max": 85 },
+  { "id": "medic", "name": "Medic", "description": "Guards the health of a sealed-city population.", "skill_min": 40, "skill_max": 85 },
+  { "id": "scientist", "name": "Scientist", "description": "Reads the void and the genome alike.", "skill_min": 35, "skill_max": 90 },
+  { "id": "agronomist", "name": "Agronomist", "description": "Feeds a thousand mouths from hydroponic decks.", "skill_min": 40, "skill_max": 80 },
+  { "id": "security_chief", "name": "Security Chief", "description": "Keeps the peace between decks and generations.", "skill_min": 40, "skill_max": 80 },
+  { "id": "navigator", "name": "Navigator", "description": "Owns the burn schedule and the century-long course.", "skill_min": 45, "skill_max": 90 }
+]

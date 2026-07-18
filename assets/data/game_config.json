@@ -1,0 +1,37 @@
+{
+  "game_name": "stellar_legacy",
+  "display_name": "Stellar Legacy",
+  "save_slot": "autosave",
+  "chronicle_slot": "chronicle",
+  "version": "0.1.0",
+  "starting_resources": {
+    "credits": 10000,
+    "energy": 5000,
+    "minerals": 2000,
+    "food": 3000,
+    "influence": 100
+  },
+  "base_production": {
+    "credits": 60.0,
+    "energy": 140.0,
+    "minerals": 35.0,
+    "food": 45.0,
+    "influence": 1.0
+  },
+  "starting_population": 1000,
+  "food_per_person_per_year": 0.04,
+  "low_food_threshold": 500,
+  "low_energy_threshold": 1000,
+  "hull_warning_threshold": 0.7,
+  "life_support_warning_threshold": 0.8,
+  "hull_decay_per_year": 0.005,
+  "life_support_decay_per_year": 0.004,
+  "generation_interval_years": 25,
+  "leader_retirement_age": 70,
+  "heir_min_age": 30,
+  "heir_max_age": 50,
+  "member_max_age": 90,
+  "event_chance_base": 0.3,
+  "event_chance_cap": 0.8,
+  "log_limit": 200
+}

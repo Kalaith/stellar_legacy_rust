@@ -1,0 +1,471 @@
+//! The full serializable simulation state for one campaign.
+//!
+//! UI panels read this via `&SimState` and never mutate it directly — all
+//! mutation happens through `UiAction` dispatch in `game.rs` and the
+//! stateless services in `simulation/` (CODE_STANDARDS §7).
+
+use crate::data::{GameData, PopulationDelta, ProductionRates, ResourceDelta, ShipDelta};
+use macroquad_toolkit::rng::SeededRng;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+pub struct ResourcePool {
+    pub credits: i64,
+    pub energy: i64,
+    pub minerals: i64,
+    pub food: i64,
+    pub influence: i64,
+}
+
+impl ResourcePool {
+    pub fn from_delta(d: ResourceDelta) -> Self {
+        let mut pool = Self::default();
+        pool.apply(&d);
+        pool
+    }
+
+    /// Apply a signed delta, clamping every resource at zero.
+    pub fn apply(&mut self, d: &ResourceDelta) {
+        self.credits = (self.credits + d.credits).max(0);
+        self.energy = (self.energy + d.energy).max(0);
+        self.minerals = (self.minerals + d.minerals).max(0);
+        self.food = (self.food + d.food).max(0);
+        self.influence = (self.influence + d.influence).max(0);
+    }
+
+    /// True when every negative component of `cost` can be paid in full.
+    pub fn can_afford(&self, cost: &ResourceDelta) -> bool {
+        self.credits + cost.credits.min(0) >= 0
+            && self.energy + cost.energy.min(0) >= 0
+            && self.minerals + cost.minerals.min(0) >= 0
+            && self.food + cost.food.min(0) >= 0
+            && self.influence + cost.influence.min(0) >= 0
+    }
+}
+
+/// Ship condition (GDD §5.1) plus the installed component loadout.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShipState {
+    pub hull_integrity: f32,
+    pub life_support: f32,
+    pub fuel: f32,
+    pub spare_parts: i64,
+    pub hull: String,
+    pub engine: String,
+    pub weapon: Option<String>,
+}
+
+impl ShipState {
+    pub fn apply(&mut self, d: &ShipDelta) {
+        self.hull_integrity = (self.hull_integrity + d.hull_integrity).clamp(0.0, 1.0);
+        self.life_support = (self.life_support + d.life_support).clamp(0.0, 1.0);
+        self.fuel = (self.fuel + d.fuel).clamp(0.0, 1.0);
+        self.spare_parts = (self.spare_parts + d.spare_parts as i64).max(0);
+    }
+}
+
+/// Colony-scale aggregate population stats (GDD §5.1). Fractions are 0-1.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PopulationState {
+    pub count: u32,
+    pub morale: f32,
+    pub unity: f32,
+    pub stability: f32,
+    pub legacy_loyalty: f32,
+    pub adaptation: f32,
+    pub cultural_drift: f32,
+}
+
+impl PopulationState {
+    pub fn apply(&mut self, d: &PopulationDelta) {
+        self.count = (self.count as i64 + d.count as i64).max(0) as u32;
+        self.morale = (self.morale + d.morale).clamp(0.0, 1.0);
+        self.unity = (self.unity + d.unity).clamp(0.0, 1.0);
+        self.stability = (self.stability + d.stability).clamp(0.0, 1.0);
+        self.legacy_loyalty = (self.legacy_loyalty + d.legacy_loyalty).clamp(0.0, 1.0);
+        self.adaptation = (self.adaptation + d.adaptation).clamp(0.0, 1.0);
+        self.cultural_drift = (self.cultural_drift + d.cultural_drift).clamp(0.0, 1.0);
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DynastyMember {
+    pub id: u32,
+    pub name: String,
+    pub age: u32,
+    /// 0-100 leadership skill; drives heir selection (GDD §5.3).
+    pub leadership: u32,
+    pub specialization: String,
+    pub trait_name: String,
+    pub is_leader: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Dynasty {
+    pub generation: u32,
+    pub years_since_generation: u32,
+    pub next_member_id: u32,
+    pub members: Vec<DynastyMember>,
+    /// Set when a generation tick finds no leader and no eligible heir.
+    pub extinct: bool,
+}
+
+impl Dynasty {
+    pub fn leader(&self) -> Option<&DynastyMember> {
+        self.members.iter().find(|m| m.is_leader)
+    }
+}
+
+/// Per-legacy tracked inputs to the failure-risk formula (GDD §5.5). These
+/// were hardcoded placeholders in the original web build; here they are real
+/// state updated by dilemmas and events.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LegacyTrack {
+    pub legacy_id: String,
+    pub tradition_points: i32,
+    pub body_horror_events: u32,
+    pub existential_dread: f32,
+    pub piracy_reputation: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MetricState {
+    pub id: String,
+    pub kind: crate::data::contracts::MetricKind,
+    pub name: String,
+    pub weight: f32,
+    pub target: f32,
+    pub current: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MilestoneState {
+    pub id: String,
+    pub name: String,
+    pub progress_threshold: f32,
+    pub reached: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ActiveContract {
+    pub template_id: String,
+    pub name: String,
+    pub objective: crate::data::contracts::ContractObjective,
+    pub target_duration_years: u32,
+    pub years_elapsed: u32,
+    pub phase: crate::data::contracts::ContractPhase,
+    pub metrics: Vec<MetricState>,
+    pub milestones: Vec<MilestoneState>,
+    /// Population when the contract began, for the survival metric.
+    pub starting_population: u32,
+}
+
+impl ActiveContract {
+    pub fn progress(&self) -> f32 {
+        if self.target_duration_years == 0 {
+            1.0
+        } else {
+            (self.years_elapsed as f32 / self.target_duration_years as f32).min(1.0)
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TradeResource {
+    Energy,
+    Minerals,
+    Food,
+    Influence,
+}
+
+impl TradeResource {
+    pub const ALL: [TradeResource; 4] = [
+        TradeResource::Energy,
+        TradeResource::Minerals,
+        TradeResource::Food,
+        TradeResource::Influence,
+    ];
+
+    pub fn label(self) -> &'static str {
+        match self {
+            TradeResource::Energy => "Energy",
+            TradeResource::Minerals => "Minerals",
+            TradeResource::Food => "Food",
+            TradeResource::Influence => "Influence",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MarketEntry {
+    pub resource: TradeResource,
+    pub price: f32,
+    /// Signed change applied by the most recent yearly drift.
+    pub trend: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MarketState {
+    pub entries: Vec<MarketEntry>,
+}
+
+/// Per-category advisor delegation (GDD §5.4): a delegated category's events
+/// auto-resolve via outcome scoring instead of blocking on the player.
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct DelegationSettings {
+    pub immediate_crisis: bool,
+    pub generational_challenge: bool,
+    pub mission_milestone: bool,
+    pub legacy_moment: bool,
+}
+
+impl DelegationSettings {
+    pub fn is_delegated(&self, category: crate::data::events::EventCategory) -> bool {
+        use crate::data::events::EventCategory::*;
+        match category {
+            ImmediateCrisis => self.immediate_crisis,
+            GenerationalChallenge => self.generational_challenge,
+            MissionMilestone => self.mission_milestone,
+            LegacyMoment => self.legacy_moment,
+        }
+    }
+
+    pub fn toggle(&mut self, category: crate::data::events::EventCategory) {
+        use crate::data::events::EventCategory::*;
+        match category {
+            ImmediateCrisis => self.immediate_crisis = !self.immediate_crisis,
+            GenerationalChallenge => self.generational_challenge = !self.generational_challenge,
+            MissionMilestone => self.mission_milestone = !self.mission_milestone,
+            LegacyMoment => self.legacy_moment = !self.legacy_moment,
+        }
+    }
+}
+
+/// An event waiting for a council decision. Stores the template id, not a
+/// copy — the UI and resolver look the template up in `GameData`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PendingEvent {
+    pub template_id: String,
+    pub rolled_year: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LogEntry {
+    pub year: u32,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SimState {
+    pub seed: u64,
+    pub rng: SeededRng,
+    /// Campaign year, starting at 0 on founding.
+    pub year: u32,
+    /// Year the last event fired, for the event-chance ramp (GDD §5.4).
+    pub last_event_year: u32,
+    pub resources: ResourcePool,
+    pub production: ProductionRates,
+    pub ship: ShipState,
+    pub population: PopulationState,
+    pub dynasty: Dynasty,
+    pub legacy: LegacyTrack,
+    pub contract: Option<ActiveContract>,
+    pub market: MarketState,
+    pub delegation: DelegationSettings,
+    pub pending_event: Option<PendingEvent>,
+    /// Accumulated named consequences from past outcomes (Pillar 2). Read by
+    /// future event weighting; append-only from outcome application.
+    pub consequences: Vec<String>,
+    pub log: Vec<LogEntry>,
+}
+
+impl SimState {
+    /// Build a fresh campaign for the chosen legacy. Deterministic for a
+    /// given (data, legacy, seed) triple — all randomness flows through the
+    /// stored seeded RNG (GDD §5.6).
+    pub fn new_campaign(data: &GameData, legacy_id: &str, seed: u64) -> Self {
+        let config = &data.config;
+        let mut rng = SeededRng::new(seed);
+        let dynasty = founding_dynasty(data, legacy_id, &mut rng);
+
+        let market = MarketState {
+            entries: TradeResource::ALL
+                .iter()
+                .map(|&resource| MarketEntry {
+                    resource,
+                    price: base_price(resource),
+                    trend: 0.0,
+                })
+                .collect(),
+        };
+
+        let mut sim = Self {
+            seed,
+            rng,
+            year: 0,
+            last_event_year: 0,
+            resources: ResourcePool::from_delta(config.starting_resources),
+            production: config.base_production,
+            ship: ShipState {
+                hull_integrity: 1.0,
+                life_support: 1.0,
+                fuel: 1.0,
+                spare_parts: 20,
+                hull: "colony_barge".to_owned(),
+                engine: "ion_drive".to_owned(),
+                weapon: None,
+            },
+            population: PopulationState {
+                count: config.starting_population,
+                morale: 0.7,
+                unity: 0.7,
+                stability: 0.7,
+                legacy_loyalty: 0.6,
+                adaptation: 0.3,
+                cultural_drift: 0.1,
+            },
+            dynasty,
+            legacy: LegacyTrack {
+                legacy_id: legacy_id.to_owned(),
+                tradition_points: 50,
+                body_horror_events: 0,
+                existential_dread: 0.0,
+                piracy_reputation: 0.0,
+            },
+            contract: None,
+            market,
+            delegation: DelegationSettings::default(),
+            pending_event: None,
+            consequences: Vec::new(),
+            log: Vec::new(),
+        };
+        sim.push_log("The founding council convenes. The voyage begins with a choice of contract.");
+        sim
+    }
+
+    pub fn push_log(&mut self, text: impl Into<String>) {
+        self.log.push(LogEntry {
+            year: self.year,
+            text: text.into(),
+        });
+    }
+
+    pub fn trim_log(&mut self, limit: usize) {
+        if self.log.len() > limit {
+            let excess = self.log.len() - limit;
+            self.log.drain(..excess);
+        }
+    }
+}
+
+pub fn base_price(resource: TradeResource) -> f32 {
+    match resource {
+        TradeResource::Energy => 2.0,
+        TradeResource::Minerals => 5.0,
+        TradeResource::Food => 3.0,
+        TradeResource::Influence => 20.0,
+    }
+}
+
+/// Generate the founding dynasty: one leader in their prime plus a spread of
+/// relatives, named from the legacy's pools.
+fn founding_dynasty(data: &GameData, legacy_id: &str, rng: &mut SeededRng) -> Dynasty {
+    let mut dynasty = Dynasty {
+        generation: 1,
+        years_since_generation: 0,
+        next_member_id: 0,
+        members: Vec::new(),
+        extinct: false,
+    };
+
+    let ages = [45u32, 38, 33, 22, 17];
+    for (i, &age) in ages.iter().enumerate() {
+        let mut member = generate_member(data, legacy_id, age, rng, &mut dynasty.next_member_id);
+        member.is_leader = i == 0;
+        dynasty.members.push(member);
+    }
+    dynasty
+}
+
+pub fn generate_member(
+    data: &GameData,
+    legacy_id: &str,
+    age: u32,
+    rng: &mut SeededRng,
+    next_id: &mut u32,
+) -> DynastyMember {
+    let pools = &data.dynasty_names;
+    let given = pick(&pools.given_names, rng);
+    let surname = pools
+        .surnames_by_legacy
+        .get(legacy_id)
+        .map(|names| pick(names, rng))
+        .unwrap_or_else(|| "Voyager".to_owned());
+    let specialization = pick(&pools.specializations, rng);
+    let trait_name = pools
+        .traits_by_legacy
+        .get(legacy_id)
+        .map(|traits| pick(traits, rng))
+        .unwrap_or_default();
+
+    let id = *next_id;
+    *next_id += 1;
+
+    DynastyMember {
+        id,
+        name: format!("{given} {surname}"),
+        age,
+        leadership: 30 + rng.below(51) as u32,
+        specialization,
+        trait_name,
+        is_leader: false,
+    }
+}
+
+fn pick(pool: &[String], rng: &mut SeededRng) -> String {
+    rng.choose(pool).cloned().unwrap_or_default()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::data::GameData;
+
+    #[test]
+    fn new_campaign_is_deterministic_for_same_seed() {
+        let data = GameData::load().unwrap();
+        let a = SimState::new_campaign(&data, "preservers", 42);
+        let b = SimState::new_campaign(&data, "preservers", 42);
+        let names_a: Vec<_> = a.dynasty.members.iter().map(|m| m.name.clone()).collect();
+        let names_b: Vec<_> = b.dynasty.members.iter().map(|m| m.name.clone()).collect();
+        assert_eq!(names_a, names_b);
+        assert_eq!(a.dynasty.leader().unwrap().age, 45);
+    }
+
+    #[test]
+    fn resource_pool_clamps_at_zero_and_checks_affordability() {
+        let mut pool = ResourcePool {
+            credits: 100,
+            ..Default::default()
+        };
+        let cost = crate::data::ResourceDelta {
+            credits: -150,
+            ..Default::default()
+        };
+        assert!(!pool.can_afford(&cost));
+        pool.apply(&cost);
+        assert_eq!(pool.credits, 0);
+    }
+
+    #[test]
+    fn sim_state_round_trips_through_serde() {
+        let data = GameData::load().unwrap();
+        let sim = SimState::new_campaign(&data, "wanderers", 7);
+        let json = serde_json::to_string(&sim).unwrap();
+        let back: SimState = serde_json::from_str(&json).unwrap();
+        assert_eq!(back.dynasty.members.len(), sim.dynasty.members.len());
+        assert_eq!(back.legacy.legacy_id, "wanderers");
+    }
+}

@@ -1,0 +1,43 @@
+[
+  {
+    "id": "founding_colony",
+    "name": "Founding Charter: Meridian Reach",
+    "objective": "colonization",
+    "description": "Carry ten thousand embryos, a seed vault, and a legal charter sixty years to Meridian Reach, and leave a living settlement behind.",
+    "target_duration_years": 60,
+    "milestones": [
+      { "id": "departure", "name": "Departure burn complete", "progress_threshold": 0.05 },
+      { "id": "halfway", "name": "Halfway beacon passed", "progress_threshold": 0.5 },
+      { "id": "site_survey", "name": "Settlement site surveyed", "progress_threshold": 0.85 },
+      { "id": "charter_signed", "name": "Colony charter signed", "progress_threshold": 1.0 }
+    ],
+    "success_metrics": [
+      { "id": "population_survival", "kind": "population_survival", "name": "Population survival", "weight": 0.3, "target": 0.9 },
+      { "id": "mission_completion", "kind": "mission_completion", "name": "Mission completion", "weight": 0.35, "target": 1.0 },
+      { "id": "resource_efficiency", "kind": "resource_efficiency", "name": "Resource efficiency", "weight": 0.15, "target": 0.7 },
+      { "id": "social_cohesion", "kind": "social_cohesion", "name": "Social cohesion", "weight": 0.2, "target": 0.6 }
+    ],
+    "failure_risks": ["hull_breach", "famine", "succession_crisis"],
+    "reward": { "credits": 8000, "influence": 120 }
+  },
+  {
+    "id": "deep_vein_survey",
+    "name": "Deep Vein Survey: Karst Belt",
+    "objective": "mining",
+    "description": "Forty years threading the Karst Belt, charting extractable veins and shipping proof-of-yield cores back by relay.",
+    "target_duration_years": 40,
+    "milestones": [
+      { "id": "belt_entry", "name": "Belt insertion achieved", "progress_threshold": 0.1 },
+      { "id": "first_core", "name": "First core shipped", "progress_threshold": 0.4 },
+      { "id": "full_chart", "name": "Vein chart completed", "progress_threshold": 1.0 }
+    ],
+    "success_metrics": [
+      { "id": "population_survival", "kind": "population_survival", "name": "Population survival", "weight": 0.25, "target": 0.85 },
+      { "id": "mission_completion", "kind": "mission_completion", "name": "Mission completion", "weight": 0.4, "target": 1.0 },
+      { "id": "resource_efficiency", "kind": "resource_efficiency", "name": "Resource efficiency", "weight": 0.2, "target": 0.75 },
+      { "id": "social_cohesion", "kind": "social_cohesion", "name": "Social cohesion", "weight": 0.15, "target": 0.5 }
+    ],
+    "failure_risks": ["hull_breach", "equipment_failure"],
+    "reward": { "credits": 6000, "minerals": 1500 }
+  }
+]

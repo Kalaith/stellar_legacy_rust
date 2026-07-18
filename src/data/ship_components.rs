@@ -1,0 +1,53 @@
+//! Ship component catalog: hulls, engines, weapons (GDD §6).
+
+use crate::data::ResourceDelta;
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ComponentKind {
+    Hull,
+    Engine,
+    Weapon,
+}
+
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct ComponentStats {
+    pub cargo: i32,
+    pub crew_capacity: i32,
+    pub speed: i32,
+    pub combat: i32,
+    pub fuel_regen: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShipComponent {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    #[serde(default)]
+    pub cost: ResourceDelta,
+    #[serde(default)]
+    pub stats: ComponentStats,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ShipComponentCatalog {
+    pub hulls: Vec<ShipComponent>,
+    pub engines: Vec<ShipComponent>,
+    pub weapons: Vec<ShipComponent>,
+}
+
+impl ShipComponentCatalog {
+    pub fn list(&self, kind: ComponentKind) -> &[ShipComponent] {
+        match kind {
+            ComponentKind::Hull => &self.hulls,
+            ComponentKind::Engine => &self.engines,
+            ComponentKind::Weapon => &self.weapons,
+        }
+    }
+
+    pub fn find(&self, kind: ComponentKind, id: &str) -> Option<&ShipComponent> {
+        self.list(kind).iter().find(|c| c.id == id)
+    }
+}

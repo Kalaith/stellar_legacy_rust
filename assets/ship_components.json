@@ -1,0 +1,71 @@
+{
+  "hulls": [
+    {
+      "id": "colony_barge",
+      "name": "Colony Barge",
+      "description": "The original hull. Slow, spacious, held together by tradition.",
+      "cost": { "credits": 0 },
+      "stats": { "cargo": 200, "crew_capacity": 12 }
+    },
+    {
+      "id": "light_corvette",
+      "name": "Light Corvette Refit",
+      "description": "A leaner spaceframe conversion. Less room, better bones.",
+      "cost": { "credits": 500 },
+      "stats": { "cargo": 100, "crew_capacity": 6, "speed": 1 }
+    },
+    {
+      "id": "generation_ark",
+      "name": "Generation Ark Expansion",
+      "description": "Hull segments grafted on over decades. A city that flies.",
+      "cost": { "credits": 2500, "minerals": 800 },
+      "stats": { "cargo": 400, "crew_capacity": 24 }
+    }
+  ],
+  "engines": [
+    {
+      "id": "ion_drive",
+      "name": "Ion Drive",
+      "description": "Reliable, efficient, and slower than continental drift.",
+      "cost": { "credits": 800, "minerals": 50 },
+      "stats": { "speed": 2 }
+    },
+    {
+      "id": "fusion_torch",
+      "name": "Fusion Torch",
+      "description": "Cuts a decade off a crossing, if the fuel holds.",
+      "cost": { "credits": 1800, "minerals": 200 },
+      "stats": { "speed": 4 }
+    },
+    {
+      "id": "ramscoop_array",
+      "name": "Ramscoop Array",
+      "description": "Harvests fuel in transit. The long-haul choice.",
+      "cost": { "credits": 3000, "minerals": 400, "energy": 500 },
+      "stats": { "speed": 3, "fuel_regen": 1 }
+    }
+  ],
+  "weapons": [
+    {
+      "id": "point_defense",
+      "name": "Point Defense Grid",
+      "description": "Keeps the debris and the desperate at a distance.",
+      "cost": { "credits": 400 },
+      "stats": { "combat": 1 }
+    },
+    {
+      "id": "pulse_cannon",
+      "name": "Pulse Cannon",
+      "description": "A deterrent with a paper trail.",
+      "cost": { "credits": 600 },
+      "stats": { "combat": 3 }
+    },
+    {
+      "id": "mass_driver",
+      "name": "Mass Driver",
+      "description": "Turns spare minerals into diplomacy.",
+      "cost": { "credits": 1400, "minerals": 300 },
+      "stats": { "combat": 5 }
+    }
+  ]
+}

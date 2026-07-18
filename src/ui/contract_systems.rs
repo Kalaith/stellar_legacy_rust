@@ -1,0 +1,171 @@
+//! Contract & Systems: active-contract progress or available charters.
+//! The "systems" list stays a plain panel, not a starmap (GDD §7, open q. 1).
+
+use crate::data::GameData;
+use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
+use macroquad::prelude::*;
+use macroquad_toolkit::prelude::*;
+use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
+
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    match &ctx.sim.contract {
+        Some(_) => draw_active(ctx, area),
+        None => draw_available(ctx, area, mouse, actions),
+    }
+}
+
+fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
+    let contract = ctx.sim.contract.as_ref().unwrap();
+    let left = Rect::new(area.x, area.y, area.w * 0.6, area.h);
+    let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
+
+    term_panel(left, Some("ACTIVE CONTRACT"));
+    let content = left.inset(20.0);
+    let mut y = content.y + 42.0;
+
+    draw_ui_text_ex(
+        &contract.name,
+        content.x,
+        y,
+        TextStyle::new(19.0, term::GREEN).params(),
+    );
+    y += 26.0;
+    draw_ui_text_ex(
+        &format!(
+            "{} · PHASE: {} · YEAR {}/{}",
+            contract.objective.label().to_uppercase(),
+            contract.phase.label().to_uppercase(),
+            contract.years_elapsed,
+            contract.target_duration_years
+        ),
+        content.x,
+        y,
+        TextStyle::new(14.0, term::AMBER_DIM).params(),
+    );
+    y += 24.0;
+
+    meter(
+        Rect::new(content.x, y, content.w, 26.0),
+        contract.progress(),
+        1.0,
+        term::AMBER,
+        Some(&format!("PROGRESS {:.0}%", contract.progress() * 100.0)),
+    );
+    y += 46.0;
+
+    draw_ui_text_ex(
+        "MILESTONES",
+        content.x,
+        y,
+        TextStyle::new(15.0, term::AMBER).params(),
+    );
+    y += 22.0;
+    for milestone in &contract.milestones {
+        let (mark, color) = if milestone.reached {
+            ("[x]", term::GREEN)
+        } else {
+            ("[ ]", term::AMBER_DIM)
+        };
+        draw_ui_text_ex(
+            &format!("{mark} {}", milestone.name),
+            content.x,
+            y,
+            TextStyle::new(14.0, color).params(),
+        );
+        y += 22.0;
+    }
+    y += 14.0;
+
+    draw_ui_text_ex(
+        "SUCCESS METRICS",
+        content.x,
+        y,
+        TextStyle::new(15.0, term::AMBER).params(),
+    );
+    y += 22.0;
+    for metric in &contract.metrics {
+        meter(
+            Rect::new(content.x, y, content.w, 20.0),
+            (metric.current / metric.target.max(0.001)).min(1.0),
+            1.0,
+            term::GREEN,
+            Some(&format!(
+                "{} {:.2}/{:.2} (w {:.0}%)",
+                metric.name,
+                metric.current,
+                metric.target,
+                metric.weight * 100.0
+            )),
+        );
+        y += 28.0;
+    }
+
+    term_panel(right, Some("RELEVANT SYSTEMS"));
+    let rcontent = right.inset(20.0);
+    // TODO(next agent, M2): populate origin/waypoint/destination entries per
+    // contract template (GDD §7) instead of this static journey summary.
+    draw_text_block(
+        "ORIGIN: Home Berth (departed)\nWAYPOINT: deep transit\nDESTINATION: per charter\n\nSystems relevant to the active charter appear here. Not a starmap by design — see gdd.md §7.",
+        rcontent.x,
+        rcontent.y + 40.0,
+        rcontent.w,
+        rcontent.h - 60.0,
+        14.0,
+        4.0,
+        term::AMBER_DIM,
+    );
+}
+
+fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    term_panel(area, Some("AVAILABLE CHARTERS"));
+    let content = area.inset(20.0);
+    let mut y = content.y + 42.0;
+
+    for id in GameData::sorted_ids(&ctx.data.contracts) {
+        let Some(template) = ctx.data.contracts.get(&id) else {
+            continue;
+        };
+        let card = Rect::new(content.x, y, content.w, 108.0);
+        draw_surface(
+            card,
+            &SurfaceStyle::new(Color::new(0.07, 0.055, 0.012, 1.0))
+                .with_border(1.0, term::AMBER_FAINT),
+        );
+        draw_ui_text_ex(
+            &template.name,
+            card.x + 14.0,
+            card.y + 24.0,
+            TextStyle::new(17.0, term::AMBER).params(),
+        );
+        draw_ui_text_ex(
+            &format!(
+                "{} · {} YEARS · reward {} cr",
+                template.objective.label().to_uppercase(),
+                template.target_duration_years,
+                template.reward.credits
+            ),
+            card.x + 14.0,
+            card.y + 44.0,
+            TextStyle::new(13.0, term::AMBER_DIM).params(),
+        );
+        draw_text_block(
+            &template.description,
+            card.x + 14.0,
+            card.y + 52.0,
+            card.w - 200.0,
+            40.0,
+            12.0,
+            3.0,
+            term::AMBER_DIM,
+        );
+        if term_button(
+            Rect::new(card.right() - 170.0, card.bottom() - 40.0, 156.0, 30.0),
+            "ACCEPT CHARTER",
+            true,
+            mouse,
+        ) {
+            actions.push(UiAction::AcceptContract(id.clone()));
+        }
+        y += 120.0;
+    }
+}

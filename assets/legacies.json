@@ -1,0 +1,134 @@
+[
+  {
+    "id": "preservers",
+    "name": "The Preservers",
+    "description": "Keep the mission, the culture, and the bloodlines exactly as the founders intended. Every deviation is a small extinction.",
+    "failure_risk": "cultural_collapse",
+    "dilemmas": [
+      {
+        "id": "archive_purge",
+        "title": "The Living Archive",
+        "description": "The archive decks need power the farms want. The archivists call the records the ship's soul; the agronomists call them dead weight.",
+        "options": [
+          {
+            "id": "protect_archive",
+            "label": "Protect the archive",
+            "success_chance": 0.75,
+            "success": {
+              "tradition_points": 10,
+              "population_delta": { "legacy_loyalty": 0.05 },
+              "log": "The archive kept its power allocation. Tradition holds."
+            },
+            "failure": {
+              "resource_delta": { "food": -200 },
+              "population_delta": { "morale": -0.05 },
+              "log": "The archive was protected, and the harvest paid for it."
+            }
+          },
+          {
+            "id": "divert_power",
+            "label": "Divert power to the farms",
+            "success_chance": 0.8,
+            "success": {
+              "tradition_points": -10,
+              "resource_delta": { "food": 300 },
+              "log": "The farms flourished. Something older dimmed."
+            },
+            "failure": {
+              "tradition_points": -15,
+              "population_delta": { "unity": -0.05 },
+              "log": "The diversion sparked protests in the archive decks."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "adaptors",
+    "name": "The Adaptors",
+    "description": "The void does not negotiate. Change the crew — genetically, cybernetically, biologically — until the mission fits.",
+    "failure_risk": "humanity_loss",
+    "dilemmas": [
+      {
+        "id": "gene_clinic",
+        "title": "The Gene Clinic",
+        "description": "A radiation-resistance germline edit is ready for the next birth cohort. It has never been tried on a full generation.",
+        "options": [
+          {
+            "id": "approve_edit",
+            "label": "Approve the edit",
+            "success_chance": 0.7,
+            "success": {
+              "population_delta": { "adaptation": 0.1, "morale": 0.03 },
+              "log": "The edited cohort thrived. The ship is becoming something new."
+            },
+            "failure": {
+              "body_horror_events": 1,
+              "population_delta": { "morale": -0.1, "unity": -0.05 },
+              "log": "Complications in the edited cohort haunted the med decks for years."
+            }
+          },
+          {
+            "id": "delay_trials",
+            "label": "Delay for more trials",
+            "success_chance": 0.9,
+            "success": {
+              "population_delta": { "unity": 0.02 },
+              "log": "The trials continued cautiously. No breakthroughs, no funerals."
+            },
+            "failure": {
+              "population_delta": { "adaptation": -0.05 },
+              "log": "Caution calcified into inertia. The clinic lost its best minds."
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wanderers",
+    "name": "The Wanderers",
+    "description": "The ship owes nothing to anyone. Take what the voyage needs — ports, convoys, and promises are all negotiable.",
+    "failure_risk": "fleet_dissolution",
+    "dilemmas": [
+      {
+        "id": "convoy_raid",
+        "title": "The Slow Convoy",
+        "description": "An unescorted freight convoy is eight weeks from help. The quartermasters have already done the math.",
+        "options": [
+          {
+            "id": "raid",
+            "label": "Raid the convoy",
+            "success_chance": 0.65,
+            "success": {
+              "piracy_reputation": 0.1,
+              "resource_delta": { "credits": 2000, "minerals": 300 },
+              "log": "The convoy was lighter after the ship passed. Word will spread."
+            },
+            "failure": {
+              "piracy_reputation": 0.05,
+              "resource_delta": { "credits": -500 },
+              "ship_delta": { "hull_integrity": -0.05 },
+              "log": "The convoy had teeth. The ship limped away with less than it brought."
+            }
+          },
+          {
+            "id": "shadow_and_trade",
+            "label": "Shadow it and trade",
+            "success_chance": 0.85,
+            "success": {
+              "resource_delta": { "credits": 500 },
+              "population_delta": { "unity": 0.02 },
+              "log": "The convoy paid fair rates for an escort it never asked for."
+            },
+            "failure": {
+              "resource_delta": { "influence": -10 },
+              "log": "The convoy mistook the shadow for a threat and ran. Awkward."
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
