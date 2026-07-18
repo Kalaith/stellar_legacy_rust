@@ -184,23 +184,41 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
     let _ = Screen::Dashboard;
 }
 
+/// Characters-per-second for the newest log line streaming in.
+const LOG_CPS: f32 = 45.0;
+
 fn draw_log_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
     term_panel(rect, Some("SHIP'S LOG"));
     let content = rect.inset(18.0);
     let line_h = 34.0;
     let visible = ((content.h - 44.0) / line_h).floor() as usize;
-    let start = ctx.sim.log.len().saturating_sub(visible);
+    let total = ctx.sim.log.len();
+    let start = total.saturating_sub(visible);
 
     let mut y = content.y + 44.0;
-    for entry in ctx.sim.log.iter().skip(start) {
+    for (i, entry) in ctx.sim.log.iter().enumerate().skip(start) {
         draw_ui_text_ex(
             &format!("Y{:03}", entry.year),
             content.x,
             y,
             TextStyle::new(13.0, term::faint()).params(),
         );
+        // The newest line streams in like live console output, with a blinking
+        // cursor while it types; older lines are shown in full.
+        let newest = i + 1 == total;
+        let shown = if newest {
+            let mut text = typed_prefix(&entry.text, ctx.log_reveal, LOG_CPS).to_owned();
+            if !is_fully_typed(&entry.text, ctx.log_reveal, LOG_CPS)
+                && (ctx.log_reveal * 2.5).fract() < 0.5
+            {
+                text.push('_');
+            }
+            text
+        } else {
+            entry.text.clone()
+        };
         draw_text_block(
-            &entry.text,
+            &shown,
             content.x + 46.0,
             y - 12.0,
             content.w - 46.0,

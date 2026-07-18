@@ -114,7 +114,11 @@ Ordered roughly by milestone (GDD §13):
    (2026-07-18)** — `CrtOverlay` now masks rounded tube-glass corners
    (`CrtStyle::corner_radius`/`bezel`, baked corner texture flipped per corner,
    drawn last so the bezel clips every layer); presets ship a 26px radius. UI
-   content is inset so nothing clips. **Monospace font DEFERRED** —
+   content is inset so nothing clips. ~~ship's-log streaming~~ **DONE
+   (2026-07-18)** — the newest ship's-log line types in like live console
+   output (`dashboard::draw_log_panel`, `LOG_CPS`, blinking cursor), driven by a
+   `Game::log_reveal` clock that resets when the log grows (instant in capture);
+   frozen `log` capture scene added. **Monospace font DEFERRED** —
    the toolkit font API (`set_default_ui_font_from_bytes`) is ready, but no
    monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
    sourcing one is a licensing decision for a human. Still to do: fold

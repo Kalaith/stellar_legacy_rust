@@ -45,8 +45,14 @@ pub struct Game {
     /// never touches the deterministic sim.
     modal_key: Option<String>,
     modal_started: f64,
+    /// Ship's-log stream clock: last-seen entry count and when it last grew,
+    /// so the newest line types in. Cosmetic; never touches the sim.
+    log_len: usize,
+    log_started: f64,
     /// Reveal text instantly (screenshot capture) instead of typing it out.
     instant_reveal: bool,
+    /// Capture-only: freeze the ship's-log stream at this elapsed time.
+    capture_log_reveal: Option<f32>,
     /// One-shot power-on boot log shown before the menu on launch.
     boot: BootScreen,
 }
@@ -84,7 +90,10 @@ impl Game {
             settings_open: false,
             modal_key: None,
             modal_started: 0.0,
+            log_len: 0,
+            log_started: 0.0,
             instant_reveal: false,
+            capture_log_reveal: None,
             boot: BootScreen::new(),
         }
     }
@@ -116,6 +125,16 @@ impl Game {
                 // Freeze the boot log mid-stream for a screenshot.
                 self.boot.seek(1.4);
                 self.state = GameState::Menu(MenuState::new(false));
+            }
+            "log" => {
+                // Dashboard with the newest log line frozen mid-stream
+                // (cursor-visible phase).
+                self.capture_log_reveal = Some(0.5);
+                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                if let Some(template) = self.data.contracts.get("founding_colony") {
+                    sim.contract = Some(contract::start_contract(template, &sim));
+                }
+                self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
             "event" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
@@ -190,6 +209,7 @@ impl Game {
         clear_background(ui::term::bg());
 
         let modal_reveal = self.modal_reveal();
+        let log_reveal = self.log_reveal();
 
         let show_boot = !self.boot.is_done() && matches!(self.state, GameState::Menu(_));
 
@@ -212,6 +232,7 @@ impl Game {
                     chronicle: &self.chronicle,
                     ui: &virtual_ui,
                     modal_reveal,
+                    log_reveal,
                 }),
             }
         };
@@ -294,6 +315,27 @@ impl Game {
             self.modal_started = get_time();
         }
         (get_time() - self.modal_started) as f32
+    }
+
+    /// Seconds since the newest ship's-log line appeared, resetting whenever the
+    /// log grows so the latest entry streams in. Large (instant) in capture or
+    /// outside gameplay.
+    fn log_reveal(&mut self) -> f32 {
+        if let Some(frozen) = self.capture_log_reveal {
+            return frozen;
+        }
+        if self.instant_reveal {
+            return f32::MAX;
+        }
+        let GameState::Gameplay(gameplay) = &self.state else {
+            return f32::MAX;
+        };
+        let len = gameplay.sim.log.len();
+        if len != self.log_len {
+            self.log_len = len;
+            self.log_started = get_time();
+        }
+        (get_time() - self.log_started) as f32
     }
 
     fn transition(&mut self, transition: StateTransition) {

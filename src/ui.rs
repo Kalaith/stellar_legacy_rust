@@ -398,6 +398,9 @@ pub struct GameplayCtx<'a> {
     /// Seconds since the current blocking modal appeared, for the terminal
     /// typewriter reveal. Large/instant when the effect is disabled.
     pub modal_reveal: f32,
+    /// Seconds since the newest ship's-log entry appeared, so it streams in
+    /// like live console output. Large/instant in capture.
+    pub log_reveal: f32,
 }
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
