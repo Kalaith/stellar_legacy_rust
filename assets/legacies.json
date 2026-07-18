@@ -297,6 +297,101 @@
             }
           }
         ]
+      },
+      {
+        "id": "forbidden_deck",
+        "title": "The Sealed Deck",
+        "description": "The founders welded shut one deck and left no reason in the record. Six generations later a leak forces the question: cut it open, or let the seal — and its silence — hold.",
+        "options": [
+          {
+            "id": "keep_it_sealed",
+            "label": "Keep the seal",
+            "success_chance": 0.7,
+            "success": {
+              "tradition_points": 10,
+              "population_delta": {
+                "legacy_loyalty": 0.05
+              },
+              "log": "The sealed deck stayed sealed. Whatever the founders hid, the ship still trusts them to have had a reason."
+            },
+            "failure": {
+              "tradition_points": 4,
+              "resource_delta": {
+                "energy": -200
+              },
+              "log": "The seal held, and the leak was rerouted at cost. The deck keeps its secret and its silence."
+            }
+          },
+          {
+            "id": "cut_it_open",
+            "label": "Cut it open",
+            "success_chance": 0.75,
+            "success": {
+              "tradition_points": -8,
+              "population_delta": {
+                "adaptation": 0.05,
+                "cultural_drift": 0.04
+              },
+              "log": "The sealed deck was opened. It held only old machinery and older fear. The founders were not infallible after all."
+            },
+            "failure": {
+              "tradition_points": -14,
+              "population_delta": {
+                "morale": -0.05,
+                "unity": -0.03
+              },
+              "log": "The deck was opened, and what the founders sealed away is a matter of argument now, not faith."
+            }
+          }
+        ]
+      },
+      {
+        "id": "the_apostate",
+        "title": "The Apostate",
+        "description": "A respected elder has stood before the council and called the mission a corpse the ship is still dressing each morning. The decks are listening.",
+        "options": [
+          {
+            "id": "debate_openly",
+            "label": "Debate them openly",
+            "success_chance": 0.7,
+            "success": {
+              "tradition_points": 8,
+              "population_delta": {
+                "unity": 0.05,
+                "legacy_loyalty": 0.03
+              },
+              "log": "The apostate was answered, not silenced. The mission survived the argument stronger for having had it."
+            },
+            "failure": {
+              "tradition_points": -4,
+              "population_delta": {
+                "cultural_drift": 0.05
+              },
+              "log": "The debate went badly. The apostate had better questions than the mission had answers."
+            }
+          },
+          {
+            "id": "strip_their_standing",
+            "label": "Strip their standing",
+            "success_chance": 0.65,
+            "success": {
+              "tradition_points": 12,
+              "population_delta": {
+                "unity": -0.04,
+                "legacy_loyalty": 0.05
+              },
+              "log": "The apostate was stripped of their council seat. The mission's letter was upheld; its spirit is quieter."
+            },
+            "failure": {
+              "tradition_points": 6,
+              "population_delta": {
+                "morale": -0.06,
+                "unity": -0.06
+              },
+              "log": "Silencing the apostate made a martyr of them. The decks kept the questions the elder was no longer allowed to ask."
+            }
+          }
+        ]
       }
     ]
   },
@@ -580,6 +675,98 @@
                 "adaptation": -0.05
               },
               "log": "Kept separate, the crew met the crisis slowly, and paid for the minutes."
+            }
+          }
+        ]
+      },
+      {
+        "id": "the_symbiont",
+        "title": "The Symbiont",
+        "description": "A cultured organism could be grafted into the crew's biology — filtering toxins, sharpening senses, at the cost of never again being wholly alone in one's own skin.",
+        "options": [
+          {
+            "id": "graft_it",
+            "label": "Graft the symbiont",
+            "success_chance": 0.6,
+            "success": {
+              "population_delta": {
+                "adaptation": 0.1,
+                "stability": 0.03
+              },
+              "log": "The symbiont took. The grafted crew are healthier, sharper, and describe a quiet company that never leaves."
+            },
+            "failure": {
+              "body_horror_events": 1,
+              "existential_dread": 0.1,
+              "population_delta": {
+                "morale": -0.07
+              },
+              "log": "In some, the symbiont did not stay a passenger. The med decks do not use the word 'possession', but they think it."
+            }
+          },
+          {
+            "id": "refuse_the_graft",
+            "label": "Refuse the graft",
+            "success_chance": 0.85,
+            "success": {
+              "population_delta": {
+                "unity": 0.03,
+                "legacy_loyalty": 0.02
+              },
+              "log": "The graft was refused. The crew keep their skins their own, and the toxins their old enemy."
+            },
+            "failure": {
+              "existential_dread": 0.05,
+              "population_delta": {
+                "adaptation": -0.05
+              },
+              "log": "The refusal held, and the voyage's poisons kept their slow appointments with the unaugmented crew."
+            }
+          }
+        ]
+      },
+      {
+        "id": "the_backup",
+        "title": "The Continuity Question",
+        "description": "The archives can now hold a full pattern of a mind — a backup, wakeable into a new body if the original dies. The theologians and the engineers are, for once, equally afraid.",
+        "options": [
+          {
+            "id": "permit_backups",
+            "label": "Permit the backups",
+            "success_chance": 0.6,
+            "success": {
+              "population_delta": {
+                "adaptation": 0.08,
+                "morale": 0.03
+              },
+              "log": "Backups were permitted. Death is negotiable now, for those who can afford the pattern-space. The ship has not decided if this is mercy."
+            },
+            "failure": {
+              "existential_dread": 0.12,
+              "population_delta": {
+                "unity": -0.05
+              },
+              "log": "The first restored mind insists it is the same person. Half the ship believes it. The other half will not shake its hand."
+            }
+          },
+          {
+            "id": "forbid_backups",
+            "label": "Forbid the backups",
+            "success_chance": 0.85,
+            "success": {
+              "existential_dread": -0.05,
+              "population_delta": {
+                "legacy_loyalty": 0.04,
+                "stability": 0.03
+              },
+              "log": "Backups were forbidden. A death is a death, and a life is a single line. The ship kept its griefs real."
+            },
+            "failure": {
+              "population_delta": {
+                "adaptation": -0.04,
+                "morale": -0.03
+              },
+              "log": "The ban held, and the dying who might have been saved went into the dark for principle's sake."
             }
           }
         ]
@@ -886,6 +1073,107 @@
                 "influence": -20
               },
               "log": "The true flag flew, and two ports closed their locks at the sight of it."
+            }
+          }
+        ]
+      },
+      {
+        "id": "the_amnesty",
+        "title": "The Amnesty",
+        "description": "A regional authority offers to expunge the ship's raider record — for a fee, and a season of honest escort work under their flag and their watch.",
+        "options": [
+          {
+            "id": "take_the_amnesty",
+            "label": "Take the amnesty",
+            "success_chance": 0.8,
+            "success": {
+              "piracy_reputation": -0.12,
+              "resource_delta": {
+                "credits": -600
+              },
+              "population_delta": {
+                "stability": 0.03
+              },
+              "log": "The ship served its season under a borrowed flag and came out with a clean record and a curious sense of loss."
+            },
+            "failure": {
+              "piracy_reputation": -0.05,
+              "resource_delta": {
+                "credits": -600
+              },
+              "population_delta": {
+                "unity": -0.03
+              },
+              "log": "The amnesty was paid for, but the escort work chafed. The record is cleaner; the crew are not sure they are."
+            }
+          },
+          {
+            "id": "keep_the_record",
+            "label": "Keep the record",
+            "success_chance": 0.85,
+            "success": {
+              "population_delta": {
+                "unity": 0.04,
+                "legacy_loyalty": 0.03
+              },
+              "log": "The ship declined the amnesty and kept its record, teeth and scars and all. Some names are earned."
+            },
+            "failure": {
+              "piracy_reputation": 0.03,
+              "resource_delta": {
+                "influence": -20
+              },
+              "log": "The record was kept, and the next three ports remembered exactly why they should not."
+            }
+          }
+        ]
+      },
+      {
+        "id": "the_prize_court",
+        "title": "The Prize",
+        "description": "A hold of goods taken in a grey-legal boarding sits contested. The rightful owners have found the ship, and a broker has offered more than the goods are worth to make them disappear.",
+        "options": [
+          {
+            "id": "sell_to_the_broker",
+            "label": "Sell to the broker",
+            "success_chance": 0.75,
+            "success": {
+              "piracy_reputation": 0.08,
+              "resource_delta": {
+                "credits": 1600
+              },
+              "log": "The contested prize went to the broker, no questions asked. The ship is richer and a name on another list."
+            },
+            "failure": {
+              "piracy_reputation": 0.12,
+              "resource_delta": {
+                "credits": 400
+              },
+              "population_delta": {
+                "unity": -0.03
+              },
+              "log": "The sale went wrong loudly. The prize is gone, the coin is thin, and the ship's reputation is thick."
+            }
+          },
+          {
+            "id": "return_the_prize",
+            "label": "Return the prize",
+            "success_chance": 0.85,
+            "success": {
+              "piracy_reputation": -0.08,
+              "resource_delta": {
+                "influence": 40
+              },
+              "population_delta": {
+                "legacy_loyalty": 0.03
+              },
+              "log": "The prize was returned to its owners. The ship lost a fortune and bought something a fortune cannot: a witness who speaks well of it."
+            },
+            "failure": {
+              "resource_delta": {
+                "credits": -200
+              },
+              "log": "The prize was returned and the gratitude was thinner than hoped. Honesty is its own reward, and sometimes only that."
             }
           }
         ]

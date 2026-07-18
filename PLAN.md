@@ -11,7 +11,7 @@ snapshot; the numbered log below records what shipped since).* Every numbered it
 (1–10) and all three cosmetic nits are **done**; the one open thread is the
 ko-fi/index.html marketing screenshots (item 9, human-gated). The game is
 content-complete against GDD §8 (and past several minimums) — 38 events, 5/5/5
-components, 6 contracts, 6 dilemmas per legacy, doubled name pools.
+components, 6 contracts, 8 dilemmas per legacy, doubled name pools.
 
 Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
@@ -158,19 +158,19 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
    (2026-07-19)** — added `coronal_tap` (mining) and `seedfall` (colonization)
    for **6** total (in the §8 6-8 band), each with milestone rewards; the
    available-charters card was compacted (78px) so 6-8 fit, data-load test
-   asserts ≥6. **6 dilemmas per legacy DONE (2026-07-19)** — three per legacy
-   (2026-07-19 pass) plus three more this pass (Preservers `calendar_reform`/
-   `bloodline_registry`/`relic_engine`; Adaptors `neural_lace`/`ageless_trial`/
-   `hive_protocol`; Wanderers `the_splinter`/`smugglers_offer`/
-   `flag_of_convenience`) for **6 each**; each engages its legacy's tracked
-   counter (tradition / body-horror+dread / piracy-reputation); data-load test
-   asserts ≥6 per legacy. **doubled name pools DONE
+   asserts ≥6. **Dilemmas DONE (§8 target 6, since deepened to 8 per legacy)** —
+   the §8 pass brought each legacy to 6, then a depth pass added two more each
+   (Preservers `forbidden_deck`/`the_apostate`; Adaptors `the_symbiont`/
+   `the_backup`; Wanderers `the_amnesty`/`the_prize_court`) for **8 each, 24
+   total**; every dilemma engages its legacy's tracked counter (tradition /
+   body-horror+dread / piracy-reputation); data-load test asserts ≥8 per
+   legacy. **doubled name pools DONE
    (2026-07-19)** — `assets/dynasty_names.json` given names 25→50, surnames
    10→20 per legacy, specializations 10→20, traits 5→10 per legacy (matched to
    each legacy's flavor); data-load test asserts the doubled counts. Pure
    `assets/*.json`; schemas unchanged. **Item 8 complete — all §8 content
-   targets met (30 events / 5-5-5 components / 6 contracts / 6 dilemmas per
-   legacy / doubled name pools).**
+   targets met, several since exceeded (38 events / 5-5-5 components /
+   6 contracts / 8 dilemmas per legacy / doubled name pools).**
 9. **Terminal polish**: monospace bitmap font (default font is close but not
    monospace), ~~flicker fx~~ **CRT overlay DONE (2026-07-18)** —
    `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module
