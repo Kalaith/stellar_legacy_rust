@@ -246,12 +246,11 @@ mod tests {
                 surnames.len()
             );
             assert!(traits.len() >= 10, "{legacy_id} traits: {}", traits.len());
-            // Each legacy carries at least three defining dilemmas (M3 target
-            // is 6 per legacy, §8).
+            // Each legacy carries its full set of defining dilemmas (§8: 6).
             let dilemmas = data.legacies.get(legacy_id).unwrap().dilemmas.len();
             assert!(
-                dilemmas >= 3,
-                "{legacy_id} should have >= 3 dilemmas, has {dilemmas}"
+                dilemmas >= 6,
+                "{legacy_id} should have >= 6 dilemmas, has {dilemmas}"
             );
         }
     }

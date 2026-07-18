@@ -146,6 +146,157 @@
             }
           }
         ]
+      },
+      {
+        "id": "calendar_reform",
+        "title": "The Calendar Question",
+        "description": "The ship keeps two clocks: the founders' Earth-dated calendar and the drift of ship-years. The council must pick one to be official.",
+        "options": [
+          {
+            "id": "keep_earth_time",
+            "label": "Keep founders' time",
+            "success_chance": 0.75,
+            "success": {
+              "tradition_points": 8,
+              "population_delta": {
+                "legacy_loyalty": 0.04,
+                "cultural_drift": -0.03
+              },
+              "log": "The ship keeps founders' time. Every date still points home."
+            },
+            "failure": {
+              "tradition_points": 3,
+              "population_delta": {
+                "morale": -0.03
+              },
+              "log": "Founders' time held, but the young count the mismatch and shrug."
+            }
+          },
+          {
+            "id": "adopt_ship_time",
+            "label": "Adopt ship-time",
+            "success_chance": 0.85,
+            "success": {
+              "tradition_points": -6,
+              "population_delta": {
+                "adaptation": 0.04,
+                "unity": 0.03
+              },
+              "log": "The ship keeps its own time now. The calendar finally matches the sky outside."
+            },
+            "failure": {
+              "tradition_points": -10,
+              "population_delta": {
+                "legacy_loyalty": -0.05
+              },
+              "log": "Ship-time won, and a thousand founder anniversaries quietly went uncelebrated."
+            }
+          }
+        ]
+      },
+      {
+        "id": "bloodline_registry",
+        "title": "The Bloodline Registry",
+        "description": "The registrars propose formal lineage records and matched pairings to keep the founding bloodlines legible for generations to come.",
+        "options": [
+          {
+            "id": "keep_the_registry",
+            "label": "Keep the registry",
+            "success_chance": 0.7,
+            "success": {
+              "tradition_points": 10,
+              "population_delta": {
+                "legacy_loyalty": 0.05,
+                "stability": 0.03
+              },
+              "log": "The bloodlines were charted and shepherded. The founders' names march on in order."
+            },
+            "failure": {
+              "tradition_points": 6,
+              "population_delta": {
+                "morale": -0.05,
+                "unity": -0.04
+              },
+              "log": "The registry held, but the matched pairings bred as much resentment as heirs."
+            }
+          },
+          {
+            "id": "let_the_decks_decide",
+            "label": "Let the decks decide",
+            "success_chance": 0.85,
+            "success": {
+              "tradition_points": -8,
+              "population_delta": {
+                "morale": 0.05,
+                "cultural_drift": 0.04
+              },
+              "log": "The registry was shelved. The bloodlines tangle now, happily and untraceably."
+            },
+            "failure": {
+              "tradition_points": -12,
+              "population_delta": {
+                "legacy_loyalty": -0.04
+              },
+              "log": "Without the registry, three founding names quietly vanished into the crowd."
+            }
+          }
+        ]
+      },
+      {
+        "id": "relic_engine",
+        "title": "The Relic Engine",
+        "description": "A founding-era drive component still turns in the reactor hall, venerated and inefficient. Engineering has a replacement that would insult it.",
+        "options": [
+          {
+            "id": "keep_the_relic",
+            "label": "Keep the relic turning",
+            "success_chance": 0.75,
+            "success": {
+              "tradition_points": 9,
+              "resource_delta": {
+                "energy": -200
+              },
+              "population_delta": {
+                "legacy_loyalty": 0.05
+              },
+              "log": "The relic engine turns on, worshipped and wasteful. The founders' hands are still on the ship."
+            },
+            "failure": {
+              "tradition_points": 5,
+              "resource_delta": {
+                "energy": -400
+              },
+              "population_delta": {
+                "morale": -0.03
+              },
+              "log": "The relic kept turning and kept drinking power. Devotion has an energy bill."
+            }
+          },
+          {
+            "id": "retire_the_relic",
+            "label": "Retire it for the new drive",
+            "success_chance": 0.85,
+            "success": {
+              "tradition_points": -7,
+              "resource_delta": {
+                "energy": 500
+              },
+              "population_delta": {
+                "adaptation": 0.04,
+                "cultural_drift": 0.03
+              },
+              "log": "The relic was retired to a display case. The new drive is quieter and colder and better."
+            },
+            "failure": {
+              "tradition_points": -13,
+              "population_delta": {
+                "legacy_loyalty": -0.05,
+                "unity": -0.03
+              },
+              "log": "The relic came out and something in the ship's chest went quiet. Efficiency has a cost too."
+            }
+          }
+        ]
       }
     ]
   },
@@ -292,6 +443,143 @@
                 "unity": -0.03
               },
               "log": "The anchoring rang hollow. You cannot miss a face you were built to forget."
+            }
+          }
+        ]
+      },
+      {
+        "id": "neural_lace",
+        "title": "The Neural Lace",
+        "description": "A brain-machine lace would let the crew think with the ship. The first volunteers are already queuing; the ethicists are already resigning.",
+        "options": [
+          {
+            "id": "weave_the_lace",
+            "label": "Weave the lace",
+            "success_chance": 0.65,
+            "success": {
+              "population_delta": {
+                "adaptation": 0.1,
+                "stability": 0.03
+              },
+              "log": "The laced crew move like one mind at the consoles. The ship has never run so smooth."
+            },
+            "failure": {
+              "body_horror_events": 1,
+              "existential_dread": 0.1,
+              "population_delta": {
+                "morale": -0.07
+              },
+              "log": "Some laces took wrong. The ward speaks softly of the ones who can't stop hearing the ship."
+            }
+          },
+          {
+            "id": "ban_the_lace",
+            "label": "Ban the lace",
+            "success_chance": 0.85,
+            "success": {
+              "population_delta": {
+                "unity": 0.03,
+                "legacy_loyalty": 0.02
+              },
+              "log": "The lace was banned. The crew keep their own thoughts, and their own inefficiencies."
+            },
+            "failure": {
+              "existential_dread": 0.05,
+              "population_delta": {
+                "adaptation": -0.05
+              },
+              "log": "The ban held, and the best minds left for ships less squeamish. The void does not wait."
+            }
+          }
+        ]
+      },
+      {
+        "id": "ageless_trial",
+        "title": "The Ageless Trial",
+        "description": "A longevity edit could stop the crew aging entirely. A dynasty that never dies is a dynasty that never inherits.",
+        "options": [
+          {
+            "id": "approve_agelessness",
+            "label": "Approve the edit",
+            "success_chance": 0.6,
+            "success": {
+              "population_delta": {
+                "adaptation": 0.08,
+                "morale": 0.04
+              },
+              "log": "The edited elders stopped aging. The ship is older and younger than it has ever been."
+            },
+            "failure": {
+              "existential_dread": 0.12,
+              "population_delta": {
+                "unity": -0.05
+              },
+              "log": "The ageless walk the decks and the young wonder when, if ever, it will be their turn."
+            }
+          },
+          {
+            "id": "reject_agelessness",
+            "label": "Reject the edit",
+            "success_chance": 0.85,
+            "success": {
+              "existential_dread": -0.05,
+              "population_delta": {
+                "legacy_loyalty": 0.04,
+                "stability": 0.03
+              },
+              "log": "The edit was refused. Generations turn as they should, and the dead make room for the born."
+            },
+            "failure": {
+              "population_delta": {
+                "adaptation": -0.04,
+                "morale": -0.03
+              },
+              "log": "The refusal held, and a cohort that wanted to see the destination will not."
+            }
+          }
+        ]
+      },
+      {
+        "id": "hive_protocol",
+        "title": "The Hive Protocol",
+        "description": "A networked-cognition protocol would pool the crew's minds during crises — faster, colder, and not entirely reversible.",
+        "options": [
+          {
+            "id": "enable_the_hive",
+            "label": "Enable the protocol",
+            "success_chance": 0.6,
+            "success": {
+              "population_delta": {
+                "adaptation": 0.1,
+                "stability": 0.05
+              },
+              "log": "In the next crisis the crew thought as one and solved it in minutes. Afterward, some found their own thoughts smaller."
+            },
+            "failure": {
+              "body_horror_events": 1,
+              "existential_dread": 0.12,
+              "population_delta": {
+                "morale": -0.08
+              },
+              "log": "The hive dissolved unevenly. Not everyone came all the way back to being one person."
+            }
+          },
+          {
+            "id": "keep_minds_separate",
+            "label": "Keep minds separate",
+            "success_chance": 0.85,
+            "success": {
+              "population_delta": {
+                "unity": 0.04,
+                "legacy_loyalty": 0.02
+              },
+              "log": "The protocol stayed sealed. The crew argue and doubt and remain, each, exactly one person."
+            },
+            "failure": {
+              "population_delta": {
+                "adaptation": -0.05
+              },
+              "log": "Kept separate, the crew met the crisis slowly, and paid for the minutes."
             }
           }
         ]
@@ -452,6 +740,152 @@
                 "morale": -0.08
               },
               "log": "The blockade held. The ship broke through with holes in it and gaps at the memorial."
+            }
+          }
+        ]
+      },
+      {
+        "id": "the_splinter",
+        "title": "The Splinter",
+        "description": "A faction has a shuttle, a grievance, and a plan to strike out on their own. Letting them go thins the ship; stopping them thins its patience.",
+        "options": [
+          {
+            "id": "let_them_go",
+            "label": "Let them go",
+            "success_chance": 0.8,
+            "success": {
+              "population_delta": {
+                "count": -40,
+                "unity": 0.05,
+                "stability": 0.03
+              },
+              "log": "The splinter took their shuttle and their argument and left. The ship is smaller and calmer."
+            },
+            "failure": {
+              "resource_delta": {
+                "minerals": -200
+              },
+              "population_delta": {
+                "count": -40,
+                "unity": -0.03
+              },
+              "log": "The splinter left, and took more than their share on the way out."
+            }
+          },
+          {
+            "id": "hold_them",
+            "label": "Hold the ship together",
+            "success_chance": 0.6,
+            "success": {
+              "population_delta": {
+                "unity": 0.06,
+                "legacy_loyalty": 0.03
+              },
+              "log": "The council talked the splinter back aboard. The ship holds, one argument richer."
+            },
+            "failure": {
+              "population_delta": {
+                "count": -20,
+                "morale": -0.06,
+                "unity": -0.05
+              },
+              "log": "The ship was held together by force of will and lost some of both."
+            }
+          }
+        ]
+      },
+      {
+        "id": "smugglers_offer",
+        "title": "The Smuggler's Offer",
+        "description": "A broker offers a fortune to run a sealed cargo through a blockade, no questions, no manifest.",
+        "options": [
+          {
+            "id": "run_the_cargo",
+            "label": "Run the cargo",
+            "success_chance": 0.7,
+            "success": {
+              "piracy_reputation": 0.08,
+              "resource_delta": {
+                "credits": 1800
+              },
+              "log": "The sealed cargo went through clean. The ship is richer and a little more wanted."
+            },
+            "failure": {
+              "piracy_reputation": 0.12,
+              "resource_delta": {
+                "credits": -400
+              },
+              "ship_delta": {
+                "hull_integrity": -0.04
+              },
+              "log": "The blockade was ready. The cargo was jettisoned and the ship's name got longer on the wrong lists."
+            }
+          },
+          {
+            "id": "decline_the_run",
+            "label": "Decline the run",
+            "success_chance": 0.9,
+            "success": {
+              "piracy_reputation": -0.04,
+              "population_delta": {
+                "legacy_loyalty": 0.02
+              },
+              "log": "The ship passed on the smuggler's coin. A cleaner reputation is its own slow dividend."
+            },
+            "failure": {
+              "resource_delta": {
+                "credits": -100
+              },
+              "log": "The run was declined, and the broker's next offer went to a hungrier ship."
+            }
+          }
+        ]
+      },
+      {
+        "id": "flag_of_convenience",
+        "title": "A Flag of Convenience",
+        "description": "For a fee, a minor authority will sell the ship a clean registry — a new name, a new past, a new set of ports that will have it.",
+        "options": [
+          {
+            "id": "buy_the_flag",
+            "label": "Buy the flag",
+            "success_chance": 0.75,
+            "success": {
+              "piracy_reputation": -0.1,
+              "resource_delta": {
+                "credits": -1000,
+                "influence": 30
+              },
+              "log": "The ship sails under a borrowed name now. Its old reputation stayed behind, mostly."
+            },
+            "failure": {
+              "piracy_reputation": -0.03,
+              "resource_delta": {
+                "credits": -1000
+              },
+              "population_delta": {
+                "unity": -0.03
+              },
+              "log": "The flag was bought, but the old name has a way of catching up in bad light."
+            }
+          },
+          {
+            "id": "sail_true",
+            "label": "Sail under its own name",
+            "success_chance": 0.85,
+            "success": {
+              "population_delta": {
+                "unity": 0.04,
+                "legacy_loyalty": 0.03
+              },
+              "log": "The ship kept its own name, reputation and all. Some crews would rather be known than welcome."
+            },
+            "failure": {
+              "piracy_reputation": 0.03,
+              "resource_delta": {
+                "influence": -20
+              },
+              "log": "The true flag flew, and two ports closed their locks at the sight of it."
             }
           }
         ]
