@@ -82,9 +82,13 @@ Ordered roughly by milestone (GDD §13):
 8. Content targets from §8: 30+ events, 5/5/5 components, 6-8 contracts, 6 dilemmas
    per legacy, doubled name pools.
 9. **Terminal polish**: monospace bitmap font (default font is close but not
-   monospace), typewriter/flicker fx (toolkit `fx`, keep subtle), settings screen
-   (toolkit `settings`) for delegation defaults, `catalog_thumbnail.png` from the
-   menu capture, ko-fi/index.html screenshots.
+   monospace), ~~flicker fx~~ **CRT overlay DONE (2026-07-18)** —
+   `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module
+   `fx/crt.rs`): scanlines + corner vignette + slow rolling refresh band +
+   subtle flicker, drawn screen-space at the end of `Game::draw`, amber preset,
+   F10 toggle. Still to do: typewriter text reveal, settings screen
+   (toolkit `settings`) for delegation defaults + CRT toggle,
+   `catalog_thumbnail.png` from the menu capture, ko-fi/index.html screenshots.
 10. Consider `achievements` for Chronicle milestones (GDD §10 "maybe").
 
 ## Conventions the framework already follows (keep them)

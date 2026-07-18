@@ -10,6 +10,7 @@ use crate::ui::{self, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::assets::AssetManager;
 use macroquad_toolkit::events::EventBus;
+use macroquad_toolkit::fx::{CrtOverlay, CrtStyle};
 use macroquad_toolkit::notifications::{
     NotificationAnchor, NotificationManager, NotificationRenderConfig,
 };
@@ -28,6 +29,11 @@ pub struct Game {
     _assets: AssetManager,
     /// Legacy ids in stable sorted order for the menu.
     legacy_ids: Vec<String>,
+    /// Screen-space phosphor-monitor overlay (scanlines, vignette, flicker),
+    /// drawn on top of every frame. Toggle with F10.
+    crt: CrtOverlay,
+    crt_style: CrtStyle,
+    crt_enabled: bool,
 }
 
 impl Game {
@@ -54,6 +60,9 @@ impl Game {
             events: EventBus::new(),
             _assets: assets,
             legacy_ids,
+            crt: CrtOverlay::new(),
+            crt_style: CrtStyle::amber(),
+            crt_enabled: true,
         }
     }
 
@@ -97,6 +106,10 @@ impl Game {
     pub fn update(&mut self, dt: f32) {
         self.notifications.update(dt);
 
+        if is_key_pressed(KeyCode::F10) {
+            self.crt_enabled = !self.crt_enabled;
+        }
+
         let actions: Vec<UiAction> = self.events.drain().collect();
         let mut transition = None;
         for action in actions {
@@ -139,6 +152,11 @@ impl Game {
                 anchor: NotificationAnchor::BottomRight,
                 ..Default::default()
             });
+
+        // Phosphor-monitor overlay sits on top of everything else.
+        if self.crt_enabled {
+            self.crt.draw(get_time() as f32, &self.crt_style);
+        }
     }
 
     fn transition(&mut self, transition: StateTransition) {
