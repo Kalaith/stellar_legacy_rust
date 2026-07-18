@@ -83,7 +83,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
     // (`ui::game_over`), so the dashboard never renders in that state.
     let advance = Rect::new(content.x, content.bottom() - 56.0, content.w, 48.0);
     let can_advance = sim.pending_event.is_none() && !sim.dynasty.extinct;
-    if term_button(advance, "ADVANCE ONE YEAR >>", can_advance, mouse) {
+    if term_button(advance, "ADVANCE ONE YEAR  [SPACE]", can_advance, mouse) {
         actions.push(UiAction::AdvanceYear);
     }
     let _ = y;

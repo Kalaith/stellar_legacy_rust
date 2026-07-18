@@ -536,8 +536,9 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
                 },
             ),
         );
+        // Numbered like terminal menu entries — the digit is also the hotkey.
         draw_text_centered_in_box_ex(
-            screen.label(),
+            &format!("{} {}", i + 1, screen.label()),
             rect.x,
             rect.y,
             rect.w,

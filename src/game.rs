@@ -304,7 +304,8 @@ impl Game {
             return;
         }
 
-        let actions: Vec<UiAction> = self.events.drain().collect();
+        let mut actions: Vec<UiAction> = self.events.drain().collect();
+        self.gather_keyboard_actions(&mut actions);
         let mut transition = None;
         for action in actions {
             if let Some(t) = self.apply_action(action) {
@@ -313,6 +314,34 @@ impl Game {
         }
         if let Some(transition) = transition {
             self.transition(transition);
+        }
+    }
+
+    /// Terminal-style keyboard navigation: number keys 1-6 switch screen tabs
+    /// and Space/Enter advances the year. Suppressed while the settings panel or
+    /// a blocking council modal is up, so keys don't leak past them.
+    fn gather_keyboard_actions(&mut self, actions: &mut Vec<UiAction>) {
+        let GameState::Gameplay(gameplay) = &self.state else {
+            return;
+        };
+        if self.settings_open || gameplay.sim.has_pending_decision() {
+            return;
+        }
+        for (i, screen) in crate::state::Screen::ALL.iter().enumerate() {
+            let key = [
+                KeyCode::Key1,
+                KeyCode::Key2,
+                KeyCode::Key3,
+                KeyCode::Key4,
+                KeyCode::Key5,
+                KeyCode::Key6,
+            ][i];
+            if is_key_pressed(key) {
+                actions.push(UiAction::SelectScreen(*screen));
+            }
+        }
+        if is_key_pressed(KeyCode::Space) || is_key_pressed(KeyCode::Enter) {
+            actions.push(UiAction::AdvanceYear);
         }
     }
 

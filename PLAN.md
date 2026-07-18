@@ -204,7 +204,12 @@ Ordered roughly by milestone (GDD §13):
    `delegation` key (`settings::load_delegation`/`save_delegation` over the
    sim's `DelegationSettings`) and is applied to `sim.delegation` in the
    `NewCampaign` transition. Panel grown to fit; `settings` capture updated.
-   Still to do: ko-fi/index.html screenshots.
+   ~~keyboard navigation~~ **DONE (2026-07-19)** — terminals are keyboard-first:
+   number keys **1-6** switch screen tabs and **Space/Enter** advances the year
+   (`Game::gather_keyboard_actions`, suppressed while the settings panel or a
+   council modal is up). Tabs are labelled `1 DASHBOARD` … `6 CHRONICLE` and the
+   advance button reads `[SPACE]` to teach the hotkeys. Still to do:
+   ko-fi/index.html screenshots (marketing artifact — human-gated).
 10. ~~Consider `achievements` for Chronicle milestones (GDD §10 "maybe").~~
     **DONE (2026-07-19).** `src/achievements.rs` defines six milestones (first
     charter, flawless voyage, full registry, fifth generation, year 100, 250
