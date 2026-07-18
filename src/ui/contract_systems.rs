@@ -160,16 +160,17 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
         let Some(template) = ctx.data.contracts.get(&id) else {
             continue;
         };
-        let card = Rect::new(content.x, y, content.w, 108.0);
+        // Compact cards so a six-to-eight charter list fits without overflow.
+        let card = Rect::new(content.x, y, content.w, 78.0);
         draw_surface(
             card,
-            &SurfaceStyle::new(Color::new(0.07, 0.055, 0.012, 1.0)).with_border(1.0, term::faint()),
+            &SurfaceStyle::new(term::surface_inset()).with_border(1.0, term::faint()),
         );
         draw_ui_text_ex(
             &template.name,
             card.x + 14.0,
-            card.y + 24.0,
-            TextStyle::new(17.0, term::primary()).params(),
+            card.y + 22.0,
+            TextStyle::new(16.0, term::primary()).params(),
         );
         draw_ui_text_ex(
             &format!(
@@ -179,27 +180,27 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
                 template.reward.credits
             ),
             card.x + 14.0,
-            card.y + 44.0,
-            TextStyle::new(13.0, term::dim()).params(),
+            card.y + 40.0,
+            TextStyle::new(12.0, term::dim()).params(),
         );
         draw_text_block(
             &template.description,
             card.x + 14.0,
-            card.y + 52.0,
-            card.w - 200.0,
-            40.0,
-            12.0,
-            3.0,
+            card.y + 46.0,
+            card.w - 190.0,
+            26.0,
+            11.0,
+            2.0,
             term::dim(),
         );
         if term_button(
-            Rect::new(card.right() - 170.0, card.bottom() - 40.0, 156.0, 30.0),
+            Rect::new(card.right() - 170.0, card.y + 24.0, 156.0, 30.0),
             "ACCEPT CHARTER",
             true,
             mouse,
         ) {
             actions.push(UiAction::AcceptContract(id.clone()));
         }
-        y += 120.0;
+        y += 82.0;
     }
 }

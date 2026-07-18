@@ -138,8 +138,11 @@ Ordered roughly by milestone (GDD §13):
    `solar_sail`/`warp_coil` (engines), `flak_screen`/`spinal_railgun` (weapons),
    each with real stat tradeoffs that feed the item-3 hooks; the Ship Builder
    card was compacted (96px, cost folded into the button) so a five-deep column
-   fits, and the data-load test asserts 5/5/5. 6-8 contracts (**4** so far),
-   6 dilemmas
+   fits, and the data-load test asserts 5/5/5. **6-8 contracts DONE
+   (2026-07-19)** — added `coronal_tap` (mining) and `seedfall` (colonization)
+   for **6** total (in the §8 6-8 band), each with milestone rewards; the
+   available-charters card was compacted (78px) so 6-8 fit, data-load test
+   asserts ≥6. 6 dilemmas
    per legacy (**3/6 each DONE 2026-07-19** — added `drift_dialect`/
    `founders_chair` (Preservers), `cold_sleep`/`mirror_test` (Adaptors),
    `marked_port`/`debt_collector` (Wanderers); each engages its legacy's tracked

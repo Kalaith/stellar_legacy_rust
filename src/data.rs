@@ -228,7 +228,7 @@ mod tests {
         assert_eq!(data.config.game_name, "stellar_legacy");
         assert_eq!(data.legacies.len(), 3);
         assert!(data.events.len() >= 4);
-        assert!(!data.contracts.is_empty());
+        assert!(data.contracts.len() >= 6, "§8 target is 6-8 contracts");
         assert_eq!(data.ship_components.hulls.len(), 5);
         assert_eq!(data.ship_components.engines.len(), 5);
         assert_eq!(data.ship_components.weapons.len(), 5);
