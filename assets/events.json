@@ -968,5 +968,260 @@
         "log": "The oldest names went to the archive to make room for the newly gone. The founders moved over, a little."
       }
     ]
+  },
+  {
+    "id": "debris_lattice",
+    "category": "immediate_crisis",
+    "title": "The Snare",
+    "description": "The ship has run into a lattice of old orbital debris — cables, panels, the bones of something that failed here. It is fouling the forward sensors and worse.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "cut_free",
+        "label": "Cut free",
+        "description": "Send crews out to clear it by hand. Slow, and exposed.",
+        "resource_delta": {
+          "energy": -150
+        },
+        "population_delta": {
+          "morale": -0.03,
+          "stability": 0.03
+        },
+        "log": "The debris lattice was cut away over three shifts of dangerous work. The forward array sees again."
+      },
+      {
+        "id": "power_through",
+        "label": "Power through",
+        "description": "Push forward and let the hull take what it takes.",
+        "ship_delta": {
+          "hull_integrity": -0.05
+        },
+        "log": "The ship shouldered through the snare and came out the other side scored and free."
+      }
+    ]
+  },
+  {
+    "id": "power_cascade",
+    "category": "immediate_crisis",
+    "title": "The Cascade",
+    "description": "One tripped breaker became ten. Half the ship is dark and the load-balancing computer is asking the council a question it was built to answer itself.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "shed_load",
+        "label": "Shed the load",
+        "description": "Cut non-essential decks to save the core grid.",
+        "population_delta": {
+          "morale": -0.04,
+          "stability": 0.04
+        },
+        "log": "Whole decks went dark to save the grid. People learned which of their comforts were negotiable."
+      },
+      {
+        "id": "rebalance",
+        "label": "Rebalance by hand",
+        "description": "Spend parts and hours coaxing the grid back whole.",
+        "resource_delta": {
+          "minerals": -100,
+          "energy": -200
+        },
+        "ship_delta": {
+          "life_support": 0.02
+        },
+        "log": "Engineers rebalanced the grid by hand, deck by deck, until the lights came back on together."
+      }
+    ]
+  },
+  {
+    "id": "the_prodigy",
+    "category": "generational_challenge",
+    "title": "The Prodigy",
+    "description": "A child in the new cohort reads the ship's systems the way others read faces. The council can fast-track them, or let them grow up ordinary.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "adaptors": 1.2
+    },
+    "outcomes": [
+      {
+        "id": "fast_track",
+        "label": "Fast-track the prodigy",
+        "description": "Give them every system and every hour.",
+        "resource_delta": {
+          "credits": -200
+        },
+        "population_delta": {
+          "adaptation": 0.05,
+          "stability": 0.03
+        },
+        "log": "The prodigy was given the run of the ship's systems. In a decade the ship will be glad; the cohort is less sure now."
+      },
+      {
+        "id": "let_them_be",
+        "label": "Let them be a child",
+        "description": "No cohort should carry the ship on one set of shoulders.",
+        "population_delta": {
+          "unity": 0.04,
+          "morale": 0.03
+        },
+        "log": "The council let the prodigy grow up ordinary. The ship kept its gift in reserve, and its childhood intact."
+      }
+    ]
+  },
+  {
+    "id": "aging_infrastructure",
+    "category": "generational_challenge",
+    "title": "The Debt Comes Due",
+    "description": "The maintenance the founders deferred and the last three generations ignored has all come due in the same decade. Something must be chosen, and something let go.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "overhaul",
+        "label": "Fund a full overhaul",
+        "description": "Pay the whole debt at once. It hurts now or later.",
+        "resource_delta": {
+          "credits": -500,
+          "minerals": -300
+        },
+        "ship_delta": {
+          "hull_integrity": 0.05,
+          "life_support": 0.03
+        },
+        "log": "The ship paid its inherited maintenance debt in full. The treasury is lighter; the ship will outlast the council that paid."
+      },
+      {
+        "id": "patch_and_pray",
+        "label": "Patch what fails",
+        "description": "Fix only what breaks. Cheaper, and a wager.",
+        "ship_delta": {
+          "life_support": -0.03
+        },
+        "long_term_consequences": [
+          "deferred_maintenance"
+        ],
+        "log": "The ship patched only what failed and left the rest to the next generation, as had every generation before."
+      }
+    ]
+  },
+  {
+    "id": "the_named_star",
+    "category": "mission_milestone",
+    "title": "First Light",
+    "description": "For the first time, the destination star can be picked out with the naked eye from the observation deck — a specific point of light, not a coordinate.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "gather_and_look",
+        "label": "Gather and look",
+        "description": "Call the ship to the windows.",
+        "population_delta": {
+          "morale": 0.1,
+          "legacy_loyalty": 0.03,
+          "stability": 0.02
+        },
+        "log": "The ship crowded the observation decks to see its destination as a star. Some had waited their whole lives to look."
+      }
+    ]
+  },
+  {
+    "id": "course_ratification",
+    "category": "mission_milestone",
+    "title": "The Final Approach",
+    "description": "The founders wrote a final-approach plan for a ship they never saw finished. The council can ratify it as written or amend it with everything the voyage has learned.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "preservers": 1.2
+    },
+    "outcomes": [
+      {
+        "id": "ratify_as_written",
+        "label": "Ratify as written",
+        "description": "Trust the plan the founders sealed.",
+        "population_delta": {
+          "legacy_loyalty": 0.05,
+          "cultural_drift": -0.03
+        },
+        "log": "The founders' approach plan was ratified unchanged. The ship will arrive exactly as it was told to."
+      },
+      {
+        "id": "amend_the_plan",
+        "label": "Amend with what we know",
+        "description": "The voyage taught things the founders could not know.",
+        "population_delta": {
+          "adaptation": 0.05,
+          "cultural_drift": 0.03,
+          "legacy_loyalty": -0.02
+        },
+        "log": "The approach plan was amended with a lifetime of hard-won data. The founders would not recognize it; it is better."
+      }
+    ]
+  },
+  {
+    "id": "returning_signal",
+    "category": "legacy_moment",
+    "title": "A Voice From Home",
+    "description": "A tight-beam message from the origin world arrives, decades stale — routine, official, and addressed to a ship the senders assume is still the one that departed.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "answer_home",
+        "label": "Answer home",
+        "description": "Send a reply into a fifty-year silence.",
+        "resource_delta": {
+          "influence": 30
+        },
+        "population_delta": {
+          "legacy_loyalty": 0.04,
+          "morale": 0.03
+        },
+        "log": "The ship answered the old signal from home. The reply will arrive to a world that may no longer be listening."
+      },
+      {
+        "id": "log_and_move_on",
+        "label": "Log it and move on",
+        "description": "Home is a place none of them will see. Face forward.",
+        "population_delta": {
+          "adaptation": 0.04,
+          "cultural_drift": 0.03,
+          "legacy_loyalty": -0.03
+        },
+        "log": "The message from home was logged and archived, unanswered. The ship's home is the ship now."
+      }
+    ]
+  },
+  {
+    "id": "last_photograph",
+    "category": "legacy_moment",
+    "title": "The Last Sky",
+    "description": "The last surviving photograph of an open planetary sky — the founders' sky — has degraded to almost nothing. The archivists ask whether to restore it, or let it finish fading.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "preservers": 1.3
+    },
+    "outcomes": [
+      {
+        "id": "restore_it",
+        "label": "Restore the image",
+        "description": "Spend to keep the founders' sky.",
+        "resource_delta": {
+          "credits": -150
+        },
+        "population_delta": {
+          "legacy_loyalty": 0.05,
+          "cultural_drift": -0.04
+        },
+        "log": "The last sky was painstakingly restored. A ship born to corridors keeps one window onto the world it left."
+      },
+      {
+        "id": "let_it_fade",
+        "label": "Let it fade",
+        "description": "Some things are meant to be let go.",
+        "population_delta": {
+          "adaptation": 0.05,
+          "cultural_drift": 0.04,
+          "legacy_loyalty": -0.03
+        },
+        "log": "The last photograph of an open sky was allowed to finish fading. The ship's children will never miss what they cannot picture."
+      }
+    ]
   }
 ]

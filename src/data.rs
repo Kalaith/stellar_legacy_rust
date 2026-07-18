@@ -272,14 +272,14 @@ mod tests {
                 .filter(|(_, e)| e.category == category)
                 .count();
             assert!(
-                count >= 7,
-                "expected >= 7 event templates for {category:?}, found {count}"
+                count >= 9,
+                "expected >= 9 event templates for {category:?}, found {count}"
             );
         }
-        // §8 M3 target: 30+ events.
+        // §8 M3 target is 30+; the pool has since grown past it.
         assert!(
-            data.events.len() >= 30,
-            "expected >= 30 event templates, found {}",
+            data.events.len() >= 38,
+            "expected >= 38 event templates, found {}",
             data.events.len()
         );
     }

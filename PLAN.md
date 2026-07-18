@@ -10,8 +10,8 @@ should build, in order.*
 snapshot; the numbered log below records what shipped since).* Every numbered item
 (1–10) and all three cosmetic nits are **done**; the one open thread is the
 ko-fi/index.html marketing screenshots (item 9, human-gated). The game is
-content-complete against GDD §8 — 30 events, 5/5/5 components, 6 contracts, 6
-dilemmas per legacy, doubled name pools.
+content-complete against GDD §8 (and past several minimums) — 38 events, 5/5/5
+components, 6 contracts, 6 dilemmas per legacy, doubled name pools.
 
 Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
@@ -144,11 +144,12 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
    applied once at creation). New `heritage` capture scene; 3 unit tests. This
    closes the Chronicle "Partial" status.
 8. ~~**Content targets from §8**~~ **DONE (2026-07-19)** — all §8 bulk-content
-   targets met. **30+ events DONE** (**30 total**, 7-8 per category; the
-   final pass added `reactor_scram`, `pirate_shadow`, `scrubber_failure`,
-   `idle_generation`, `apprentice_glut`, `slingshot`, `dark_stretch`,
-   `resupply_cache`, `native_leader`, `memory_wall`; data-load test asserts ≥30
-   / ≥7 per category), **5/5/5
+   targets met, several exceeded. **30+ events DONE** (**38 total**, 9-10 per
+   category; passed the §8 minimum of 30 then a further depth pass added
+   `debris_lattice`, `power_cascade`, `the_prodigy`, `aging_infrastructure`,
+   `the_named_star`, `course_ratification`, `returning_signal`,
+   `last_photograph` for more variety across long campaigns; data-load test
+   asserts ≥38 / ≥9 per category), **5/5/5
    components DONE (2026-07-19)** — added `habitat_ring`/`armored_prow` (hulls),
    `solar_sail`/`warp_coil` (engines), `flak_screen`/`spinal_railgun` (weapons),
    each with real stat tradeoffs that feed the item-3 hooks; the Ship Builder
