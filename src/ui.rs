@@ -10,6 +10,7 @@ pub mod crew_dynasty;
 pub mod dashboard;
 pub mod event_modal;
 pub mod market;
+pub mod settings;
 pub mod ship_builder;
 
 use crate::chronicle::ChronicleStore;

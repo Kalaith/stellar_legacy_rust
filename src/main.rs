@@ -8,6 +8,7 @@ mod chronicle;
 mod data;
 mod game;
 mod save;
+mod settings;
 mod simulation;
 mod state;
 mod ui;

@@ -5,6 +5,7 @@ use crate::chronicle::{ChronicleEntry, ChronicleStore};
 use crate::data::ship_components::ComponentKind;
 use crate::data::GameData;
 use crate::save;
+use crate::settings::DisplaySettings;
 use crate::simulation::{contract, crew, event_resolver, legacy, market, tick};
 use crate::state::{GameState, GameplayState, MenuState, SimState, StateTransition};
 use crate::ui::{self, UiAction};
@@ -31,10 +32,14 @@ pub struct Game {
     /// Legacy ids in stable sorted order for the menu.
     legacy_ids: Vec<String>,
     /// Screen-space phosphor-monitor overlay (scanlines, vignette, flicker),
-    /// drawn on top of every frame. Toggle with F10.
+    /// drawn on top of every frame. Toggle with F10; tune via the F1 panel.
     crt: CrtOverlay,
+    /// Cached overlay style derived from `display`.
     crt_style: CrtStyle,
-    crt_enabled: bool,
+    /// Persisted CRT display preferences.
+    display: DisplaySettings,
+    /// Whether the F1 display-settings overlay is open.
+    settings_open: bool,
     /// Terminal typewriter reveal for blocking modals: which modal is showing
     /// and when it appeared, so its body text streams in. Purely cosmetic —
     /// never touches the deterministic sim.
@@ -57,6 +62,8 @@ impl Game {
         );
         let legacy_ids = GameData::sorted_ids(&data.legacies);
         let save_exists = save::save_exists(&data.config);
+        let display = DisplaySettings::load(&data.config.game_name);
+        let crt_style = display.crt_style();
 
         let mut assets = AssetManager::new();
         let _ = assets.load_asset_pack("assets.zip").await;
@@ -71,8 +78,9 @@ impl Game {
             _assets: assets,
             legacy_ids,
             crt: CrtOverlay::new(),
-            crt_style: CrtStyle::amber(),
-            crt_enabled: true,
+            crt_style,
+            display,
+            settings_open: false,
             modal_key: None,
             modal_started: 0.0,
             instant_reveal: false,
@@ -88,6 +96,10 @@ impl Game {
         self.boot.finish();
         match scene {
             "menu" => self.state = GameState::Menu(MenuState::new(false)),
+            "settings" => {
+                self.state = GameState::Menu(MenuState::new(true));
+                self.settings_open = true;
+            }
             "boot" => {
                 // Freeze the boot log mid-stream for a screenshot.
                 self.boot.seek(1.4);
@@ -129,8 +141,13 @@ impl Game {
     pub fn update(&mut self, dt: f32) {
         self.notifications.update(dt);
 
+        // F10 toggles the CRT effect outright; F1 opens the display panel.
         if is_key_pressed(KeyCode::F10) {
-            self.crt_enabled = !self.crt_enabled;
+            self.display.crt_enabled = !self.display.crt_enabled;
+            self.persist_display();
+        }
+        if self.boot.is_done() && is_key_pressed(KeyCode::F1) {
+            self.settings_open = !self.settings_open;
         }
 
         // Boot log plays once before the menu; any input skips it. Capture mode
@@ -186,10 +203,23 @@ impl Game {
                 }),
             }
         };
+
+        // The display panel floats above everything and captures its input.
+        let display_actions = if self.settings_open {
+            ui::settings::draw(&self.display, virtual_ui.mouse_position())
+        } else {
+            Vec::new()
+        };
         end_virtual_ui_frame();
 
-        for action in actions {
-            self.events.push(action);
+        // While the panel is open, swallow the underlying screen's intents.
+        if !self.settings_open {
+            for action in actions {
+                self.events.push(action);
+            }
+        }
+        for action in display_actions {
+            self.apply_display_action(action);
         }
 
         self.notifications
@@ -199,9 +229,31 @@ impl Game {
             });
 
         // Phosphor-monitor overlay sits on top of everything else.
-        if self.crt_enabled {
+        if self.display.crt_enabled {
             self.crt.draw(get_time() as f32, &self.crt_style);
         }
+    }
+
+    /// Re-derive the cached CRT style from the current settings and save them.
+    fn persist_display(&mut self) {
+        self.crt_style = self.display.crt_style();
+        if let Err(err) = self.display.save(&self.data.config.game_name) {
+            self.notifications
+                .warning(format!("Display settings not saved: {err}"));
+        }
+    }
+
+    /// Apply an intent from the display-settings overlay.
+    fn apply_display_action(&mut self, action: crate::ui::settings::DisplayAction) {
+        use crate::ui::settings::DisplayAction;
+        match action {
+            DisplayAction::ToggleCrt => self.display.crt_enabled = !self.display.crt_enabled,
+            DisplayAction::ToggleScanlines => self.display.scanlines = !self.display.scanlines,
+            DisplayAction::ToggleFlicker => self.display.flicker = !self.display.flicker,
+            DisplayAction::SetPhosphor(p) => self.display.phosphor = p,
+            DisplayAction::Close => self.settings_open = false,
+        }
+        self.persist_display();
     }
 
     /// Seconds since the current blocking modal appeared, resetting the clock

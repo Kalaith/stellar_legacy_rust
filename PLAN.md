@@ -98,11 +98,17 @@ Ordered roughly by milestone (GDD §13):
    (2026-07-18)** — toolkit `ui::draw_text_glow` (dim offset copies fanned to a
    radius + crisp foreground) gives bright headings a CRT bloom; applied to the
    menu title, the gameplay header game-name, and the boot banner (subtle
-   alphas so body text stays crisp). **Monospace font DEFERRED** — the
-   toolkit font API (`set_default_ui_font_from_bytes`) is ready, but no
-   monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
-   sourcing one is a licensing decision for a human. Still to do: settings
-   screen (toolkit `settings`) for delegation defaults + CRT toggle,
+   alphas so body text stays crisp). ~~settings screen (CRT toggle)~~ **DONE
+   (2026-07-18)** — F1 opens a `DISPLAY // CRT MONITOR` overlay
+   (`src/ui/settings.rs`) with toggles for CRT effect / scanlines / flicker and
+   an amber↔green phosphor choice; prefs persist under their own `display`
+   key (`src/settings.rs::DisplaySettings`, loaded at startup, saved on change,
+   separate from the sim save so determinism is untouched). F10 still hard-
+   toggles the effect. New `settings` capture scene. **Monospace font
+   DEFERRED** — the toolkit font API (`set_default_ui_font_from_bytes`) is
+   ready, but no monospace TTF is bundled in the repo (only proportional
+   Rajdhani/DejaVuSans); sourcing one is a licensing decision for a human.
+   Still to do: fold delegation defaults into the settings overlay,
    `catalog_thumbnail.png` from the menu capture, ko-fi/index.html screenshots.
 10. Consider `achievements` for Chronicle milestones (GDD §10 "maybe").
 
