@@ -27,7 +27,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         &contract.name,
         content.x,
         y,
-        TextStyle::new(19.0, term::GREEN).params(),
+        TextStyle::new(19.0, term::accent()).params(),
     );
     y += 26.0;
     draw_ui_text_ex(
@@ -40,7 +40,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         ),
         content.x,
         y,
-        TextStyle::new(14.0, term::AMBER_DIM).params(),
+        TextStyle::new(14.0, term::dim()).params(),
     );
     y += 24.0;
 
@@ -48,7 +48,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         Rect::new(content.x, y, content.w, 26.0),
         contract.progress(),
         1.0,
-        term::AMBER,
+        term::primary(),
         Some(&format!("PROGRESS {:.0}%", contract.progress() * 100.0)),
     );
     y += 46.0;
@@ -57,14 +57,14 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         "MILESTONES",
         content.x,
         y,
-        TextStyle::new(15.0, term::AMBER).params(),
+        TextStyle::new(15.0, term::primary()).params(),
     );
     y += 22.0;
     for milestone in &contract.milestones {
         let (mark, color) = if milestone.reached {
-            ("[x]", term::GREEN)
+            ("[x]", term::accent())
         } else {
-            ("[ ]", term::AMBER_DIM)
+            ("[ ]", term::dim())
         };
         draw_ui_text_ex(
             &format!("{mark} {}", milestone.name),
@@ -80,7 +80,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         "SUCCESS METRICS",
         content.x,
         y,
-        TextStyle::new(15.0, term::AMBER).params(),
+        TextStyle::new(15.0, term::primary()).params(),
     );
     y += 22.0;
     for metric in &contract.metrics {
@@ -88,7 +88,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
             Rect::new(content.x, y, content.w, 20.0),
             (metric.current / metric.target.max(0.001)).min(1.0),
             1.0,
-            term::GREEN,
+            term::accent(),
             Some(&format!(
                 "{} {:.2}/{:.2} (w {:.0}%)",
                 metric.name,
@@ -112,7 +112,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         rcontent.h - 60.0,
         14.0,
         4.0,
-        term::AMBER_DIM,
+        term::dim(),
     );
 }
 
@@ -128,14 +128,13 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
         let card = Rect::new(content.x, y, content.w, 108.0);
         draw_surface(
             card,
-            &SurfaceStyle::new(Color::new(0.07, 0.055, 0.012, 1.0))
-                .with_border(1.0, term::AMBER_FAINT),
+            &SurfaceStyle::new(Color::new(0.07, 0.055, 0.012, 1.0)).with_border(1.0, term::faint()),
         );
         draw_ui_text_ex(
             &template.name,
             card.x + 14.0,
             card.y + 24.0,
-            TextStyle::new(17.0, term::AMBER).params(),
+            TextStyle::new(17.0, term::primary()).params(),
         );
         draw_ui_text_ex(
             &format!(
@@ -146,7 +145,7 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
             ),
             card.x + 14.0,
             card.y + 44.0,
-            TextStyle::new(13.0, term::AMBER_DIM).params(),
+            TextStyle::new(13.0, term::dim()).params(),
         );
         draw_text_block(
             &template.description,
@@ -156,7 +155,7 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
             40.0,
             12.0,
             3.0,
-            term::AMBER_DIM,
+            term::dim(),
         );
         if term_button(
             Rect::new(card.right() - 170.0, card.bottom() - 40.0, 156.0, 30.0),

@@ -39,11 +39,11 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec
         let heir_eligible = member.age >= config.heir_min_age && member.age <= config.heir_max_age;
         let designated = ctx.sim.dynasty.designated_heir == Some(member.id);
         let color = if member.is_leader {
-            term::GREEN
+            term::accent()
         } else if heir_eligible {
-            term::AMBER
+            term::primary()
         } else {
-            term::AMBER_DIM
+            term::dim()
         };
         let role = if member.is_leader {
             " [LEADER]"
@@ -65,7 +65,7 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec
             &format!("   trait: {}", member.trait_name),
             content.x,
             y + 16.0,
-            TextStyle::new(12.0, term::AMBER_FAINT).params(),
+            TextStyle::new(12.0, term::faint()).params(),
         );
         if heir_eligible
             && !member.is_leader
@@ -87,7 +87,7 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec
             &format!("... and {} more", ctx.sim.dynasty.members.len() - visible),
             content.x,
             y,
-            TextStyle::new(13.0, term::AMBER_FAINT).params(),
+            TextStyle::new(13.0, term::faint()).params(),
         );
     }
 }
@@ -108,7 +108,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<
                     ),
                     content.x,
                     y,
-                    TextStyle::new(13.0, term::GREEN).params(),
+                    TextStyle::new(13.0, term::accent()).params(),
                 );
                 let maxed = holder.skill >= archetype.skill_max;
                 if term_button(
@@ -129,7 +129,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<
                     &format!("{} — POST VACANT", archetype.name),
                     content.x,
                     y,
-                    TextStyle::new(13.0, term::AMBER_DIM).params(),
+                    TextStyle::new(13.0, term::dim()).params(),
                 );
                 if term_button(
                     Rect::new(content.right() - 150.0, y - 14.0, 144.0, 24.0),
@@ -155,7 +155,7 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
         y,
         "GENERATION",
         &ctx.sim.dynasty.generation.to_string(),
-        term::GREEN,
+        term::accent(),
     );
     y += 24.0;
     let next_gen = ctx
@@ -168,7 +168,7 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
         y,
         "NEXT GENERATION IN",
         &format!("{next_gen} yr"),
-        term::AMBER,
+        term::primary(),
     );
     y += 34.0;
 
@@ -180,7 +180,7 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
         44.0,
         13.0,
         3.0,
-        term::AMBER_DIM,
+        term::dim(),
     );
     y += 54.0;
 
@@ -217,7 +217,7 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
         ),
     ];
     for (label, value) in &counters {
-        stat_line(content.x, y, label, value, term::AMBER);
+        stat_line(content.x, y, label, value, term::primary());
         y += 22.0;
     }
 
@@ -231,9 +231,9 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
         .map(|l| l.failure_risk.replace('_', " ").to_uppercase())
         .unwrap_or_default();
     let (status, color) = if risk.at_risk {
-        ("AT RISK", term::RED)
+        ("AT RISK", term::alert())
     } else {
-        ("STABLE", term::GREEN)
+        ("STABLE", term::accent())
     };
     stat_line(
         content.x,
@@ -248,7 +248,7 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
             &format!("  + {} ({})", factor.label, factor.points),
             content.x,
             y,
-            TextStyle::new(13.0, term::RED).params(),
+            TextStyle::new(13.0, term::alert()).params(),
         );
         y += 18.0;
     }

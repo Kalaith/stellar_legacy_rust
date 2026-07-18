@@ -64,6 +64,7 @@ impl Game {
         let save_exists = save::save_exists(&data.config);
         let display = DisplaySettings::load(&data.config.game_name);
         let crt_style = display.crt_style();
+        ui::term::set_phosphor(display.phosphor);
 
         let mut assets = AssetManager::new();
         let _ = assets.load_asset_pack("assets.zip").await;
@@ -91,11 +92,22 @@ impl Game {
     /// Seed a deterministic state for the headless screenshot harness.
     pub fn begin_capture_scene(&mut self, scene: &str) {
         // Screenshots want the final composed frame, not a mid-type one, and
-        // never the boot log.
+        // never the boot log. Force canonical amber display so captures are
+        // deterministic regardless of any persisted preference.
         self.instant_reveal = true;
         self.boot.finish();
+        self.display = DisplaySettings::default();
+        self.crt_style = self.display.crt_style();
+        ui::term::set_phosphor(self.display.phosphor);
         match scene {
             "menu" => self.state = GameState::Menu(MenuState::new(false)),
+            "green" => {
+                // Same menu on the green (P1) tube, to verify the recolor.
+                self.display.phosphor = crate::settings::Phosphor::Green;
+                self.crt_style = self.display.crt_style();
+                ui::term::set_phosphor(self.display.phosphor);
+                self.state = GameState::Menu(MenuState::new(true));
+            }
             "settings" => {
                 self.state = GameState::Menu(MenuState::new(true));
                 self.settings_open = true;
@@ -175,7 +187,7 @@ impl Game {
     }
 
     pub fn draw(&mut self) {
-        clear_background(ui::term::BG);
+        clear_background(ui::term::bg());
 
         let modal_reveal = self.modal_reveal();
 
@@ -237,6 +249,7 @@ impl Game {
     /// Re-derive the cached CRT style from the current settings and save them.
     fn persist_display(&mut self) {
         self.crt_style = self.display.crt_style();
+        ui::term::set_phosphor(self.display.phosphor);
         if let Err(err) = self.display.save(&self.data.config.game_name) {
             self.notifications
                 .warning(format!("Display settings not saved: {err}"));

@@ -17,7 +17,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         &format!("SHIP TREASURY: {} CREDITS", ctx.sim.resources.credits),
         content.x,
         y,
-        TextStyle::new(17.0, term::GREEN).params(),
+        TextStyle::new(17.0, term::accent()).params(),
     );
     y += 34.0;
 
@@ -32,7 +32,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
             label,
             content.x + offset,
             y,
-            TextStyle::new(13.0, term::AMBER_FAINT).params(),
+            TextStyle::new(13.0, term::faint()).params(),
         );
     }
     y += 10.0;
@@ -49,26 +49,26 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
             entry.resource.label(),
             content.x,
             y,
-            TextStyle::new(16.0, term::AMBER).params(),
+            TextStyle::new(16.0, term::primary()).params(),
         );
         draw_ui_text_ex(
             &held.to_string(),
             content.x + 220.0,
             y,
-            TextStyle::new(16.0, term::GREEN).params(),
+            TextStyle::new(16.0, term::accent()).params(),
         );
         draw_ui_text_ex(
             &format!("{:.1} cr", entry.price),
             content.x + 360.0,
             y,
-            TextStyle::new(16.0, term::AMBER).params(),
+            TextStyle::new(16.0, term::primary()).params(),
         );
         let (arrow, color) = if entry.trend > 0.005 {
-            ("▲", term::GREEN)
+            ("▲", term::accent())
         } else if entry.trend < -0.005 {
-            ("▼", term::RED)
+            ("▼", term::alert())
         } else {
-            ("—", term::AMBER_DIM)
+            ("—", term::dim())
         };
         draw_ui_text_ex(
             &format!("{arrow} {:+.2}", entry.trend),
@@ -96,6 +96,6 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         40.0,
         13.0,
         3.0,
-        term::AMBER_DIM,
+        term::dim(),
     );
 }

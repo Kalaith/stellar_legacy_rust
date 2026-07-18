@@ -79,7 +79,7 @@ impl BootScreen {
     /// Draw the streaming log centred on a black screen. The CRT overlay is
     /// applied on top by `Game::draw`, so this already reads as a monitor.
     pub fn draw(&self) {
-        draw_rectangle(0.0, 0.0, LOGICAL_WIDTH, LOGICAL_HEIGHT, term::BG);
+        draw_rectangle(0.0, 0.0, LOGICAL_WIDTH, LOGICAL_HEIGHT, term::bg());
 
         let mut budget = (self.elapsed * CPS) as usize;
         let blink = (self.elapsed * 3.0).fract() < 0.5;
@@ -92,9 +92,9 @@ impl BootScreen {
             let show = budget.min(n);
             let text: String = line.chars().take(show).collect();
             let color = if i == 0 || i == LINES.len() - 1 {
-                term::AMBER
+                term::primary()
             } else {
-                term::GREEN
+                term::accent()
             };
             let style = TextStyle::new(16.0, color);
             let dims = if i == 0 {
@@ -110,7 +110,7 @@ impl BootScreen {
                         "_",
                         x + dims.width,
                         y,
-                        TextStyle::new(16.0, term::AMBER).params(),
+                        TextStyle::new(16.0, term::primary()).params(),
                     );
                 }
                 cursor_drawn = true;
@@ -122,13 +122,13 @@ impl BootScreen {
         // Fully streamed: park a blinking cursor on the prompt line.
         if !cursor_drawn && blink {
             let last = LINES[LINES.len() - 1];
-            let w = measure_text_size(last, TextStyle::new(16.0, term::AMBER)).width;
+            let w = measure_text_size(last, TextStyle::new(16.0, term::primary())).width;
             let prompt_y = 150.0 + (LINES.len() - 1) as f32 * LINE_H;
             draw_ui_text_ex(
                 "_",
                 x + w + 4.0,
                 prompt_y,
-                TextStyle::new(16.0, term::AMBER).params(),
+                TextStyle::new(16.0, term::primary()).params(),
             );
         }
     }

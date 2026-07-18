@@ -52,9 +52,9 @@ fn draw_component_card(
         &SurfaceStyle::new(Color::new(0.07, 0.055, 0.012, 1.0)).with_border(
             1.0,
             if installed {
-                term::GREEN
+                term::accent()
             } else {
-                term::AMBER_FAINT
+                term::faint()
             },
         ),
     );
@@ -62,7 +62,15 @@ fn draw_component_card(
         &component.name,
         rect.x + 12.0,
         rect.y + 22.0,
-        TextStyle::new(16.0, if installed { term::GREEN } else { term::AMBER }).params(),
+        TextStyle::new(
+            16.0,
+            if installed {
+                term::accent()
+            } else {
+                term::primary()
+            },
+        )
+        .params(),
     );
     draw_text_block(
         &component.description,
@@ -72,7 +80,7 @@ fn draw_component_card(
         30.0,
         12.0,
         2.0,
-        term::AMBER_DIM,
+        term::dim(),
     );
 
     let cost = &component.cost;
@@ -95,7 +103,7 @@ fn draw_component_card(
         &cost_text,
         rect.x + 12.0,
         rect.y + 76.0,
-        TextStyle::new(13.0, term::AMBER_DIM).params(),
+        TextStyle::new(13.0, term::dim()).params(),
     );
 
     let btn = Rect::new(rect.x + 12.0, rect.y + 84.0, rect.w - 24.0, 26.0);
@@ -106,7 +114,7 @@ fn draw_component_card(
             btn.y,
             btn.w,
             btn.h,
-            TextStyle::new(14.0, term::GREEN),
+            TextStyle::new(14.0, term::accent()),
         );
     } else {
         let negated = crate::data::ResourceDelta {

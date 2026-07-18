@@ -26,20 +26,117 @@ use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt, VirtualUi};
 pub const LOGICAL_WIDTH: f32 = 1280.0;
 pub const LOGICAL_HEIGHT: f32 = 720.0;
 
-/// Phosphor-terminal palette carried over from the web original (GDD §0):
-/// amber primary #FFB000, green success #00FF66, red alerts.
+/// Phosphor-terminal palette (GDD §0). The tube is monochrome: every color is
+/// a brightness of one hue, selectable at runtime between amber (P3) and green
+/// (P1) via [`term::set_phosphor`]. Alerts stay warm-red on both so danger
+/// reads even on a green tube.
 pub mod term {
+    use crate::settings::Phosphor;
     use macroquad::prelude::Color;
+    use std::cell::Cell;
 
-    pub const BG: Color = Color::new(0.02, 0.018, 0.005, 1.0);
-    pub const PANEL: Color = Color::new(0.055, 0.045, 0.012, 0.97);
-    pub const PANEL_HEADER: Color = Color::new(0.09, 0.07, 0.015, 1.0);
-    pub const AMBER: Color = Color::new(1.0, 0.69, 0.0, 1.0);
-    pub const AMBER_DIM: Color = Color::new(0.62, 0.44, 0.05, 1.0);
-    pub const AMBER_FAINT: Color = Color::new(0.35, 0.26, 0.05, 1.0);
-    pub const GREEN: Color = Color::new(0.0, 1.0, 0.4, 1.0);
-    pub const RED: Color = Color::new(1.0, 0.28, 0.2, 1.0);
-    pub const BORDER: Color = Color::new(0.62, 0.44, 0.05, 0.8);
+    thread_local! {
+        static PHOSPHOR: Cell<Phosphor> = const { Cell::new(Phosphor::Amber) };
+    }
+
+    /// Switch the active phosphor tube for all subsequent draws.
+    pub fn set_phosphor(phosphor: Phosphor) {
+        PHOSPHOR.with(|cell| cell.set(phosphor));
+    }
+
+    fn tube(amber: Color, green: Color) -> Color {
+        match PHOSPHOR.with(Cell::get) {
+            Phosphor::Amber => amber,
+            Phosphor::Green => green,
+        }
+    }
+
+    pub fn bg() -> Color {
+        tube(
+            Color::new(0.02, 0.018, 0.005, 1.0),
+            Color::new(0.004, 0.02, 0.008, 1.0),
+        )
+    }
+    pub fn panel() -> Color {
+        tube(
+            Color::new(0.055, 0.045, 0.012, 0.97),
+            Color::new(0.014, 0.05, 0.022, 0.97),
+        )
+    }
+    pub fn panel_header() -> Color {
+        tube(
+            Color::new(0.09, 0.07, 0.015, 1.0),
+            Color::new(0.02, 0.08, 0.03, 1.0),
+        )
+    }
+    pub fn primary() -> Color {
+        tube(
+            Color::new(1.0, 0.69, 0.0, 1.0),
+            Color::new(0.3, 1.0, 0.45, 1.0),
+        )
+    }
+    pub fn dim() -> Color {
+        tube(
+            Color::new(0.62, 0.44, 0.05, 1.0),
+            Color::new(0.16, 0.6, 0.28, 1.0),
+        )
+    }
+    pub fn faint() -> Color {
+        tube(
+            Color::new(0.35, 0.26, 0.05, 1.0),
+            Color::new(0.09, 0.32, 0.15, 1.0),
+        )
+    }
+    /// Success / value accent — a brighter tint of the tube hue.
+    pub fn accent() -> Color {
+        tube(
+            Color::new(0.0, 1.0, 0.4, 1.0),
+            Color::new(0.6, 1.0, 0.7, 1.0),
+        )
+    }
+    /// Alert red — warm on both tubes so danger still reads on a green screen.
+    pub fn alert() -> Color {
+        Color::new(1.0, 0.28, 0.2, 1.0)
+    }
+    pub fn border() -> Color {
+        tube(
+            Color::new(0.62, 0.44, 0.05, 0.8),
+            Color::new(0.16, 0.6, 0.28, 0.8),
+        )
+    }
+
+    // Dark interactive surface fills (buttons, tabs, selectable rows), tinted to
+    // the tube so nothing reads warm on the green screen.
+    pub fn surface() -> Color {
+        tube(
+            Color::new(0.11, 0.085, 0.015, 1.0),
+            Color::new(0.02, 0.07, 0.032, 1.0),
+        )
+    }
+    pub fn surface_hover() -> Color {
+        tube(
+            Color::new(0.22, 0.16, 0.02, 1.0),
+            Color::new(0.04, 0.13, 0.06, 1.0),
+        )
+    }
+    pub fn surface_active() -> Color {
+        tube(
+            Color::new(0.2, 0.15, 0.02, 1.0),
+            Color::new(0.04, 0.12, 0.06, 1.0),
+        )
+    }
+    pub fn surface_disabled() -> Color {
+        tube(
+            Color::new(0.05, 0.04, 0.02, 1.0),
+            Color::new(0.01, 0.035, 0.016, 1.0),
+        )
+    }
+    pub fn surface_inset() -> Color {
+        tube(
+            Color::new(0.07, 0.055, 0.012, 1.0),
+            Color::new(0.014, 0.05, 0.024, 1.0),
+        )
+    }
 }
 
 /// Every interaction the UI can request. Game logic applies these in
@@ -75,16 +172,21 @@ pub enum UiAction {
 // ---------------------------------------------------------------------------
 
 pub fn term_panel(rect: Rect, title: Option<&str>) {
-    let style = SurfaceStyle::new(term::PANEL)
-        .with_border(1.0, term::BORDER)
-        .with_header(34.0, term::PANEL_HEADER)
-        .with_header_divider(1.0, term::BORDER);
+    let style = SurfaceStyle::new(term::panel())
+        .with_border(1.0, term::border())
+        .with_header(34.0, term::panel_header())
+        .with_header_divider(1.0, term::border());
     if let Some(title) = title {
-        draw_surface_with_title(rect, Some(title), &style, TextStyle::new(17.0, term::AMBER));
+        draw_surface_with_title(
+            rect,
+            Some(title),
+            &style,
+            TextStyle::new(17.0, term::primary()),
+        );
     } else {
         draw_surface(
             rect,
-            &SurfaceStyle::new(term::PANEL).with_border(1.0, term::BORDER),
+            &SurfaceStyle::new(term::panel()).with_border(1.0, term::border()),
         );
     }
 }
@@ -92,17 +194,13 @@ pub fn term_panel(rect: Rect, title: Option<&str>) {
 pub fn term_button(rect: Rect, label: &str, enabled: bool, mouse: Vec2) -> bool {
     let hovered = enabled && rect.contains_point(mouse);
     let fill = if !enabled {
-        Color::new(0.05, 0.04, 0.02, 1.0)
+        term::surface_disabled()
     } else if hovered {
-        Color::new(0.22, 0.16, 0.02, 1.0)
+        term::surface_hover()
     } else {
-        Color::new(0.11, 0.085, 0.015, 1.0)
+        term::surface()
     };
-    let border = if enabled {
-        term::AMBER_DIM
-    } else {
-        term::AMBER_FAINT
-    };
+    let border = if enabled { term::dim() } else { term::faint() };
     draw_surface(rect, &SurfaceStyle::new(fill).with_border(1.0, border));
     draw_text_centered_in_box_ex(
         label,
@@ -113,9 +211,9 @@ pub fn term_button(rect: Rect, label: &str, enabled: bool, mouse: Vec2) -> bool 
         TextStyle::new(
             16.0,
             if enabled {
-                term::AMBER
+                term::primary()
             } else {
-                term::AMBER_FAINT
+                term::faint()
             },
         ),
     );
@@ -148,13 +246,17 @@ pub fn term_meter_toned(rect: Rect, value: f32, max: f32, label: &str, tone: Met
         rect,
         value,
         max,
-        if critical { term::RED } else { term::GREEN },
+        if critical {
+            term::alert()
+        } else {
+            term::accent()
+        },
         Some(label),
     );
 }
 
 pub fn stat_line(x: f32, y: f32, label: &str, value: &str, value_color: Color) {
-    draw_ui_text_ex(label, x, y, TextStyle::new(15.0, term::AMBER_DIM).params());
+    draw_ui_text_ex(label, x, y, TextStyle::new(15.0, term::dim()).params());
     draw_text_right(value, x + 250.0, y, TextStyle::new(15.0, value_color));
 }
 
@@ -177,7 +279,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         "STELLAR LEGACY",
         LOGICAL_WIDTH / 2.0 - 190.0,
         130.0,
-        TextStyle::new(48.0, term::AMBER),
+        TextStyle::new(48.0, term::primary()),
         0.1,
         3.0,
     );
@@ -185,7 +287,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         "// generational starship command //",
         LOGICAL_WIDTH / 2.0 - 165.0,
         165.0,
-        TextStyle::new(17.0, term::AMBER_DIM).params(),
+        TextStyle::new(17.0, term::dim()).params(),
     );
 
     let panel = Rect::new(LOGICAL_WIDTH / 2.0 - 320.0, 210.0, 640.0, 420.0);
@@ -197,7 +299,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         "Choose the legacy that will steer your bloodline:",
         content.x,
         y,
-        TextStyle::new(16.0, term::AMBER_DIM).params(),
+        TextStyle::new(16.0, term::dim()).params(),
     );
     y += 18.0;
 
@@ -208,18 +310,18 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         let rect = Rect::new(content.x, y + 8.0, content.w, 62.0);
         let selected = i == ctx.menu.selected_legacy;
         let fill = if selected {
-            Color::new(0.16, 0.12, 0.02, 1.0)
+            term::surface_active()
         } else {
-            Color::new(0.07, 0.055, 0.012, 1.0)
+            term::surface_inset()
         };
         draw_surface(
             rect,
             &SurfaceStyle::new(fill).with_border(
                 1.0,
                 if selected {
-                    term::AMBER
+                    term::primary()
                 } else {
-                    term::AMBER_FAINT
+                    term::faint()
                 },
             ),
         );
@@ -227,7 +329,15 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
             &legacy.name,
             rect.x + 14.0,
             rect.y + 24.0,
-            TextStyle::new(18.0, if selected { term::GREEN } else { term::AMBER }).params(),
+            TextStyle::new(
+                18.0,
+                if selected {
+                    term::accent()
+                } else {
+                    term::primary()
+                },
+            )
+            .params(),
         );
         draw_text_block(
             &legacy.description,
@@ -237,7 +347,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
             26.0,
             13.0,
             2.0,
-            term::AMBER_DIM,
+            term::dim(),
         );
         if rect.contains_point(mouse) && is_mouse_button_released(MouseButton::Left) {
             actions.push(UiAction::SelectLegacy(i));
@@ -329,7 +439,7 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
         &ctx.data.config.display_name.to_uppercase(),
         rect.x + 16.0,
         rect.y + 36.0,
-        TextStyle::new(24.0, term::AMBER),
+        TextStyle::new(24.0, term::primary()),
         0.12,
         2.0,
     );
@@ -352,7 +462,7 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
         ),
         rect.x + 330.0,
         rect.y + 36.0,
-        TextStyle::new(16.0, term::AMBER_DIM).params(),
+        TextStyle::new(16.0, term::dim()).params(),
     );
 
     draw_text_right(
@@ -366,7 +476,7 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
         ),
         rect.right() - 16.0,
         rect.y + 36.0,
-        TextStyle::new(15.0, term::GREEN),
+        TextStyle::new(15.0, term::accent()),
     );
 }
 
@@ -378,18 +488,18 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         let rect = Rect::new(16.0 + i as f32 * (tab_w + 6.0), 80.0, tab_w, 38.0);
         let active = *screen == ctx.screen;
         let fill = if active {
-            Color::new(0.2, 0.15, 0.02, 1.0)
+            term::surface_active()
         } else {
-            Color::new(0.07, 0.055, 0.012, 1.0)
+            term::surface_inset()
         };
         draw_surface(
             rect,
             &SurfaceStyle::new(fill).with_border(
                 1.0,
                 if active {
-                    term::AMBER
+                    term::primary()
                 } else {
-                    term::AMBER_FAINT
+                    term::faint()
                 },
             ),
         );
@@ -399,7 +509,7 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
             rect.y,
             rect.w,
             rect.h,
-            TextStyle::new(14.0, if active { term::GREEN } else { term::AMBER_DIM }),
+            TextStyle::new(14.0, if active { term::accent() } else { term::dim() }),
         );
         if !active && rect.contains_point(mouse) && is_mouse_button_released(MouseButton::Left) {
             actions.push(UiAction::SelectScreen(*screen));

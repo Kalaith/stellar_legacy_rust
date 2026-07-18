@@ -52,7 +52,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
         y,
         "SPARE PARTS",
         &sim.ship.spare_parts.to_string(),
-        term::GREEN,
+        term::accent(),
     );
     y += 26.0;
     let contract_line = sim
@@ -64,7 +64,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
         "ACTIVE CONTRACT",
         content.x,
         y,
-        TextStyle::new(15.0, term::AMBER_DIM).params(),
+        TextStyle::new(15.0, term::dim()).params(),
     );
     y += 20.0;
     draw_text_block(
@@ -75,7 +75,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
         40.0,
         14.0,
         3.0,
-        term::GREEN,
+        term::accent(),
     );
     y += 44.0;
 
@@ -88,7 +88,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
             60.0,
             14.0,
             3.0,
-            term::RED,
+            term::alert(),
         );
         y += 70.0;
     }
@@ -112,7 +112,7 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
         y,
         "POPULATION",
         &pop.count.to_string(),
-        term::GREEN,
+        term::accent(),
     );
     y += 30.0;
 
@@ -148,7 +148,7 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
         y,
         "TRADITION",
         &legacy.tradition_points.to_string(),
-        term::AMBER,
+        term::primary(),
     );
     y += 24.0;
     stat_line(
@@ -157,9 +157,9 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
         "CONSEQUENCES CARRIED",
         &ctx.sim.consequences.len().to_string(),
         if ctx.sim.consequences.is_empty() {
-            term::GREEN
+            term::accent()
         } else {
-            term::RED
+            term::alert()
         },
     );
     y += 24.0;
@@ -179,7 +179,7 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
             .filter(|d| **d)
             .count()
         ),
-        term::AMBER,
+        term::primary(),
     );
     let _ = Screen::Dashboard;
 }
@@ -197,7 +197,7 @@ fn draw_log_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
             &format!("Y{:03}", entry.year),
             content.x,
             y,
-            TextStyle::new(13.0, term::AMBER_FAINT).params(),
+            TextStyle::new(13.0, term::faint()).params(),
         );
         draw_text_block(
             &entry.text,
@@ -207,7 +207,7 @@ fn draw_log_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
             30.0,
             13.0,
             2.0,
-            term::AMBER_DIM,
+            term::dim(),
         );
         y += line_h;
     }

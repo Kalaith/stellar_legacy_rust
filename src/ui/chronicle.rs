@@ -22,7 +22,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, _mouse: Vec2, _actions: &mut Vec<
             120.0,
             15.0,
             5.0,
-            term::AMBER_DIM,
+            term::dim(),
         );
         return;
     }
@@ -35,7 +35,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, _mouse: Vec2, _actions: &mut Vec<
             ),
             content.x,
             y,
-            TextStyle::new(16.0, term::AMBER).params(),
+            TextStyle::new(16.0, term::primary()).params(),
         );
         draw_ui_text_ex(
             &format!(
@@ -44,7 +44,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, _mouse: Vec2, _actions: &mut Vec<
             ),
             content.x,
             y + 18.0,
-            TextStyle::new(13.0, term::AMBER_DIM).params(),
+            TextStyle::new(13.0, term::dim()).params(),
         );
         y += 46.0;
     }

@@ -104,12 +104,17 @@ Ordered roughly by milestone (GDD §13):
    an amber↔green phosphor choice; prefs persist under their own `display`
    key (`src/settings.rs::DisplaySettings`, loaded at startup, saved on change,
    separate from the sim save so determinism is untouched). F10 still hard-
-   toggles the effect. New `settings` capture scene. **Monospace font
-   DEFERRED** — the toolkit font API (`set_default_ui_font_from_bytes`) is
-   ready, but no monospace TTF is bundled in the repo (only proportional
-   Rajdhani/DejaVuSans); sourcing one is a licensing decision for a human.
-   Still to do: fold delegation defaults into the settings overlay,
-   `catalog_thumbnail.png` from the menu capture, ko-fi/index.html screenshots.
+   toggles the effect. New `settings` capture scene. ~~phosphor recolor~~ **DONE
+   (2026-07-18)** — the `term` palette is now runtime phosphor-aware: every hue
+   is a `fn` reading a thread-local tube (`term::set_phosphor`), so choosing
+   GREEN recolors the *entire* monochrome UI (text, borders, panels, surface
+   fills), not just the overlay tint; alerts stay warm-red on both tubes. New
+   `green` capture scene. ~~`catalog_thumbnail.png`~~ **DONE (2026-07-18)** —
+   root 16:9 title capture from the menu scene. **Monospace font DEFERRED** —
+   the toolkit font API (`set_default_ui_font_from_bytes`) is ready, but no
+   monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
+   sourcing one is a licensing decision for a human. Still to do: fold
+   delegation defaults into the settings overlay, ko-fi/index.html screenshots.
 10. Consider `achievements` for Chronicle milestones (GDD §10 "maybe").
 
 ## Conventions the framework already follows (keep them)

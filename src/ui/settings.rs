@@ -79,7 +79,7 @@ pub fn draw(display: &DisplaySettings, mouse: Vec2) -> Vec<DisplayAction> {
         "PHOSPHOR",
         content.x,
         y + 22.0,
-        TextStyle::new(16.0, term::AMBER_DIM).params(),
+        TextStyle::new(16.0, term::dim()).params(),
     );
     let bw = 92.0;
     if choice_button(
@@ -104,7 +104,7 @@ pub fn draw(display: &DisplaySettings, mouse: Vec2) -> Vec<DisplayAction> {
         "F1 / F10 toggle this panel and the CRT effect.",
         content.x,
         y + 14.0,
-        TextStyle::new(13.0, term::AMBER_FAINT).params(),
+        TextStyle::new(13.0, term::faint()).params(),
     );
 
     if term_button(
@@ -134,7 +134,7 @@ fn toggle_row(
         label,
         x,
         y + 22.0,
-        TextStyle::new(16.0, term::AMBER_DIM).params(),
+        TextStyle::new(16.0, term::dim()).params(),
     );
     let rect = Rect::new(x + w - 92.0, y, 92.0, 34.0);
     if choice_button(rect, if on { "ON" } else { "OFF" }, on, mouse) {
@@ -146,20 +146,20 @@ fn toggle_row(
 fn choice_button(rect: Rect, label: &str, active: bool, mouse: Vec2) -> bool {
     let hovered = rect.contains_point(mouse);
     let fill = if active {
-        Color::new(0.2, 0.15, 0.02, 1.0)
+        term::surface_active()
     } else if hovered {
-        Color::new(0.12, 0.09, 0.015, 1.0)
+        term::surface_hover()
     } else {
-        Color::new(0.07, 0.055, 0.012, 1.0)
+        term::surface_inset()
     };
     draw_surface(
         rect,
         &SurfaceStyle::new(fill).with_border(
             1.0,
             if active {
-                term::AMBER
+                term::primary()
             } else {
-                term::AMBER_FAINT
+                term::faint()
             },
         ),
     );
@@ -169,7 +169,7 @@ fn choice_button(rect: Rect, label: &str, active: bool, mouse: Vec2) -> bool {
         rect.y,
         rect.w,
         rect.h,
-        TextStyle::new(15.0, if active { term::GREEN } else { term::AMBER_DIM }),
+        TextStyle::new(15.0, if active { term::accent() } else { term::dim() }),
     );
     hovered && is_mouse_button_released(MouseButton::Left)
 }
