@@ -16,12 +16,18 @@
             "success_chance": 0.75,
             "success": {
               "tradition_points": 10,
-              "population_delta": { "legacy_loyalty": 0.05 },
+              "population_delta": {
+                "legacy_loyalty": 0.05
+              },
               "log": "The archive kept its power allocation. Tradition holds."
             },
             "failure": {
-              "resource_delta": { "food": -200 },
-              "population_delta": { "morale": -0.05 },
+              "resource_delta": {
+                "food": -200
+              },
+              "population_delta": {
+                "morale": -0.05
+              },
               "log": "The archive was protected, and the harvest paid for it."
             }
           },
@@ -31,13 +37,112 @@
             "success_chance": 0.8,
             "success": {
               "tradition_points": -10,
-              "resource_delta": { "food": 300 },
+              "resource_delta": {
+                "food": 300
+              },
               "log": "The farms flourished. Something older dimmed."
             },
             "failure": {
               "tradition_points": -15,
-              "population_delta": { "unity": -0.05 },
+              "population_delta": {
+                "unity": -0.05
+              },
               "log": "The diversion sparked protests in the archive decks."
+            }
+          }
+        ]
+      },
+      {
+        "id": "drift_dialect",
+        "title": "The Drift Dialect",
+        "description": "The children speak a ship-tongue the founders would not follow. The linguists want it recorded and taught; the elders want it corrected.",
+        "options": [
+          {
+            "id": "enforce_founder_tongue",
+            "label": "Enforce the founders' tongue",
+            "success_chance": 0.7,
+            "success": {
+              "tradition_points": 8,
+              "population_delta": {
+                "cultural_drift": -0.05,
+                "legacy_loyalty": 0.03
+              },
+              "log": "The old grammar was drilled back into the decks. The founders would understand every word."
+            },
+            "failure": {
+              "tradition_points": 4,
+              "population_delta": {
+                "unity": -0.05,
+                "morale": -0.03
+              },
+              "log": "The correction landed as a rebuke. The children obey, and resent."
+            }
+          },
+          {
+            "id": "record_the_drift",
+            "label": "Record the drift",
+            "success_chance": 0.85,
+            "success": {
+              "tradition_points": -6,
+              "population_delta": {
+                "cultural_drift": 0.05,
+                "adaptation": 0.04
+              },
+              "log": "The ship-tongue entered the archive as a living thing. The founders' words are now one dialect among two."
+            },
+            "failure": {
+              "tradition_points": -10,
+              "population_delta": {
+                "unity": -0.03
+              },
+              "log": "The archive swelled with a tongue no elder will read. The soul of the record blurred."
+            }
+          }
+        ]
+      },
+      {
+        "id": "founders_chair",
+        "title": "The Founder's Chair",
+        "description": "The founder's seat has sat empty on the council for six generations, a place kept for a woman long dead. A movement wants the living leader to finally sit in it.",
+        "options": [
+          {
+            "id": "keep_it_empty",
+            "label": "Keep the chair empty",
+            "success_chance": 0.8,
+            "success": {
+              "tradition_points": 12,
+              "population_delta": {
+                "legacy_loyalty": 0.06
+              },
+              "log": "The chair stays empty, and full. The founder still presides over every vote."
+            },
+            "failure": {
+              "tradition_points": 6,
+              "population_delta": {
+                "morale": -0.04
+              },
+              "log": "The empty chair began to look like a rebuke to the living. Some stopped attending."
+            }
+          },
+          {
+            "id": "seat_the_leader",
+            "label": "Seat the living leader",
+            "success_chance": 0.75,
+            "success": {
+              "tradition_points": -8,
+              "population_delta": {
+                "unity": 0.05,
+                "cultural_drift": 0.03
+              },
+              "log": "The leader took the founder's chair. The council feels present-tense for the first time in memory."
+            },
+            "failure": {
+              "tradition_points": -16,
+              "population_delta": {
+                "legacy_loyalty": -0.06,
+                "unity": -0.04
+              },
+              "log": "The living leader sat in the founder's chair, and something sacred became merely furniture."
             }
           }
         ]
@@ -60,12 +165,18 @@
             "label": "Approve the edit",
             "success_chance": 0.7,
             "success": {
-              "population_delta": { "adaptation": 0.1, "morale": 0.03 },
+              "population_delta": {
+                "adaptation": 0.1,
+                "morale": 0.03
+              },
               "log": "The edited cohort thrived. The ship is becoming something new."
             },
             "failure": {
               "body_horror_events": 1,
-              "population_delta": { "morale": -0.1, "unity": -0.05 },
+              "population_delta": {
+                "morale": -0.1,
+                "unity": -0.05
+              },
               "log": "Complications in the edited cohort haunted the med decks for years."
             }
           },
@@ -74,12 +185,113 @@
             "label": "Delay for more trials",
             "success_chance": 0.9,
             "success": {
-              "population_delta": { "unity": 0.02 },
+              "population_delta": {
+                "unity": 0.02
+              },
               "log": "The trials continued cautiously. No breakthroughs, no funerals."
             },
             "failure": {
-              "population_delta": { "adaptation": -0.05 },
+              "population_delta": {
+                "adaptation": -0.05
+              },
               "log": "Caution calcified into inertia. The clinic lost its best minds."
+            }
+          }
+        ]
+      },
+      {
+        "id": "cold_sleep",
+        "title": "The Long Dark",
+        "description": "A lightless twenty-year leg lies ahead. Engineering has a hibernation edit that would let most of the ship sleep through it — untested at scale.",
+        "options": [
+          {
+            "id": "mass_hibernation",
+            "label": "Edit the crew to sleep",
+            "success_chance": 0.65,
+            "success": {
+              "population_delta": {
+                "adaptation": 0.08
+              },
+              "resource_delta": {
+                "food": 400
+              },
+              "log": "The ship slept through the dark on a fraction of its rations. It woke changed, and fed."
+            },
+            "failure": {
+              "body_horror_events": 1,
+              "existential_dread": 0.1,
+              "population_delta": {
+                "morale": -0.08
+              },
+              "log": "Not everyone woke right. The med decks do not discuss the ones who woke wrong."
+            }
+          },
+          {
+            "id": "wake_the_ship",
+            "label": "Ride it awake",
+            "success_chance": 0.85,
+            "success": {
+              "population_delta": {
+                "unity": 0.04,
+                "stability": 0.03
+              },
+              "resource_delta": {
+                "food": -300
+              },
+              "log": "The ship stayed awake through the dark, together, hungry, and whole."
+            },
+            "failure": {
+              "existential_dread": 0.08,
+              "population_delta": {
+                "morale": -0.05
+              },
+              "log": "Twenty years of dark with open eyes. The counselors earned their keep."
+            }
+          }
+        ]
+      },
+      {
+        "id": "mirror_test",
+        "title": "The Mirror Test",
+        "description": "The newest cohort, three edits deep, looked at the founders' portraits and felt nothing. A chaplain asks whether they are still the same crew, or a new one wearing the ship.",
+        "options": [
+          {
+            "id": "embrace_the_new",
+            "label": "Embrace what they are becoming",
+            "success_chance": 0.7,
+            "success": {
+              "population_delta": {
+                "adaptation": 0.1,
+                "unity": 0.03
+              },
+              "log": "The ship stopped mourning the crew it used to be. The mirror shows something that survives."
+            },
+            "failure": {
+              "existential_dread": 0.12,
+              "population_delta": {
+                "morale": -0.06
+              },
+              "log": "Told they were something new, the cohort grieved a self they never had."
+            }
+          },
+          {
+            "id": "anchor_to_the_founders",
+            "label": "Anchor them to the founders",
+            "success_chance": 0.8,
+            "success": {
+              "existential_dread": -0.06,
+              "population_delta": {
+                "legacy_loyalty": 0.04,
+                "adaptation": -0.03
+              },
+              "log": "The portraits went back up in every ward. The cohort learned whose faces to miss."
+            },
+            "failure": {
+              "existential_dread": 0.06,
+              "population_delta": {
+                "unity": -0.03
+              },
+              "log": "The anchoring rang hollow. You cannot miss a face you were built to forget."
             }
           }
         ]
@@ -103,13 +315,20 @@
             "success_chance": 0.65,
             "success": {
               "piracy_reputation": 0.1,
-              "resource_delta": { "credits": 2000, "minerals": 300 },
+              "resource_delta": {
+                "credits": 2000,
+                "minerals": 300
+              },
               "log": "The convoy was lighter after the ship passed. Word will spread."
             },
             "failure": {
               "piracy_reputation": 0.05,
-              "resource_delta": { "credits": -500 },
-              "ship_delta": { "hull_integrity": -0.05 },
+              "resource_delta": {
+                "credits": -500
+              },
+              "ship_delta": {
+                "hull_integrity": -0.05
+              },
               "log": "The convoy had teeth. The ship limped away with less than it brought."
             }
           },
@@ -118,13 +337,121 @@
             "label": "Shadow it and trade",
             "success_chance": 0.85,
             "success": {
-              "resource_delta": { "credits": 500 },
-              "population_delta": { "unity": 0.02 },
+              "resource_delta": {
+                "credits": 500
+              },
+              "population_delta": {
+                "unity": 0.02
+              },
               "log": "The convoy paid fair rates for an escort it never asked for."
             },
             "failure": {
-              "resource_delta": { "influence": -10 },
+              "resource_delta": {
+                "influence": -10
+              },
               "log": "The convoy mistook the shadow for a threat and ran. Awkward."
+            }
+          }
+        ]
+      },
+      {
+        "id": "marked_port",
+        "title": "The Marked Port",
+        "description": "A wealthy port bars any ship with a raider's record. The ship's reputation precedes it. The forger on C-deck can rewrite a transponder log by morning.",
+        "options": [
+          {
+            "id": "forge_clean",
+            "label": "Forge a clean record",
+            "success_chance": 0.7,
+            "success": {
+              "resource_delta": {
+                "credits": 1200,
+                "influence": 20
+              },
+              "log": "The ship docked as an honest hauler and left richer. No one checked the welds."
+            },
+            "failure": {
+              "piracy_reputation": 0.08,
+              "resource_delta": {
+                "influence": -20
+              },
+              "log": "The forgery was caught at the airlock. The port's blacklist grew a line."
+            }
+          },
+          {
+            "id": "trade_elsewhere",
+            "label": "Take the honest custom elsewhere",
+            "success_chance": 0.9,
+            "success": {
+              "piracy_reputation": -0.06,
+              "resource_delta": {
+                "credits": 400
+              },
+              "log": "The ship traded lean but clean at a lesser port. The reputation cooled a degree."
+            },
+            "failure": {
+              "resource_delta": {
+                "credits": -200
+              },
+              "log": "The lesser port had lesser prices. The detour cost more than it saved."
+            }
+          }
+        ]
+      },
+      {
+        "id": "debt_collector",
+        "title": "The Debt Collector",
+        "description": "A corsair fleet remembers a convoy the ship stripped a generation ago, and has come to collect interest. They outnumber the ship three to one.",
+        "options": [
+          {
+            "id": "pay_the_tribute",
+            "label": "Pay the tribute",
+            "success_chance": 0.85,
+            "success": {
+              "piracy_reputation": -0.08,
+              "resource_delta": {
+                "credits": -1500
+              },
+              "population_delta": {
+                "unity": 0.03
+              },
+              "log": "The old debt was paid in full. The corsairs left, and so did the ship's grudge."
+            },
+            "failure": {
+              "resource_delta": {
+                "credits": -1500,
+                "minerals": -300
+              },
+              "population_delta": {
+                "morale": -0.04
+              },
+              "log": "The tribute was paid, and then some. Corsairs count generously in their own favor."
+            }
+          },
+          {
+            "id": "run_the_blockade",
+            "label": "Run the blockade",
+            "success_chance": 0.55,
+            "success": {
+              "piracy_reputation": 0.1,
+              "resource_delta": {
+                "credits": 800
+              },
+              "population_delta": {
+                "unity": 0.05
+              },
+              "log": "The ship ran the gauntlet and lived. The corsairs tell the story with less pride than they'd like."
+            },
+            "failure": {
+              "piracy_reputation": 0.05,
+              "ship_delta": {
+                "hull_integrity": -0.1
+              },
+              "population_delta": {
+                "count": -30,
+                "morale": -0.08
+              },
+              "log": "The blockade held. The ship broke through with holes in it and gaps at the memorial."
             }
           }
         ]

@@ -238,6 +238,13 @@ mod tests {
                 .surnames_by_legacy
                 .contains_key(legacy_id));
             assert!(data.dynasty_names.traits_by_legacy.contains_key(legacy_id));
+            // Each legacy carries at least three defining dilemmas (M3 target
+            // is 6 per legacy, §8).
+            let dilemmas = data.legacies.get(legacy_id).unwrap().dilemmas.len();
+            assert!(
+                dilemmas >= 3,
+                "{legacy_id} should have >= 3 dilemmas, has {dilemmas}"
+            );
         }
     }
 

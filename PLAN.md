@@ -130,8 +130,14 @@ Ordered roughly by milestone (GDD §13):
    +cr/+inf/+tradition"). Deterministic (derived from the persisted Chronicle,
    applied once at creation). New `heritage` capture scene; 3 unit tests. This
    closes the Chronicle "Partial" status.
-8. Content targets from §8: 30+ events, 5/5/5 components, 6-8 contracts, 6 dilemmas
-   per legacy, doubled name pools.
+8. **Content targets from §8** (bulk-content pass, in progress): 30+ events
+   (**12/30** so far), 5/5/5 components, 6-8 contracts (**4** so far), 6 dilemmas
+   per legacy (**3/6 each DONE 2026-07-19** — added `drift_dialect`/
+   `founders_chair` (Preservers), `cold_sleep`/`mirror_test` (Adaptors),
+   `marked_port`/`debt_collector` (Wanderers); each engages its legacy's tracked
+   counter — tradition / body-horror+dread / piracy-reputation — and the
+   data-load test now asserts ≥3 per legacy), doubled name pools. Pure
+   `assets/*.json`; schemas unchanged.
 9. **Terminal polish**: monospace bitmap font (default font is close but not
    monospace), ~~flicker fx~~ **CRT overlay DONE (2026-07-18)** —
    `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module
