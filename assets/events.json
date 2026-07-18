@@ -5,23 +5,36 @@
     "title": "System Failure",
     "description": "A primary subsystem has failed mid-voyage. Engineering wants parts and power; the council wants a plan.",
     "requires_decision": true,
-    "legacy_weight_modifiers": { "adaptors": 1.2 },
+    "legacy_weight_modifiers": {
+      "adaptors": 1.2
+    },
     "outcomes": [
       {
         "id": "emergency_repair",
         "label": "Emergency repair",
         "description": "Spend minerals and credits to restore the system fully.",
-        "resource_delta": { "minerals": -150, "credits": -200 },
-        "ship_delta": { "hull_integrity": 0.05 },
+        "resource_delta": {
+          "minerals": -150,
+          "credits": -200
+        },
+        "ship_delta": {
+          "hull_integrity": 0.05
+        },
         "log": "Engineering crews restored the failed system at material cost."
       },
       {
         "id": "reroute_power",
         "label": "Reroute power",
         "description": "Bypass the failure. Cheap now, a debt for later.",
-        "resource_delta": { "energy": -400 },
-        "ship_delta": { "life_support": -0.05 },
-        "long_term_consequences": ["deferred_maintenance"],
+        "resource_delta": {
+          "energy": -400
+        },
+        "ship_delta": {
+          "life_support": -0.05
+        },
+        "long_term_consequences": [
+          "deferred_maintenance"
+        ],
         "log": "Power was rerouted around the failure. The bypass will outlive its welcome."
       }
     ]
@@ -37,15 +50,24 @@
         "id": "expand_rations",
         "label": "Expand rations",
         "description": "Feed the boom.",
-        "resource_delta": { "food": -300 },
-        "population_delta": { "count": 60, "morale": 0.05 },
+        "resource_delta": {
+          "food": -300
+        },
+        "population_delta": {
+          "count": 60,
+          "morale": 0.05
+        },
         "log": "The ship's population grew, and the galley budget grew with it."
       },
       {
         "id": "ration_strictly",
         "label": "Hold rations steady",
         "description": "No new allocations. The nursery decks will remember.",
-        "population_delta": { "count": 30, "morale": -0.05, "unity": -0.03 },
+        "population_delta": {
+          "count": 30,
+          "morale": -0.05,
+          "unity": -0.03
+        },
         "log": "Rations held steady through the birth cohort. Some decks kept score."
       }
     ]
@@ -61,8 +83,12 @@
         "id": "textbook_burn",
         "label": "Textbook burn",
         "description": "By the book, on the fuel budget.",
-        "resource_delta": { "energy": -600 },
-        "population_delta": { "morale": 0.1 },
+        "resource_delta": {
+          "energy": -600
+        },
+        "population_delta": {
+          "morale": 0.1
+        },
         "log": "The arrival burn went by the book. The observation decks were crowded for a week."
       }
     ]
@@ -73,22 +99,35 @@
     "title": "Cultural Schism",
     "description": "Two decks now keep different calendars. The disagreement has stopped being polite.",
     "requires_decision": true,
-    "legacy_weight_modifiers": { "preservers": 1.3 },
+    "legacy_weight_modifiers": {
+      "preservers": 1.3
+    },
     "outcomes": [
       {
         "id": "mediate",
         "label": "Council mediation",
         "description": "Spend influence to reconcile the factions.",
-        "resource_delta": { "influence": -30 },
-        "population_delta": { "unity": 0.08, "cultural_drift": -0.05 },
+        "resource_delta": {
+          "influence": -30
+        },
+        "population_delta": {
+          "unity": 0.08,
+          "cultural_drift": -0.05
+        },
         "log": "The council brokered a settlement between the divided decks."
       },
       {
         "id": "let_it_run",
         "label": "Let it run its course",
         "description": "Cultures drift. Intervening has costs too.",
-        "population_delta": { "unity": -0.08, "cultural_drift": 0.1, "adaptation": 0.05 },
-        "long_term_consequences": ["deck_rivalry"],
+        "population_delta": {
+          "unity": -0.08,
+          "cultural_drift": 0.1,
+          "adaptation": 0.05
+        },
+        "long_term_consequences": [
+          "deck_rivalry"
+        ],
         "log": "The schism was left to run its course. The ship is quieter, and colder."
       }
     ]
@@ -99,22 +138,34 @@
     "title": "Micrometeoroid Storm",
     "description": "A debris front the forward sensors caught too late. The hull is taking hits and the shelters are filling.",
     "requires_decision": true,
-    "legacy_weight_modifiers": { "wanderers": 1.2 },
+    "legacy_weight_modifiers": {
+      "wanderers": 1.2
+    },
     "outcomes": [
       {
         "id": "brace_and_seal",
         "label": "Brace and seal",
         "description": "Shutter the outer decks and ride it out. Slow, safe, hard on nerves.",
-        "population_delta": { "morale": -0.06, "stability": 0.03 },
-        "ship_delta": { "hull_integrity": -0.03 },
+        "population_delta": {
+          "morale": -0.06,
+          "stability": 0.03
+        },
+        "ship_delta": {
+          "hull_integrity": -0.03
+        },
         "log": "The ship shuttered its outer decks and rode the storm out, scarred but whole."
       },
       {
         "id": "burn_around",
         "label": "Burn around it",
         "description": "Spend fuel to steer clear. The schedule slips; the hull survives.",
-        "resource_delta": { "energy": -350 },
-        "ship_delta": { "fuel": -0.08, "hull_integrity": -0.01 },
+        "resource_delta": {
+          "energy": -350
+        },
+        "ship_delta": {
+          "fuel": -0.08,
+          "hull_integrity": -0.01
+        },
         "log": "A hard burn carried the ship clear of the debris front, at the cost of the fuel budget."
       }
     ]
@@ -130,16 +181,27 @@
         "id": "vent_the_annex",
         "label": "Vent the annex",
         "description": "Blow the section to space. The core is saved; the annex crew are not all accounted for.",
-        "population_delta": { "count": -20, "morale": -0.1, "unity": 0.02 },
+        "population_delta": {
+          "count": -20,
+          "morale": -0.1,
+          "unity": 0.02
+        },
         "log": "The annex was vented to save the core. The memorial wall grew by a column."
       },
       {
         "id": "manual_patch",
         "label": "Order a manual patch",
         "description": "Send engineers in with what they have. Expensive, and not without risk.",
-        "resource_delta": { "minerals": -120, "credits": -150 },
-        "ship_delta": { "hull_integrity": 0.02 },
-        "long_term_consequences": ["scarred_reactor"],
+        "resource_delta": {
+          "minerals": -120,
+          "credits": -150
+        },
+        "ship_delta": {
+          "hull_integrity": 0.02
+        },
+        "long_term_consequences": [
+          "scarred_reactor"
+        ],
         "log": "Engineers patched the breach by hand. The reactor runs, and runs hot."
       }
     ]
@@ -150,22 +212,34 @@
     "title": "The Skills Drought",
     "description": "The last founding specialists are retiring faster than apprentices can replace them. Institutional memory is thinning.",
     "requires_decision": true,
-    "legacy_weight_modifiers": { "adaptors": 1.2 },
+    "legacy_weight_modifiers": {
+      "adaptors": 1.2
+    },
     "outcomes": [
       {
         "id": "crash_apprenticeship",
         "label": "Crash apprenticeship",
         "description": "Pull hands from other duties to train replacements now.",
-        "resource_delta": { "credits": -300 },
-        "population_delta": { "stability": 0.05, "adaptation": 0.05 },
+        "resource_delta": {
+          "credits": -300
+        },
+        "population_delta": {
+          "stability": 0.05,
+          "adaptation": 0.05
+        },
         "log": "A crash apprenticeship filled the benches, if not yet the shoes."
       },
       {
         "id": "lean_on_records",
         "label": "Lean on the records",
         "description": "Trust the archives to carry what the elders knew. Some of it will not translate.",
-        "population_delta": { "adaptation": -0.05, "legacy_loyalty": 0.04 },
-        "long_term_consequences": ["lost_craft"],
+        "population_delta": {
+          "adaptation": -0.05,
+          "legacy_loyalty": 0.04
+        },
+        "long_term_consequences": [
+          "lost_craft"
+        ],
         "log": "The crews leaned on the archives. Something in the doing, not the knowing, was lost."
       }
     ]
@@ -176,21 +250,34 @@
     "title": "The Restless Generation",
     "description": "A cohort born to the corridors has decided the mission is their grandparents' promise, not theirs.",
     "requires_decision": true,
-    "legacy_weight_modifiers": { "wanderers": 1.3, "preservers": 0.8 },
+    "legacy_weight_modifiers": {
+      "wanderers": 1.3,
+      "preservers": 0.8
+    },
     "outcomes": [
       {
         "id": "seat_them",
         "label": "Seat them on the council",
         "description": "Fold the dissent into the institution. It changes both.",
-        "population_delta": { "unity": 0.06, "cultural_drift": 0.04, "legacy_loyalty": -0.03 },
+        "population_delta": {
+          "unity": 0.06,
+          "cultural_drift": 0.04,
+          "legacy_loyalty": -0.03
+        },
         "log": "The restless generation was given a seat and a stake. The council sounds younger now."
       },
       {
         "id": "hold_the_line",
         "label": "Hold the founders' line",
         "description": "The charter is not up for renegotiation. Say so plainly.",
-        "population_delta": { "unity": -0.05, "legacy_loyalty": 0.06, "morale": -0.03 },
-        "long_term_consequences": ["banked_resentment"],
+        "population_delta": {
+          "unity": -0.05,
+          "legacy_loyalty": 0.06,
+          "morale": -0.03
+        },
+        "long_term_consequences": [
+          "banked_resentment"
+        ],
         "log": "The council held the founders' line. The corridors went quiet in a way that keeps."
       }
     ]
@@ -206,8 +293,13 @@
         "id": "mark_the_crossing",
         "label": "Mark the crossing",
         "description": "A day of ceremony and rest. Morale answers.",
-        "resource_delta": { "influence": 20 },
-        "population_delta": { "morale": 0.08, "legacy_loyalty": 0.04 },
+        "resource_delta": {
+          "influence": 20
+        },
+        "population_delta": {
+          "morale": 0.08,
+          "legacy_loyalty": 0.04
+        },
         "log": "The ship marked the halfway crossing. For a day, the corridors felt like a procession."
       }
     ]
@@ -218,22 +310,35 @@
     "title": "A Silent Hull",
     "description": "Sensors snag a derelict on the transit lane — an older ship, dark, drifting. It answers no hail.",
     "requires_decision": true,
-    "legacy_weight_modifiers": { "wanderers": 1.4 },
+    "legacy_weight_modifiers": {
+      "wanderers": 1.4
+    },
     "outcomes": [
       {
         "id": "board_and_salvage",
         "label": "Board and salvage",
         "description": "Take what the dead ship offers. Not everyone approves.",
-        "resource_delta": { "minerals": 400, "credits": 300 },
-        "population_delta": { "morale": -0.03, "cultural_drift": 0.03 },
-        "long_term_consequences": ["grave_robbed"],
+        "resource_delta": {
+          "minerals": 400,
+          "credits": 300
+        },
+        "population_delta": {
+          "morale": -0.03,
+          "cultural_drift": 0.03
+        },
+        "long_term_consequences": [
+          "grave_robbed"
+        ],
         "log": "The boarding parties stripped the derelict of what it could spare. The holds are fuller; the mess halls quieter."
       },
       {
         "id": "log_and_pass",
         "label": "Log it and pass",
         "description": "Record the position, say the words, keep the schedule.",
-        "population_delta": { "unity": 0.03, "legacy_loyalty": 0.03 },
+        "population_delta": {
+          "unity": 0.03,
+          "legacy_loyalty": 0.03
+        },
         "log": "The ship logged the derelict's position, spoke for its dead, and passed on."
       }
     ]
@@ -244,21 +349,34 @@
     "title": "The Founders' Creed",
     "description": "A movement wants the founding charter read aloud each year, word for word, forever. Another wants it revised for a ship the founders never saw.",
     "requires_decision": true,
-    "legacy_weight_modifiers": { "preservers": 1.4, "adaptors": 1.2 },
+    "legacy_weight_modifiers": {
+      "preservers": 1.4,
+      "adaptors": 1.2
+    },
     "outcomes": [
       {
         "id": "enshrine_it",
         "label": "Enshrine the charter",
         "description": "The founders' words become law and liturgy both.",
-        "population_delta": { "legacy_loyalty": 0.08, "cultural_drift": -0.06, "adaptation": -0.04 },
+        "population_delta": {
+          "legacy_loyalty": 0.08,
+          "cultural_drift": -0.06,
+          "adaptation": -0.04
+        },
         "log": "The charter was enshrined, unaltered. The ship knows exactly who it was meant to be."
       },
       {
         "id": "amend_it",
         "label": "Amend the charter",
         "description": "A living document for a living ship. Every word changed is a small funeral.",
-        "population_delta": { "adaptation": 0.07, "cultural_drift": 0.05, "legacy_loyalty": -0.06 },
-        "long_term_consequences": ["revised_charter"],
+        "population_delta": {
+          "adaptation": 0.07,
+          "cultural_drift": 0.05,
+          "legacy_loyalty": -0.06
+        },
+        "long_term_consequences": [
+          "revised_charter"
+        ],
         "log": "The charter was amended. The founders would not recognize the ship; the ship is not sure it minds."
       }
     ]
@@ -274,16 +392,287 @@
         "id": "founders_name",
         "label": "Honor the founders' name",
         "description": "The name they wrote into the plan, kept.",
-        "population_delta": { "legacy_loyalty": 0.06, "unity": 0.03 },
+        "population_delta": {
+          "legacy_loyalty": 0.06,
+          "unity": 0.03
+        },
         "log": "The destination kept the name its founders chose. Some traditions are only words until you keep them."
       },
       {
         "id": "the_ships_name",
         "label": "Let the ship choose",
         "description": "A vote, deck by deck. Messy, and theirs.",
-        "resource_delta": { "influence": -20 },
-        "population_delta": { "unity": 0.06, "cultural_drift": 0.03, "legacy_loyalty": -0.02 },
+        "resource_delta": {
+          "influence": -20
+        },
+        "population_delta": {
+          "unity": 0.06,
+          "cultural_drift": 0.03,
+          "legacy_loyalty": -0.02
+        },
         "log": "The ship named its own destination by vote. The charts bear a word no founder wrote."
+      }
+    ]
+  },
+  {
+    "id": "hull_fracture",
+    "category": "immediate_crisis",
+    "title": "The Slow Crack",
+    "description": "A hairline fracture is walking its way across a spine frame. It is not urgent yet. 'Yet' is doing a great deal of work in that sentence.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "reinforce_now",
+        "label": "Reinforce it now",
+        "description": "Pull minerals and crews to brace the frame before it spreads.",
+        "resource_delta": {
+          "minerals": -200
+        },
+        "ship_delta": {
+          "hull_integrity": 0.06
+        },
+        "log": "The spine frame was braced before the crack could vote on the matter."
+      },
+      {
+        "id": "monitor_it",
+        "label": "Monitor and defer",
+        "description": "Sensor it, log it, spend nothing. A problem for a later council.",
+        "population_delta": {
+          "morale": 0.02
+        },
+        "long_term_consequences": [
+          "deferred_maintenance"
+        ],
+        "ship_delta": {
+          "hull_integrity": -0.02
+        },
+        "log": "The crack was catalogued and left to grow. It will keep its appointment."
+      }
+    ]
+  },
+  {
+    "id": "contagion",
+    "category": "immediate_crisis",
+    "title": "Recycled Air",
+    "description": "Something is moving through the ventilation the way rumors move through the decks. The medics want the decks sealed; the foremen want them working.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "adaptors": 1.2
+    },
+    "outcomes": [
+      {
+        "id": "quarantine",
+        "label": "Seal the decks",
+        "description": "Lose the labor, keep the lungs.",
+        "resource_delta": {
+          "credits": -200
+        },
+        "population_delta": {
+          "count": -5,
+          "stability": 0.03
+        },
+        "log": "The decks were sealed and the outbreak starved of hosts. Production limped; the ward filled slowly."
+      },
+      {
+        "id": "work_through_it",
+        "label": "Work through it",
+        "description": "Keep the ship moving. The strong will carry the weak, or not.",
+        "population_delta": {
+          "count": -25,
+          "morale": -0.07
+        },
+        "log": "The ship worked through the sickness. The memorial wall did the accounting."
+      }
+    ]
+  },
+  {
+    "id": "birth_dearth",
+    "category": "generational_challenge",
+    "title": "The Thin Cohort",
+    "description": "This generation came small. The nurseries have empty cribs and the actuaries have furrowed brows.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "incentivize",
+        "label": "Incentivize births",
+        "description": "Spend influence and rations to fill the cribs.",
+        "resource_delta": {
+          "food": -200,
+          "influence": -20
+        },
+        "population_delta": {
+          "count": 40,
+          "morale": 0.03
+        },
+        "log": "The council's incentives filled the nurseries. The next census will thank them."
+      },
+      {
+        "id": "accept_it",
+        "label": "Accept a lean generation",
+        "description": "A smaller crew eats less and argues less. It also builds less.",
+        "population_delta": {
+          "count": 10,
+          "stability": 0.04,
+          "unity": 0.02
+        },
+        "log": "The lean cohort grew up close-knit and few. The ship ran quieter, and shorter-handed."
+      }
+    ]
+  },
+  {
+    "id": "schooling_crisis",
+    "category": "generational_challenge",
+    "title": "The Crowded Classroom",
+    "description": "The school decks were built for a smaller ship. The waiting lists are longer than the curriculum.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "expand_schooling",
+        "label": "Expand the schools",
+        "description": "Convert deck space and credits into classrooms.",
+        "resource_delta": {
+          "credits": -400
+        },
+        "population_delta": {
+          "adaptation": 0.04,
+          "legacy_loyalty": 0.03
+        },
+        "log": "New classrooms opened on a converted cargo deck. A generation will be better taught for it."
+      }
+    ]
+  },
+  {
+    "id": "course_correction",
+    "category": "mission_milestone",
+    "title": "The Fork in the Dark",
+    "description": "Two viable courses to the destination diverge here: a fast lane through a debris shelf, or a slow safe arc. The nav computer wants a decision it cannot make.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "wanderers": 1.2
+    },
+    "outcomes": [
+      {
+        "id": "fast_lane",
+        "label": "Take the fast lane",
+        "description": "Shave years off the crossing. Bet the hull on good sensors.",
+        "ship_delta": {
+          "hull_integrity": -0.04,
+          "fuel": -0.05
+        },
+        "population_delta": {
+          "morale": 0.05
+        },
+        "log": "The ship threaded the debris shelf and gained a decade. The hull wears the toll."
+      },
+      {
+        "id": "safe_arc",
+        "label": "Take the safe arc",
+        "description": "Add years, keep the plating.",
+        "population_delta": {
+          "stability": 0.04,
+          "legacy_loyalty": 0.02
+        },
+        "log": "The ship took the long safe arc. The schedule slipped; nothing else did."
+      }
+    ]
+  },
+  {
+    "id": "relay_contact",
+    "category": "mission_milestone",
+    "title": "A Voice on the Relay",
+    "description": "An automated relay, older than the mission, is broadcasting a handshake into the dark. It wants to talk. It may only be an echo.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "answer_it",
+        "label": "Answer the relay",
+        "description": "Trade data with the old machine. Knowledge, and exposure.",
+        "resource_delta": {
+          "influence": 40
+        },
+        "population_delta": {
+          "adaptation": 0.03,
+          "cultural_drift": 0.03
+        },
+        "log": "The ship answered the relay and came away with charts and a strange new vocabulary."
+      },
+      {
+        "id": "run_silent",
+        "label": "Run silent",
+        "description": "Log its position, tell it nothing, keep the ship's shape a secret.",
+        "population_delta": {
+          "unity": 0.03,
+          "stability": 0.02
+        },
+        "log": "The ship passed the relay in silence. Whatever it wanted, it will keep wanting."
+      }
+    ]
+  },
+  {
+    "id": "first_death_in_space",
+    "category": "legacy_moment",
+    "title": "The First Rite",
+    "description": "A generation born entirely in transit must decide how to bury its dead — the founders' soil rites, impossible here, or something the ship invents for itself.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "preservers": 1.3
+    },
+    "outcomes": [
+      {
+        "id": "keep_the_soil_rite",
+        "label": "Keep the soil rite",
+        "description": "Use precious hydroponic loam for symbolic burial. Costly, and rooted.",
+        "resource_delta": {
+          "food": -150
+        },
+        "population_delta": {
+          "legacy_loyalty": 0.06,
+          "cultural_drift": -0.04
+        },
+        "log": "The dead were laid in borrowed soil, as the founders would know. The farms felt the loss."
+      },
+      {
+        "id": "invent_a_rite",
+        "label": "Invent a ship rite",
+        "description": "Commit the dead to the void with new words. Cheaper, and untethered.",
+        "population_delta": {
+          "cultural_drift": 0.06,
+          "adaptation": 0.04,
+          "legacy_loyalty": -0.04
+        },
+        "log": "The ship spoke new words over its first spacers' dead. A tradition began that no founder wrote."
+      }
+    ]
+  },
+  {
+    "id": "veterans_petition",
+    "category": "legacy_moment",
+    "title": "The Last Founders",
+    "description": "The final three crew who were awake at departure petition the council: they want the mission's original wording read into the record before they die, unamended.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "honor_the_petition",
+        "label": "Honor the petition",
+        "description": "Read the founding words as written. Let the old crew hear them once more.",
+        "population_delta": {
+          "legacy_loyalty": 0.05,
+          "morale": 0.03
+        },
+        "log": "The founding words were read whole to the last who remembered them. Some wept; none objected."
+      },
+      {
+        "id": "read_the_revision",
+        "label": "Read the current charter",
+        "description": "The living ship's amended wording is the true text now. Honesty over sentiment.",
+        "population_delta": {
+          "adaptation": 0.03,
+          "legacy_loyalty": -0.04
+        },
+        "long_term_consequences": [
+          "banked_resentment"
+        ],
+        "log": "The amended charter was read instead. The last founders heard a mission they did not entirely recognize."
       }
     ]
   }

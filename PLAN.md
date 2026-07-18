@@ -131,7 +131,10 @@ Ordered roughly by milestone (GDD §13):
    applied once at creation). New `heritage` capture scene; 3 unit tests. This
    closes the Chronicle "Partial" status.
 8. **Content targets from §8** (bulk-content pass, in progress): 30+ events
-   (**12/30** so far), 5/5/5 components, 6-8 contracts (**4** so far), 6 dilemmas
+   (**20/30** so far, 5 per category — 2026-07-19 batch added `hull_fracture`,
+   `contagion`, `birth_dearth`, `schooling_crisis`, `course_correction`,
+   `relay_contact`, `first_death_in_space`, `veterans_petition`), 5/5/5
+   components, 6-8 contracts (**4** so far), 6 dilemmas
    per legacy (**3/6 each DONE 2026-07-19** — added `drift_dialect`/
    `founders_chair` (Preservers), `cold_sleep`/`mirror_test` (Adaptors),
    `marked_port`/`debt_collector` (Wanderers); each engages its legacy's tracked

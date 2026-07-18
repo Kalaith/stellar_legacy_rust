@@ -258,17 +258,21 @@ mod tests {
             MissionMilestone,
             LegacyMoment,
         ] {
-            // M2 target (§8): 12 events, 3 per category.
+            // Every category is well represented (§8 M3 target is 30+ total).
             let count = data
                 .events
                 .iter()
                 .filter(|(_, e)| e.category == category)
                 .count();
             assert!(
-                count >= 3,
-                "expected >= 3 event templates for {category:?}, found {count}"
+                count >= 5,
+                "expected >= 5 event templates for {category:?}, found {count}"
             );
         }
-        assert_eq!(data.events.len(), 12, "M2 event target is 12 templates");
+        assert!(
+            data.events.len() >= 20,
+            "expected >= 20 event templates, found {}",
+            data.events.len()
+        );
     }
 }
