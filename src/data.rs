@@ -138,6 +138,11 @@ pub struct ShipConfig {
     /// Bonus contract progress-years added per point of aggregate speed each
     /// year (boosts milestones/score, not the duration).
     pub contract_progress_per_speed: f32,
+    /// Success-chance bonus per point of aggregate combat on Wanderer dilemmas
+    /// (firepower backs the confrontation).
+    pub combat_dilemma_odds_per_point: f32,
+    /// Ceiling on an effective dilemma success chance after the combat bonus.
+    pub dilemma_odds_cap: f32,
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per

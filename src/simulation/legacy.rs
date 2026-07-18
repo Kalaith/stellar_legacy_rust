@@ -38,15 +38,30 @@ pub fn pending_dilemma_def<'a>(sim: &SimState, data: &'a GameData) -> Option<&'a
         .find(|d| d.id == pending.dilemma_id)
 }
 
+/// Effective success chance for a dilemma option: the base chance plus a
+/// combat bonus on Wanderer dilemmas (firepower backs the confrontation —
+/// GDD combat → wanderer odds), capped by config. Shown honestly in the modal
+/// and used for the roll (Pillar 3).
+pub fn dilemma_odds(sim: &SimState, data: &GameData, base_chance: f32) -> f32 {
+    let bonus = if sim.legacy.legacy_id == "wanderers" {
+        let combat = crate::simulation::ship::loadout_stats(sim, data).combat;
+        combat as f32 * data.config.ship.combat_dilemma_odds_per_point
+    } else {
+        0.0
+    };
+    (base_chance + bonus).clamp(0.0, data.config.ship.dilemma_odds_cap)
+}
+
 /// Resolve the pending dilemma with the chosen option: roll the option's
-/// success chance on the sim RNG, apply the winning branch (including the
-/// legacy counters), log it, and clear the pending state. Returns the log
-/// line that was recorded.
+/// (combat-adjusted) success chance on the sim RNG, apply the winning branch
+/// (including the legacy counters), log it, and clear the pending state.
+/// Returns the log line that was recorded.
 pub fn resolve_dilemma(sim: &mut SimState, data: &GameData, option_index: usize) -> Option<String> {
     let dilemma = pending_dilemma_def(sim, data)?.clone();
     let option = dilemma.options.get(option_index)?;
 
-    let succeeded = sim.rng.chance(option.success_chance);
+    let chance = dilemma_odds(sim, data, option.success_chance);
+    let succeeded = sim.rng.chance(chance);
     let effect = if succeeded {
         option.success.clone()
     } else {
@@ -166,6 +181,22 @@ mod tests {
         sim.legacy.piracy_reputation = 0.9;
         let risky = failure_risk(&sim, &data.config);
         assert_eq!(risky.total, data.config.failure_risk.piracy_points);
+    }
+
+    #[test]
+    fn combat_lifts_wanderer_dilemma_odds_only() {
+        let data = GameData::load().unwrap();
+        // A Wanderer ship with a weapon installed beats its base odds.
+        let mut wanderer = SimState::new_campaign(&data, "wanderers", 4);
+        wanderer.ship.weapon = Some("mass_driver".to_owned()); // combat 5
+        let lifted = dilemma_odds(&wanderer, &data, 0.65);
+        assert!(lifted > 0.65, "combat should raise Wanderer odds: {lifted}");
+        assert!(lifted <= data.config.ship.dilemma_odds_cap);
+
+        // The same weapon does nothing for another legacy's dilemmas.
+        let mut preserver = SimState::new_campaign(&data, "preservers", 4);
+        preserver.ship.weapon = Some("mass_driver".to_owned());
+        assert_eq!(dilemma_odds(&preserver, &data, 0.65), 0.65);
     }
 
     #[test]

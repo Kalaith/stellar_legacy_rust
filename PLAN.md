@@ -78,8 +78,14 @@ Ordered roughly by milestone (GDD §13):
    (`loadout_stats(...).cargo`, min 50) instead of a fixed 100, shown as
    `HOLD N (lot size)`; bigger hulls trade bigger lots (the buy/sell verbs
    already took an amount, so no sim change). New `market` capture scene.
-   **Still to do:** combat → wanderer-dilemma odds (needs honest-odds plumbing
-   into the dilemma modal), contract-milestone production deltas.
+   **combat → wanderer-dilemma odds DONE (2026-07-18)** —
+   `legacy::dilemma_odds(sim, data, base)` adds `combat ×
+   ship.combat_dilemma_odds_per_point` on Wanderer dilemmas (capped by
+   `dilemma_odds_cap`); used both for the `resolve_dilemma` roll and shown
+   honestly in the modal as `Success odds: N% (combat +M%)` (Pillar 3). New
+   `dilemma_combat` capture scene; unit-tested (lifts Wanderer odds only,
+   respects the cap). **Still to do (minor):** contract-milestone production
+   deltas — otherwise item 3 is complete.
 4. ~~**Game-over / retirement flow.**~~ **DONE (2026-07-18).** Dynasty
    extinction now triggers a full-screen `VOYAGE TERMINATED` terminal takeover
    (`src/ui/game_over.rs`, intercepts `draw_gameplay` before header/tabs) with a

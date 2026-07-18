@@ -106,8 +106,20 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
             card,
             &SurfaceStyle::new(Color::new(0.08, 0.065, 0.015, 1.0)).with_border(1.0, term::faint()),
         );
+        let odds =
+            crate::simulation::legacy::dilemma_odds(ctx.sim, ctx.data, option.success_chance);
+        let combat_bonus = odds - option.success_chance;
+        let odds_text = if combat_bonus > 0.001 {
+            format!(
+                "Success odds: {:.0}%  (combat +{:.0}%)",
+                odds * 100.0,
+                combat_bonus * 100.0
+            )
+        } else {
+            format!("Success odds: {:.0}%", odds * 100.0)
+        };
         draw_ui_text_ex(
-            &format!("Success odds: {:.0}%", option.success_chance * 100.0),
+            &odds_text,
             card.x + 14.0,
             card.y + 24.0,
             TextStyle::new(13.0, term::accent()).params(),

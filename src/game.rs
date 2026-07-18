@@ -211,6 +211,17 @@ impl Game {
                 });
                 self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
+            "dilemma_combat" => {
+                // Wanderer convoy raid with a weapon installed — combat lifts
+                // the shown odds.
+                let mut sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                sim.ship.weapon = Some("mass_driver".to_owned());
+                sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {
+                    dilemma_id: "convoy_raid".to_owned(),
+                    rolled_year: 0,
+                });
+                self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
+            }
             "gameover" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.year = 148;
