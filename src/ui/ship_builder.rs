@@ -1,6 +1,6 @@
 //! Ship Builder: component catalog and current loadout (GDD §9).
 
-use crate::data::ship_components::{ComponentKind, ShipComponent};
+use crate::data::ship_components::{ComponentKind, ComponentStats, ShipComponent};
 use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
@@ -27,6 +27,28 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
             y += 128.0;
         }
     }
+}
+
+/// Compact terminal readout of a component's non-zero stats, e.g.
+/// `CARGO 200 · SPD 2 · CBT 3`.
+fn stats_line(stats: &ComponentStats) -> String {
+    let mut parts = Vec::new();
+    if stats.cargo != 0 {
+        parts.push(format!("CARGO {}", stats.cargo));
+    }
+    if stats.crew_capacity != 0 {
+        parts.push(format!("CREW {}", stats.crew_capacity));
+    }
+    if stats.speed != 0 {
+        parts.push(format!("SPD {}", stats.speed));
+    }
+    if stats.combat != 0 {
+        parts.push(format!("CBT {}", stats.combat));
+    }
+    if stats.fuel_regen != 0 {
+        parts.push(format!("FUEL+{}", stats.fuel_regen));
+    }
+    parts.join(" · ")
 }
 
 fn is_installed(ctx: &GameplayCtx<'_>, kind: ComponentKind, id: &str) -> bool {
@@ -77,11 +99,21 @@ fn draw_component_card(
         rect.x + 12.0,
         rect.y + 30.0,
         rect.w - 24.0,
-        30.0,
+        28.0,
         12.0,
         2.0,
         term::dim(),
     );
+
+    let stats = stats_line(&component.stats);
+    if !stats.is_empty() {
+        draw_ui_text_ex(
+            &stats,
+            rect.x + 12.0,
+            rect.y + 64.0,
+            TextStyle::new(12.0, term::accent()).params(),
+        );
+    }
 
     let cost = &component.cost;
     let mut cost_parts = Vec::new();

@@ -150,6 +150,12 @@ impl Game {
                 gameplay.screen = crate::state::Screen::CrewDynasty;
                 self.state = GameState::Gameplay(Box::new(gameplay));
             }
+            "ship" => {
+                let sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = crate::state::Screen::ShipBuilder;
+                self.state = GameState::Gameplay(Box::new(gameplay));
+            }
             "dilemma" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {

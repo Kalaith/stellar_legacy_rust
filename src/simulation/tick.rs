@@ -6,7 +6,7 @@
 
 use crate::data::{GameData, ResourceDelta};
 use crate::simulation::contract::{score_success, SuccessLevel};
-use crate::simulation::{contract, crew, event_resolver, legacy, market, succession};
+use crate::simulation::{contract, crew, event_resolver, legacy, market, ship, succession};
 use crate::state::sim::SimState;
 
 /// Everything a single year produced that the caller (game.rs) must react
@@ -42,6 +42,10 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
         influence: (sim.production.influence * crew_mult.influence).floor() as i64,
     };
     sim.resources.apply(&produced);
+
+    // Ship loadout bonus: installed component stats grant extra production and
+    // fuel regen (PLAN item 3).
+    ship::apply_loadout_effects(sim, data);
 
     // Food upkeep; famine bleeds morale and people. A serving medic keeps
     // some of the starving alive.

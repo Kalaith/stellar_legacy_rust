@@ -60,11 +60,17 @@ Ordered roughly by milestone (GDD §13):
    best-leadership fallback. Crew UI lives on the Crew & Dynasty screen (`crew`
    capture scene). Event-outcome hooks (navigator/combat) intentionally deferred
    to item 3 where ship component stats land.
-3. **Production bonuses.** `ProductionRates` is pre-keyed (the GDD §5.1 bug fix),
-   but nothing modifies it yet — ship components and contract milestones should
-   grant production deltas. The Ship Builder purchase currently only swaps the
-   loadout id; make component stats matter (speed → contract progress, cargo →
-   market lots, combat → wanderer dilemma odds).
+3. **Production bonuses.** ~~Ship components grant nothing.~~ **PARTLY DONE
+   (2026-07-18).** `simulation/ship.rs` aggregates the installed hull+engine+
+   weapon `ComponentStats` (`loadout_stats`) and applies yearly effects in the
+   tick (`apply_loadout_effects`, after base production): speed → credits,
+   cargo → minerals, fuel_regen → ship fuel, scaled by a new
+   `game_config.json → ship` block (`ShipConfig`). The Ship Builder now shows a
+   per-component stat readout (`CARGO/CREW/SPD/CBT/FUEL`), so loadouts visibly
+   differ; new `ship` capture scene. **Still to do:** the GDD's more specific
+   hooks — speed → contract *progress/score* (needs an `ActiveContract`
+   bonus-progress field), cargo → market lot size, combat → wanderer-dilemma
+   odds — and contract-milestone production deltas.
 4. ~~**Game-over / retirement flow.**~~ **DONE (2026-07-18).** Dynasty
    extinction now triggers a full-screen `VOYAGE TERMINATED` terminal takeover
    (`src/ui/game_over.rs`, intercepts `draw_gameplay` before header/tabs) with a

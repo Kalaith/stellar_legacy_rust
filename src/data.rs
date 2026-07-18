@@ -103,7 +103,21 @@ pub struct GameConfig {
     pub dilemma_chance_per_generation: f32,
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
+    pub ship: ShipConfig,
     pub log_limit: usize,
+}
+
+/// Ship-loadout tunables (PLAN item 3). The installed components' aggregated
+/// stats scale a yearly production bonus and fuel regeneration
+/// (`simulation::ship`).
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct ShipConfig {
+    /// Credits per point of aggregate engine/hull speed (faster trade runs).
+    pub credits_per_speed: i64,
+    /// Minerals per point of aggregate cargo (bigger holds haul more).
+    pub minerals_per_cargo: f32,
+    /// Fuel fraction restored per point of aggregate fuel_regen each year.
+    pub fuel_regen_per_point: f32,
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per

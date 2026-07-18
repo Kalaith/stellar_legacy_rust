@@ -59,5 +59,10 @@
     "piracy_points": 25,
     "at_risk_threshold": 50
   },
+  "ship": {
+    "credits_per_speed": 40,
+    "minerals_per_cargo": 0.1,
+    "fuel_regen_per_point": 0.05
+  },
   "log_limit": 200
 }
