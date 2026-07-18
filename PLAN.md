@@ -4,18 +4,29 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: framework complete, M1 mostly proven
+## Current status: content- and feature-complete (through M3); polish/marketing only
 
-The project is a fully compiling, tested skeleton with the GDD §11 architecture in
-place. Verified: `cargo test` (18 tests green), `cargo clippy --all-targets
---all-features -- -D warnings` (clean), `cargo fmt` (applied), WASM target checks
-(`cargo check --release --target wasm32-unknown-unknown`), and headless UI captures
-for four scenes (`docs/verification/ui_{menu,gameplay,event,dilemma}.png`, regenerate
-with `.\scripts\capture_ui.ps1 -Scenes menu,gameplay,event,dilemma`).
+*Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
+snapshot; the numbered log below records what shipped since).* Every numbered item
+(1–10) and all three cosmetic nits are **done**; the one open thread is the
+ko-fi/index.html marketing screenshots (item 9, human-gated). The game is
+content-complete against GDD §8 — 30 events, 5/5/5 components, 6 contracts, 6
+dilemmas per legacy, doubled name pools.
 
-A campaign is already playable end-to-end in skeleton form: pick a legacy → accept a
-charter → advance years → resolve council events → generations turn over → contract
-completes → Chronicle entry recorded and persisted across saves.
+Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
+test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
+fmt` (applied), WASM target checks (`cargo check --release --target
+wasm32-unknown-unknown`), and headless UI captures for ~20 scenes under
+`docs/verification/` (menu, gameplay, event, dilemma, dilemma_combat, crew, ship,
+market, contracts, contract_active, boot, settings, help, green, log, heritage,
+chronicle, gameover), regenerated with `.\scripts\capture_ui.ps1 -Scenes <list>`.
+
+A campaign plays end to end: pick a legacy → accept a charter → advance years →
+resolve council events and legacy dilemmas → generations turn over → contract
+completes → Chronicle entry recorded and Heritage carried to the next voyage. The
+UI is a full old-CRT terminal (scanlines, vignette, rolling refresh band, flicker,
+rounded tube-glass corners, phosphor bloom, a power-on POST, live-streaming log,
+amber/green phosphor tubes) and is keyboard-first throughout (F2 lists the keys).
 
 ## What is implemented (and where)
 
@@ -31,12 +42,14 @@ completes → Chronicle entry recorded and persisted across saves.
 | Save/load (§7) | `src/save.rs` | **Done** — toolkit slots, migration hook stubbed for future versions |
 | Chronicle (§7) | `src/chronicle.rs` + `src/heritage.rs` | **Done** — persistent cross-playthrough contract log + Heritage modifiers (renown → tier → new-campaign bonus) |
 | State machine (§11) | `src/state.rs`, `src/game.rs` | **Done** — Menu/Gameplay, explicit `StateTransition`, `UiAction` dispatch via `EventBus` |
-| Terminal UI shell (§9) | `src/ui.rs` + `src/ui/*` | **Done as skeleton** — all 6 screens + blocking event modal, amber/green/red phosphor palette |
-| Capture harness | `src/main.rs` (`STELLAR_LEGACY` prefix) | **Done** — scenes: `menu`, `gameplay`, `event` |
+| Terminal UI shell (§9) | `src/ui.rs` + `src/ui/*` | **Done** — all 6 screens + blocking event/dilemma modals + game-over takeover; full CRT terminal (overlay, phosphor glow, typewriter reveal, boot POST, streaming log, runtime amber/green phosphor tubes); keyboard-first with F1 settings / F2 help |
+| Capture harness | `src/main.rs` (`STELLAR_LEGACY` prefix) | **Done** — ~20 scenes (`menu`, `gameplay`, `event`, `dilemma`, `dilemma_combat`, `crew`, `ship`, `market`, `contracts`, `contract_active`, `boot`, `settings`, `help`, `green`, `log`, `heritage`, `chronicle`, `gameover`) |
 
-## What is NOT built yet (the next agent's work)
+## Milestone work — progress log (all items complete)
 
-Ordered roughly by milestone (GDD §13):
+Ordered roughly by milestone (GDD §13). Every numbered item below is **done**;
+the entries record what shipped and where. The only outstanding thread is the
+human-gated ko-fi/index.html marketing screenshots noted under item 9.
 
 ### Finish M1 → M2 (playable prototype)
 
