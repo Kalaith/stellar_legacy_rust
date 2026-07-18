@@ -1,7 +1,10 @@
 //! Dashboard: ship vitals, population, advance-time control, ship's log.
 
 use crate::state::Screen;
-use crate::ui::{stat_line, term, term_button, term_meter, term_panel, GameplayCtx, UiAction};
+use crate::ui::{
+    stat_line, term, term_button, term_meter, term_meter_toned, term_panel, GameplayCtx, MeterTone,
+    UiAction,
+};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
@@ -113,20 +116,27 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
     );
     y += 30.0;
 
-    let bars: [(&str, f32); 6] = [
-        ("MORALE", pop.morale),
-        ("UNITY", pop.unity),
-        ("STABILITY", pop.stability),
-        ("LEGACY LOYALTY", pop.legacy_loyalty),
-        ("ADAPTATION", pop.adaptation),
-        ("CULTURAL DRIFT", pop.cultural_drift),
+    // Most meters read low-is-bad; adaptation is neutral and cultural drift is
+    // high-is-bad, so their critical-red highlight is toned accordingly.
+    let bars: [(&str, f32, MeterTone); 6] = [
+        ("MORALE", pop.morale, MeterTone::LowCritical),
+        ("UNITY", pop.unity, MeterTone::LowCritical),
+        ("STABILITY", pop.stability, MeterTone::LowCritical),
+        ("LEGACY LOYALTY", pop.legacy_loyalty, MeterTone::LowCritical),
+        ("ADAPTATION", pop.adaptation, MeterTone::Neutral),
+        (
+            "CULTURAL DRIFT",
+            pop.cultural_drift,
+            MeterTone::HighCritical,
+        ),
     ];
-    for (label, value) in bars {
-        term_meter(
+    for (label, value, tone) in bars {
+        term_meter_toned(
             Rect::new(content.x, y, content.w, 20.0),
             value,
             1.0,
             &format!("{label} {:.0}%", value * 100.0),
+            tone,
         );
         y += 30.0;
     }

@@ -90,10 +90,16 @@ Ordered roughly by milestone (GDD §13):
    `fx/typewriter.rs` (`typed_prefix`/`typed_char_count`/`is_fully_typed`,
    pure + tested); modal body text streams in at `REVEAL_CPS` with a blinking
    underscore cursor (`event_modal::draw_typed_block`). A cosmetic reveal clock
-   lives on `Game` (`modal_reveal`, reset per modal, instant in capture). Still
-   to do: settings screen (toolkit `settings`) for delegation defaults + CRT
-   toggle, `catalog_thumbnail.png` from the menu capture, ko-fi/index.html
-   screenshots.
+   lives on `Game` (`modal_reveal`, reset per modal, instant in capture).
+   ~~power-on boot sequence~~ **DONE (2026-07-18)** — `src/boot.rs`
+   (`BootScreen`) streams a terminal POST log once before the menu on launch
+   (amber banner + green status lines, blinking cursor, ~2.5s, any input skips);
+   frozen-frame `boot` capture scene added. **Monospace font DEFERRED** — the
+   toolkit font API (`set_default_ui_font_from_bytes`) is ready, but no
+   monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
+   sourcing one is a licensing decision for a human. Still to do: settings
+   screen (toolkit `settings`) for delegation defaults + CRT toggle,
+   `catalog_thumbnail.png` from the menu capture, ko-fi/index.html screenshots.
 10. Consider `achievements` for Chronicle milestones (GDD §10 "maybe").
 
 ## Conventions the framework already follows (keep them)
@@ -132,8 +138,10 @@ commit before starting M2 work (every sibling game is its own repo).
 
 ## Known cosmetic nits (fine to fix opportunistically)
 
-- Meter color logic treats <35% as "critical" red — correct for morale/hull, but
-  inverted for `cultural_drift`/`adaptation` where low is good/neutral.
+- ~~Meter color logic treats <35% as "critical" red — inverted for
+  `cultural_drift`/`adaptation`~~ **FIXED (2026-07-18)** — `term_meter_toned`
+  takes a `MeterTone` (`LowCritical`/`HighCritical`/`Neutral`); the dashboard
+  bars tag adaptation `Neutral` and cultural drift `HighCritical`.
 - ~~The event modal header band is empty~~ **FIXED (2026-07-18)** — the
   category/legacy line now renders centered in the header band; the title leads
   the body.

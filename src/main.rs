@@ -3,6 +3,7 @@
 use macroquad::prelude::*;
 use macroquad_toolkit::capture;
 
+mod boot;
 mod chronicle;
 mod data;
 mod game;

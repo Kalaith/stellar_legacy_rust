@@ -1,5 +1,6 @@
 //! Game struct: owns the state machine, applies UiActions, drives the tick.
 
+use crate::boot::BootScreen;
 use crate::chronicle::{ChronicleEntry, ChronicleStore};
 use crate::data::ship_components::ComponentKind;
 use crate::data::GameData;
@@ -41,6 +42,8 @@ pub struct Game {
     modal_started: f64,
     /// Reveal text instantly (screenshot capture) instead of typing it out.
     instant_reveal: bool,
+    /// One-shot power-on boot log shown before the menu on launch.
+    boot: BootScreen,
 }
 
 impl Game {
@@ -73,15 +76,23 @@ impl Game {
             modal_key: None,
             modal_started: 0.0,
             instant_reveal: false,
+            boot: BootScreen::new(),
         }
     }
 
     /// Seed a deterministic state for the headless screenshot harness.
     pub fn begin_capture_scene(&mut self, scene: &str) {
-        // Screenshots want the final composed frame, not a mid-type one.
+        // Screenshots want the final composed frame, not a mid-type one, and
+        // never the boot log.
         self.instant_reveal = true;
+        self.boot.finish();
         match scene {
             "menu" => self.state = GameState::Menu(MenuState::new(false)),
+            "boot" => {
+                // Freeze the boot log mid-stream for a screenshot.
+                self.boot.seek(1.4);
+                self.state = GameState::Menu(MenuState::new(false));
+            }
             "event" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.pending_event = Some(crate::state::sim::PendingEvent {
@@ -122,6 +133,18 @@ impl Game {
             self.crt_enabled = !self.crt_enabled;
         }
 
+        // Boot log plays once before the menu; any input skips it. Capture mode
+        // freezes it at a seeked frame (instant_reveal), so don't advance then.
+        if !self.boot.is_done() && matches!(self.state, GameState::Menu(_)) {
+            if !self.instant_reveal {
+                self.boot.update(dt);
+                if is_mouse_button_pressed(MouseButton::Left) || get_last_key_pressed().is_some() {
+                    self.boot.finish();
+                }
+            }
+            return;
+        }
+
         let actions: Vec<UiAction> = self.events.drain().collect();
         let mut transition = None;
         for action in actions {
@@ -139,22 +162,29 @@ impl Game {
 
         let modal_reveal = self.modal_reveal();
 
+        let show_boot = !self.boot.is_done() && matches!(self.state, GameState::Menu(_));
+
         let virtual_ui = begin_virtual_ui_frame(ui::LOGICAL_WIDTH, ui::LOGICAL_HEIGHT);
-        let actions = match &self.state {
-            GameState::Menu(menu) => ui::draw_menu(ui::MenuCtx {
-                data: &self.data,
-                menu,
-                legacy_ids: &self.legacy_ids,
-                ui: &virtual_ui,
-            }),
-            GameState::Gameplay(gameplay) => ui::draw_gameplay(ui::GameplayCtx {
-                data: &self.data,
-                sim: &gameplay.sim,
-                screen: gameplay.screen,
-                chronicle: &self.chronicle,
-                ui: &virtual_ui,
-                modal_reveal,
-            }),
+        let actions = if show_boot {
+            self.boot.draw();
+            Vec::new()
+        } else {
+            match &self.state {
+                GameState::Menu(menu) => ui::draw_menu(ui::MenuCtx {
+                    data: &self.data,
+                    menu,
+                    legacy_ids: &self.legacy_ids,
+                    ui: &virtual_ui,
+                }),
+                GameState::Gameplay(gameplay) => ui::draw_gameplay(ui::GameplayCtx {
+                    data: &self.data,
+                    sim: &gameplay.sim,
+                    screen: gameplay.screen,
+                    chronicle: &self.chronicle,
+                    ui: &virtual_ui,
+                    modal_reveal,
+                }),
+            }
         };
         end_virtual_ui_frame();
 

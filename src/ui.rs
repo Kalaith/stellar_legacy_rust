@@ -121,8 +121,28 @@ pub fn term_button(rect: Rect, label: &str, enabled: bool, mouse: Vec2) -> bool 
     hovered && is_mouse_button_released(MouseButton::Left)
 }
 
+/// Which end of a meter is the dangerous one, for the critical-red highlight.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum MeterTone {
+    /// A low reading is bad (hull, morale, fuel…): red under 35%.
+    LowCritical,
+    /// A high reading is bad (cultural drift…): red over 65%.
+    HighCritical,
+    /// Neither end is inherently bad (adaptation): never red.
+    Neutral,
+}
+
 pub fn term_meter(rect: Rect, value: f32, max: f32, label: &str) {
-    let critical = max > 0.0 && value / max < 0.35;
+    term_meter_toned(rect, value, max, label, MeterTone::LowCritical);
+}
+
+pub fn term_meter_toned(rect: Rect, value: f32, max: f32, label: &str, tone: MeterTone) {
+    let frac = if max > 0.0 { value / max } else { 0.0 };
+    let critical = match tone {
+        MeterTone::LowCritical => frac < 0.35,
+        MeterTone::HighCritical => frac > 0.65,
+        MeterTone::Neutral => false,
+    };
     meter(
         rect,
         value,
