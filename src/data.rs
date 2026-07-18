@@ -226,10 +226,17 @@ mod tests {
             MissionMilestone,
             LegacyMoment,
         ] {
+            // M2 target (§8): 12 events, 3 per category.
+            let count = data
+                .events
+                .iter()
+                .filter(|(_, e)| e.category == category)
+                .count();
             assert!(
-                data.events.iter().any(|(_, e)| e.category == category),
-                "no event template for {category:?}"
+                count >= 3,
+                "expected >= 3 event templates for {category:?}, found {count}"
             );
         }
+        assert_eq!(data.events.len(), 12, "M2 event target is 12 templates");
     }
 }

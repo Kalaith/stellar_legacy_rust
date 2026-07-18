@@ -81,10 +81,15 @@ Ordered roughly by milestone (GDD §13):
    separately. New `gameover` capture scene; the dashboard's old inline extinct
    message was removed (now unreachable). Heritage modifiers from the retired
    run remain item 7.
-5. **Event content.** 4 templates exist (original parity). M2 target is 12 across
-   the 4 categories (§8). Pure `assets/events.json` work; the resolver needs no
-   changes. Use `consequences` (already tracked on the sim) to gate/weight
-   follow-up events — that's the intended payoff of Pillar 2.
+5. ~~**Event content.**~~ **DONE (2026-07-18).** `assets/events.json` now holds
+   the M2 target of 12 templates, 3 per category (added `micrometeoroid_storm`,
+   `coolant_breach`, `skills_drought`, `youth_unrest`, `halfway_beacon`,
+   `derelict_encounter`, `founders_creed`, `the_naming`). Pure content — the
+   resolver was unchanged. Several outcomes record `long_term_consequences`
+   (`scarred_reactor`, `lost_craft`, `banked_resentment`, `grave_robbed`,
+   `revised_charter`) feeding the Pillar-2 consequence log; `legacy_weight_modifiers`
+   bias templates toward the fitting legacy. `event_categories_all_represented`
+   now asserts 12 total / ≥3 per category. (M3 target is 30+, §8.)
 6. ~~**Contract content**~~ **DONE (2026-07-18).** Added the two missing
    prototype charters to `assets/contracts.json` — `veiled_expanse_survey`
    (exploration) and `tarssen_relief` (rescue) — so all four §8 objectives

@@ -92,5 +92,199 @@
         "log": "The schism was left to run its course. The ship is quieter, and colder."
       }
     ]
+  },
+  {
+    "id": "micrometeoroid_storm",
+    "category": "immediate_crisis",
+    "title": "Micrometeoroid Storm",
+    "description": "A debris front the forward sensors caught too late. The hull is taking hits and the shelters are filling.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": { "wanderers": 1.2 },
+    "outcomes": [
+      {
+        "id": "brace_and_seal",
+        "label": "Brace and seal",
+        "description": "Shutter the outer decks and ride it out. Slow, safe, hard on nerves.",
+        "population_delta": { "morale": -0.06, "stability": 0.03 },
+        "ship_delta": { "hull_integrity": -0.03 },
+        "log": "The ship shuttered its outer decks and rode the storm out, scarred but whole."
+      },
+      {
+        "id": "burn_around",
+        "label": "Burn around it",
+        "description": "Spend fuel to steer clear. The schedule slips; the hull survives.",
+        "resource_delta": { "energy": -350 },
+        "ship_delta": { "fuel": -0.08, "hull_integrity": -0.01 },
+        "log": "A hard burn carried the ship clear of the debris front, at the cost of the fuel budget."
+      }
+    ]
+  },
+  {
+    "id": "coolant_breach",
+    "category": "immediate_crisis",
+    "title": "Coolant Breach",
+    "description": "A coolant line has ruptured in the reactor annex. Every minute of delay is a degree the core will not forgive.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "vent_the_annex",
+        "label": "Vent the annex",
+        "description": "Blow the section to space. The core is saved; the annex crew are not all accounted for.",
+        "population_delta": { "count": -20, "morale": -0.1, "unity": 0.02 },
+        "log": "The annex was vented to save the core. The memorial wall grew by a column."
+      },
+      {
+        "id": "manual_patch",
+        "label": "Order a manual patch",
+        "description": "Send engineers in with what they have. Expensive, and not without risk.",
+        "resource_delta": { "minerals": -120, "credits": -150 },
+        "ship_delta": { "hull_integrity": 0.02 },
+        "long_term_consequences": ["scarred_reactor"],
+        "log": "Engineers patched the breach by hand. The reactor runs, and runs hot."
+      }
+    ]
+  },
+  {
+    "id": "skills_drought",
+    "category": "generational_challenge",
+    "title": "The Skills Drought",
+    "description": "The last founding specialists are retiring faster than apprentices can replace them. Institutional memory is thinning.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": { "adaptors": 1.2 },
+    "outcomes": [
+      {
+        "id": "crash_apprenticeship",
+        "label": "Crash apprenticeship",
+        "description": "Pull hands from other duties to train replacements now.",
+        "resource_delta": { "credits": -300 },
+        "population_delta": { "stability": 0.05, "adaptation": 0.05 },
+        "log": "A crash apprenticeship filled the benches, if not yet the shoes."
+      },
+      {
+        "id": "lean_on_records",
+        "label": "Lean on the records",
+        "description": "Trust the archives to carry what the elders knew. Some of it will not translate.",
+        "population_delta": { "adaptation": -0.05, "legacy_loyalty": 0.04 },
+        "long_term_consequences": ["lost_craft"],
+        "log": "The crews leaned on the archives. Something in the doing, not the knowing, was lost."
+      }
+    ]
+  },
+  {
+    "id": "youth_unrest",
+    "category": "generational_challenge",
+    "title": "The Restless Generation",
+    "description": "A cohort born to the corridors has decided the mission is their grandparents' promise, not theirs.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": { "wanderers": 1.3, "preservers": 0.8 },
+    "outcomes": [
+      {
+        "id": "seat_them",
+        "label": "Seat them on the council",
+        "description": "Fold the dissent into the institution. It changes both.",
+        "population_delta": { "unity": 0.06, "cultural_drift": 0.04, "legacy_loyalty": -0.03 },
+        "log": "The restless generation was given a seat and a stake. The council sounds younger now."
+      },
+      {
+        "id": "hold_the_line",
+        "label": "Hold the founders' line",
+        "description": "The charter is not up for renegotiation. Say so plainly.",
+        "population_delta": { "unity": -0.05, "legacy_loyalty": 0.06, "morale": -0.03 },
+        "long_term_consequences": ["banked_resentment"],
+        "log": "The council held the founders' line. The corridors went quiet in a way that keeps."
+      }
+    ]
+  },
+  {
+    "id": "halfway_beacon",
+    "category": "mission_milestone",
+    "title": "The Halfway Beacon",
+    "description": "The ship passes the midpoint marker its founders laid in the plan. Half the voyage is behind; no one living chose the far half.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "mark_the_crossing",
+        "label": "Mark the crossing",
+        "description": "A day of ceremony and rest. Morale answers.",
+        "resource_delta": { "influence": 20 },
+        "population_delta": { "morale": 0.08, "legacy_loyalty": 0.04 },
+        "log": "The ship marked the halfway crossing. For a day, the corridors felt like a procession."
+      }
+    ]
+  },
+  {
+    "id": "derelict_encounter",
+    "category": "mission_milestone",
+    "title": "A Silent Hull",
+    "description": "Sensors snag a derelict on the transit lane — an older ship, dark, drifting. It answers no hail.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": { "wanderers": 1.4 },
+    "outcomes": [
+      {
+        "id": "board_and_salvage",
+        "label": "Board and salvage",
+        "description": "Take what the dead ship offers. Not everyone approves.",
+        "resource_delta": { "minerals": 400, "credits": 300 },
+        "population_delta": { "morale": -0.03, "cultural_drift": 0.03 },
+        "long_term_consequences": ["grave_robbed"],
+        "log": "The boarding parties stripped the derelict of what it could spare. The holds are fuller; the mess halls quieter."
+      },
+      {
+        "id": "log_and_pass",
+        "label": "Log it and pass",
+        "description": "Record the position, say the words, keep the schedule.",
+        "population_delta": { "unity": 0.03, "legacy_loyalty": 0.03 },
+        "log": "The ship logged the derelict's position, spoke for its dead, and passed on."
+      }
+    ]
+  },
+  {
+    "id": "founders_creed",
+    "category": "legacy_moment",
+    "title": "The Founders' Creed",
+    "description": "A movement wants the founding charter read aloud each year, word for word, forever. Another wants it revised for a ship the founders never saw.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": { "preservers": 1.4, "adaptors": 1.2 },
+    "outcomes": [
+      {
+        "id": "enshrine_it",
+        "label": "Enshrine the charter",
+        "description": "The founders' words become law and liturgy both.",
+        "population_delta": { "legacy_loyalty": 0.08, "cultural_drift": -0.06, "adaptation": -0.04 },
+        "log": "The charter was enshrined, unaltered. The ship knows exactly who it was meant to be."
+      },
+      {
+        "id": "amend_it",
+        "label": "Amend the charter",
+        "description": "A living document for a living ship. Every word changed is a small funeral.",
+        "population_delta": { "adaptation": 0.07, "cultural_drift": 0.05, "legacy_loyalty": -0.06 },
+        "long_term_consequences": ["revised_charter"],
+        "log": "The charter was amended. The founders would not recognize the ship; the ship is not sure it minds."
+      }
+    ]
+  },
+  {
+    "id": "the_naming",
+    "category": "legacy_moment",
+    "title": "The Right to Name",
+    "description": "The destination needs a name for the charts and the histories. Every faction has one ready, and a reason it must win.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "founders_name",
+        "label": "Honor the founders' name",
+        "description": "The name they wrote into the plan, kept.",
+        "population_delta": { "legacy_loyalty": 0.06, "unity": 0.03 },
+        "log": "The destination kept the name its founders chose. Some traditions are only words until you keep them."
+      },
+      {
+        "id": "the_ships_name",
+        "label": "Let the ship choose",
+        "description": "A vote, deck by deck. Messy, and theirs.",
+        "resource_delta": { "influence": -20 },
+        "population_delta": { "unity": 0.06, "cultural_drift": 0.03, "legacy_loyalty": -0.02 },
+        "log": "The ship named its own destination by vote. The charts bear a word no founder wrote."
+      }
+    ]
   }
 ]
