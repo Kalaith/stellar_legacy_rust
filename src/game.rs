@@ -21,6 +21,23 @@ use macroquad_toolkit::persistence::delete_slot;
 use macroquad_toolkit::prelude::{begin_virtual_ui_frame, end_virtual_ui_frame};
 use macroquad_toolkit::rng;
 
+/// True on the frame the number key for a 0-based list index (1..=9) is pressed.
+fn digit_pressed(index: usize) -> bool {
+    let key = match index {
+        0 => KeyCode::Key1,
+        1 => KeyCode::Key2,
+        2 => KeyCode::Key3,
+        3 => KeyCode::Key4,
+        4 => KeyCode::Key5,
+        5 => KeyCode::Key6,
+        6 => KeyCode::Key7,
+        7 => KeyCode::Key8,
+        8 => KeyCode::Key9,
+        _ => return false,
+    };
+    is_key_pressed(key)
+}
+
 pub struct Game {
     data: GameData,
     state: GameState,
@@ -317,26 +334,42 @@ impl Game {
         }
     }
 
-    /// Terminal-style keyboard navigation: number keys 1-6 switch screen tabs
-    /// and Space/Enter advances the year. Suppressed while the settings panel or
-    /// a blocking council modal is up, so keys don't leak past them.
+    /// Terminal-style keyboard navigation. A blocking council modal takes the
+    /// number keys for its options; otherwise 1-6 switch screen tabs and
+    /// Space/Enter advances the year. Suppressed while the settings panel is up.
     fn gather_keyboard_actions(&mut self, actions: &mut Vec<UiAction>) {
         let GameState::Gameplay(gameplay) = &self.state else {
             return;
         };
-        if self.settings_open || gameplay.sim.has_pending_decision() {
+        if self.settings_open {
             return;
         }
+        let sim = &gameplay.sim;
+
+        // A pending council decision claims the number keys for its choices.
+        if let Some(pending) = &sim.pending_event {
+            if let Some(template) = self.data.events.get(&pending.template_id) {
+                for i in 0..template.outcomes.len() {
+                    if digit_pressed(i) {
+                        actions.push(UiAction::ResolveEvent(i));
+                    }
+                }
+            }
+            return;
+        }
+        if sim.pending_dilemma.is_some() {
+            if let Some(dilemma) = legacy::pending_dilemma_def(sim, &self.data) {
+                for i in 0..dilemma.options.len() {
+                    if digit_pressed(i) {
+                        actions.push(UiAction::ResolveDilemma(i));
+                    }
+                }
+            }
+            return;
+        }
+
         for (i, screen) in crate::state::Screen::ALL.iter().enumerate() {
-            let key = [
-                KeyCode::Key1,
-                KeyCode::Key2,
-                KeyCode::Key3,
-                KeyCode::Key4,
-                KeyCode::Key5,
-                KeyCode::Key6,
-            ][i];
-            if is_key_pressed(key) {
+            if digit_pressed(i) {
                 actions.push(UiAction::SelectScreen(*screen));
             }
         }

@@ -58,7 +58,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         );
         if term_button(
             Rect::new(card.right() - 178.0, card.y + 24.0, 164.0, 36.0),
-            &outcome.label.to_uppercase(),
+            &format!("[{}] {}", i + 1, outcome.label.to_uppercase()),
             true,
             mouse,
         ) {
@@ -136,7 +136,7 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
         );
         if term_button(
             Rect::new(card.right() - 178.0, card.y + 24.0, 164.0, 36.0),
-            &option.label.to_uppercase(),
+            &format!("[{}] {}", i + 1, option.label.to_uppercase()),
             true,
             mouse,
         ) {
