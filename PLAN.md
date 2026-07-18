@@ -278,8 +278,10 @@ cargo fmt -- --check
 
 Note: the repo-root `Cargo.toml` workspace glob requires every top-level dir to be
 a crate or excluded; `dragons_den` (gdd-only) was added to the exclude list during
-this setup. `stellar_legacy` is not yet a git repository — run `git init` + initial
-commit before starting M2 work (every sibling game is its own repo).
+this setup. `stellar_legacy` is its own git repository (default branch `master`),
+like every sibling game — commit work there. In this workspace, prefer
+`cargo fmt -p stellar_legacy [-- --check]` (bare `cargo fmt` can intermittently
+report "Failed to find targets" across the multi-crate workspace).
 
 ## Known cosmetic nits (fine to fix opportunistically)
 
