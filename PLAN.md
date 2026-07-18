@@ -73,9 +73,13 @@ Ordered roughly by milestone (GDD §13):
    (speed passed from the tick via `loadout_stats`); `progress()` counts it, so
    milestones/mission-completion score higher without shortening the duration.
    Surfaced as a `DRIVE ASSIST: +N yr` line on the active-contract screen; new
-   `contract_active` capture scene; unit-tested. **Still to do:** cargo → market
-   lot size, combat → wanderer-dilemma odds, contract-milestone production
-   deltas.
+   `contract_active` capture scene; unit-tested. **cargo → market lot size DONE
+   (2026-07-18)** — the Market's buy/sell lot is now the ship's aggregate cargo
+   (`loadout_stats(...).cargo`, min 50) instead of a fixed 100, shown as
+   `HOLD N (lot size)`; bigger hulls trade bigger lots (the buy/sell verbs
+   already took an amount, so no sim change). New `market` capture scene.
+   **Still to do:** combat → wanderer-dilemma odds (needs honest-odds plumbing
+   into the dilemma modal), contract-milestone production deltas.
 4. ~~**Game-over / retirement flow.**~~ **DONE (2026-07-18).** Dynasty
    extinction now triggers a full-screen `VOYAGE TERMINATED` terminal takeover
    (`src/ui/game_over.rs`, intercepts `draw_gameplay` before header/tabs) with a

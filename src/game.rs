@@ -172,6 +172,12 @@ impl Game {
                 gameplay.screen = crate::state::Screen::ShipBuilder;
                 self.state = GameState::Gameplay(Box::new(gameplay));
             }
+            "market" => {
+                let sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = crate::state::Screen::Market;
+                self.state = GameState::Gameplay(Box::new(gameplay));
+            }
             "contracts" => {
                 // No active contract, so the available-charters list is shown.
                 let sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);

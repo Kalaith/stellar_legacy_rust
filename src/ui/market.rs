@@ -1,20 +1,25 @@
 //! Market: buy/sell the four tradeable resources with price trends (GDD §5.1).
 
+use crate::simulation::ship::loadout_stats;
 use crate::state::sim::TradeResource;
 use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-const LOT: i64 = 100;
-
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     term_panel(area, Some("COMMODITY EXCHANGE"));
     let content = area.inset(24.0);
     let mut y = content.y + 46.0;
 
+    // Trade lot scales with the ship's cargo capacity (PLAN item 3).
+    let lot = (loadout_stats(ctx.sim, ctx.data).cargo.max(50)) as i64;
+
     draw_ui_text_ex(
-        &format!("SHIP TREASURY: {} CREDITS", ctx.sim.resources.credits),
+        &format!(
+            "SHIP TREASURY: {} CREDITS   ·   HOLD {} (lot size)",
+            ctx.sim.resources.credits, lot
+        ),
         content.x,
         y,
         TextStyle::new(17.0, term::accent()).params(),
@@ -79,11 +84,11 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
 
         let buy_rect = Rect::new(content.x + 660.0, y - 22.0, 130.0, 30.0);
         let sell_rect = Rect::new(content.x + 800.0, y - 22.0, 130.0, 30.0);
-        if term_button(buy_rect, &format!("BUY {LOT}"), true, mouse) {
-            actions.push(UiAction::Buy(entry.resource, LOT));
+        if term_button(buy_rect, &format!("BUY {lot}"), true, mouse) {
+            actions.push(UiAction::Buy(entry.resource, lot));
         }
-        if term_button(sell_rect, &format!("SELL {LOT}"), held >= LOT, mouse) {
-            actions.push(UiAction::Sell(entry.resource, LOT));
+        if term_button(sell_rect, &format!("SELL {lot}"), held >= lot, mouse) {
+            actions.push(UiAction::Sell(entry.resource, lot));
         }
     }
 
