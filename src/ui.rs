@@ -262,6 +262,9 @@ pub struct GameplayCtx<'a> {
     pub screen: Screen,
     pub chronicle: &'a ChronicleStore,
     pub ui: &'a VirtualUi,
+    /// Seconds since the current blocking modal appeared, for the terminal
+    /// typewriter reveal. Large/instant when the effect is disabled.
+    pub modal_reveal: f32,
 }
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {

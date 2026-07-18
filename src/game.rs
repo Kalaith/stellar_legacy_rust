@@ -34,6 +34,13 @@ pub struct Game {
     crt: CrtOverlay,
     crt_style: CrtStyle,
     crt_enabled: bool,
+    /// Terminal typewriter reveal for blocking modals: which modal is showing
+    /// and when it appeared, so its body text streams in. Purely cosmetic —
+    /// never touches the deterministic sim.
+    modal_key: Option<String>,
+    modal_started: f64,
+    /// Reveal text instantly (screenshot capture) instead of typing it out.
+    instant_reveal: bool,
 }
 
 impl Game {
@@ -63,11 +70,16 @@ impl Game {
             crt: CrtOverlay::new(),
             crt_style: CrtStyle::amber(),
             crt_enabled: true,
+            modal_key: None,
+            modal_started: 0.0,
+            instant_reveal: false,
         }
     }
 
     /// Seed a deterministic state for the headless screenshot harness.
     pub fn begin_capture_scene(&mut self, scene: &str) {
+        // Screenshots want the final composed frame, not a mid-type one.
+        self.instant_reveal = true;
         match scene {
             "menu" => self.state = GameState::Menu(MenuState::new(false)),
             "event" => {
@@ -125,6 +137,8 @@ impl Game {
     pub fn draw(&mut self) {
         clear_background(ui::term::BG);
 
+        let modal_reveal = self.modal_reveal();
+
         let virtual_ui = begin_virtual_ui_frame(ui::LOGICAL_WIDTH, ui::LOGICAL_HEIGHT);
         let actions = match &self.state {
             GameState::Menu(menu) => ui::draw_menu(ui::MenuCtx {
@@ -139,6 +153,7 @@ impl Game {
                 screen: gameplay.screen,
                 chronicle: &self.chronicle,
                 ui: &virtual_ui,
+                modal_reveal,
             }),
         };
         end_virtual_ui_frame();
@@ -157,6 +172,33 @@ impl Game {
         if self.crt_enabled {
             self.crt.draw(get_time() as f32, &self.crt_style);
         }
+    }
+
+    /// Seconds since the current blocking modal appeared, resetting the clock
+    /// whenever a different modal takes over. Returns a large value (instant
+    /// reveal) in capture mode; the value is unused when no modal is showing.
+    fn modal_reveal(&mut self) -> f32 {
+        if self.instant_reveal {
+            return f32::MAX;
+        }
+        let key = match &self.state {
+            GameState::Gameplay(g) => {
+                if let Some(p) = &g.sim.pending_event {
+                    Some(format!("E:{}", p.template_id))
+                } else {
+                    g.sim
+                        .pending_dilemma
+                        .as_ref()
+                        .map(|p| format!("D:{}", p.dilemma_id))
+                }
+            }
+            _ => None,
+        };
+        if key != self.modal_key {
+            self.modal_key = key;
+            self.modal_started = get_time();
+        }
+        (get_time() - self.modal_started) as f32
     }
 
     fn transition(&mut self, transition: StateTransition) {

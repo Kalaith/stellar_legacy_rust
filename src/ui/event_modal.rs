@@ -7,6 +7,9 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
+/// Characters-per-second for the terminal reveal of modal body text.
+const REVEAL_CPS: f32 = 55.0;
+
 pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
     let Some(pending) = &ctx.sim.pending_event else {
         return;
@@ -15,18 +18,12 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         return;
     };
 
-    let content = modal_frame(template.outcomes.len(), term::RED);
-    let mut y = content.y + 22.0;
-    draw_ui_text_ex(
-        &format!(
-            "COUNCIL DECISION — {}",
-            template.category.label().to_uppercase()
-        ),
-        content.x,
-        y,
-        TextStyle::new(14.0, term::RED).params(),
+    let header = format!(
+        "COUNCIL DECISION — {}",
+        template.category.label().to_uppercase()
     );
-    y += 30.0;
+    let content = modal_frame(&header, template.outcomes.len(), term::RED);
+    let mut y = content.y + 22.0;
     draw_ui_text_ex(
         &template.title,
         content.x,
@@ -34,15 +31,12 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         TextStyle::new(22.0, term::AMBER).params(),
     );
     y += 20.0;
-    draw_text_block(
+    draw_typed_block(
         &template.description,
         content.x,
         y,
         content.w,
-        70.0,
-        14.0,
-        4.0,
-        term::AMBER_DIM,
+        ctx.modal_reveal,
     );
     y += 84.0;
 
@@ -88,15 +82,9 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
         .map(|l| l.name.clone())
         .unwrap_or_default();
 
-    let content = modal_frame(dilemma.options.len(), term::AMBER);
+    let header = format!("LEGACY DILEMMA — {}", legacy_name.to_uppercase());
+    let content = modal_frame(&header, dilemma.options.len(), term::AMBER);
     let mut y = content.y + 22.0;
-    draw_ui_text_ex(
-        &format!("LEGACY DILEMMA — {}", legacy_name.to_uppercase()),
-        content.x,
-        y,
-        TextStyle::new(14.0, term::AMBER).params(),
-    );
-    y += 30.0;
     draw_ui_text_ex(
         &dilemma.title,
         content.x,
@@ -104,15 +92,12 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
         TextStyle::new(22.0, term::AMBER).params(),
     );
     y += 20.0;
-    draw_text_block(
+    draw_typed_block(
         &dilemma.description,
         content.x,
         y,
         content.w,
-        70.0,
-        14.0,
-        4.0,
-        term::AMBER_DIM,
+        ctx.modal_reveal,
     );
     y += 84.0;
 
@@ -151,8 +136,9 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
     }
 }
 
-/// Dim the world and draw the modal surface; returns the content rect.
-fn modal_frame(option_count: usize, accent: Color) -> Rect {
+/// Dim the world and draw the modal surface with `header` in the title band;
+/// returns the content rect.
+fn modal_frame(header: &str, option_count: usize, accent: Color) -> Rect {
     draw_rectangle(
         0.0,
         0.0,
@@ -175,5 +161,34 @@ fn modal_frame(option_count: usize, accent: Color) -> Rect {
             .with_header(40.0, term::PANEL_HEADER)
             .with_header_divider(1.0, accent),
     );
+    draw_text_centered_in_box_ex(
+        header,
+        rect.x,
+        rect.y,
+        rect.w,
+        40.0,
+        TextStyle::new(15.0, accent),
+    );
     rect.inset(26.0)
+}
+
+/// Word-wrapped body text revealed left-to-right terminal style, with a
+/// blinking underscore cursor while it is still typing.
+fn draw_typed_block(text: &str, x: f32, y: f32, w: f32, reveal: f32) {
+    let shown = typed_prefix(text, reveal, REVEAL_CPS);
+    let cursor = if !is_fully_typed(text, reveal, REVEAL_CPS) && (reveal * 2.5).fract() < 0.5 {
+        "_"
+    } else {
+        ""
+    };
+    draw_text_block(
+        &format!("{shown}{cursor}"),
+        x,
+        y,
+        w,
+        70.0,
+        14.0,
+        4.0,
+        term::AMBER_DIM,
+    );
 }

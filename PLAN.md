@@ -86,9 +86,14 @@ Ordered roughly by milestone (GDD §13):
    `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module
    `fx/crt.rs`): scanlines + corner vignette + slow rolling refresh band +
    subtle flicker, drawn screen-space at the end of `Game::draw`, amber preset,
-   F10 toggle. Still to do: typewriter text reveal, settings screen
-   (toolkit `settings`) for delegation defaults + CRT toggle,
-   `catalog_thumbnail.png` from the menu capture, ko-fi/index.html screenshots.
+   F10 toggle. ~~typewriter text reveal~~ **DONE (2026-07-18)** — toolkit
+   `fx/typewriter.rs` (`typed_prefix`/`typed_char_count`/`is_fully_typed`,
+   pure + tested); modal body text streams in at `REVEAL_CPS` with a blinking
+   underscore cursor (`event_modal::draw_typed_block`). A cosmetic reveal clock
+   lives on `Game` (`modal_reveal`, reset per modal, instant in capture). Still
+   to do: settings screen (toolkit `settings`) for delegation defaults + CRT
+   toggle, `catalog_thumbnail.png` from the menu capture, ko-fi/index.html
+   screenshots.
 10. Consider `achievements` for Chronicle milestones (GDD §10 "maybe").
 
 ## Conventions the framework already follows (keep them)
@@ -129,6 +134,8 @@ commit before starting M2 work (every sibling game is its own repo).
 
 - Meter color logic treats <35% as "critical" red — correct for morale/hull, but
   inverted for `cultural_drift`/`adaptation` where low is good/neutral.
-- The event modal header band is empty (title is drawn in the body).
+- ~~The event modal header band is empty~~ **FIXED (2026-07-18)** — the
+  category/legacy line now renders centered in the header band; the title leads
+  the body.
 - Menu lists legacies in sorted-id order (Adaptors first); GDD implies no order,
   but Preservers-first might read better.
