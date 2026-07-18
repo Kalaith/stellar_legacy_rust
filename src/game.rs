@@ -156,6 +156,13 @@ impl Game {
                 gameplay.screen = crate::state::Screen::ShipBuilder;
                 self.state = GameState::Gameplay(Box::new(gameplay));
             }
+            "contracts" => {
+                // No active contract, so the available-charters list is shown.
+                let sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = crate::state::Screen::Contract;
+                self.state = GameState::Gameplay(Box::new(gameplay));
+            }
             "dilemma" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {

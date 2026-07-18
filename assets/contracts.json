@@ -39,5 +39,47 @@
     ],
     "failure_risks": ["hull_breach", "equipment_failure"],
     "reward": { "credits": 6000, "minerals": 1500 }
+  },
+  {
+    "id": "veiled_expanse_survey",
+    "name": "Charter of Discovery: The Veiled Expanse",
+    "objective": "exploration",
+    "description": "Thirty-five years into the unmapped dark past the last relay, charting a lightless expanse the founders only ever named. Bring back the map, and the naming rights.",
+    "target_duration_years": 35,
+    "milestones": [
+      { "id": "last_relay", "name": "Last relay beacon cleared", "progress_threshold": 0.1 },
+      { "id": "first_charting", "name": "First uncharted system logged", "progress_threshold": 0.45 },
+      { "id": "deep_anomaly", "name": "Deep anomaly catalogued", "progress_threshold": 0.75 },
+      { "id": "atlas_sealed", "name": "Expanse atlas sealed", "progress_threshold": 1.0 }
+    ],
+    "success_metrics": [
+      { "id": "population_survival", "kind": "population_survival", "name": "Population survival", "weight": 0.2, "target": 0.8 },
+      { "id": "mission_completion", "kind": "mission_completion", "name": "Mission completion", "weight": 0.45, "target": 1.0 },
+      { "id": "resource_efficiency", "kind": "resource_efficiency", "name": "Resource efficiency", "weight": 0.15, "target": 0.7 },
+      { "id": "social_cohesion", "kind": "social_cohesion", "name": "Social cohesion", "weight": 0.2, "target": 0.55 }
+    ],
+    "failure_risks": ["hull_breach", "navigation_error", "morale_collapse"],
+    "reward": { "credits": 5000, "influence": 260 }
+  },
+  {
+    "id": "tarssen_relief",
+    "name": "Relief Mandate: The Tarssen Drift",
+    "objective": "rescue",
+    "description": "A generation ship went silent in the Tarssen Drift twenty-two years ago. Someone may still be breathing. Reach them, take aboard who remains, and answer for every berth you cannot fill.",
+    "target_duration_years": 22,
+    "milestones": [
+      { "id": "distress_fix", "name": "Distress bearing fixed", "progress_threshold": 0.15 },
+      { "id": "hull_contact", "name": "Silent hull boarded", "progress_threshold": 0.55 },
+      { "id": "survivors_aboard", "name": "Survivors brought aboard", "progress_threshold": 0.85 },
+      { "id": "safe_harbor", "name": "Refugees delivered to safe harbor", "progress_threshold": 1.0 }
+    ],
+    "success_metrics": [
+      { "id": "population_survival", "kind": "population_survival", "name": "Population survival", "weight": 0.4, "target": 0.9 },
+      { "id": "mission_completion", "kind": "mission_completion", "name": "Mission completion", "weight": 0.3, "target": 1.0 },
+      { "id": "resource_efficiency", "kind": "resource_efficiency", "name": "Resource efficiency", "weight": 0.1, "target": 0.6 },
+      { "id": "social_cohesion", "kind": "social_cohesion", "name": "Social cohesion", "weight": 0.2, "target": 0.6 }
+    ],
+    "failure_risks": ["life_support_failure", "overcrowding", "moral_injury"],
+    "reward": { "credits": 4000, "influence": 340 }
   }
 ]

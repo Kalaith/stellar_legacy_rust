@@ -85,8 +85,13 @@ Ordered roughly by milestone (GDD §13):
    the 4 categories (§8). Pure `assets/events.json` work; the resolver needs no
    changes. Use `consequences` (already tracked on the sim) to gate/weight
    follow-up events — that's the intended payoff of Pillar 2.
-6. **Contract content**: 2 templates exist; add exploration + rescue (§8: 4 total
-   for prototype).
+6. ~~**Contract content**~~ **DONE (2026-07-18).** Added the two missing
+   prototype charters to `assets/contracts.json` — `veiled_expanse_survey`
+   (exploration) and `tarssen_relief` (rescue) — so all four §8 objectives
+   (mining, colonization, exploration, rescue) are covered. Both follow the
+   schema (milestones, four success metrics summing to 1.0, failure_risks,
+   reward) and surface automatically on the Contract screen's available-charters
+   list. New `contracts` capture scene. (M3 target is 6-8 total, §8.)
 
 ### M3 (content-complete)
 
