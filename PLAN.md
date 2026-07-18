@@ -110,7 +110,11 @@ Ordered roughly by milestone (GDD §13):
    GREEN recolors the *entire* monochrome UI (text, borders, panels, surface
    fills), not just the overlay tint; alerts stay warm-red on both tubes. New
    `green` capture scene. ~~`catalog_thumbnail.png`~~ **DONE (2026-07-18)** —
-   root 16:9 title capture from the menu scene. **Monospace font DEFERRED** —
+   root 16:9 title capture from the menu scene. ~~screen curvature~~ **DONE
+   (2026-07-18)** — `CrtOverlay` now masks rounded tube-glass corners
+   (`CrtStyle::corner_radius`/`bezel`, baked corner texture flipped per corner,
+   drawn last so the bezel clips every layer); presets ship a 26px radius. UI
+   content is inset so nothing clips. **Monospace font DEFERRED** —
    the toolkit font API (`set_default_ui_font_from_bytes`) is ready, but no
    monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
    sourcing one is a licensing decision for a human. Still to do: fold
