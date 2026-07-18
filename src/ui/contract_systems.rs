@@ -51,7 +51,19 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         term::primary(),
         Some(&format!("PROGRESS {:.0}%", contract.progress() * 100.0)),
     );
-    y += 46.0;
+    y += 34.0;
+    if contract.bonus_progress > 0.0 {
+        draw_ui_text_ex(
+            &format!(
+                "DRIVE ASSIST: +{:.1} yr from ship speed",
+                contract.bonus_progress
+            ),
+            content.x,
+            y,
+            TextStyle::new(12.0, term::accent()).params(),
+        );
+    }
+    y += 22.0;
 
     draw_ui_text_ex(
         "MILESTONES",

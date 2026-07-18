@@ -67,10 +67,15 @@ Ordered roughly by milestone (GDD §13):
    cargo → minerals, fuel_regen → ship fuel, scaled by a new
    `game_config.json → ship` block (`ShipConfig`). The Ship Builder now shows a
    per-component stat readout (`CARGO/CREW/SPD/CBT/FUEL`), so loadouts visibly
-   differ; new `ship` capture scene. **Still to do:** the GDD's more specific
-   hooks — speed → contract *progress/score* (needs an `ActiveContract`
-   bonus-progress field), cargo → market lot size, combat → wanderer-dilemma
-   odds — and contract-milestone production deltas.
+   differ; new `ship` capture scene. **speed → contract progress DONE
+   (2026-07-18)** — `ActiveContract.bonus_progress` (serde default) accrues
+   `speed × ship.contract_progress_per_speed` each year in `advance_contract`
+   (speed passed from the tick via `loadout_stats`); `progress()` counts it, so
+   milestones/mission-completion score higher without shortening the duration.
+   Surfaced as a `DRIVE ASSIST: +N yr` line on the active-contract screen; new
+   `contract_active` capture scene; unit-tested. **Still to do:** cargo → market
+   lot size, combat → wanderer-dilemma odds, contract-milestone production
+   deltas.
 4. ~~**Game-over / retirement flow.**~~ **DONE (2026-07-18).** Dynasty
    extinction now triggers a full-screen `VOYAGE TERMINATED` terminal takeover
    (`src/ui/game_over.rs`, intercepts `draw_gameplay` before header/tabs) with a

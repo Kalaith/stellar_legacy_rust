@@ -135,6 +135,9 @@ pub struct ShipConfig {
     pub minerals_per_cargo: f32,
     /// Fuel fraction restored per point of aggregate fuel_regen each year.
     pub fuel_regen_per_point: f32,
+    /// Bonus contract progress-years added per point of aggregate speed each
+    /// year (boosts milestones/score, not the duration).
+    pub contract_progress_per_speed: f32,
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per

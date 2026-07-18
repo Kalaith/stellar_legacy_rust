@@ -179,6 +179,24 @@ impl Game {
                 gameplay.screen = crate::state::Screen::Contract;
                 self.state = GameState::Gameplay(Box::new(gameplay));
             }
+            "contract_active" => {
+                // A charter a dozen years in, to show progress + drive assist.
+                let mut sim = SimState::new_campaign(&self.data, "adaptors", 0xC0FFEE);
+                if let Some(template) = self.data.contracts.get("deep_vein_survey") {
+                    sim.contract = Some(contract::start_contract(template, &sim));
+                }
+                sim.resources.food = 1_000_000;
+                for _ in 0..12 {
+                    sim.pending_event = None;
+                    sim.pending_dilemma = None;
+                    tick::advance_year(&mut sim, &self.data);
+                }
+                sim.pending_event = None;
+                sim.pending_dilemma = None;
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = crate::state::Screen::Contract;
+                self.state = GameState::Gameplay(Box::new(gameplay));
+            }
             "dilemma" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {

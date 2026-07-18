@@ -62,7 +62,8 @@
   "ship": {
     "credits_per_speed": 40,
     "minerals_per_cargo": 0.1,
-    "fuel_regen_per_point": 0.05
+    "fuel_regen_per_point": 0.05,
+    "contract_progress_per_speed": 0.04
   },
   "heritage": [
     { "min_renown": 0, "name": "Founding" },

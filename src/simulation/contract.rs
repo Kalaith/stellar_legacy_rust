@@ -80,22 +80,33 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
             })
             .collect(),
         starting_population: sim.population.count,
+        bonus_progress: 0.0,
     }
 }
 
 /// Advance the active contract by one year: progress, phase, milestones, and
-/// refreshed metric readings. Returns newly reached milestone names.
-pub fn advance_contract(sim: &mut SimState, config: &crate::data::GameConfig) -> Vec<String> {
+/// refreshed metric readings. `speed` is the ship loadout's aggregate speed,
+/// which adds bonus progress (PLAN item 3). Returns newly reached milestone
+/// names.
+pub fn advance_contract(
+    sim: &mut SimState,
+    config: &crate::data::GameConfig,
+    speed: i32,
+) -> Vec<String> {
     let population_count = sim.population.count;
     let unity = sim.population.unity;
     let food_ok = sim.resources.food >= config.low_food_threshold;
     let energy_ok = sim.resources.energy >= config.low_energy_threshold;
+    let progress_per_speed = config.ship.contract_progress_per_speed;
 
     let Some(contract) = sim.contract.as_mut() else {
         return Vec::new();
     };
 
     contract.years_elapsed += 1;
+    if speed > 0 {
+        contract.bonus_progress += speed as f32 * progress_per_speed;
+    }
     let progress = contract.progress();
     contract.phase = ContractPhase::for_progress(progress);
 

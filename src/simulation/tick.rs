@@ -117,8 +117,10 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
         }
     }
 
-    // Contract progress and completion (GDD §5.2).
-    for milestone in contract::advance_contract(sim, config) {
+    // Contract progress and completion (GDD §5.2). Ship speed adds bonus
+    // progress (PLAN item 3).
+    let contract_speed = ship::loadout_stats(sim, data).speed;
+    for milestone in contract::advance_contract(sim, config, contract_speed) {
         sim.push_log(format!("Milestone reached: {milestone}"));
     }
     if let Some(active) = &sim.contract {
@@ -240,6 +242,27 @@ mod tests {
         assert!(score > 0.0);
         let active = sim.contract.as_ref().unwrap();
         assert!(active.milestones.iter().all(|m| m.reached));
+    }
+
+    #[test]
+    fn ship_speed_adds_bonus_contract_progress() {
+        let (data, mut sim) = fresh(9);
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        sim.resources.food = 1_000_000;
+        sim.pending_event = None;
+        sim.pending_dilemma = None;
+
+        advance_year(&mut sim, &data);
+
+        let contract = sim.contract.as_ref().unwrap();
+        assert!(
+            contract.bonus_progress > 0.0,
+            "the founding loadout's speed should add bonus progress"
+        );
+        // Progress outruns the naive years/duration thanks to the speed bonus.
+        let naive = contract.years_elapsed as f32 / contract.target_duration_years as f32;
+        assert!(contract.progress() > naive);
     }
 
     #[test]

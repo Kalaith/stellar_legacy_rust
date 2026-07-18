@@ -174,6 +174,10 @@ pub struct ActiveContract {
     pub milestones: Vec<MilestoneState>,
     /// Population when the contract began, for the survival metric.
     pub starting_population: u32,
+    /// Extra progress-years accrued from ship speed (PLAN item 3). Boosts
+    /// milestone/mission-completion progress without shortening the duration.
+    #[serde(default)]
+    pub bonus_progress: f32,
 }
 
 impl ActiveContract {
@@ -181,7 +185,8 @@ impl ActiveContract {
         if self.target_duration_years == 0 {
             1.0
         } else {
-            (self.years_elapsed as f32 / self.target_duration_years as f32).min(1.0)
+            ((self.years_elapsed as f32 + self.bonus_progress) / self.target_duration_years as f32)
+                .min(1.0)
         }
     }
 }
