@@ -7,7 +7,7 @@
     "target_duration_years": 60,
     "milestones": [
       { "id": "departure", "name": "Departure burn complete", "progress_threshold": 0.05 },
-      { "id": "halfway", "name": "Halfway beacon passed", "progress_threshold": 0.5 },
+      { "id": "halfway", "name": "Halfway beacon passed", "progress_threshold": 0.5, "reward": { "influence": 40 } },
       { "id": "site_survey", "name": "Settlement site surveyed", "progress_threshold": 0.85 },
       { "id": "charter_signed", "name": "Colony charter signed", "progress_threshold": 1.0 }
     ],
@@ -28,7 +28,7 @@
     "target_duration_years": 40,
     "milestones": [
       { "id": "belt_entry", "name": "Belt insertion achieved", "progress_threshold": 0.1 },
-      { "id": "first_core", "name": "First core shipped", "progress_threshold": 0.4 },
+      { "id": "first_core", "name": "First core shipped", "progress_threshold": 0.4, "reward": { "minerals": 300 } },
       { "id": "full_chart", "name": "Vein chart completed", "progress_threshold": 1.0 }
     ],
     "success_metrics": [
@@ -49,7 +49,7 @@
     "milestones": [
       { "id": "last_relay", "name": "Last relay beacon cleared", "progress_threshold": 0.1 },
       { "id": "first_charting", "name": "First uncharted system logged", "progress_threshold": 0.45 },
-      { "id": "deep_anomaly", "name": "Deep anomaly catalogued", "progress_threshold": 0.75 },
+      { "id": "deep_anomaly", "name": "Deep anomaly catalogued", "progress_threshold": 0.75, "reward": { "influence": 70 } },
       { "id": "atlas_sealed", "name": "Expanse atlas sealed", "progress_threshold": 1.0 }
     ],
     "success_metrics": [
@@ -70,7 +70,7 @@
     "milestones": [
       { "id": "distress_fix", "name": "Distress bearing fixed", "progress_threshold": 0.15 },
       { "id": "hull_contact", "name": "Silent hull boarded", "progress_threshold": 0.55 },
-      { "id": "survivors_aboard", "name": "Survivors brought aboard", "progress_threshold": 0.85 },
+      { "id": "survivors_aboard", "name": "Survivors brought aboard", "progress_threshold": 0.85, "reward": { "influence": 90, "credits": 500 } },
       { "id": "safe_harbor", "name": "Refugees delivered to safe harbor", "progress_threshold": 1.0 }
     ],
     "success_metrics": [

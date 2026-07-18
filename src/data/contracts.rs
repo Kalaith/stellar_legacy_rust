@@ -85,6 +85,10 @@ pub struct MilestoneDef {
     pub name: String,
     /// 0-1 progress fraction at which this milestone is reached.
     pub progress_threshold: f32,
+    /// One-time resources granted when this milestone is first reached
+    /// (PLAN item 3 — progress pays off along the way).
+    #[serde(default)]
+    pub reward: ResourceDelta,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

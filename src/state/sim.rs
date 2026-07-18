@@ -160,6 +160,9 @@ pub struct MilestoneState {
     pub name: String,
     pub progress_threshold: f32,
     pub reached: bool,
+    /// One-time resources granted when first reached (PLAN item 3).
+    #[serde(default)]
+    pub reward: ResourceDelta,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

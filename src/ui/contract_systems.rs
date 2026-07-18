@@ -1,11 +1,33 @@
 //! Contract & Systems: active-contract progress or available charters.
 //! The "systems" list stays a plain panel, not a starmap (GDD §7, open q. 1).
 
-use crate::data::GameData;
+use crate::data::{GameData, ResourceDelta};
 use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
+
+/// A compact ` → +N res` suffix for a milestone's one-time reward (empty when
+/// there is none).
+fn reward_hint(reward: &ResourceDelta) -> String {
+    let mut parts = Vec::new();
+    for (amount, unit) in [
+        (reward.credits, "cr"),
+        (reward.minerals, "min"),
+        (reward.energy, "en"),
+        (reward.food, "food"),
+        (reward.influence, "inf"),
+    ] {
+        if amount != 0 {
+            parts.push(format!("+{amount} {unit}"));
+        }
+    }
+    if parts.is_empty() {
+        String::new()
+    } else {
+        format!("   ({})", parts.join(" "))
+    }
+}
 
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     match &ctx.sim.contract {
@@ -78,8 +100,9 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         } else {
             ("[ ]", term::dim())
         };
+        let bounty = reward_hint(&milestone.reward);
         draw_ui_text_ex(
-            &format!("{mark} {}", milestone.name),
+            &format!("{mark} {}{bounty}", milestone.name),
             content.x,
             y,
             TextStyle::new(14.0, color).params(),

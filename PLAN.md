@@ -60,8 +60,8 @@ Ordered roughly by milestone (GDD §13):
    best-leadership fallback. Crew UI lives on the Crew & Dynasty screen (`crew`
    capture scene). Event-outcome hooks (navigator/combat) intentionally deferred
    to item 3 where ship component stats land.
-3. **Production bonuses.** ~~Ship components grant nothing.~~ **PARTLY DONE
-   (2026-07-18).** `simulation/ship.rs` aggregates the installed hull+engine+
+3. ~~**Production bonuses.**~~ **DONE (2026-07-18/19).** `simulation/ship.rs`
+   aggregates the installed hull+engine+
    weapon `ComponentStats` (`loadout_stats`) and applies yearly effects in the
    tick (`apply_loadout_effects`, after base production): speed → credits,
    cargo → minerals, fuel_regen → ship fuel, scaled by a new
@@ -84,8 +84,13 @@ Ordered roughly by milestone (GDD §13):
    `dilemma_odds_cap`); used both for the `resolve_dilemma` roll and shown
    honestly in the modal as `Success odds: N% (combat +M%)` (Pillar 3). New
    `dilemma_combat` capture scene; unit-tested (lifts Wanderer odds only,
-   respects the cap). **Still to do (minor):** contract-milestone production
-   deltas — otherwise item 3 is complete.
+   respects the cap). **contract-milestone deltas DONE (2026-07-19)** —
+   `MilestoneDef`/`MilestoneState` carry an optional `reward: ResourceDelta`
+   (serde default) applied once when the milestone is first reached
+   (`advance_contract` collects rewards then applies them after the contract
+   borrow ends); several `assets/contracts.json` milestones now grant
+   intermediate payoffs, shown as `(+N res)` on the active-contract milestone
+   list. Unit-tested (lands once, no repeat). **Item 3 complete.**
 4. ~~**Game-over / retirement flow.**~~ **DONE (2026-07-18).** Dynasty
    extinction now triggers a full-screen `VOYAGE TERMINATED` terminal takeover
    (`src/ui/game_over.rs`, intercepts `draw_gameplay` before header/tabs) with a
