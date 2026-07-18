@@ -147,8 +147,12 @@ Ordered roughly by milestone (GDD §13):
    `founders_chair` (Preservers), `cold_sleep`/`mirror_test` (Adaptors),
    `marked_port`/`debt_collector` (Wanderers); each engages its legacy's tracked
    counter — tradition / body-horror+dread / piracy-reputation — and the
-   data-load test now asserts ≥3 per legacy), doubled name pools. Pure
-   `assets/*.json`; schemas unchanged.
+   data-load test now asserts ≥3 per legacy), **doubled name pools DONE
+   (2026-07-19)** — `assets/dynasty_names.json` given names 25→50, surnames
+   10→20 per legacy, specializations 10→20, traits 5→10 per legacy (matched to
+   each legacy's flavor); data-load test asserts the doubled counts. Pure
+   `assets/*.json`; schemas unchanged. **Remaining: events 20→30+, dilemmas
+   3→6 per legacy.**
 9. **Terminal polish**: monospace bitmap font (default font is close but not
    monospace), ~~flicker fx~~ **CRT overlay DONE (2026-07-18)** —
    `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module

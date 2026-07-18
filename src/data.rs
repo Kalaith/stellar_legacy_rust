@@ -233,13 +233,19 @@ mod tests {
         assert_eq!(data.ship_components.engines.len(), 5);
         assert_eq!(data.ship_components.weapons.len(), 5);
         assert_eq!(data.crew_archetypes.len(), 7);
+        // Doubled name pools (§8): 50 given names, 20 surnames + 10 traits
+        // per legacy.
+        assert!(data.dynasty_names.given_names.len() >= 50);
         for legacy_id in ["preservers", "adaptors", "wanderers"] {
             assert!(data.legacies.contains(legacy_id));
-            assert!(data
-                .dynasty_names
-                .surnames_by_legacy
-                .contains_key(legacy_id));
-            assert!(data.dynasty_names.traits_by_legacy.contains_key(legacy_id));
+            let surnames = &data.dynasty_names.surnames_by_legacy[legacy_id];
+            let traits = &data.dynasty_names.traits_by_legacy[legacy_id];
+            assert!(
+                surnames.len() >= 20,
+                "{legacy_id} surnames: {}",
+                surnames.len()
+            );
+            assert!(traits.len() >= 10, "{legacy_id} traits: {}", traits.len());
             // Each legacy carries at least three defining dilemmas (M3 target
             // is 6 per legacy, §8).
             let dilemmas = data.legacies.get(legacy_id).unwrap().dilemmas.len();
