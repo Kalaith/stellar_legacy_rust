@@ -245,6 +245,11 @@ Ordered roughly by milestone (GDD §13):
   no `_`-prefixed dead code — the two intentionally-idle fields
   (`Game::_assets`, texture manifest) are wired through the toolkit loader
   instead.
+- **Hardening:** `tick::tests::long_campaign_stays_internally_consistent` soaks
+  a well-fed campaign 250 years across many generations, resolving every
+  council decision, and asserts the invariants (0–1 fractions, non-negative
+  resources, a living dynasty always has a leader, the survey completes). Keep
+  it green when touching the tick/succession/resolver paths.
 
 ## Build / verify loop
 
