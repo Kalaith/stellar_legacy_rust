@@ -675,5 +675,298 @@
         "log": "The amended charter was read instead. The last founders heard a mission they did not entirely recognize."
       }
     ]
+  },
+  {
+    "id": "reactor_scram",
+    "category": "immediate_crisis",
+    "title": "Reactor Scram",
+    "description": "The core dropped its rods on an automatic fault. The ship runs on batteries now, and everyone can hear the silence where the hum should be.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "cold_restart",
+        "label": "Cold restart by the book",
+        "description": "Slow, safe, hours in the dark.",
+        "resource_delta": {
+          "energy": -300
+        },
+        "population_delta": {
+          "morale": -0.03,
+          "stability": 0.03
+        },
+        "log": "The core came back on a careful cold restart. The dark was long and the coffee ran out."
+      },
+      {
+        "id": "hot_override",
+        "label": "Override and hot-restart",
+        "description": "Fast, and the fault might still be there.",
+        "ship_delta": {
+          "hull_integrity": -0.02
+        },
+        "population_delta": {
+          "morale": 0.03
+        },
+        "long_term_consequences": [
+          "scarred_reactor"
+        ],
+        "log": "The engineers hot-restarted the core over its own objections. It runs; it grumbles."
+      }
+    ]
+  },
+  {
+    "id": "pirate_shadow",
+    "category": "immediate_crisis",
+    "title": "The Tail",
+    "description": "A ship with no transponder has matched the voyage's heading for three days. It is not closing. It is not leaving.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "wanderers": 1.3
+    },
+    "outcomes": [
+      {
+        "id": "warn_it_off",
+        "label": "Warn it off",
+        "description": "Light it up and make the ship look expensive to attack.",
+        "resource_delta": {
+          "energy": -200
+        },
+        "population_delta": {
+          "unity": 0.03
+        },
+        "log": "A show of teeth sent the shadow drifting back into the dark. Probably."
+      },
+      {
+        "id": "ignore_it",
+        "label": "Hold course, say nothing",
+        "description": "Give it nothing to react to.",
+        "population_delta": {
+          "stability": -0.03,
+          "morale": -0.03
+        },
+        "log": "The ship held course and the tail eventually fell away. The observation decks watched the whole time."
+      }
+    ]
+  },
+  {
+    "id": "scrubber_failure",
+    "category": "immediate_crisis",
+    "title": "The Thickening Air",
+    "description": "Two CO2 scrubbers failed in the same week. The air is going stale deck by deck and the spares are a generation old.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "cannibalize_spares",
+        "label": "Cannibalize for parts",
+        "description": "Strip other systems to rebuild the scrubbers.",
+        "resource_delta": {
+          "minerals": -150
+        },
+        "ship_delta": {
+          "life_support": 0.06
+        },
+        "log": "The scrubbers breathe again, assembled from the corpses of lesser machines."
+      },
+      {
+        "id": "ration_the_air",
+        "label": "Ration activity",
+        "description": "Slow the ship to slow the breathing.",
+        "population_delta": {
+          "morale": -0.06,
+          "stability": 0.02
+        },
+        "log": "The ship moved at half-effort until the air cleared. Everyone learned to sit very still."
+      }
+    ]
+  },
+  {
+    "id": "idle_generation",
+    "category": "generational_challenge",
+    "title": "The Idle Hands",
+    "description": "Automation has outrun the population. A generation has grown up with too little to do and too much time to wonder why they are here.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "make_work",
+        "label": "Fund make-work projects",
+        "description": "Spend credits on purpose, even invented purpose.",
+        "resource_delta": {
+          "credits": -300
+        },
+        "population_delta": {
+          "morale": 0.05,
+          "stability": 0.03
+        },
+        "log": "The council funded a hundred small projects. Idle hands found rails to paint and songs to write."
+      },
+      {
+        "id": "let_them_wonder",
+        "label": "Let them find their own purpose",
+        "description": "Trust boredom to breed either art or trouble.",
+        "population_delta": {
+          "adaptation": 0.05,
+          "cultural_drift": 0.04,
+          "unity": -0.03
+        },
+        "log": "Left to themselves, the idle generation invented new things to be, some of them useful."
+      }
+    ]
+  },
+  {
+    "id": "apprentice_glut",
+    "category": "generational_challenge",
+    "title": "Too Many Hands",
+    "description": "This cohort trained hard for posts that are already filled. The waiting list for real work is longer than a career.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "rotate_posts",
+        "label": "Rotate the posts",
+        "description": "Share the work thin so everyone gets some.",
+        "population_delta": {
+          "unity": 0.04,
+          "stability": 0.02
+        },
+        "log": "The posts were rotated so the trained could stay sharp. Nobody is idle; nobody is expert."
+      }
+    ]
+  },
+  {
+    "id": "slingshot",
+    "category": "mission_milestone",
+    "title": "The Slingshot",
+    "description": "A massive body sits just off the course. A gravity assist could bank years of fuel — if the approach is flawless.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "thread_it",
+        "label": "Thread the slingshot",
+        "description": "Fly close, gain speed, risk the tides.",
+        "ship_delta": {
+          "fuel": 0.1,
+          "hull_integrity": -0.02
+        },
+        "population_delta": {
+          "morale": 0.05
+        },
+        "log": "The ship whipped past the giant and came out faster and lighter on fuel. The tides only rattled the crockery."
+      },
+      {
+        "id": "skip_it",
+        "label": "Skip the maneuver",
+        "description": "Burn the fuel, keep the plating.",
+        "resource_delta": {
+          "energy": -400
+        },
+        "log": "The council skipped the slingshot and paid in fuel for the peace of mind."
+      }
+    ]
+  },
+  {
+    "id": "dark_stretch",
+    "category": "mission_milestone",
+    "title": "The Dark Stretch",
+    "description": "Ahead lies a region the founders' charts simply stop describing — a long stretch where the sensors will have little to say.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "run_it_steady",
+        "label": "Run it steady",
+        "description": "Trust the plan and the dead reckoning.",
+        "population_delta": {
+          "stability": 0.03,
+          "unity": 0.02
+        },
+        "log": "The ship crossed the dark stretch on dead reckoning and old faith. It came out where the charts said it would."
+      }
+    ]
+  },
+  {
+    "id": "resupply_cache",
+    "category": "mission_milestone",
+    "title": "The Cache",
+    "description": "A supply cache the mission planners seeded decades ago drifts on the course ahead, if its beacon can be trusted.",
+    "requires_decision": true,
+    "outcomes": [
+      {
+        "id": "claim_the_cache",
+        "label": "Match and claim it",
+        "description": "Spend fuel to rendezvous with the drop.",
+        "ship_delta": {
+          "fuel": -0.05
+        },
+        "resource_delta": {
+          "minerals": 500,
+          "food": 400
+        },
+        "log": "The cache was claimed on schedule, exactly as a founder a lifetime dead had promised."
+      },
+      {
+        "id": "pass_the_cache",
+        "label": "Pass it by",
+        "description": "Stay on the fuel budget; the holds are full enough.",
+        "population_delta": {
+          "legacy_loyalty": 0.02
+        },
+        "log": "The cache drifted past, unopened. The ship needs nothing yet, and the founders keep their gift."
+      }
+    ]
+  },
+  {
+    "id": "native_leader",
+    "category": "legacy_moment",
+    "title": "Born to the Corridors",
+    "description": "For the first time, the dynasty's leader was born, raised, and will die aboard — with no memory, even inherited, of a world with a sky.",
+    "requires_decision": false,
+    "outcomes": [
+      {
+        "id": "mark_the_first",
+        "label": "Mark the moment",
+        "description": "Acknowledge that the ship now leads itself, from itself.",
+        "population_delta": {
+          "unity": 0.05,
+          "cultural_drift": 0.03,
+          "adaptation": 0.03
+        },
+        "log": "The ship marked its first wholly ship-born leader. Something ended quietly; something began louder."
+      }
+    ]
+  },
+  {
+    "id": "memory_wall",
+    "category": "legacy_moment",
+    "title": "The Memory Wall",
+    "description": "The memorial wall has run out of room. The council must decide whether to extend it, archive the oldest names, or begin again.",
+    "requires_decision": true,
+    "legacy_weight_modifiers": {
+      "preservers": 1.3
+    },
+    "outcomes": [
+      {
+        "id": "extend_the_wall",
+        "label": "Extend the wall",
+        "description": "Give the dead more room, whatever it costs the living decks.",
+        "resource_delta": {
+          "minerals": -100
+        },
+        "population_delta": {
+          "legacy_loyalty": 0.05,
+          "morale": 0.03
+        },
+        "log": "The memorial wall grew a new wing. No name will be moved while the ship still flies."
+      },
+      {
+        "id": "archive_the_oldest",
+        "label": "Archive the oldest names",
+        "description": "Move the earliest dead into the record to make room.",
+        "population_delta": {
+          "cultural_drift": 0.04,
+          "legacy_loyalty": -0.04
+        },
+        "long_term_consequences": [
+          "banked_resentment"
+        ],
+        "log": "The oldest names went to the archive to make room for the newly gone. The founders moved over, a little."
+      }
+    ]
   }
 ]

@@ -130,10 +130,12 @@ Ordered roughly by milestone (GDD §13):
    +cr/+inf/+tradition"). Deterministic (derived from the persisted Chronicle,
    applied once at creation). New `heritage` capture scene; 3 unit tests. This
    closes the Chronicle "Partial" status.
-8. **Content targets from §8** (bulk-content pass, in progress): 30+ events
-   (**20/30** so far, 5 per category — 2026-07-19 batch added `hull_fracture`,
-   `contagion`, `birth_dearth`, `schooling_crisis`, `course_correction`,
-   `relay_contact`, `first_death_in_space`, `veterans_petition`), **5/5/5
+8. ~~**Content targets from §8**~~ **DONE (2026-07-19)** — all §8 bulk-content
+   targets met. **30+ events DONE** (**30 total**, 7-8 per category; the
+   final pass added `reactor_scram`, `pirate_shadow`, `scrubber_failure`,
+   `idle_generation`, `apprentice_glut`, `slingshot`, `dark_stretch`,
+   `resupply_cache`, `native_leader`, `memory_wall`; data-load test asserts ≥30
+   / ≥7 per category), **5/5/5
    components DONE (2026-07-19)** — added `habitat_ring`/`armored_prow` (hulls),
    `solar_sail`/`warp_coil` (engines), `flak_screen`/`spinal_railgun` (weapons),
    each with real stat tradeoffs that feed the item-3 hooks; the Ship Builder
@@ -152,8 +154,9 @@ Ordered roughly by milestone (GDD §13):
    (2026-07-19)** — `assets/dynasty_names.json` given names 25→50, surnames
    10→20 per legacy, specializations 10→20, traits 5→10 per legacy (matched to
    each legacy's flavor); data-load test asserts the doubled counts. Pure
-   `assets/*.json`; schemas unchanged. **Remaining: events 20→30+ (only §8
-   target left).**
+   `assets/*.json`; schemas unchanged. **Item 8 complete — all §8 content
+   targets met (30 events / 5-5-5 components / 6 contracts / 6 dilemmas per
+   legacy / doubled name pools).**
 9. **Terminal polish**: monospace bitmap font (default font is close but not
    monospace), ~~flicker fx~~ **CRT overlay DONE (2026-07-18)** —
    `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module
