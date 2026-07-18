@@ -349,7 +349,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
             ),
         );
         draw_ui_text_ex(
-            &legacy.name,
+            &format!("{} {}", i + 1, legacy.name),
             rect.x + 14.0,
             rect.y + 24.0,
             TextStyle::new(
@@ -382,7 +382,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
     let btn_w = (content.w - 20.0) / 3.0;
     if term_button(
         Rect::new(content.x, y, btn_w, 44.0),
-        "BEGIN VOYAGE",
+        "BEGIN VOYAGE [ENTER]",
         true,
         mouse,
     ) {

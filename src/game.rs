@@ -363,16 +363,42 @@ impl Game {
         }
     }
 
-    /// Terminal-style keyboard navigation. A blocking council modal takes the
-    /// number keys for its options; otherwise 1-6 switch screen tabs and
-    /// Space/Enter advances the year. Suppressed while the settings panel is up.
+    /// Terminal-style keyboard navigation. On the menu, number keys pick a
+    /// legacy, arrows move the selection, Enter begins the voyage. In gameplay,
+    /// a blocking council modal takes the number keys for its options, otherwise
+    /// 1-6 switch screen tabs and Space/Enter advances the year. Suppressed while
+    /// the settings or help panel is up.
     fn gather_keyboard_actions(&mut self, actions: &mut Vec<UiAction>) {
-        let GameState::Gameplay(gameplay) = &self.state else {
-            return;
-        };
         if self.settings_open || self.help_open {
             return;
         }
+
+        // Menu: keyboard legacy selection and launch (terminals are keyboard-first).
+        if let GameState::Menu(menu) = &self.state {
+            let selected = menu.selected_legacy;
+            let count = self.legacy_ids.len();
+            for i in 0..count {
+                if digit_pressed(i) {
+                    actions.push(UiAction::SelectLegacy(i));
+                }
+            }
+            if is_key_pressed(KeyCode::Up) {
+                actions.push(UiAction::SelectLegacy(selected.saturating_sub(1)));
+            }
+            if is_key_pressed(KeyCode::Down) {
+                actions.push(UiAction::SelectLegacy(
+                    (selected + 1).min(count.saturating_sub(1)),
+                ));
+            }
+            if is_key_pressed(KeyCode::Enter) {
+                actions.push(UiAction::StartNewGame);
+            }
+            return;
+        }
+
+        let GameState::Gameplay(gameplay) = &self.state else {
+            return;
+        };
         let sim = &gameplay.sim;
 
         // A pending council decision claims the number keys for its choices.

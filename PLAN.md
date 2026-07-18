@@ -205,12 +205,14 @@ Ordered roughly by milestone (GDD §13):
    sim's `DelegationSettings`) and is applied to `sim.delegation` in the
    `NewCampaign` transition. Panel grown to fit; `settings` capture updated.
    ~~keyboard navigation~~ **DONE (2026-07-19)** — terminals are keyboard-first,
-   so every interaction now has a key: **1-6** switch screen tabs, **Space/Enter**
-   advances the year, and when a council **event/dilemma modal** is up the number
-   keys select its options (`Game::gather_keyboard_actions` + `digit_pressed`,
-   the modal claiming the digits from the tabs; suppressed while the settings
-   panel is up). Tabs read `1 DASHBOARD` … `6 CHRONICLE`, the advance button
-   reads `[SPACE]`, and modal option buttons are prefixed `[1]`/`[2]` to teach
+   so every screen is keyboard-navigable: on the **menu**, number keys pick a
+   legacy, arrows move the selection, and Enter begins the voyage; in
+   **gameplay**, **1-6** switch screen tabs and **Space/Enter** advances the
+   year; when a council **event/dilemma modal** is up the number keys select its
+   options (`Game::gather_keyboard_actions` + `digit_pressed`, the modal claiming
+   the digits; suppressed while the settings/help panel is up). Legacy rows read
+   `1 The Preservers` …, tabs `1 DASHBOARD` … `6 CHRONICLE`, the advance button
+   `[SPACE]`, the begin button `[ENTER]`, and modal options `[1]`/`[2]` to teach
    the hotkeys. ~~help overlay~~ **DONE (2026-07-19)** — **F2** opens a
    `HELP // CONTROLS` overlay (`src/ui/help.rs`) listing every key; **Esc**
    closes whichever panel is open (help, then settings); F1/F2 are mutually
