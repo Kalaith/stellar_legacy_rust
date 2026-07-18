@@ -96,7 +96,14 @@ impl BootScreen {
             } else {
                 term::GREEN
             };
-            let dims = draw_ui_text_ex(&text, x, y, TextStyle::new(16.0, color).params());
+            let style = TextStyle::new(16.0, color);
+            let dims = if i == 0 {
+                // The banner line glows like a warm phosphor header.
+                draw_text_glow(&text, x, y, style, 0.14, 2.0);
+                measure_text_size(&text, style)
+            } else {
+                draw_ui_text_ex(&text, x, y, style.params())
+            };
             if !cursor_drawn && show < n {
                 if blink {
                     draw_ui_text_ex(

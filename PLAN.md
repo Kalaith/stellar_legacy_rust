@@ -94,7 +94,11 @@ Ordered roughly by milestone (GDD §13):
    ~~power-on boot sequence~~ **DONE (2026-07-18)** — `src/boot.rs`
    (`BootScreen`) streams a terminal POST log once before the menu on launch
    (amber banner + green status lines, blinking cursor, ~2.5s, any input skips);
-   frozen-frame `boot` capture scene added. **Monospace font DEFERRED** — the
+   frozen-frame `boot` capture scene added. ~~phosphor text glow~~ **DONE
+   (2026-07-18)** — toolkit `ui::draw_text_glow` (dim offset copies fanned to a
+   radius + crisp foreground) gives bright headings a CRT bloom; applied to the
+   menu title, the gameplay header game-name, and the boot banner (subtle
+   alphas so body text stays crisp). **Monospace font DEFERRED** — the
    toolkit font API (`set_default_ui_font_from_bytes`) is ready, but no
    monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
    sourcing one is a licensing decision for a human. Still to do: settings

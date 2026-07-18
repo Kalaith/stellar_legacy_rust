@@ -172,11 +172,13 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
     let mut actions = Vec::new();
     let mouse = ctx.ui.mouse_position();
 
-    draw_ui_text_ex(
+    draw_text_glow(
         "STELLAR LEGACY",
         LOGICAL_WIDTH / 2.0 - 190.0,
         130.0,
-        TextStyle::new(48.0, term::AMBER).params(),
+        TextStyle::new(48.0, term::AMBER),
+        0.1,
+        3.0,
     );
     draw_ui_text_ex(
         "// generational starship command //",
@@ -322,11 +324,13 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
     term_panel(rect, None);
 
     let sim = ctx.sim;
-    draw_ui_text_ex(
+    draw_text_glow(
         &ctx.data.config.display_name.to_uppercase(),
         rect.x + 16.0,
         rect.y + 36.0,
-        TextStyle::new(24.0, term::AMBER).params(),
+        TextStyle::new(24.0, term::AMBER),
+        0.12,
+        2.0,
     );
 
     let leader = sim
