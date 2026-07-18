@@ -174,7 +174,15 @@ Ordered roughly by milestone (GDD §13):
    monospace TTF is bundled in the repo (only proportional Rajdhani/DejaVuSans);
    sourcing one is a licensing decision for a human. Still to do: fold
    delegation defaults into the settings overlay, ko-fi/index.html screenshots.
-10. Consider `achievements` for Chronicle milestones (GDD §10 "maybe").
+10. ~~Consider `achievements` for Chronicle milestones (GDD §10 "maybe").~~
+    **DONE (2026-07-19).** `src/achievements.rs` defines six milestones (first
+    charter, flawless voyage, full registry, fifth generation, year 100, 250
+    renown) over the toolkit `achievements` registry; `evaluate(sim, chronicle)`
+    derives unlocks purely from post-state, so `Game::check_achievements` (called
+    after each year and on campaign transitions) unlocks + notifies once each and
+    persists under its own `achievements` key (cosmetic — no sim effect). Shown
+    as a `MILESTONES` panel on the Chronicle screen (unlocked N/M + `[x]/[ ]`
+    list). New `chronicle` capture scene; 3 unit tests.
 
 ## Conventions the framework already follows (keep them)
 

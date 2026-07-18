@@ -21,6 +21,7 @@ use crate::data::GameData;
 use crate::state::sim::{SimState, TradeResource};
 use crate::state::{MenuState, Screen};
 use macroquad::prelude::*;
+use macroquad_toolkit::achievements::Achievements;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt, VirtualUi};
 
@@ -415,6 +416,7 @@ pub struct GameplayCtx<'a> {
     pub sim: &'a SimState,
     pub screen: Screen,
     pub chronicle: &'a ChronicleStore,
+    pub achievements: &'a Achievements,
     pub ui: &'a VirtualUi,
     /// Seconds since the current blocking modal appeared, for the terminal
     /// typewriter reveal. Large/instant when the effect is disabled.

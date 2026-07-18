@@ -10,6 +10,7 @@ use crate::simulation::{contract, crew, event_resolver, legacy, market, tick};
 use crate::state::{GameState, GameplayState, MenuState, SimState, StateTransition};
 use crate::ui::{self, UiAction};
 use macroquad::prelude::*;
+use macroquad_toolkit::achievements::Achievements;
 use macroquad_toolkit::assets::AssetManager;
 use macroquad_toolkit::events::EventBus;
 use macroquad_toolkit::fx::{CrtOverlay, CrtStyle};
@@ -24,6 +25,8 @@ pub struct Game {
     data: GameData,
     state: GameState,
     chronicle: ChronicleStore,
+    /// Cross-playthrough achievements (GDD §10), persisted separately.
+    achievements: Achievements,
     notifications: NotificationManager,
     events: EventBus<UiAction>,
     /// Kept wired for toolkit consistency; this game ships no sprite art
@@ -76,10 +79,13 @@ impl Game {
         let _ = assets.load_asset_pack("assets.zip").await;
         let _ = assets.load_texture_configs(&data.texture_manifest).await;
 
+        let achievements = crate::achievements::load(&data.config.game_name);
+
         Self {
             data,
             state: GameState::Menu(MenuState::new(save_exists)),
             chronicle,
+            achievements,
             notifications: NotificationManager::new(),
             events: EventBus::new(),
             _assets: assets,
@@ -222,6 +228,32 @@ impl Game {
                 });
                 self.state = GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
+            "chronicle" => {
+                // Seed a storied Chronicle and unlock the matching milestones.
+                self.achievements =
+                    Achievements::from_definitions(crate::achievements::definitions());
+                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                sim.dynasty.generation = 5;
+                sim.year = 120;
+                for i in 0..5 {
+                    self.chronicle.record(crate::chronicle::ChronicleEntry {
+                        completed_year: 40 + i * 20,
+                        contract_name: "Deep Vein Survey: Karst Belt".to_owned(),
+                        objective: "Mining".to_owned(),
+                        legacy_id: "preservers".to_owned(),
+                        leader_name: "Boro Chartwright".to_owned(),
+                        generation: i + 1,
+                        score: 0.92,
+                        outcome: if i % 2 == 0 { "Complete" } else { "Partial" }.to_owned(),
+                    });
+                }
+                for id in crate::achievements::evaluate(&sim, &self.chronicle) {
+                    self.achievements.unlock(id);
+                }
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = crate::state::Screen::Chronicle;
+                self.state = GameState::Gameplay(Box::new(gameplay));
+            }
             "gameover" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.year = 148;
@@ -303,6 +335,7 @@ impl Game {
                     sim: &gameplay.sim,
                     screen: gameplay.screen,
                     chronicle: &self.chronicle,
+                    achievements: &self.achievements,
                     ui: &virtual_ui,
                     modal_reveal,
                     log_reveal,
@@ -446,6 +479,31 @@ impl Game {
                 self.state = GameState::Menu(MenuState::new(save::save_exists(&self.data.config)));
             }
         }
+        self.check_achievements();
+    }
+
+    /// Unlock any achievements the current state satisfies, notifying once each
+    /// and persisting on change. Cheap to call on any state change.
+    fn check_achievements(&mut self) {
+        let ids: Vec<&'static str> = match &self.state {
+            GameState::Gameplay(gameplay) => {
+                crate::achievements::evaluate(&gameplay.sim, &self.chronicle)
+            }
+            GameState::Menu(_) => return,
+        };
+        let mut changed = false;
+        for id in ids {
+            if self.achievements.unlock(id) {
+                changed = true;
+                if let Some(achievement) = self.achievements.get(id) {
+                    self.notifications
+                        .success(format!("Achievement unlocked: {}", achievement.name));
+                }
+            }
+        }
+        if changed {
+            let _ = crate::achievements::save(&self.achievements, &self.data.config.game_name);
+        }
     }
 
     fn apply_action(&mut self, action: UiAction) -> Option<StateTransition> {
@@ -520,6 +578,7 @@ impl Game {
             // ---- Gameplay ----
             UiAction::AdvanceYear => {
                 self.advance_year();
+                self.check_achievements();
                 None
             }
             UiAction::ResolveEvent(index) => {
