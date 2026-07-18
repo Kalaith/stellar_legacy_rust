@@ -22,9 +22,9 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
 
         for component in ctx.data.ship_components.list(*kind) {
             let installed = is_installed(ctx, *kind, &component.id);
-            let card = Rect::new(content.x, y, content.w, 118.0);
+            let card = Rect::new(content.x, y, content.w, 96.0);
             draw_component_card(ctx, card, component, installed, mouse, *kind, actions);
-            y += 128.0;
+            y += 100.0;
         }
     }
 }
@@ -83,9 +83,9 @@ fn draw_component_card(
     draw_ui_text_ex(
         &component.name,
         rect.x + 12.0,
-        rect.y + 22.0,
+        rect.y + 20.0,
         TextStyle::new(
-            16.0,
+            15.0,
             if installed {
                 term::accent()
             } else {
@@ -97,10 +97,10 @@ fn draw_component_card(
     draw_text_block(
         &component.description,
         rect.x + 12.0,
-        rect.y + 30.0,
+        rect.y + 26.0,
         rect.w - 24.0,
-        28.0,
-        12.0,
+        24.0,
+        11.0,
         2.0,
         term::dim(),
     );
@@ -110,11 +110,13 @@ fn draw_component_card(
         draw_ui_text_ex(
             &stats,
             rect.x + 12.0,
-            rect.y + 64.0,
+            rect.y + 56.0,
             TextStyle::new(12.0, term::accent()).params(),
         );
     }
 
+    // Cost is folded into the button so the card stays compact enough for a
+    // five-deep catalog column.
     let cost = &component.cost;
     let mut cost_parts = Vec::new();
     if cost.credits != 0 {
@@ -126,19 +128,8 @@ fn draw_component_card(
     if cost.energy != 0 {
         cost_parts.push(format!("{} en", cost.energy));
     }
-    let cost_text = if cost_parts.is_empty() {
-        "installed at launch".to_owned()
-    } else {
-        cost_parts.join(" + ")
-    };
-    draw_ui_text_ex(
-        &cost_text,
-        rect.x + 12.0,
-        rect.y + 76.0,
-        TextStyle::new(13.0, term::dim()).params(),
-    );
 
-    let btn = Rect::new(rect.x + 12.0, rect.y + 84.0, rect.w - 24.0, 26.0);
+    let btn = Rect::new(rect.x + 12.0, rect.y + 68.0, rect.w - 24.0, 22.0);
     if installed {
         draw_text_centered_in_box_ex(
             "INSTALLED",
@@ -149,6 +140,11 @@ fn draw_component_card(
             TextStyle::new(14.0, term::accent()),
         );
     } else {
+        let label = if cost_parts.is_empty() {
+            "INSTALL (free)".to_owned()
+        } else {
+            format!("PURCHASE · {}", cost_parts.join(" + "))
+        };
         let negated = crate::data::ResourceDelta {
             credits: -cost.credits,
             energy: -cost.energy,
@@ -157,7 +153,7 @@ fn draw_component_card(
             influence: -cost.influence,
         };
         let affordable = ctx.sim.resources.can_afford(&negated);
-        if term_button(btn, "PURCHASE & INSTALL", affordable, mouse) {
+        if term_button(btn, &label, affordable, mouse) {
             actions.push(UiAction::PurchaseComponent(kind, component.id.clone()));
         }
     }

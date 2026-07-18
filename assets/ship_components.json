@@ -4,22 +4,66 @@
       "id": "colony_barge",
       "name": "Colony Barge",
       "description": "The original hull. Slow, spacious, held together by tradition.",
-      "cost": { "credits": 0 },
-      "stats": { "cargo": 200, "crew_capacity": 12 }
+      "cost": {
+        "credits": 0
+      },
+      "stats": {
+        "cargo": 200,
+        "crew_capacity": 12
+      }
     },
     {
       "id": "light_corvette",
       "name": "Light Corvette Refit",
       "description": "A leaner spaceframe conversion. Less room, better bones.",
-      "cost": { "credits": 500 },
-      "stats": { "cargo": 100, "crew_capacity": 6, "speed": 1 }
+      "cost": {
+        "credits": 500
+      },
+      "stats": {
+        "cargo": 100,
+        "crew_capacity": 6,
+        "speed": 1
+      }
     },
     {
       "id": "generation_ark",
       "name": "Generation Ark Expansion",
       "description": "Hull segments grafted on over decades. A city that flies.",
-      "cost": { "credits": 2500, "minerals": 800 },
-      "stats": { "cargo": 400, "crew_capacity": 24 }
+      "cost": {
+        "credits": 2500,
+        "minerals": 800
+      },
+      "stats": {
+        "cargo": 400,
+        "crew_capacity": 24
+      }
+    },
+    {
+      "id": "habitat_ring",
+      "name": "Rotating Habitat Ring",
+      "description": "A grafted-on ring of spun-gravity decks. Room to grow, if you can spin it.",
+      "cost": {
+        "credits": 2000,
+        "minerals": 400
+      },
+      "stats": {
+        "cargo": 250,
+        "crew_capacity": 30
+      }
+    },
+    {
+      "id": "armored_prow",
+      "name": "Armored Prow",
+      "description": "A reinforced forward mass. Less hold, but it shrugs off the void's insults.",
+      "cost": {
+        "credits": 1500,
+        "minerals": 600
+      },
+      "stats": {
+        "cargo": 120,
+        "crew_capacity": 8,
+        "combat": 1
+      }
     }
   ],
   "engines": [
@@ -27,22 +71,65 @@
       "id": "ion_drive",
       "name": "Ion Drive",
       "description": "Reliable, efficient, and slower than continental drift.",
-      "cost": { "credits": 800, "minerals": 50 },
-      "stats": { "speed": 2 }
+      "cost": {
+        "credits": 800,
+        "minerals": 50
+      },
+      "stats": {
+        "speed": 2
+      }
     },
     {
       "id": "fusion_torch",
       "name": "Fusion Torch",
       "description": "Cuts a decade off a crossing, if the fuel holds.",
-      "cost": { "credits": 1800, "minerals": 200 },
-      "stats": { "speed": 4 }
+      "cost": {
+        "credits": 1800,
+        "minerals": 200
+      },
+      "stats": {
+        "speed": 4
+      }
     },
     {
       "id": "ramscoop_array",
       "name": "Ramscoop Array",
       "description": "Harvests fuel in transit. The long-haul choice.",
-      "cost": { "credits": 3000, "minerals": 400, "energy": 500 },
-      "stats": { "speed": 3, "fuel_regen": 1 }
+      "cost": {
+        "credits": 3000,
+        "minerals": 400,
+        "energy": 500
+      },
+      "stats": {
+        "speed": 3,
+        "fuel_regen": 1
+      }
+    },
+    {
+      "id": "solar_sail",
+      "name": "Solar Sail Array",
+      "description": "Slow, silent, and it never runs dry near a star.",
+      "cost": {
+        "credits": 1200,
+        "minerals": 100
+      },
+      "stats": {
+        "speed": 1,
+        "fuel_regen": 2
+      }
+    },
+    {
+      "id": "warp_coil",
+      "name": "Experimental Warp Coil",
+      "description": "Folds the distance and the fuel budget in equal measure.",
+      "cost": {
+        "credits": 4000,
+        "minerals": 600,
+        "energy": 800
+      },
+      "stats": {
+        "speed": 6
+      }
     }
   ],
   "weapons": [
@@ -50,22 +137,58 @@
       "id": "point_defense",
       "name": "Point Defense Grid",
       "description": "Keeps the debris and the desperate at a distance.",
-      "cost": { "credits": 400 },
-      "stats": { "combat": 1 }
+      "cost": {
+        "credits": 400
+      },
+      "stats": {
+        "combat": 1
+      }
     },
     {
       "id": "pulse_cannon",
       "name": "Pulse Cannon",
       "description": "A deterrent with a paper trail.",
-      "cost": { "credits": 600 },
-      "stats": { "combat": 3 }
+      "cost": {
+        "credits": 600
+      },
+      "stats": {
+        "combat": 3
+      }
     },
     {
       "id": "mass_driver",
       "name": "Mass Driver",
       "description": "Turns spare minerals into diplomacy.",
-      "cost": { "credits": 1400, "minerals": 300 },
-      "stats": { "combat": 5 }
+      "cost": {
+        "credits": 1400,
+        "minerals": 300
+      },
+      "stats": {
+        "combat": 5
+      }
+    },
+    {
+      "id": "flak_screen",
+      "name": "Flak Screen",
+      "description": "A cheap curtain of shrapnel. Discourages the casually hostile.",
+      "cost": {
+        "credits": 500
+      },
+      "stats": {
+        "combat": 2
+      }
+    },
+    {
+      "id": "spinal_railgun",
+      "name": "Spinal Railgun",
+      "description": "The whole ship is the gun. Aim by turning.",
+      "cost": {
+        "credits": 2200,
+        "minerals": 500
+      },
+      "stats": {
+        "combat": 7
+      }
     }
   ]
 }

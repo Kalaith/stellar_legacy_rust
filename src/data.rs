@@ -229,7 +229,9 @@ mod tests {
         assert_eq!(data.legacies.len(), 3);
         assert!(data.events.len() >= 4);
         assert!(!data.contracts.is_empty());
-        assert_eq!(data.ship_components.hulls.len(), 3);
+        assert_eq!(data.ship_components.hulls.len(), 5);
+        assert_eq!(data.ship_components.engines.len(), 5);
+        assert_eq!(data.ship_components.weapons.len(), 5);
         assert_eq!(data.crew_archetypes.len(), 7);
         for legacy_id in ["preservers", "adaptors", "wanderers"] {
             assert!(data.legacies.contains(legacy_id));

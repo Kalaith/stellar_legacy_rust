@@ -133,8 +133,13 @@ Ordered roughly by milestone (GDD §13):
 8. **Content targets from §8** (bulk-content pass, in progress): 30+ events
    (**20/30** so far, 5 per category — 2026-07-19 batch added `hull_fracture`,
    `contagion`, `birth_dearth`, `schooling_crisis`, `course_correction`,
-   `relay_contact`, `first_death_in_space`, `veterans_petition`), 5/5/5
-   components, 6-8 contracts (**4** so far), 6 dilemmas
+   `relay_contact`, `first_death_in_space`, `veterans_petition`), **5/5/5
+   components DONE (2026-07-19)** — added `habitat_ring`/`armored_prow` (hulls),
+   `solar_sail`/`warp_coil` (engines), `flak_screen`/`spinal_railgun` (weapons),
+   each with real stat tradeoffs that feed the item-3 hooks; the Ship Builder
+   card was compacted (96px, cost folded into the button) so a five-deep column
+   fits, and the data-load test asserts 5/5/5. 6-8 contracts (**4** so far),
+   6 dilemmas
    per legacy (**3/6 each DONE 2026-07-19** — added `drift_dialect`/
    `founders_chair` (Preservers), `cold_sleep`/`mirror_test` (Adaptors),
    `marked_port`/`debt_collector` (Wanderers); each engages its legacy's tracked
