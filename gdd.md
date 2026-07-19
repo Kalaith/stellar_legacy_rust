@@ -178,16 +178,22 @@ refit economy that gives past success somewhere to go.*
     to pristine condition with a one-time morale/hope lift, for when repairs can no longer
     keep the old hull flying. A new *ship*, never new *people*: cultural drift does not
     reset — the dynasty and its changed population always carry forward.
-- **What persists, what ends.** Ship condition, loadout, resources, the dynasty and its
-  drifted population all persist across missions (they already live in the one saved
-  `SimState`; wear that is not repaired compounds run over run). Only **dynasty extinction**
-  ends the line — that remains the true game-over. Renown still accrues to the Chronicle and
-  can gate larger, richer charters for later runs (escalation, not reset).
-- **Pacing target.** One mission run should pace to roughly **45–75 minutes** of real play,
-  reached by tuning mission length (in-game years) against decision density (events,
-  dilemmas) plus the drydock phase — **not** by any real-time/background simulation, which
-  stays a non-goal (§12). Time still advances only on an explicit *Advance* (Pillar 4). A
-  cosmetic wall-clock run timer may surface so pacing can be measured and felt.
+- **What persists, what ends — carry on success, reset only on game-over.** When a run
+  ends in *success* (the mission completes), the ship, its loadout, resources, and above all
+  the **dynasty and its drifted population carry across** to the next mission — the people
+  continue to build the legacy (they already live in the one saved `SimState`; unrepaired
+  wear compounds run over run). The *only* thing that resets is **game-over: dynasty
+  extinction**, which ends that run early and starts the player over with a **new ship and
+  new people** (a fresh `SimState`). Renown still accrues to the Chronicle across all of it
+  and can gate larger, richer charters for later runs (escalation, not reset).
+- **Pacing — ~1 hour soft cap, ~30 min floor.** One successful mission run should pace to
+  roughly **30–60 minutes** of real play: ~1 hour is a soft cap, and a run should *not* come
+  in **under 30 minutes** — the only way a run ends sooner is game-over (extinction). Reached
+  by tuning mission length (in-game years) against decision density (events, dilemmas) plus
+  the drydock phase — **not** by any real-time/background simulation, which stays a non-goal
+  (§12). Time still advances only on an explicit *Advance* (Pillar 4). A cosmetic wall-clock
+  run timer surfaces so the floor/cap can be measured and felt; the mission must be sized so
+  even brisk, decisive play cannot clear it in under ~30 minutes.
 
 See PLAN.md "M4 — The Voyage-and-Return Refit Loop" for the code-grounded build order.
 
@@ -559,13 +565,13 @@ src/
      summary feels thin.
   3. Exact automation/delegation UI — how many domains can be delegated simultaneously,
      and does delegating everything trivialize the "century-scale" pacing goal?
-  4. **(v2, §3.1)** Is "a run = one mission on a persistent ship" the intended unit, or
-     should a run be a whole campaign with the ship carried across *campaigns*? Leaning
-     strongly toward the former — it needs no new persistence channel (the ship already
-     lives in one saved `SimState`, and "between missions" falls out of `contract == None`),
-     and it matches "buy upgrades/repairs for the next run" cleanly. The latter would
-     require a ship-carry channel analogous to Heritage/Chronicle. Revisit only if the
-     owner wants runs to be shorter, disposable campaigns rather than legs of one voyage.
+  4. **(v2, §3.1) RESOLVED 2026-07-19 — owner confirmed the persistent-ship model.** A run
+     is one mission on a persistent ship; on success the people/dynasty carry across and
+     continue to build the legacy, and only game-over (extinction) resets to a new ship and
+     new people. This needs no new persistence channel (the ship already lives in one saved
+     `SimState`; "between missions" is `contract == None`). Also settled: ~1 hour is a soft
+     cap and a run has a ~30-minute floor (sub-30 only via game-over). Still open: are
+     repair/commission verbs port-only or priced-anytime (leaning priced-anytime).
 
 ---
 

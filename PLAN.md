@@ -15,10 +15,12 @@ components, 8 contracts, 8 dilemmas per legacy, doubled name pools.
 **New direction (owner-directed 2026-07-19):** a **Voyage-and-Return Refit Loop** —
 one *run* = one mission flown by a persistent ship that leaves fresh and hopeful and
 arrives back worn and changed, with a between-missions **drydock** economy (repair /
-upgrade / commission a new ship) funding the next run, paced to ~45–75 min. Design
-captured in `gdd.md §3.1`; the code-grounded build order is **M4** below. This is now the
-active work; the ko-fi/index.html marketing screenshots (item 9) remain the only
-human-gated leftover from M3.
+upgrade / commission a new ship) funding the next run. Paced to **30–60 min** (soft cap
+~1 hr, ~30 min floor; a run only ends sooner via game-over). On success the people/dynasty
+**carry across** to keep building the legacy; only **game-over (dynasty extinction)** resets
+to a new ship and new people. Design in `gdd.md §3.1`; the code-grounded build order is
+**M4** below. This is now the active work; the ko-fi/index.html marketing screenshots
+(item 9) remain the only human-gated leftover from M3.
 
 Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
@@ -272,10 +274,12 @@ missions" is simply the state `sim.contract == None`. Extinction (`dynasty.extin
 `game_over.rs`) stays the true game-over. The work is to make the *arc* felt and give the
 *port phase* real verbs.
 
-**Working assumption (see gdd.md §12 Q4):** a run = one mission on a persistent ship
-(recommended). If the owner instead wants runs to be disposable campaigns with the ship
-carried across *campaigns*, M4.3–M4.5 still hold but would need a ship-carry channel like
-Heritage — flag before building if that's the intent.
+**Run model (owner-confirmed 2026-07-19, gdd.md §12 Q4):** a run = one mission on a
+persistent ship. On success the people/dynasty carry across in the same `SimState` and keep
+building the legacy; **game-over (dynasty extinction) is the only reset** — it ends the run
+early and starts a fresh ship + fresh people. Pacing is a **~30-min floor / ~1-hr soft cap**:
+a successful run must not be clearable in under ~30 min (sub-30 only via game-over), so
+mission length/decision density (M4.2) must be sized to guarantee the floor.
 
 1. **M4.1 — Voyage drift (the people change).** The one genuinely new sim mechanic. Add
    a `game_config.json → voyage_drift` block and apply it per year in
@@ -288,12 +292,15 @@ Heritage — flag before building if that's the intent.
    makes the crew visibly diverge over a long run even with no events. Surface a "distance
    from the founders" readout on the dashboard. Test: over N years drift accrues
    monotonically and stays in 0–1.
-2. **M4.2 — Honest degradation curve.** Retune (config-only where possible) so a single
-   long mission ends ~40–55% hull — "held together on hope and prayers." Raise
-   `hull_decay_per_year`/`life_support_decay_per_year` and/or widen the default mission
-   length so wear is felt; add a small per-year `spare_parts` consumption (today
-   `spare_parts` moves only via events) so restocking matters. Decay already compounds
-   across missions in one `SimState` (nothing resets it), so skipping repairs bites.
+2. **M4.2 — Honest degradation curve + the 30-min floor.** Retune (config-only where
+   possible) so a single long mission ends ~40–55% hull — "held together on hope and
+   prayers." Raise `hull_decay_per_year`/`life_support_decay_per_year` and/or widen the
+   default mission length so wear is felt; add a small per-year `spare_parts` consumption
+   (today `spare_parts` moves only via events) so restocking matters. Decay already
+   compounds across missions in one `SimState` (nothing resets it), so skipping repairs
+   bites. **This item also owns the pacing floor:** size the default mission length (in
+   years) so even brisk, decisive play cannot clear a successful run in under ~30 min, with
+   the ~1-hr soft cap as the upper band. Measure against the M4.6 run timer and adjust.
 3. **M4.3 — Repair verbs (drydock sink).** New `UiAction::Repair(RepairKind)` (Hull /
    LifeSupport / Fuel / Parts) dispatched next to `purchase_component`
    (`game.rs:906-935`): each costs credits+minerals from config, restores its stat toward
@@ -321,9 +328,10 @@ Heritage — flag before building if that's the intent.
    `heritage.rs:43-65`) so later runs escalate. Keep flat for v1; add tiers only if runs
    start to feel same-y.
 
-**Open questions for the owner** (don't block M4.1–M4.2 on these): run-model interpretation
-(gdd.md §12 Q4); is 1 hour a soft target (recommended, tuned via M4.2/M4.6) or a hard cap;
-should repair/commission be port-only or priced-anytime (recommended anytime).
+**Resolved (2026-07-19):** run-model = persistent ship, carry on success / reset only on
+game-over (gdd.md §12 Q4); pacing = ~30-min floor, ~1-hr soft cap. **Still open** (doesn't
+block M4.1–M4.2): should repair/commission be port-only or priced-anytime (leaning
+priced-anytime).
 
 ## Conventions the framework already follows (keep them)
 
