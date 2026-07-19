@@ -10,7 +10,8 @@ should build, in order.*
 snapshot; the numbered log below records what shipped since).* Every numbered item
 (1–10, the original M1–M3 scope) and all three cosmetic nits are **done**; the game is
 content-complete against GDD §8 (and past several minimums) — 46 events, 5/5/5
-components, 8 contracts, 8 dilemmas per legacy, doubled name pools.
+components, 10 contracts (across a 0/100/250/400 renown ladder), 8 dilemmas per
+legacy, doubled name pools.
 
 **New direction (owner-directed 2026-07-19):** a **Voyage-and-Return Refit Loop** —
 one *run* = one mission flown by a persistent ship that leaves fresh and hopeful and
@@ -403,7 +404,11 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    view, on-theme for the CRT); `AcceptContract` also refuses below the threshold
    (defense-in-depth). Data-load test asserts both gated and founding-available charters
    exist. Verified build/clippy/fmt/57 tests + `drydock` capture (renown 82 → four charters
-   open, `LOCKED · RENOWN 100/250` on the rest). This was the last M4 item.
+   open, `LOCKED · RENOWN 100/250` on the rest). This was the last M4 item. **Content pass
+   (2026-07-19): 8→10 charters** — added `warden_patrol` (rescue, renown 100) and
+   `the_long_dark` (exploration, renown 400 — an 80-year capstone for storied dynasties),
+   extending the ladder to **0 / 100 / 250 / 400** (4/3/2/1 charters); the two-column grid
+   holds 10 (5 rows) cleanly; data-load floor bumped to ≥10.
 
 **Resolved (2026-07-19):** run-model = persistent ship, carry on success / reset only on
 game-over (gdd.md §12 Q4); pacing = ~30-min floor, ~1-hr soft cap; **repair/loadout split —

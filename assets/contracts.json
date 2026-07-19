@@ -564,5 +564,157 @@
       "influence": 320
     },
     "min_renown": 0
+  },
+  {
+    "id": "warden_patrol",
+    "name": "Warden Mandate: The Cinder Lane",
+    "objective": "rescue",
+    "description": "Forty years standing guard over a lawless shipping lane — escorting convoys, answering distress calls, and pulling the wrecked from the dark before the scavengers do.",
+    "target_duration_years": 42,
+    "min_renown": 100,
+    "milestones": [
+      {
+        "id": "lane_reached",
+        "name": "On station at the Cinder Lane",
+        "progress_threshold": 0.15
+      },
+      {
+        "id": "first_rescue",
+        "name": "First convoy escorted home",
+        "progress_threshold": 0.5,
+        "reward": {
+          "influence": 60
+        }
+      },
+      {
+        "id": "lane_pacified",
+        "name": "The lane runs quiet",
+        "progress_threshold": 0.85,
+        "reward": {
+          "credits": 600
+        }
+      },
+      {
+        "id": "mandate_closed",
+        "name": "Warden mandate discharged",
+        "progress_threshold": 1.0
+      }
+    ],
+    "success_metrics": [
+      {
+        "id": "population_survival",
+        "kind": "population_survival",
+        "name": "Population survival",
+        "weight": 0.3,
+        "target": 0.85
+      },
+      {
+        "id": "mission_completion",
+        "kind": "mission_completion",
+        "name": "Mission completion",
+        "weight": 0.35,
+        "target": 1.0
+      },
+      {
+        "id": "resource_efficiency",
+        "kind": "resource_efficiency",
+        "name": "Resource efficiency",
+        "weight": 0.15,
+        "target": 0.65
+      },
+      {
+        "id": "social_cohesion",
+        "kind": "social_cohesion",
+        "name": "Social cohesion",
+        "weight": 0.2,
+        "target": 0.6
+      }
+    ],
+    "failure_risks": [
+      "morale_collapse",
+      "overcrowding",
+      "navigation_error"
+    ],
+    "reward": {
+      "credits": 6000,
+      "influence": 300
+    }
+  },
+  {
+    "id": "the_long_dark",
+    "name": "The Long Dark: Charter to the Rim",
+    "objective": "exploration",
+    "description": "Eighty years to the galaxy's ragged edge and back, charting the black between the last stars. The founders dreamed of this run and never dared it. Only a storied ship should.",
+    "target_duration_years": 80,
+    "min_renown": 400,
+    "milestones": [
+      {
+        "id": "last_star",
+        "name": "Last charted star behind us",
+        "progress_threshold": 0.15
+      },
+      {
+        "id": "the_deep",
+        "name": "Into the true dark",
+        "progress_threshold": 0.45,
+        "reward": {
+          "influence": 100
+        }
+      },
+      {
+        "id": "the_rim",
+        "name": "The rim reached and read",
+        "progress_threshold": 0.75,
+        "reward": {
+          "credits": 800,
+          "influence": 100
+        }
+      },
+      {
+        "id": "return_home",
+        "name": "The long way home, charted",
+        "progress_threshold": 1.0
+      }
+    ],
+    "success_metrics": [
+      {
+        "id": "population_survival",
+        "kind": "population_survival",
+        "name": "Population survival",
+        "weight": 0.25,
+        "target": 0.8
+      },
+      {
+        "id": "mission_completion",
+        "kind": "mission_completion",
+        "name": "Mission completion",
+        "weight": 0.45,
+        "target": 1.0
+      },
+      {
+        "id": "resource_efficiency",
+        "kind": "resource_efficiency",
+        "name": "Resource efficiency",
+        "weight": 0.1,
+        "target": 0.65
+      },
+      {
+        "id": "social_cohesion",
+        "kind": "social_cohesion",
+        "name": "Social cohesion",
+        "weight": 0.2,
+        "target": 0.55
+      }
+    ],
+    "failure_risks": [
+      "navigation_error",
+      "morale_collapse",
+      "hull_breach",
+      "supply_shortfall"
+    ],
+    "reward": {
+      "credits": 9000,
+      "influence": 500
+    }
   }
 ]

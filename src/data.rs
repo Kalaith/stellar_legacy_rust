@@ -300,7 +300,10 @@ mod tests {
         assert_eq!(data.config.game_name, "stellar_legacy");
         assert_eq!(data.legacies.len(), 3);
         assert!(data.events.len() >= 4);
-        assert!(data.contracts.len() >= 8, "§8 target is 6-8 contracts");
+        assert!(
+            data.contracts.len() >= 10,
+            "§8 target was 6-8 contracts; the pool has since grown"
+        );
         // Charter tiering (PLAN M4.8): some charters gate behind renown, some
         // are available from the founding.
         assert!(
