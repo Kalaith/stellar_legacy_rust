@@ -408,7 +408,10 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    (2026-07-19): 8→10 charters** — added `warden_patrol` (rescue, renown 100) and
    `the_long_dark` (exploration, renown 400 — an 80-year capstone for storied dynasties),
    extending the ladder to **0 / 100 / 250 / 400** (4/3/2/1 charters); the two-column grid
-   holds 10 (5 rows) cleanly; data-load floor bumped to ≥10.
+   holds 10 (5 rows) cleanly; data-load floor bumped to ≥10. **Legibility fix (2026-07-19):**
+   the drydock CONDITION line now shows the dynasty's current **`RENOWN N`** next to the
+   `LOCKED · RENOWN N` gates, so the escalation path reads at a glance (e.g. renown 82 → the
+   100/250/400 locks are clearly "how far to go").
 
 **Resolved (2026-07-19):** run-model = persistent ship, carry on success / reset only on
 game-over (gdd.md §12 Q4); pacing = ~30-min floor, ~1-hr soft cap; **repair/loadout split —

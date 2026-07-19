@@ -157,6 +157,10 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
     term_panel(area, Some("IN DRYDOCK // AVAILABLE CHARTERS"));
     let content = area.inset(20.0);
     let sim = ctx.sim;
+    // Charter tiering (PLAN M4.8): richer charters unlock as Chronicle renown
+    // accrues, so a storied dynasty earns the century-long prestige missions.
+    // Shown in the condition line so the LOCKED · RENOWN N gates are legible.
+    let renown = crate::heritage::renown(ctx.chronicle);
     let mut y = content.y + 40.0;
 
     // Homecoming: the mission just concluded (latest Chronicle entry).
@@ -188,11 +192,12 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
     // Current condition — a reminder to refit before casting off again.
     draw_ui_text_ex(
         &format!(
-            "CONDITION · hull {:.0}% · life {:.0}% · parts {} · crew {}",
+            "CONDITION · hull {:.0}% · life {:.0}% · parts {} · crew {} · RENOWN {}",
             sim.ship.hull_integrity * 100.0,
             sim.ship.life_support * 100.0,
             sim.ship.spare_parts,
-            sim.crew.len()
+            sim.crew.len(),
+            renown
         ),
         content.x,
         y,
@@ -211,9 +216,6 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
     // scrollbar (each column is half-width; four rows fit comfortably).
     const GAP: f32 = 16.0;
     let col_w = (content.w - GAP) / 2.0;
-    // Charter tiering (PLAN M4.8): richer charters unlock as Chronicle renown
-    // accrues, so a storied dynasty earns the century-long prestige missions.
-    let renown = crate::heritage::renown(ctx.chronicle);
 
     for (i, id) in GameData::sorted_ids(&ctx.data.contracts)
         .into_iter()
