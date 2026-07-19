@@ -119,6 +119,8 @@ pub struct GameConfig {
     pub repair: RepairConfig,
     /// Gating for installing salvaged parts underway (PLAN M4.4).
     pub field_install: FieldInstallConfig,
+    /// Commission-a-new-ship tunables (PLAN M4.5).
+    pub commission: CommissionConfig,
     /// Heritage tiers (GDD §7), ascending by `min_renown`. The highest tier a
     /// new dynasty's accumulated Chronicle renown clears grants its bonus.
     pub heritage: Vec<HeritageTier>,
@@ -201,6 +203,18 @@ pub struct FieldInstallConfig {
     pub skill_required: u32,
     pub parts_cost: i64,
     pub minerals_cost: i64,
+}
+
+/// Commission-a-new-ship tunables (PLAN M4.5). Commissioning a hull costs the
+/// hull's own catalog price plus this premium (a whole fresh vessel), fully
+/// refits the ship, and lifts morale/unity — a new ship renews hope. It never
+/// resets the population's drift; the people carry across.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct CommissionConfig {
+    pub premium_credits: i64,
+    pub premium_minerals: i64,
+    pub hope_morale: f32,
+    pub hope_unity: f32,
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per

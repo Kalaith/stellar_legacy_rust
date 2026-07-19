@@ -6,7 +6,7 @@
 //! stats — no RNG.
 
 use crate::data::ship_components::{ComponentKind, ComponentStats};
-use crate::data::{GameConfig, GameData, ResourceDelta};
+use crate::data::{GameConfig, GameData, PopulationDelta, ResourceDelta};
 use crate::state::sim::SimState;
 
 /// Whether a salvaged part can be installed right now, and if not, why
@@ -164,6 +164,48 @@ pub fn field_repair(
     sim.push_log(format!(
         "{} patched in the field — it will hold, for now.",
         kind.label()
+    ));
+    Ok(())
+}
+
+/// Commission a new ship (port-only, PLAN M4.5): swap to a new hull, fully
+/// refit the vessel, and lift the crew's morale — a fresh hull renews hope. The
+/// people carry across unchanged (drift/adaptation are NOT reset). Costs the
+/// hull's catalog price plus a commission premium.
+pub fn commission_ship(sim: &mut SimState, data: &GameData, hull_id: &str) -> Result<(), String> {
+    if sim.contract.is_some() {
+        return Err("A new ship can only be commissioned in port.".to_owned());
+    }
+    let Some(hull) = data.ship_components.find(ComponentKind::Hull, hull_id) else {
+        return Err("Unknown hull.".to_owned());
+    };
+    let cm = &data.config.commission;
+    let cost = ResourceDelta {
+        credits: -(hull.cost.credits + cm.premium_credits),
+        minerals: -(hull.cost.minerals + cm.premium_minerals),
+        energy: -hull.cost.energy,
+        ..Default::default()
+    };
+    if !sim.resources.can_afford(&cost) {
+        return Err("The treasury cannot cover a new ship.".to_owned());
+    }
+    let name = hull.name.clone();
+    sim.resources.apply(&cost);
+    sim.ship.hull = hull_id.to_owned();
+    sim.ship.hull_integrity = 1.0;
+    sim.ship.life_support = 1.0;
+    sim.ship.fuel = 1.0;
+    if sim.ship.spare_parts < data.config.repair.full_parts_restock {
+        sim.ship.spare_parts = data.config.repair.full_parts_restock;
+    }
+    // A fresh hull renews hope — but the people are who they've become.
+    sim.population.apply(&PopulationDelta {
+        morale: cm.hope_morale,
+        unity: cm.hope_unity,
+        ..Default::default()
+    });
+    sim.push_log(format!(
+        "A new ship christened: the {name}. Hope runs high again."
     ));
     Ok(())
 }
@@ -394,6 +436,48 @@ mod tests {
             !sim.ship.salvage.is_empty(),
             "boarding a derelict fills the salvage hold"
         );
+    }
+
+    #[test]
+    fn commission_refits_and_lifts_hope_but_keeps_the_people() {
+        use crate::simulation::contract::start_contract;
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        sim.resources.credits = 100_000;
+        sim.resources.minerals = 100_000;
+        sim.ship.hull_integrity = 0.3;
+        sim.ship.life_support = 0.4;
+        sim.ship.spare_parts = 0;
+        sim.population.morale = 0.4;
+        let drift_before = sim.population.cultural_drift;
+
+        // Underway: refused.
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        assert!(commission_ship(&mut sim, &data, "generation_ark").is_err());
+
+        // In port: swaps hull, full refit, morale lift; the people don't reset.
+        sim.contract = None;
+        commission_ship(&mut sim, &data, "generation_ark").unwrap();
+        assert_eq!(sim.ship.hull, "generation_ark");
+        assert_eq!(sim.ship.hull_integrity, 1.0);
+        assert_eq!(sim.ship.life_support, 1.0);
+        assert!(sim.ship.spare_parts >= data.config.repair.full_parts_restock);
+        assert!(sim.population.morale > 0.4, "a fresh hull lifts hope");
+        assert_eq!(
+            sim.population.cultural_drift, drift_before,
+            "commissioning a ship never resets who the people have become"
+        );
+    }
+
+    #[test]
+    fn commission_needs_the_full_price() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        sim.contract = None;
+        sim.resources.credits = 0;
+        sim.resources.minerals = 0;
+        assert!(commission_ship(&mut sim, &data, "generation_ark").is_err());
     }
 
     #[test]

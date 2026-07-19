@@ -95,6 +95,12 @@
     "parts_cost": 6,
     "minerals_cost": 200
   },
+  "commission": {
+    "premium_credits": 3000,
+    "premium_minerals": 800,
+    "hope_morale": 0.15,
+    "hope_unity": 0.08
+  },
   "heritage": [
     { "min_renown": 0, "name": "Founding" },
     { "min_renown": 100, "name": "Remembered", "credits": 500, "tradition": 5 },

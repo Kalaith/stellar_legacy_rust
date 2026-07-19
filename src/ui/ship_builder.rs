@@ -159,6 +159,29 @@ fn draw_component_card(
         if term_button(btn, label, enabled, mouse) {
             actions.push(UiAction::InstallSalvage(component.id.clone()));
         }
+    } else if kind == ComponentKind::Hull {
+        // A new hull is a whole new ship — commissioning it fully refits the
+        // vessel and lifts hope, port-only, at the hull price + a premium
+        // (PLAN M4.5).
+        let cm = ctx.data.config.commission;
+        let in_port = ctx.sim.contract.is_none();
+        let total_credits = cost.credits + cm.premium_credits;
+        let total_minerals = cost.minerals + cm.premium_minerals;
+        let label = if in_port {
+            let mut bits = vec![format!("{total_credits} cr")];
+            if total_minerals > 0 {
+                bits.push(format!("{total_minerals} min"));
+            }
+            format!("COMMISSION · {}", bits.join(" + "))
+        } else {
+            "COMMISSION · PORT ONLY".to_owned()
+        };
+        let affordable = in_port
+            && ctx.sim.resources.credits >= total_credits
+            && ctx.sim.resources.minerals >= total_minerals;
+        if term_button(btn, &label, affordable, mouse) {
+            actions.push(UiAction::CommissionShip(component.id.clone()));
+        }
     } else {
         let label = if cost_parts.is_empty() {
             "INSTALL (free)".to_owned()

@@ -840,6 +840,19 @@ impl Game {
                 }
                 None
             }
+            UiAction::CommissionShip(id) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crate::simulation::ship::commission_ship(
+                        &mut gameplay.sim,
+                        &self.data,
+                        &id,
+                    ) {
+                        Ok(()) => self.notifications.success("New ship commissioned."),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
             UiAction::Buy(resource, amount) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     match market::buy(&mut gameplay.sim, resource, amount) {

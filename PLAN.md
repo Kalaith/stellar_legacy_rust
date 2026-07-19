@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3, M4.4 done)
+## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3–M4.5 done)
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -22,7 +22,7 @@ to a new ship and new people. Design in `gdd.md §3.1`; the code-grounded build 
 **M4** below. This is now the active work; the ko-fi/index.html marketing screenshots
 (item 9) remain the only human-gated leftover from M3.
 
-Verified: `cargo test` (**55 tests green**, incl. a 250-year soak/integration
+Verified: `cargo test` (**57 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
 fmt` (applied), WASM target checks (`cargo check --release --target
 wasm32-unknown-unknown`), and headless UI captures for ~20 scenes under
@@ -344,11 +344,19 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    DRYDOCK/ENGINEER/PARTS`) underway. New `data::FieldInstallConfig` + config `field_install`
    block. 3 unit tests (field install gated by crew+part; free in port; grant lands in the
    hold). Verified build/clippy/fmt/55 tests + `ship` capture.
-5. **M4.5 — Commission a new ship (port-only).** New `UiAction::CommissionShip(hull_id)`,
-   allowed only when `sim.contract.is_none()`: a large-credit purchase that swaps `ship.hull`,
-   restores hull/life-support/fuel/parts to full, and grants a one-time morale/hope lift —
-   but does **not** reset `cultural_drift`/`adaptation` (a new ship, never new people). Log a
-   christening line. This is the owner's "buy a new ship for the next run."
+5. ~~**M4.5 — Commission a new ship (port-only).**~~ **DONE (2026-07-19).**
+   `ship::commission_ship`, `UiAction::CommissionShip(hull_id)`, dispatched in `game.rs` —
+   allowed only when `sim.contract.is_none()`. Swaps `ship.hull`, restores
+   hull/life-support/fuel to 1.0 and tops parts up, and lifts `morale`/`unity` by
+   `commission.hope_*` — but **never resets `cultural_drift`/`adaptation`** (a new ship, never
+   new people; unit-tested). Costs the hull's catalog price **plus** a commission premium
+   (`commission.premium_credits` 3000 + `premium_minerals` 800). New `data::CommissionConfig`
+   + config `commission` block. **UI:** the Ship-Builder hull cards now route to COMMISSION
+   instead of the bare component-swap — the `ship` capture shows each hull as
+   `COMMISSION · {price+premium}` (e.g. Generation Ark 5500 cr + 1600 min), port-gated
+   (`COMMISSION · PORT ONLY` underway); engines/weapons keep PURCHASE. 2 unit tests
+   (commission refits + lifts hope + keeps the people; needs the full price). Verified
+   build/clippy/fmt/57 tests + `ship` capture.
 6. **M4.6 — The drydock phase + the port/underway gate.** When `sim.contract == None` and
    the dynasty lives, frame the arrival-and-refit beat: a one-time **Homecoming** summary on
    arrival (years this mission, hull + population change since departure, reward banked) and
