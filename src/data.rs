@@ -6,6 +6,8 @@ pub mod events;
 pub mod legacies;
 pub mod ship_components;
 
+use std::collections::HashMap;
+
 use macroquad_toolkit::assets::TextureConfig;
 use macroquad_toolkit::data_loader::{
     load_embedded_json, load_embedded_json_labeled, DataRegistry,
@@ -104,6 +106,8 @@ pub struct GameConfig {
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
+    /// Per-year population drift over a voyage (PLAN M4.1).
+    pub voyage_drift: VoyageDrift,
     /// Heritage tiers (GDD §7), ascending by `min_renown`. The highest tier a
     /// new dynasty's accumulated Chronicle renown clears grants its bonus.
     pub heritage: Vec<HeritageTier>,
@@ -143,6 +147,23 @@ pub struct ShipConfig {
     pub combat_dilemma_odds_per_point: f32,
     /// Ceiling on an effective dilemma success chance after the combat bonus.
     pub dilemma_odds_cap: f32,
+}
+
+/// Per-year population drift over a voyage (PLAN M4.1): a long mission changes
+/// the people, not just the ship. Applied every year in `simulation::tick`,
+/// deterministic (no RNG) and clamped by `PopulationState::apply`. The identity
+/// terms (adaptation / cultural_drift / legacy_loyalty) are scaled by a
+/// per-legacy multiplier so Adaptors change fastest and Preservers slowest; the
+/// voyage strain on morale/unity is universal (not scaled).
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VoyageDrift {
+    pub adaptation_per_year: f32,
+    pub cultural_drift_per_year: f32,
+    pub legacy_loyalty_per_year: f32,
+    pub morale_strain_per_year: f32,
+    pub unity_strain_per_year: f32,
+    /// Legacy id → magnitude multiplier for the identity terms.
+    pub legacy_multipliers: HashMap<String, f32>,
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per

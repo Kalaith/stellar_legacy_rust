@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 (the refit loop) newly specified, not yet built
+## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1 done)
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -22,7 +22,7 @@ to a new ship and new people. Design in `gdd.md §3.1`; the code-grounded build 
 **M4** below. This is now the active work; the ko-fi/index.html marketing screenshots
 (item 9) remain the only human-gated leftover from M3.
 
-Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
+Verified: `cargo test` (**48 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
 fmt` (applied), WASM target checks (`cargo check --release --target
 wasm32-unknown-unknown`), and headless UI captures for ~20 scenes under
@@ -281,17 +281,21 @@ early and starts a fresh ship + fresh people. Pacing is a **~30-min floor / ~1-h
 a successful run must not be clearable in under ~30 min (sub-30 only via game-over), so
 mission length/decision density (M4.2) must be sized to guarantee the floor.
 
-1. **M4.1 — Voyage drift (the people change).** The one genuinely new sim mechanic. Add
-   a `game_config.json → voyage_drift` block and apply it per year in
-   `simulation/tick.rs` (alongside the hull/life-support decay at `tick.rs:73-74`): small
-   deltas that raise `population.adaptation` and `cultural_drift`, nudge `legacy_loyalty`
-   toward the faction pull, and slightly erode `morale`/`unity` under voyage strain,
-   scaled by a per-legacy modifier (Adaptors fastest, Preservers slowest). Deterministic
-   (no RNG), clamped via `PopulationState::apply` (`sim.rs:80-88`). Today
-   `adaptation`/`cultural_drift`/`legacy_loyalty`/`stability` move *only* on events — this
-   makes the crew visibly diverge over a long run even with no events. Surface a "distance
-   from the founders" readout on the dashboard. Test: over N years drift accrues
-   monotonically and stays in 0–1.
+1. ~~**M4.1 — Voyage drift (the people change).**~~ **DONE (2026-07-19).** The one
+   genuinely new sim mechanic. New `game_config.json → voyage_drift` block
+   (`data::VoyageDrift`: per-year `adaptation`/`cultural_drift`/`legacy_loyalty` deltas +
+   `morale`/`unity` strain + a per-legacy multiplier map) applied every year in
+   `simulation/tick.rs::apply_voyage_drift` (right after the hull/life-support decay):
+   adaptation and cultural drift rise, loyalty to the founders fades, morale/unity take
+   voyage strain, with the identity terms scaled by the legacy multiplier
+   (`preservers 0.6` / `wanderers 1.0` / `adaptors 1.5`). Deterministic (no RNG), clamped
+   via `PopulationState::apply`. Today these stats otherwise move only on events; now the
+   crew visibly diverges over a long run even in quiet years. Dashboard gained a **FROM THE
+   FOUNDING** readout (`dashboard::founder_distance` + evocative label — "true to the
+   founding" … "unrecognizable"). Two unit tests: drift changes the people and stays 0–1;
+   Adaptors change faster than Preservers. Verified build/clippy/fmt/48 tests + `gameplay`
+   capture. **Numbers are a conservative first pass — tune against a real playthrough with
+   the M4.7 timer.**
 2. **M4.2 — Honest degradation curve + the 30-min floor.** Retune (config-only where
    possible) so a single long mission ends ~40–55% hull — "held together on hope and
    prayers." Raise `hull_decay_per_year`/`life_support_decay_per_year` and/or widen the

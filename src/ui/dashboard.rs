@@ -1,5 +1,6 @@
 //! Dashboard: ship vitals, population, advance-time control, ship's log.
 
+use crate::state::sim::PopulationState;
 use crate::state::Screen;
 use crate::ui::{
     stat_line, term, term_button, term_meter, term_meter_toned, term_panel, GameplayCtx, MeterTone,
@@ -169,7 +170,57 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
         ),
         term::primary(),
     );
+    y += 24.0;
+
+    // How far this crew has drifted from the hopeful founders who cast off
+    // (PLAN M4.1). Voyage drift makes this climb over a long run. The
+    // percentage sits in the stat column; the evocative descriptor gets its
+    // own full-width line so neither collides with the label.
+    let dist = founder_distance(pop);
+    let dist_color = if dist < 0.5 {
+        term::primary()
+    } else {
+        term::alert()
+    };
+    stat_line(
+        content.x,
+        y,
+        "FROM THE FOUNDING",
+        &format!("{:.0}%", dist * 100.0),
+        dist_color,
+    );
+    y += 18.0;
+    draw_ui_text_ex(
+        &format!("> {}", founder_distance_label(dist)),
+        content.x,
+        y,
+        TextStyle::new(13.0, term::dim()).params(),
+    );
     let _ = Screen::Dashboard;
+}
+
+/// How far the population has diverged from the founding crew (0 = as the
+/// founders were, 1 = unrecognizable), a composite of risen adaptation, risen
+/// cultural drift, and faded legacy loyalty. Baselines mirror the founding
+/// values set in `SimState::new_campaign`.
+fn founder_distance(pop: &PopulationState) -> f32 {
+    const F_ADAPT: f32 = 0.3;
+    const F_DRIFT: f32 = 0.1;
+    const F_LOYALTY: f32 = 0.6;
+    let a = ((pop.adaptation - F_ADAPT) / (1.0 - F_ADAPT)).clamp(0.0, 1.0);
+    let d = ((pop.cultural_drift - F_DRIFT) / (1.0 - F_DRIFT)).clamp(0.0, 1.0);
+    let l = ((F_LOYALTY - pop.legacy_loyalty) / F_LOYALTY).clamp(0.0, 1.0);
+    (a + d + l) / 3.0
+}
+
+fn founder_distance_label(distance: f32) -> &'static str {
+    match distance {
+        x if x < 0.15 => "true to the founding",
+        x if x < 0.40 => "quietly diverging",
+        x if x < 0.65 => "a changed people",
+        x if x < 0.85 => "distant from the founders",
+        _ => "unrecognizable",
+    }
 }
 
 /// Characters-per-second for the newest log line streaming in.

@@ -67,6 +67,18 @@
     "combat_dilemma_odds_per_point": 0.04,
     "dilemma_odds_cap": 0.95
   },
+  "voyage_drift": {
+    "adaptation_per_year": 0.004,
+    "cultural_drift_per_year": 0.004,
+    "legacy_loyalty_per_year": -0.003,
+    "morale_strain_per_year": -0.0012,
+    "unity_strain_per_year": -0.0012,
+    "legacy_multipliers": {
+      "preservers": 0.6,
+      "adaptors": 1.5,
+      "wanderers": 1.0
+    }
+  },
   "heritage": [
     { "min_renown": 0, "name": "Founding" },
     { "min_renown": 100, "name": "Remembered", "credits": 500, "tradition": 5 },

@@ -4,7 +4,7 @@
 //! one in-game year: production, upkeep, wear, aging, contract progress,
 //! market drift, then an event roll.
 
-use crate::data::{GameData, ResourceDelta};
+use crate::data::{GameConfig, GameData, PopulationDelta, ResourceDelta};
 use crate::simulation::contract::{score_success, SuccessLevel};
 use crate::simulation::{contract, crew, event_resolver, legacy, market, ship, succession};
 use crate::state::sim::SimState;
@@ -72,6 +72,12 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
     // Ship wear.
     sim.ship.hull_integrity = (sim.ship.hull_integrity - config.hull_decay_per_year).max(0.0);
     sim.ship.life_support = (sim.ship.life_support - config.life_support_decay_per_year).max(0.0);
+
+    // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
+    // ship — adaptation and cultural drift rise, loyalty to the founders fades,
+    // and the strain wears at morale and unity. Deterministic; the founders'
+    // hopeful crew slowly becomes someone else the longer they fly.
+    apply_voyage_drift(sim, config);
 
     // Generational tick (GDD §5.3).
     sim.dynasty.years_since_generation += 1;
@@ -164,6 +170,26 @@ fn roll_yearly_event(sim: &mut SimState, data: &GameData, report: &mut TickRepor
     }
 }
 
+/// Apply one year of voyage drift to the population (PLAN M4.1). Identity terms
+/// scale by the legacy's multiplier (Adaptors fastest, Preservers slowest); the
+/// morale/unity strain is universal. Clamped to 0-1 by `PopulationState::apply`.
+fn apply_voyage_drift(sim: &mut SimState, config: &GameConfig) {
+    let vd = &config.voyage_drift;
+    let mult = vd
+        .legacy_multipliers
+        .get(&sim.legacy.legacy_id)
+        .copied()
+        .unwrap_or(1.0);
+    sim.population.apply(&PopulationDelta {
+        adaptation: vd.adaptation_per_year * mult,
+        cultural_drift: vd.cultural_drift_per_year * mult,
+        legacy_loyalty: vd.legacy_loyalty_per_year * mult,
+        morale: vd.morale_strain_per_year,
+        unity: vd.unity_strain_per_year,
+        ..Default::default()
+    });
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -174,6 +200,51 @@ mod tests {
         let data = GameData::load().unwrap();
         let sim = SimState::new_campaign(&data, "preservers", seed);
         (data, sim)
+    }
+
+    #[test]
+    fn voyage_drift_changes_the_people_and_stays_bounded() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "wanderers", 1);
+        let (a0, d0, l0) = (
+            sim.population.adaptation,
+            sim.population.cultural_drift,
+            sim.population.legacy_loyalty,
+        );
+        // A long voyage with no events at all still reshapes the crew.
+        for _ in 0..40 {
+            apply_voyage_drift(&mut sim, &data.config);
+        }
+        assert!(sim.population.adaptation > a0, "adaptation rises underway");
+        assert!(sim.population.cultural_drift > d0, "cultural drift rises");
+        assert!(
+            sim.population.legacy_loyalty < l0,
+            "loyalty to the founders fades"
+        );
+        for v in [
+            sim.population.adaptation,
+            sim.population.cultural_drift,
+            sim.population.legacy_loyalty,
+            sim.population.morale,
+            sim.population.unity,
+        ] {
+            assert!((0.0..=1.0).contains(&v), "drift stays a 0-1 fraction: {v}");
+        }
+    }
+
+    #[test]
+    fn voyage_drift_scales_by_legacy() {
+        let data = GameData::load().unwrap();
+        let mut adaptors = SimState::new_campaign(&data, "adaptors", 1);
+        let mut preservers = SimState::new_campaign(&data, "preservers", 1);
+        for _ in 0..30 {
+            apply_voyage_drift(&mut adaptors, &data.config);
+            apply_voyage_drift(&mut preservers, &data.config);
+        }
+        assert!(
+            adaptors.population.cultural_drift > preservers.population.cultural_drift,
+            "Adaptors change faster than Preservers"
+        );
     }
 
     #[test]
