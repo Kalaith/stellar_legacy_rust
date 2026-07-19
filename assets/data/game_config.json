@@ -90,6 +90,11 @@
     "full_minerals_cost": 500,
     "full_parts_restock": 20
   },
+  "field_install": {
+    "skill_required": 40,
+    "parts_cost": 6,
+    "minerals_cost": 200
+  },
   "heritage": [
     { "min_renown": 0, "name": "Founding" },
     { "min_renown": 100, "name": "Remembered", "credits": 500, "tradition": 5 },

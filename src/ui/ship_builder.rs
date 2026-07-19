@@ -1,6 +1,7 @@
 //! Ship Builder: component catalog and current loadout (GDD §9).
 
 use crate::data::ship_components::{ComponentKind, ComponentStats, ShipComponent};
+use crate::simulation::ship::{install_eligibility, InstallEligibility};
 use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
@@ -69,12 +70,17 @@ fn draw_component_card(
     kind: ComponentKind,
     actions: &mut Vec<UiAction>,
 ) {
+    let salvaged = ctx.sim.ship.salvage.iter().any(|s| s == &component.id);
     draw_surface(
         rect,
         &SurfaceStyle::new(Color::new(0.07, 0.055, 0.012, 1.0)).with_border(
             1.0,
             if installed {
                 term::accent()
+            } else if salvaged {
+                // A part in the salvage hold stands out brighter than the
+                // buy-it-new catalog entries (PLAN M4.4).
+                term::primary()
             } else {
                 term::faint()
             },
@@ -139,6 +145,20 @@ fn draw_component_card(
             btn.h,
             TextStyle::new(14.0, term::accent()),
         );
+    } else if salvaged {
+        // A found part installs from the hold rather than being bought — free
+        // in port, gated by crew + parts underway (PLAN M4.4).
+        let (enabled, label) = match install_eligibility(ctx.sim, ctx.data, &component.id) {
+            InstallEligibility::Ready if ctx.sim.contract.is_none() => (true, "INSTALL (SALVAGED)"),
+            InstallEligibility::Ready => (true, "FIELD INSTALL (SALVAGED)"),
+            InstallEligibility::NeedsDrydock => (false, "SALVAGED · NEEDS DRYDOCK"),
+            InstallEligibility::NeedsEngineer => (false, "SALVAGED · NEEDS ENGINEER"),
+            InstallEligibility::NeedsConsumables => (false, "SALVAGED · NEEDS PARTS"),
+            InstallEligibility::NotSalvaged => (false, "SALVAGED"),
+        };
+        if term_button(btn, label, enabled, mouse) {
+            actions.push(UiAction::InstallSalvage(component.id.clone()));
+        }
     } else {
         let label = if cost_parts.is_empty() {
             "INSTALL (free)".to_owned()

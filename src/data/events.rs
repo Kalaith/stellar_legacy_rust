@@ -47,6 +47,9 @@ pub struct EventOutcome {
     /// in auto-resolve outcome scoring (GDD §5.4).
     #[serde(default)]
     pub long_term_consequences: Vec<String>,
+    /// A ship component id this outcome drops into the salvage hold (PLAN M4.4).
+    #[serde(default)]
+    pub grant_component: Option<String>,
     #[serde(default)]
     pub log: String,
 }

@@ -145,6 +145,11 @@ pub fn apply_outcome(sim: &mut SimState, template: &EventTemplate, outcome_index
     sim.population.apply(&outcome.population_delta);
     sim.consequences
         .extend(outcome.long_term_consequences.iter().cloned());
+    // A salvaged component drops into the hold, to be installed later
+    // (PLAN M4.4). The outcome's own log narrates the find.
+    if let Some(component_id) = &outcome.grant_component {
+        sim.ship.salvage.push(component_id.clone());
+    }
 
     let text = if outcome.log.is_empty() {
         format!("{}: {}", template.title, outcome.label)

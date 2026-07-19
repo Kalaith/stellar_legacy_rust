@@ -9,6 +9,104 @@ use crate::data::ship_components::{ComponentKind, ComponentStats};
 use crate::data::{GameConfig, GameData, ResourceDelta};
 use crate::state::sim::SimState;
 
+/// Whether a salvaged part can be installed right now, and if not, why
+/// (PLAN M4.4). At port anything installs; underway it's gated by the part,
+/// the crew, and consumables.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum InstallEligibility {
+    Ready,
+    NeedsDrydock,
+    NeedsEngineer,
+    NeedsConsumables,
+    NotSalvaged,
+}
+
+/// The post id whose holder can fit salvaged parts in the field.
+const FIELD_ENGINEER_POST: &str = "engineer";
+
+fn has_field_engineer(sim: &SimState, skill_required: u32) -> bool {
+    sim.crew
+        .iter()
+        .any(|c| c.archetype_id == FIELD_ENGINEER_POST && c.skill >= skill_required)
+}
+
+/// Can this salvaged part be fitted right now (PLAN M4.4)? Single source of
+/// truth shared by `install_salvage` and the Ship screen's install button.
+pub fn install_eligibility(sim: &SimState, data: &GameData, id: &str) -> InstallEligibility {
+    if !sim.ship.salvage.iter().any(|s| s == id) {
+        return InstallEligibility::NotSalvaged;
+    }
+    let Some((_, component)) = data.ship_components.find_any(id) else {
+        return InstallEligibility::NotSalvaged;
+    };
+    // In port, the drydock fits anything for free.
+    if sim.contract.is_none() {
+        return InstallEligibility::Ready;
+    }
+    let cfg = &data.config.field_install;
+    if !component.field_installable {
+        return InstallEligibility::NeedsDrydock;
+    }
+    if !has_field_engineer(sim, cfg.skill_required) {
+        return InstallEligibility::NeedsEngineer;
+    }
+    let minerals = ResourceDelta {
+        minerals: -cfg.minerals_cost,
+        ..Default::default()
+    };
+    if sim.ship.spare_parts < cfg.parts_cost || !sim.resources.can_afford(&minerals) {
+        return InstallEligibility::NeedsConsumables;
+    }
+    InstallEligibility::Ready
+}
+
+/// Install a salvaged part into its slot, dropping it from the hold (PLAN M4.4).
+/// Underway this charges spare parts + minerals; in port it's free. Refuses with
+/// a reason if the part isn't installable in the current situation.
+pub fn install_salvage(sim: &mut SimState, data: &GameData, id: &str) -> Result<(), String> {
+    match install_eligibility(sim, data, id) {
+        InstallEligibility::Ready => {}
+        InstallEligibility::NotSalvaged => {
+            return Err("That part isn't in the salvage hold.".to_owned())
+        }
+        InstallEligibility::NeedsDrydock => {
+            return Err("Too big to fit in the field — it needs a drydock.".to_owned())
+        }
+        InstallEligibility::NeedsEngineer => {
+            return Err("No engineer skilled enough to fit it underway.".to_owned())
+        }
+        InstallEligibility::NeedsConsumables => {
+            return Err("Not enough spare parts or minerals to fit it.".to_owned())
+        }
+    }
+    let (kind, name) = {
+        let (kind, component) = data
+            .ship_components
+            .find_any(id)
+            .expect("eligibility checked");
+        (kind, component.name.clone())
+    };
+    // Underway installs consume the field kit; a drydock install is free.
+    if sim.contract.is_some() {
+        let cfg = &data.config.field_install;
+        sim.resources.apply(&ResourceDelta {
+            minerals: -cfg.minerals_cost,
+            ..Default::default()
+        });
+        sim.ship.spare_parts -= cfg.parts_cost;
+    }
+    match kind {
+        ComponentKind::Hull => sim.ship.hull = id.to_owned(),
+        ComponentKind::Engine => sim.ship.engine = id.to_owned(),
+        ComponentKind::Weapon => sim.ship.weapon = Some(id.to_owned()),
+    }
+    if let Some(pos) = sim.ship.salvage.iter().position(|s| s == id) {
+        sim.ship.salvage.remove(pos);
+    }
+    sim.push_log(format!("{name} fitted from the salvage hold."));
+    Ok(())
+}
+
 /// Which ship subsystem a repair verb targets (PLAN M4.3).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RepairKind {
@@ -214,6 +312,88 @@ mod tests {
         assert_eq!(sim.ship.life_support, 1.0);
         assert_eq!(sim.ship.fuel, 1.0);
         assert!(sim.ship.spare_parts >= data.config.repair.full_parts_restock);
+    }
+
+    #[test]
+    fn salvage_field_install_is_gated_by_crew_and_part() {
+        use crate::simulation::contract::start_contract;
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        sim.ship.spare_parts = 100;
+        sim.resources.minerals = 100_000;
+        // Underway.
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+
+        // A field-installable weapon in the hold, with a skilled engineer aboard
+        // (the founding crew includes an engineer), installs underway.
+        let eng = sim
+            .crew
+            .iter_mut()
+            .find(|c| c.archetype_id == "engineer")
+            .unwrap();
+        eng.skill = data.config.field_install.skill_required + 5;
+        sim.ship.salvage.push("mass_driver".to_owned());
+        assert_eq!(
+            install_eligibility(&sim, &data, "mass_driver"),
+            InstallEligibility::Ready
+        );
+        install_salvage(&mut sim, &data, "mass_driver").unwrap();
+        assert_eq!(sim.ship.weapon.as_deref(), Some("mass_driver"));
+        assert!(!sim.ship.salvage.iter().any(|s| s == "mass_driver"));
+
+        // A hull is not field-installable — it must wait for a drydock.
+        sim.ship.salvage.push("generation_ark".to_owned());
+        assert_eq!(
+            install_eligibility(&sim, &data, "generation_ark"),
+            InstallEligibility::NeedsDrydock
+        );
+        assert!(install_salvage(&mut sim, &data, "generation_ark").is_err());
+
+        // With no skilled engineer, even a modular part can't be fitted underway.
+        sim.crew.retain(|c| c.archetype_id != "engineer");
+        sim.ship.salvage.push("flak_screen".to_owned());
+        assert_eq!(
+            install_eligibility(&sim, &data, "flak_screen"),
+            InstallEligibility::NeedsEngineer
+        );
+    }
+
+    #[test]
+    fn salvage_installs_freely_in_port() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        sim.contract = None; // in port
+        sim.ship.spare_parts = 0;
+        sim.resources.minerals = 0;
+        // Even a hull installs in the drydock, with no crew or consumables.
+        sim.crew.clear();
+        sim.ship.salvage.push("generation_ark".to_owned());
+        assert_eq!(
+            install_eligibility(&sim, &data, "generation_ark"),
+            InstallEligibility::Ready
+        );
+        install_salvage(&mut sim, &data, "generation_ark").unwrap();
+        assert_eq!(sim.ship.hull, "generation_ark");
+        assert!(sim.ship.salvage.is_empty());
+    }
+
+    #[test]
+    fn granted_component_lands_in_the_salvage_hold() {
+        use crate::simulation::event_resolver::apply_outcome;
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "wanderers", 1);
+        let template = data.events.get("derelict_encounter").unwrap().clone();
+        let idx = template
+            .outcomes
+            .iter()
+            .position(|o| o.grant_component.is_some())
+            .expect("derelict_encounter grants a salvage part");
+        apply_outcome(&mut sim, &template, idx);
+        assert!(
+            !sim.ship.salvage.is_empty(),
+            "boarding a derelict fills the salvage hold"
+        );
     }
 
     #[test]

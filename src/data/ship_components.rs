@@ -29,6 +29,10 @@ pub struct ShipComponent {
     pub cost: ResourceDelta,
     #[serde(default)]
     pub stats: ComponentStats,
+    /// Can this part be fitted underway by a skilled engineer, or does it need a
+    /// drydock (PLAN M4.4)? Engines/weapons are modular; hulls are structural.
+    #[serde(default)]
+    pub field_installable: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -49,5 +53,20 @@ impl ShipComponentCatalog {
 
     pub fn find(&self, kind: ComponentKind, id: &str) -> Option<&ShipComponent> {
         self.list(kind).iter().find(|c| c.id == id)
+    }
+
+    /// Find a component by id across all three slots (PLAN M4.4: a salvaged
+    /// part's kind isn't known up front). Returns the slot it belongs in.
+    pub fn find_any(&self, id: &str) -> Option<(ComponentKind, &ShipComponent)> {
+        for kind in [
+            ComponentKind::Hull,
+            ComponentKind::Engine,
+            ComponentKind::Weapon,
+        ] {
+            if let Some(component) = self.find(kind, id) {
+                return Some((kind, component));
+            }
+        }
+        None
     }
 }

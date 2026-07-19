@@ -10,7 +10,8 @@
       "stats": {
         "cargo": 200,
         "crew_capacity": 12
-      }
+      },
+      "field_installable": false
     },
     {
       "id": "light_corvette",
@@ -23,7 +24,8 @@
         "cargo": 100,
         "crew_capacity": 6,
         "speed": 1
-      }
+      },
+      "field_installable": false
     },
     {
       "id": "generation_ark",
@@ -36,7 +38,8 @@
       "stats": {
         "cargo": 400,
         "crew_capacity": 24
-      }
+      },
+      "field_installable": false
     },
     {
       "id": "habitat_ring",
@@ -49,7 +52,8 @@
       "stats": {
         "cargo": 250,
         "crew_capacity": 30
-      }
+      },
+      "field_installable": false
     },
     {
       "id": "armored_prow",
@@ -63,7 +67,8 @@
         "cargo": 120,
         "crew_capacity": 8,
         "combat": 1
-      }
+      },
+      "field_installable": false
     }
   ],
   "engines": [
@@ -77,7 +82,8 @@
       },
       "stats": {
         "speed": 2
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "fusion_torch",
@@ -89,7 +95,8 @@
       },
       "stats": {
         "speed": 4
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "ramscoop_array",
@@ -103,7 +110,8 @@
       "stats": {
         "speed": 3,
         "fuel_regen": 1
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "solar_sail",
@@ -116,7 +124,8 @@
       "stats": {
         "speed": 1,
         "fuel_regen": 2
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "warp_coil",
@@ -129,7 +138,8 @@
       },
       "stats": {
         "speed": 6
-      }
+      },
+      "field_installable": true
     }
   ],
   "weapons": [
@@ -142,7 +152,8 @@
       },
       "stats": {
         "combat": 1
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "pulse_cannon",
@@ -153,7 +164,8 @@
       },
       "stats": {
         "combat": 3
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "mass_driver",
@@ -165,7 +177,8 @@
       },
       "stats": {
         "combat": 5
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "flak_screen",
@@ -176,7 +189,8 @@
       },
       "stats": {
         "combat": 2
-      }
+      },
+      "field_installable": true
     },
     {
       "id": "spinal_railgun",
@@ -188,7 +202,8 @@
       },
       "stats": {
         "combat": 7
-      }
+      },
+      "field_installable": true
     }
   ]
 }

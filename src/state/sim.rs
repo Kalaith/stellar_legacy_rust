@@ -53,6 +53,10 @@ pub struct ShipState {
     pub hull: String,
     pub engine: String,
     pub weapon: Option<String>,
+    /// Components found on the voyage but not yet installed (PLAN M4.4).
+    /// Field-installable underway only if crew + part allow; freely in port.
+    #[serde(default)]
+    pub salvage: Vec<String>,
 }
 
 impl ShipState {
@@ -354,6 +358,7 @@ impl SimState {
                 hull: "colony_barge".to_owned(),
                 engine: "ion_drive".to_owned(),
                 weapon: None,
+                salvage: Vec::new(),
             },
             population: PopulationState {
                 count: config.starting_population,

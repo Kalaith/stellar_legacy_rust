@@ -329,7 +329,8 @@
         "long_term_consequences": [
           "grave_robbed"
         ],
-        "log": "The boarding parties stripped the derelict of what it could spare. The holds are fuller; the mess halls quieter."
+        "log": "The boarding parties stripped the derelict for parts — and cut a working mass driver free of its spine, now lashed in the salvage hold.",
+        "grant_component": "mass_driver"
       },
       {
         "id": "log_and_pass",
@@ -898,7 +899,8 @@
           "minerals": 500,
           "food": 400
         },
-        "log": "The cache was claimed on schedule, exactly as a founder a lifetime dead had promised."
+        "log": "The cache gave up rations and metals — and, folded in its heart, an intact solar sail array, stowed in the salvage hold.",
+        "grant_component": "solar_sail"
       },
       {
         "id": "pass_the_cache",

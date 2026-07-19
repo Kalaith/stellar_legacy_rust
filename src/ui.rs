@@ -168,6 +168,7 @@ pub enum UiAction {
     PurchaseComponent(ComponentKind, String),
     FieldRepair(crate::simulation::ship::RepairKind),
     FullRepair,
+    InstallSalvage(String),
     Buy(TradeResource, i64),
     Sell(TradeResource, i64),
     ToggleDelegation(EventCategory),

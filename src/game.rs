@@ -213,7 +213,9 @@ impl Game {
                 self.state = GameState::Gameplay(Box::new(gameplay));
             }
             "ship" => {
-                let sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                // Seed a salvage hold so the SALVAGE HOLD strip shows (M4.4).
+                sim.ship.salvage = vec!["mass_driver".to_owned(), "solar_sail".to_owned()];
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = crate::state::Screen::ShipBuilder;
                 self.state = GameState::Gameplay(Box::new(gameplay));
@@ -820,6 +822,19 @@ impl Game {
                     match crate::simulation::ship::full_repair(&mut gameplay.sim, &self.data.config)
                     {
                         Ok(()) => self.notifications.success("Full refit complete."),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
+            UiAction::InstallSalvage(id) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crate::simulation::ship::install_salvage(
+                        &mut gameplay.sim,
+                        &self.data,
+                        &id,
+                    ) {
+                        Ok(()) => self.notifications.success("Salvage installed."),
                         Err(err) => self.notifications.warning(err),
                     }
                 }

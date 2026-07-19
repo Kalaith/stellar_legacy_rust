@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3 done)
+## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3, M4.4 done)
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -22,7 +22,7 @@ to a new ship and new people. Design in `gdd.md §3.1`; the code-grounded build 
 **M4** below. This is now the active work; the ko-fi/index.html marketing screenshots
 (item 9) remain the only human-gated leftover from M3.
 
-Verified: `cargo test` (**52 tests green**, incl. a 250-year soak/integration
+Verified: `cargo test` (**55 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
 fmt` (applied), WASM target checks (`cargo check --release --target
 wasm32-unknown-unknown`), and headless UI captures for ~20 scenes under
@@ -326,19 +326,24 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    field buttons disabled on a pristine ship and FULL REFIT — PORT ONLY disabled while a
    charter is active. 3 unit tests (field caps below pristine; refused without parts; full
    refit port-only + restores all). Verified build/clippy/fmt/52 tests.
-4. **M4.4 — Found parts + gated field install.** New content channel + mechanic. Let
-   event/contract outcomes **grant a component** (a salvaged part) into a new
-   `sim.ship.salvage: Vec<String>` inventory (add a `grant_component: Option<String>` to the
-   event-outcome / milestone-reward schema; wire in `event_resolver`/`advance_contract`). A
-   found part can be **field-installed underway only if the crew and the part allow it** —
-   a `can_field_install(component, &crew, &resources) -> bool` gate keyed on: (a) the
-   *part* — new `ShipComponent.field_installable: bool` (or an install-difficulty rating);
-   (b) the *crew* — a qualified engineer aboard (a `CrewMember` on the engineer post with
-   skill ≥ a config threshold); (c) *consumables* — a spare-parts/minerals cost.
-   `UiAction::InstallSalvage(id)`; at port any salvaged/owned part installs freely (no crew
-   gate). Surface the salvage inventory + per-part install-eligibility ("needs drydock" /
-   "needs a chief engineer" / "install") on the Ship screen. This is where "if a new part is
-   found during the mission it might be installable, depending on the crew, item, etc." lives.
+4. ~~**M4.4 — Found parts + gated field install.**~~ **DONE (2026-07-19).** Event
+   outcomes now **grant a component** into a new `sim.ship.salvage: Vec<String>` hold
+   (`EventOutcome.grant_component: Option<String>`, applied in `event_resolver::apply_outcome`;
+   `derelict_encounter`/`board_and_salvage` drops a `mass_driver`,
+   `resupply_cache`/`claim_the_cache` a `solar_sail`, both narrated in the outcome log). A
+   found part is **field-installed underway only if the crew and the part allow it** — the
+   gate lives in `ship::install_eligibility` (single source of truth, an `InstallEligibility`
+   enum): (a) part — new `ShipComponent.field_installable` (engines/weapons true, hulls false
+   → "needs drydock"); (b) crew — an `engineer` with skill ≥ `field_install.skill_required`
+   (40) aboard; (c) consumables — `parts_cost` (6) + `minerals_cost` (200). `ship::install_salvage`
+   installs (swaps the slot, drops from the hold), charging the field kit underway and free in
+   port. `UiAction::InstallSalvage(id)`, dispatched in `game.rs`. **UI without a layout change:**
+   a salvaged part *is* a known component, so its existing Ship-Builder catalog card gets a
+   brighter (primary) border and its button becomes install-from-salvage — the `ship` capture
+   shows Solar Sail Array + Mass Driver as `INSTALL (SALVAGED)`, gated labels (`SALVAGED · NEEDS
+   DRYDOCK/ENGINEER/PARTS`) underway. New `data::FieldInstallConfig` + config `field_install`
+   block. 3 unit tests (field install gated by crew+part; free in port; grant lands in the
+   hold). Verified build/clippy/fmt/55 tests + `ship` capture.
 5. **M4.5 — Commission a new ship (port-only).** New `UiAction::CommissionShip(hull_id)`,
    allowed only when `sim.contract.is_none()`: a large-credit purchase that swaps `ship.hull`,
    restores hull/life-support/fuel/parts to full, and grants a one-time morale/hope lift —

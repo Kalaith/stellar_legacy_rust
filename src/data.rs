@@ -117,6 +117,8 @@ pub struct GameConfig {
     pub voyage_drift: VoyageDrift,
     /// Field-vs-port repair tunables (PLAN M4.3).
     pub repair: RepairConfig,
+    /// Gating for installing salvaged parts underway (PLAN M4.4).
+    pub field_install: FieldInstallConfig,
     /// Heritage tiers (GDD §7), ascending by `min_renown`. The highest tier a
     /// new dynasty's accumulated Chronicle renown clears grants its bonus.
     pub heritage: Vec<HeritageTier>,
@@ -189,6 +191,16 @@ pub struct RepairConfig {
     pub full_credits_cost: i64,
     pub full_minerals_cost: i64,
     pub full_parts_restock: i64,
+}
+
+/// Gating for fitting a salvaged component underway (PLAN M4.4). At port any
+/// part installs freely; in the black it needs a `field_installable` part, an
+/// engineer at `skill_required`, and `parts_cost` spare parts + `minerals_cost`.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct FieldInstallConfig {
+    pub skill_required: u32,
+    pub parts_cost: i64,
+    pub minerals_cost: i64,
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per
