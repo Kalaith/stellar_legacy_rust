@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3–M4.5 done)
+## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3–M4.6 done)
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -27,8 +27,8 @@ test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `carg
 fmt` (applied), WASM target checks (`cargo check --release --target
 wasm32-unknown-unknown`), and headless UI captures for ~20 scenes under
 `docs/verification/` (menu, gameplay, event, dilemma, dilemma_combat, crew, ship,
-market, contracts, contract_active, boot, settings, help, green, log, heritage,
-chronicle, gameover), regenerated with `.\scripts\capture_ui.ps1 -Scenes <list>`.
+market, contracts, contract_active, drydock, boot, settings, help, green, log,
+heritage, chronicle, gameover), regenerated with `.\scripts\capture_ui.ps1 -Scenes <list>`.
 
 A campaign plays end to end: pick a legacy → accept a charter → advance years →
 resolve council events and legacy dilemmas → generations turn over → contract
@@ -52,7 +52,7 @@ amber/green phosphor tubes) and is keyboard-first throughout (F2 lists the keys)
 | Chronicle (§7) | `src/chronicle.rs` + `src/heritage.rs` | **Done** — persistent cross-playthrough contract log + Heritage modifiers (renown → tier → new-campaign bonus) |
 | State machine (§11) | `src/state.rs`, `src/game.rs` | **Done** — Menu/Gameplay, explicit `StateTransition`, `UiAction` dispatch via `EventBus` |
 | Terminal UI shell (§9) | `src/ui.rs` + `src/ui/*` | **Done** — all 6 screens + blocking event/dilemma modals + game-over takeover; full CRT terminal (overlay, phosphor glow, typewriter reveal, boot POST, streaming log, runtime amber/green phosphor tubes); keyboard-first with F1 settings / F2 help |
-| Capture harness | `src/main.rs` (`STELLAR_LEGACY` prefix) | **Done** — ~20 scenes (`menu`, `gameplay`, `event`, `dilemma`, `dilemma_combat`, `crew`, `ship`, `market`, `contracts`, `contract_active`, `boot`, `settings`, `help`, `green`, `log`, `heritage`, `chronicle`, `gameover`) |
+| Capture harness | `src/main.rs` (`STELLAR_LEGACY` prefix) | **Done** — ~21 scenes (`menu`, `gameplay`, `event`, `dilemma`, `dilemma_combat`, `crew`, `ship`, `market`, `contracts`, `contract_active`, `drydock`, `boot`, `settings`, `help`, `green`, `log`, `heritage`, `chronicle`, `gameover`) |
 
 ## Milestone work — progress log (all items complete)
 
@@ -357,16 +357,21 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    (`COMMISSION · PORT ONLY` underway); engines/weapons keep PURCHASE. 2 unit tests
    (commission refits + lifts hope + keeps the people; needs the full price). Verified
    build/clippy/fmt/57 tests + `ship` capture.
-6. **M4.6 — The drydock phase + the port/underway gate.** When `sim.contract == None` and
-   the dynasty lives, frame the arrival-and-refit beat: a one-time **Homecoming** summary on
-   arrival (years this mission, hull + population change since departure, reward banked) and
-   an "IN DRYDOCK" hub surfacing full-repair / full-loadout / commission / accept-next-charter.
-   **This item owns the port-only gate:** catalog loadout changes (`PurchaseComponent`), full
-   repair (M4.3), and commission (M4.5) require `contract.is_none()`; underway the only ship
-   verbs are field repair (M4.3) and gated found-part install (M4.4). Simplest build: a
-   between-missions banner + summary on the existing Contract/Ship/Market screens; optionally
-   a dedicated `Screen::Drydock` (`gameplay.rs:9-26`). UI stays a pure view — new `UiAction`s
-   only. Capture a `drydock` + `homecoming` scene.
+6. ~~**M4.6 — The drydock phase + the port/underway gate.**~~ **DONE (2026-07-19).**
+   **Port-only gate closed:** `purchase_component` now refuses while `contract.is_some()`
+   ("loadout changes wait for port"), and the Ship-Builder engine/weapon cards show
+   `PURCHASE · PORT ONLY` (disabled) underway — so the full split holds: underway only field
+   repair (M4.3) + gated found-part install (M4.4); in port full repair + full loadout +
+   commission. **Drydock framing:** the Contract screen's between-missions view
+   (`contract_systems::draw_available`, shown whenever `contract == None`) is retitled
+   **IN DRYDOCK // AVAILABLE CHARTERS** and gained a **Homecoming** banner from the latest
+   `ChronicleEntry` ("HOMECOMING · {contract} — {outcome} (score N), concluded YNN") plus a
+   live **CONDITION** line (hull / life / parts / crew) reminding you to refit, above the
+   charter grid (grid shifts down, all 8 still fit). New `drydock` capture scene (worn ship +
+   a concluded charter in the Chronicle → the full banner). No new sim logic beyond the
+   one-line purchase gate, so no new unit tests; verified build/clippy/fmt/57 tests +
+   `drydock` capture. (A dedicated `Screen::Drydock` was unnecessary — the existing
+   between-missions Contract view is the hub.)
 7. **M4.7 — Run framing + pace instrumentation.** A cosmetic wall-clock run timer on the
    HUD and in the Homecoming/Chronicle summary (elapsed real time for the mission) — not
    background sim; time still only moves on `AdvanceYear`. Record per-mission real and

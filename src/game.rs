@@ -233,6 +233,27 @@ impl Game {
                 gameplay.screen = crate::state::Screen::Contract;
                 self.state = GameState::Gameplay(Box::new(gameplay));
             }
+            "drydock" => {
+                // Home from a mission (M4.6): no active contract, a worn ship,
+                // and a concluded charter in the Chronicle → the Homecoming banner.
+                let mut sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                sim.ship.hull_integrity = 0.46;
+                sim.ship.life_support = 0.58;
+                sim.ship.spare_parts = 3;
+                self.chronicle.record(crate::chronicle::ChronicleEntry {
+                    completed_year: 41,
+                    contract_name: "Deep Vein Survey: Karst Belt".to_owned(),
+                    objective: "Mining".to_owned(),
+                    legacy_id: "wanderers".to_owned(),
+                    leader_name: "Sella Voss".to_owned(),
+                    generation: 2,
+                    score: 0.82,
+                    outcome: "Partial".to_owned(),
+                });
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = crate::state::Screen::Contract;
+                self.state = GameState::Gameplay(Box::new(gameplay));
+            }
             "contract_active" => {
                 // A charter a dozen years in, to show progress + drive assist.
                 let mut sim = SimState::new_campaign(&self.data, "adaptors", 0xC0FFEE);
@@ -962,6 +983,13 @@ impl Game {
             return;
         };
         let sim = &mut gameplay.sim;
+
+        // Loadout changes are a drydock job (PLAN M4.6): only in port.
+        if sim.contract.is_some() {
+            self.notifications
+                .warning("Loadout changes wait for port — you're underway.");
+            return;
+        }
 
         let cost = crate::data::ResourceDelta {
             credits: -component.cost.credits,

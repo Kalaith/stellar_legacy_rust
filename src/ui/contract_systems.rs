@@ -152,9 +152,52 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
 }
 
 fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
-    term_panel(area, Some("AVAILABLE CHARTERS"));
+    // Between missions the ship is in port — frame the arrival-and-refit beat
+    // (PLAN M4.6) above the charter list.
+    term_panel(area, Some("IN DRYDOCK // AVAILABLE CHARTERS"));
     let content = area.inset(20.0);
-    let top = content.y + 42.0;
+    let sim = ctx.sim;
+    let mut y = content.y + 40.0;
+
+    // Homecoming: the mission just concluded (latest Chronicle entry).
+    let homecoming = match ctx.chronicle.entries.last() {
+        Some(last) => format!(
+            "HOMECOMING · {} — {} (score {:.2}), concluded Y{}",
+            last.contract_name,
+            last.outcome.to_uppercase(),
+            last.score,
+            last.completed_year
+        ),
+        None => "IN DRYDOCK · the ship rides at anchor, fresh and untried.".to_owned(),
+    };
+    draw_ui_text_ex(
+        &homecoming,
+        content.x,
+        y,
+        TextStyle::new(14.0, term::accent()).params(),
+    );
+    y += 22.0;
+    // Current condition — a reminder to refit before casting off again.
+    draw_ui_text_ex(
+        &format!(
+            "CONDITION · hull {:.0}% · life {:.0}% · parts {} · crew {}",
+            sim.ship.hull_integrity * 100.0,
+            sim.ship.life_support * 100.0,
+            sim.ship.spare_parts,
+            sim.crew.len()
+        ),
+        content.x,
+        y,
+        TextStyle::new(13.0, term::dim()).params(),
+    );
+    y += 20.0;
+    draw_ui_text_ex(
+        "Repair or refit on the SHIP screen, then accept the next charter:",
+        content.x,
+        y,
+        TextStyle::new(12.0, term::faint()).params(),
+    );
+    let top = y + 26.0;
 
     // Two-column charter grid so the list scales past six charters without a
     // scrollbar (each column is half-width; four rows fit comfortably).

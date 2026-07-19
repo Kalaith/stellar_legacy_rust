@@ -183,7 +183,11 @@ fn draw_component_card(
             actions.push(UiAction::CommissionShip(component.id.clone()));
         }
     } else {
-        let label = if cost_parts.is_empty() {
+        // Buying a component is a drydock job — port-only (PLAN M4.6).
+        let in_port = ctx.sim.contract.is_none();
+        let label = if !in_port {
+            "PURCHASE · PORT ONLY".to_owned()
+        } else if cost_parts.is_empty() {
             "INSTALL (free)".to_owned()
         } else {
             format!("PURCHASE · {}", cost_parts.join(" + "))
@@ -195,7 +199,7 @@ fn draw_component_card(
             food: -cost.food,
             influence: -cost.influence,
         };
-        let affordable = ctx.sim.resources.can_afford(&negated);
+        let affordable = in_port && ctx.sim.resources.can_afford(&negated);
         if term_button(btn, &label, affordable, mouse) {
             actions.push(UiAction::PurchaseComponent(kind, component.id.clone()));
         }
