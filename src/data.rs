@@ -301,6 +301,16 @@ mod tests {
         assert_eq!(data.legacies.len(), 3);
         assert!(data.events.len() >= 4);
         assert!(data.contracts.len() >= 8, "§8 target is 6-8 contracts");
+        // Charter tiering (PLAN M4.8): some charters gate behind renown, some
+        // are available from the founding.
+        assert!(
+            data.contracts.iter().any(|(_, c)| c.min_renown > 0),
+            "some charters should unlock with renown"
+        );
+        assert!(
+            data.contracts.iter().any(|(_, c)| c.min_renown == 0),
+            "some charters should be available from the founding"
+        );
         assert_eq!(data.ship_components.hulls.len(), 5);
         assert_eq!(data.ship_components.engines.len(), 5);
         assert_eq!(data.ship_components.weapons.len(), 5);

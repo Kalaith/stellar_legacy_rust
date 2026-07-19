@@ -104,4 +104,8 @@ pub struct ContractTemplate {
     pub failure_risks: Vec<String>,
     #[serde(default)]
     pub reward: ResourceDelta,
+    /// Chronicle renown a dynasty must have accrued before this charter unlocks
+    /// (PLAN M4.8). 0 = available from the founding; richer charters gate higher.
+    #[serde(default)]
+    pub min_renown: i64,
 }

@@ -848,11 +848,13 @@ impl Game {
             }
             UiAction::AcceptContract(id) => {
                 let mut accepted = false;
+                // Charter tiering (PLAN M4.8): richer charters need renown.
+                let renown = crate::heritage::renown(&self.chronicle);
                 if let (GameState::Gameplay(gameplay), Some(template)) =
                     (&mut self.state, self.data.contracts.get(&id))
                 {
                     let sim = &mut gameplay.sim;
-                    if sim.contract.is_none() {
+                    if sim.contract.is_none() && renown >= template.min_renown {
                         sim.contract = Some(contract::start_contract(template, sim));
                         sim.push_log(format!("Charter accepted: {}", template.name));
                         accepted = true;

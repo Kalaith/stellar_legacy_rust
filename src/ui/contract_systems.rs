@@ -211,6 +211,9 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
     // scrollbar (each column is half-width; four rows fit comfortably).
     const GAP: f32 = 16.0;
     let col_w = (content.w - GAP) / 2.0;
+    // Charter tiering (PLAN M4.8): richer charters unlock as Chronicle renown
+    // accrues, so a storied dynasty earns the century-long prestige missions.
+    let renown = crate::heritage::renown(ctx.chronicle);
 
     for (i, id) in GameData::sorted_ids(&ctx.data.contracts)
         .into_iter()
@@ -219,6 +222,7 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
         let Some(template) = ctx.data.contracts.get(&id) else {
             continue;
         };
+        let locked = template.min_renown > renown;
         let col = (i % 2) as f32;
         let row = (i / 2) as f32;
         let card = Rect::new(
@@ -235,7 +239,15 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
             &template.name,
             card.x + 14.0,
             card.y + 22.0,
-            TextStyle::new(16.0, term::primary()).params(),
+            TextStyle::new(
+                16.0,
+                if locked {
+                    term::faint()
+                } else {
+                    term::primary()
+                },
+            )
+            .params(),
         );
         draw_ui_text_ex(
             &format!(
@@ -258,12 +270,16 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
             2.0,
             term::dim(),
         );
-        if term_button(
-            Rect::new(card.right() - 170.0, card.y + 24.0, 156.0, 30.0),
-            "ACCEPT CHARTER",
-            true,
-            mouse,
-        ) {
+        let btn = Rect::new(card.right() - 170.0, card.y + 24.0, 156.0, 30.0);
+        if locked {
+            // Reads like a terminal access gate — the escalation path in view.
+            term_button(
+                btn,
+                &format!("LOCKED · RENOWN {}", template.min_renown),
+                false,
+                mouse,
+            );
+        } else if term_button(btn, "ACCEPT CHARTER", true, mouse) {
             actions.push(UiAction::AcceptContract(id.clone()));
         }
     }

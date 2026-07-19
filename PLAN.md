@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 in progress (M4.1, M4.2 curve, M4.3–M4.7 done; only M4.8 stretch + floor playtest left)
+## Current status: M1–M4 COMPLETE (all M4.1–M4.8 built); only the ~30-min-floor playtest tuning is human-gated
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -261,8 +261,14 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
 
 ## M4 — The Voyage-and-Return Refit Loop (owner-directed 2026-07-19)
 
-*Design intent in `gdd.md §3.1`. This section is the code-grounded build order. Nothing
-here is built yet — items are ordered so each is shippable and verifiable on its own.*
+*Design intent in `gdd.md §3.1`. This section was the code-grounded build order; **all
+eight items (M4.1–M4.8) are now built and verified.** The loop plays end to end: depart
+fresh → the people drift and the ship wears → keep it limping with field repair + scavenged
+parts → arrive home worn and changed → in drydock, full-repair / refit / commission a new
+ship → accept the next (renown-gated) charter and cast off again, with a run timer gauging
+the pace. **The one remaining task is human-gated:** a real playthrough to calibrate the
+~30-min floor (watch `RUN`, lengthen missions if under ~30 min) and confirm the M4.1–M4.5
+config numbers feel right.*
 
 **Why this is a small build, not a rewrite.** The persistent ship the owner wants already
 exists in the code: a contract completes and **auto-continues in the same `SimState`**
@@ -387,10 +393,17 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    human task:** play a run, watch `RUN`, and if a successful run finishes under ~30 min,
    lengthen the mission band / decision density (config-only) — I can't measure wall-clock
    play headlessly.
-8. **M4.8 — (Stretch) Charter tiering by renown.** Gate larger/richer charters behind
-   accumulated renown or missions-completed (ties into `heritage::derive`,
-   `heritage.rs:43-65`) so later runs escalate. Keep flat for v1; add tiers only if runs
-   start to feel same-y.
+8. ~~**M4.8 — Charter tiering by renown.**~~ **DONE (2026-07-19).** New
+   `ContractTemplate.min_renown` (serde-default 0); richer charters gate behind accumulated
+   Chronicle renown (`heritage::renown`, the existing score→points sum): tier-0 (the modest
+   rescues/mining) open from the founding, `veiled_expanse_survey`/`seedfall` at 100
+   (≈ Remembered), the century-long `founding_colony`/`starfall_beacon` at 250 (≈ Storied).
+   The drydock charter grid greys a locked charter's title and shows a
+   **`LOCKED · RENOWN N`** button (a terminal access-gate — the escalation path stays in
+   view, on-theme for the CRT); `AcceptContract` also refuses below the threshold
+   (defense-in-depth). Data-load test asserts both gated and founding-available charters
+   exist. Verified build/clippy/fmt/57 tests + `drydock` capture (renown 82 → four charters
+   open, `LOCKED · RENOWN 100/250` on the rest). This was the last M4 item.
 
 **Resolved (2026-07-19):** run-model = persistent ship, carry on success / reset only on
 game-over (gdd.md §12 Q4); pacing = ~30-min floor, ~1-hr soft cap; **repair/loadout split —
