@@ -314,6 +314,25 @@ mod tests {
             data.contracts.iter().any(|(_, c)| c.min_renown == 0),
             "some charters should be available from the founding"
         );
+        // Salvage pool (PLAN M4.4): several event outcomes drop a found part,
+        // and every granted id must resolve to a real component.
+        let salvage_grants: Vec<&String> = data
+            .events
+            .iter()
+            .flat_map(|(_, e)| e.outcomes.iter())
+            .filter_map(|o| o.grant_component.as_ref())
+            .collect();
+        assert!(
+            salvage_grants.len() >= 4,
+            "expected >= 4 salvage-granting outcomes, found {}",
+            salvage_grants.len()
+        );
+        for id in salvage_grants {
+            assert!(
+                data.ship_components.find_any(id).is_some(),
+                "event grant_component '{id}' must be a real ship component"
+            );
+        }
         assert_eq!(data.ship_components.hulls.len(), 5);
         assert_eq!(data.ship_components.engines.len(), 5);
         assert_eq!(data.ship_components.weapons.len(), 5);

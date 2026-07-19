@@ -300,7 +300,8 @@
           "morale": 0.08,
           "legacy_loyalty": 0.04
         },
-        "log": "The ship marked the halfway crossing. For a day, the corridors felt like a procession."
+        "log": "The ship marked the halfway crossing. For a day, the corridors felt like a procession — and the founders had left more than a marker: a ramscoop module, cached at the beacon, now folded into the salvage hold.",
+        "grant_component": "ramscoop_array"
       }
     ]
   },
@@ -989,7 +990,8 @@
           "morale": -0.03,
           "stability": 0.03
         },
-        "log": "The debris lattice was cut away over three shifts of dangerous work. The forward array sees again."
+        "log": "The debris lattice was cut away over three shifts of dangerous work. The forward array sees again — and the crews dragged back a slab of reinforced prow-plate, too big to fit in the field but worth stowing for the next drydock.",
+        "grant_component": "armored_prow"
       },
       {
         "id": "power_through",

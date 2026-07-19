@@ -351,7 +351,13 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    shows Solar Sail Array + Mass Driver as `INSTALL (SALVAGED)`, gated labels (`SALVAGED · NEEDS
    DRYDOCK/ENGINEER/PARTS`) underway. New `data::FieldInstallConfig` + config `field_install`
    block. 3 unit tests (field install gated by crew+part; free in port; grant lands in the
-   hold). Verified build/clippy/fmt/55 tests + `ship` capture.
+   hold). Verified build/clippy/fmt/55 tests + `ship` capture. **Salvage-pool deepening
+   (2026-07-19):** grew the found-parts pool from 2 → **4 sources** with all three part
+   kinds — `debris_lattice`/`cut_free` now yields an `armored_prow` (a *hull*, so it exercises
+   the "NEEDS DRYDOCK" gate in real play) and `halfway_beacon`/`mark_the_crossing` a
+   `ramscoop_array` (engine), both narrated in the outcome logs. A data-load integrity check
+   now asserts ≥4 salvage-granting outcomes **and that every `grant_component` id resolves to
+   a real component** (catches typos).
 5. ~~**M4.5 — Commission a new ship (port-only).**~~ **DONE (2026-07-19).**
    `ship::commission_ship`, `UiAction::CommissionShip(hull_id)`, dispatched in `game.rs` —
    allowed only when `sim.contract.is_none()`. Swaps `ship.hull`, restores
