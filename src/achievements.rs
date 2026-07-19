@@ -102,6 +102,7 @@ mod tests {
             generation: 1,
             score: 0.95,
             outcome: outcome.into(),
+            duration_years: 60,
         }
     }
 

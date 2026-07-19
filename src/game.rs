@@ -69,6 +69,15 @@ pub struct Game {
     /// never touches the deterministic sim.
     modal_key: Option<String>,
     modal_started: f64,
+    /// Wall-clock `get_time()` when the current mission's charter was accepted,
+    /// for the cosmetic run timer (PLAN M4.7). Session-local; never touches the
+    /// deterministic sim.
+    mission_started: Option<f64>,
+    /// Real seconds the last completed mission took, shown in the drydock
+    /// Homecoming until the next charter is accepted.
+    last_mission_real_secs: Option<f32>,
+    /// Capture-only override so the run timer is deterministic in screenshots.
+    capture_run_secs: Option<f32>,
     /// Ship's-log stream clock: last-seen entry count and when it last grew,
     /// so the newest line types in. Cosmetic; never touches the sim.
     log_len: usize,
@@ -129,6 +138,9 @@ impl Game {
             help_open: false,
             modal_key: None,
             modal_started: 0.0,
+            mission_started: None,
+            last_mission_real_secs: None,
+            capture_run_secs: None,
             log_len: 0,
             log_started: 0.0,
             instant_reveal: false,
@@ -143,6 +155,7 @@ impl Game {
         // never the boot log. Force canonical amber display so captures are
         // deterministic regardless of any persisted preference.
         self.instant_reveal = true;
+        self.capture_run_secs = None;
         self.boot.finish();
         self.display = DisplaySettings::default();
         self.crt_style = self.display.crt_style();
@@ -179,6 +192,7 @@ impl Game {
                         generation: i + 1,
                         score: 0.95,
                         outcome: "Complete".to_owned(),
+                        duration_years: 60,
                     });
                 }
                 self.state = GameState::Menu(MenuState::new(true));
@@ -249,7 +263,9 @@ impl Game {
                     generation: 2,
                     score: 0.82,
                     outcome: "Partial".to_owned(),
+                    duration_years: 40,
                 });
+                self.capture_run_secs = Some(2280.0); // 38m — the run just flown
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = crate::state::Screen::Contract;
                 self.state = GameState::Gameplay(Box::new(gameplay));
@@ -268,6 +284,7 @@ impl Game {
                 }
                 sim.pending_event = None;
                 sim.pending_dilemma = None;
+                self.capture_run_secs = Some(1140.0); // 19m into the run (live timer)
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = crate::state::Screen::Contract;
                 self.state = GameState::Gameplay(Box::new(gameplay));
@@ -308,6 +325,7 @@ impl Game {
                         generation: i + 1,
                         score: 0.92,
                         outcome: if i % 2 == 0 { "Complete" } else { "Partial" }.to_owned(),
+                        duration_years: 40,
                     });
                 }
                 for id in crate::achievements::evaluate(&sim, &self.chronicle) {
@@ -486,6 +504,7 @@ impl Game {
                     ui: &virtual_ui,
                     modal_reveal,
                     log_reveal,
+                    run_clock: self.run_clock_for(&gameplay.sim),
                 }),
             }
         };
@@ -610,7 +629,24 @@ impl Game {
         (get_time() - self.log_started) as f32
     }
 
+    /// The cosmetic run timer's elapsed seconds (PLAN M4.7): live while a mission
+    /// is active, frozen at the last mission's time while in port, and a fixed
+    /// override in capture. Never feeds the deterministic sim.
+    fn run_clock_for(&self, sim: &SimState) -> Option<f32> {
+        if let Some(secs) = self.capture_run_secs {
+            return Some(secs);
+        }
+        if sim.contract.is_some() {
+            self.mission_started.map(|t| (get_time() - t) as f32)
+        } else {
+            self.last_mission_real_secs
+        }
+    }
+
     fn transition(&mut self, transition: StateTransition) {
+        // Any state change clears the session-local run timer (PLAN M4.7).
+        self.mission_started = None;
+        self.last_mission_real_secs = None;
         match transition {
             StateTransition::NewCampaign { legacy_id, seed } => {
                 let mut sim = SimState::new_campaign(&self.data, &legacy_id, seed);
@@ -732,6 +768,8 @@ impl Game {
                         .warning(format!("Save clear failed: {err}"));
                 }
                 self.state = GameState::Menu(MenuState::new(save::save_exists(&self.data.config)));
+                self.mission_started = None;
+                self.last_mission_real_secs = None;
                 self.notifications
                     .info("Voyage retired. The Chronicle remembers.");
                 None
@@ -809,6 +847,7 @@ impl Game {
                 None
             }
             UiAction::AcceptContract(id) => {
+                let mut accepted = false;
                 if let (GameState::Gameplay(gameplay), Some(template)) =
                     (&mut self.state, self.data.contracts.get(&id))
                 {
@@ -816,8 +855,14 @@ impl Game {
                     if sim.contract.is_none() {
                         sim.contract = Some(contract::start_contract(template, sim));
                         sim.push_log(format!("Charter accepted: {}", template.name));
-                        self.notifications.success("Charter accepted.");
+                        accepted = true;
                     }
+                }
+                if accepted {
+                    // Start the cosmetic run timer for this mission (PLAN M4.7).
+                    self.mission_started = Some(get_time());
+                    self.last_mission_real_secs = None;
+                    self.notifications.success("Charter accepted.");
                 }
                 None
             }
@@ -944,7 +989,15 @@ impl Game {
                 generation: sim.dynasty.generation,
                 score,
                 outcome: level.label().to_owned(),
+                duration_years: sim
+                    .contract
+                    .as_ref()
+                    .map(|c| c.years_elapsed)
+                    .unwrap_or_default(),
             };
+            // Freeze the run timer for the Homecoming (PLAN M4.7).
+            self.last_mission_real_secs = self.mission_started.map(|t| (get_time() - t) as f32);
+            self.mission_started = None;
             sim.push_log(format!(
                 "Contract concluded: {} — {} (score {score:.2}).",
                 entry.contract_name, entry.outcome

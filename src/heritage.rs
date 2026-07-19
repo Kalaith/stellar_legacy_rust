@@ -121,6 +121,7 @@ mod tests {
             generation: 1,
             score,
             outcome: "Complete".into(),
+            duration_years: 60,
         }
     }
 

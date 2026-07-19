@@ -161,13 +161,21 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
 
     // Homecoming: the mission just concluded (latest Chronicle entry).
     let homecoming = match ctx.chronicle.entries.last() {
-        Some(last) => format!(
-            "HOMECOMING · {} — {} (score {:.2}), concluded Y{}",
-            last.contract_name,
-            last.outcome.to_uppercase(),
-            last.score,
-            last.completed_year
-        ),
+        Some(last) => {
+            let mut s = format!(
+                "HOMECOMING · {} — {} (score {:.2}), Y{} after {} yr",
+                last.contract_name,
+                last.outcome.to_uppercase(),
+                last.score,
+                last.completed_year,
+                last.duration_years
+            );
+            // Real time the run took (PLAN M4.7), when it was flown this session.
+            if let Some(secs) = ctx.run_clock {
+                s.push_str(&format!(" · played {}m", (secs / 60.0).round() as u32));
+            }
+            s
+        }
         None => "IN DRYDOCK · the ship rides at anchor, fresh and untried.".to_owned(),
     };
     draw_ui_text_ex(

@@ -429,6 +429,10 @@ pub struct GameplayCtx<'a> {
     /// Seconds since the newest ship's-log entry appeared, so it streams in
     /// like live console output. Large/instant in capture.
     pub log_reveal: f32,
+    /// Cosmetic wall-clock run timer (PLAN M4.7): elapsed real seconds for the
+    /// current mission (live), or the last mission's while in port. `None`
+    /// before the first charter. Never feeds the deterministic sim.
+    pub run_clock: Option<f32>,
 }
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
@@ -493,10 +497,25 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
         .get(&sim.legacy.legacy_id)
         .map(|l| l.name.clone())
         .unwrap_or_default();
+    // A live run timer while a mission is underway — the pacing gauge for the
+    // ~30-min floor / ~1-hr cap (PLAN M4.7).
+    let run_seg = if sim.contract.is_some() {
+        ctx.run_clock
+            .map(|secs| {
+                format!(
+                    "  |  RUN {:02}:{:02}",
+                    (secs / 60.0) as u32,
+                    (secs % 60.0) as u32
+                )
+            })
+            .unwrap_or_default()
+    } else {
+        String::new()
+    };
     draw_ui_text_ex(
         &format!(
-            "YEAR {}  |  GEN {}  |  {}  |  {}",
-            sim.year, sim.dynasty.generation, legacy, leader
+            "YEAR {}  |  GEN {}  |  {}  |  {}{}",
+            sim.year, sim.dynasty.generation, legacy, leader, run_seg
         ),
         rect.x + 330.0,
         rect.y + 36.0,

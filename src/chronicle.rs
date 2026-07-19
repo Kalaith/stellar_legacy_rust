@@ -20,6 +20,9 @@ pub struct ChronicleEntry {
     pub generation: u32,
     pub score: f32,
     pub outcome: String,
+    /// In-game years the mission ran (PLAN M4.7). Serde-default for old logs.
+    #[serde(default)]
+    pub duration_years: u32,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]

@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3–M4.6 done)
+## Current status: M1–M3 complete; M4 in progress (M4.1, M4.2 curve, M4.3–M4.7 done; only M4.8 stretch + floor playtest left)
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -309,8 +309,9 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    build/clippy/fmt/49 tests (soak still green). **Deferred — the ~30-min real-time
    floor:** it can only be set by measuring actual play time, which needs the M4.7 run
    timer + a human playthrough (headless captures can't measure wall-clock play). Mission
-   lengths were left as-is (22–60 yr) pending that; do the length / decision-density tuning
-   in the same pass that builds M4.7.
+   lengths were left as-is (22–60 yr) pending that. **UPDATE: M4.7's run timer now provides
+   the measurement tool** — the calibration is unblocked but is a human playtest (watch
+   `RUN` during a run; lengthen missions if under ~30 min).
 3. ~~**M4.3 — Two repair regimes: field (underway) vs full (port).**~~ **DONE
    (2026-07-19).** Both verbs live in `simulation/ship.rs` (testable, like `market::buy`)
    and dispatch from `game.rs`, with a new `RepairKind` enum. **Field repair**
@@ -372,11 +373,20 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    one-line purchase gate, so no new unit tests; verified build/clippy/fmt/57 tests +
    `drydock` capture. (A dedicated `Screen::Drydock` was unnecessary — the existing
    between-missions Contract view is the hub.)
-7. **M4.7 — Run framing + pace instrumentation.** A cosmetic wall-clock run timer on the
-   HUD and in the Homecoming/Chronicle summary (elapsed real time for the mission) — not
-   background sim; time still only moves on `AdvanceYear`. Record per-mission real and
-   in-game duration into the `ChronicleEntry` (`chronicle.rs:13-49`). Use it to tune M4.2
-   and decision density toward the **30–60 min** band (~30-min floor, ~1-hr soft cap).
+7. ~~**M4.7 — Run framing + pace instrumentation.**~~ **DONE (2026-07-19).** A cosmetic
+   wall-clock **run timer** lives on `Game` (`mission_started`/`last_mission_real_secs`,
+   session-local; set on `AcceptContract`, frozen at contract completion, reset on any
+   transition/retire) — never touches the deterministic sim (Pillar 4 intact; time still
+   only moves on `AdvanceYear`). Surfaced via a new `GameplayCtx.run_clock`: the header shows
+   a live `RUN mm:ss` while a mission is underway (the `contract_active` capture shows
+   `RUN 19:00`), and the drydock **Homecoming** shows the finished run's in-game + real span
+   (`Y41 after 40 yr · played 38m`). In-game duration is now persisted on
+   `ChronicleEntry.duration_years` (serde-default). Deterministic captures via a
+   `capture_run_secs` override. Verified build/clippy/fmt/57 tests + `contract_active` +
+   `drydock` captures. **The ~30-min floor is now fully tooled but its calibration stays a
+   human task:** play a run, watch `RUN`, and if a successful run finishes under ~30 min,
+   lengthen the mission band / decision density (config-only) — I can't measure wall-clock
+   play headlessly.
 8. **M4.8 — (Stretch) Charter tiering by renown.** Gate larger/richer charters behind
    accumulated renown or missions-completed (ties into `heritage::derive`,
    `heritage.rs:43-65`) so later runs escalate. Keep flat for v1; add tiers only if runs
