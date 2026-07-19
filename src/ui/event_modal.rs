@@ -186,7 +186,7 @@ fn modal_frame(header: &str, option_count: usize, accent: Color) -> Rect {
 /// blinking underscore cursor while it is still typing.
 fn draw_typed_block(text: &str, x: f32, y: f32, w: f32, reveal: f32) {
     let shown = typed_prefix(text, reveal, REVEAL_CPS);
-    let cursor = if !is_fully_typed(text, reveal, REVEAL_CPS) && (reveal * 2.5).fract() < 0.5 {
+    let cursor = if !is_fully_typed(text, reveal, REVEAL_CPS) && blink(reveal, 2.5) {
         "_"
     } else {
         ""

@@ -79,8 +79,11 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
     );
 
     // Blinking retire prompt.
-    let blink = (get_time() as f32 * 2.5).fract() < 0.5;
-    let caret = if blink { ">" } else { " " };
+    let caret = if blink(get_time() as f32, 2.5) {
+        ">"
+    } else {
+        " "
+    };
     let btn = Rect::new(content.x, content.bottom() - 46.0, content.w, 42.0);
     if term_button(btn, &format!("{caret} RETIRE VOYAGE"), true, mouse) {
         actions.push(UiAction::RetireVoyage);

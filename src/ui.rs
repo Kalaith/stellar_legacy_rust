@@ -501,13 +501,7 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
     // ~30-min floor / ~1-hr cap (PLAN M4.7).
     let run_seg = if sim.contract.is_some() {
         ctx.run_clock
-            .map(|secs| {
-                format!(
-                    "  |  RUN {:02}:{:02}",
-                    (secs / 60.0) as u32,
-                    (secs % 60.0) as u32
-                )
-            })
+            .map(|secs| format!("  |  RUN {}", format_mmss(secs)))
             .unwrap_or_default()
     } else {
         String::new()

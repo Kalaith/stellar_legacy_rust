@@ -316,9 +316,7 @@ fn draw_log_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
         let newest = i + 1 == total;
         let shown = if newest {
             let mut text = typed_prefix(&entry.text, ctx.log_reveal, LOG_CPS).to_owned();
-            if !is_fully_typed(&entry.text, ctx.log_reveal, LOG_CPS)
-                && (ctx.log_reveal * 2.5).fract() < 0.5
-            {
+            if !is_fully_typed(&entry.text, ctx.log_reveal, LOG_CPS) && blink(ctx.log_reveal, 2.5) {
                 text.push('_');
             }
             text

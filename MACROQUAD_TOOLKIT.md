@@ -13,9 +13,9 @@ A collection of common utilities for Macroquad game development, extracted from 
 - **Sprite system**: Builder pattern for texture rendering with transformations
 - **Screenshot capture**: Env-var-driven headless capture harness for visual verification
 - **Color helpers**: `with_alpha`, `lighten`/`darken`, `mix`, HSV conversion, hue shift
-- **Math**: lerp/smoothstep/approach, easing curves, time-based pulse, `Tween`
+- **Math**: lerp/smoothstep/approach, easing curves, time-based pulse, square-wave `blink`, `Tween`
 - **Timing**: `Cooldown`, `Timer`, `IntervalTimer`, `Timeline` phase sequencer
-- **FX**: trauma screen shake, screen fades, pooled particles, floating text
+- **FX**: trauma screen shake, screen fades, pooled particles, floating text, terminal typewriter (single string + `reveal_block` for multi-line streams)
 - **Form widgets**: toggle, checkbox, slider, stepper, segmented bar, keycap
 - **Scroll & tabs**: `ScrollArea` with drawn scrollbar, tab bars / nav columns
 - **Settings**: shared `GameSettings` (volume groups, fullscreen, UI scale) with persistence
@@ -217,10 +217,11 @@ Interpolation and easing primitives — use these instead of private `lerp`/`eas
 ```rust
 use macroquad_toolkit::math::{lerp, inv_lerp, remap, smoothstep, approach, exp_approach,
                               ease_out_cubic, ease_out_back, pulse01, pulse_range, bob,
-                              hash_str, Tween};
+                              blink, hash_str, Tween};
 
 let x = lerp(a, b, t);
 let glow = pulse_range(3.0, 0.55, 0.77);   // replaces (get_time()*k).sin() idioms
+let caret = if blink(elapsed, 2.5) { "_" } else { "" }; // square-wave cursor blink
 let mut slide = Tween::new(0.0, 8.0);      // exponential ease-toward-target
 slide.set_target(panel_x);
 slide.update(dt);
@@ -287,6 +288,27 @@ projectiles.push(                                     // melee slash: stays near
 );
 for impact in projectiles.update(dt) { apply_damage(impact); }
 for p in projectiles.iter() { draw_at(p.position(), p.progress()); }
+```
+
+Terminal-style character reveal — given the full text, seconds elapsed, and a
+chars-per-second rate, these return how much should be visible (a non-positive
+rate reveals everything, handy for capture/accessibility). Counting is by
+`char`, so multi-byte UTF-8 never splits:
+
+```rust
+use macroquad_toolkit::fx::{typed_prefix, is_fully_typed, prefix_chars, reveal_block};
+
+let shown = typed_prefix(line, elapsed, 40.0);          // one string
+if !is_fully_typed(line, elapsed, 40.0) { /* draw caret */ }
+
+// A whole block streamed as one shared budget (boot log, console output):
+// line N only starts once lines 0..N are fully shown.
+let r = reveal_block(&lines, elapsed, 170.0);
+for (i, line) in lines.iter().enumerate() {
+    draw(prefix_chars(line, r.shown[i]));               // visible prefix per line
+}
+// Park a blinking caret at the write head (or final glyph once complete):
+if i == r.cursor_line && blink(elapsed, 3.0) { draw_caret(); }
 ```
 
 ### Form widgets, scroll, and tabs (`ui` module)

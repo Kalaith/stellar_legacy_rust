@@ -81,16 +81,14 @@ impl BootScreen {
     pub fn draw(&self) {
         draw_rectangle(0.0, 0.0, LOGICAL_WIDTH, LOGICAL_HEIGHT, term::bg());
 
-        let mut budget = (self.elapsed * CPS) as usize;
-        let blink = (self.elapsed * 3.0).fract() < 0.5;
+        // The whole log streams as one shared character budget (toolkit
+        // `reveal_block`), so lines fill in order like real console output.
+        let reveal = reveal_block(LINES, self.elapsed, CPS);
         let x = LOGICAL_WIDTH / 2.0 - 320.0;
         let mut y = 150.0;
-        let mut cursor_drawn = false;
 
         for (i, line) in LINES.iter().enumerate() {
-            let n = line.chars().count();
-            let show = budget.min(n);
-            let text: String = line.chars().take(show).collect();
+            let text = prefix_chars(line, reveal.shown[i]);
             let color = if i == 0 || i == LINES.len() - 1 {
                 term::primary()
             } else {
@@ -99,37 +97,23 @@ impl BootScreen {
             let style = TextStyle::new(16.0, color);
             let dims = if i == 0 {
                 // The banner line glows like a warm phosphor header.
-                draw_text_glow(&text, x, y, style, 0.14, 2.0);
-                measure_text_size(&text, style)
+                draw_text_glow(text, x, y, style, 0.14, 2.0);
+                measure_text_size(text, style)
             } else {
-                draw_ui_text_ex(&text, x, y, style.params())
+                draw_ui_text_ex(text, x, y, style.params())
             };
-            if !cursor_drawn && show < n {
-                if blink {
-                    draw_ui_text_ex(
-                        "_",
-                        x + dims.width,
-                        y,
-                        TextStyle::new(16.0, term::primary()).params(),
-                    );
-                }
-                cursor_drawn = true;
+            // The write-cursor sits on one line: mid-stream it trails the last
+            // typed glyph; once complete it parks at the end of the prompt.
+            if i == reveal.cursor_line && blink(self.elapsed, 3.0) {
+                let gap = if reveal.complete { 4.0 } else { 0.0 };
+                draw_ui_text_ex(
+                    "_",
+                    x + dims.width + gap,
+                    y,
+                    TextStyle::new(16.0, term::primary()).params(),
+                );
             }
-            budget -= show;
             y += LINE_H;
-        }
-
-        // Fully streamed: park a blinking cursor on the prompt line.
-        if !cursor_drawn && blink {
-            let last = LINES[LINES.len() - 1];
-            let w = measure_text_size(last, TextStyle::new(16.0, term::primary())).width;
-            let prompt_y = 150.0 + (LINES.len() - 1) as f32 * LINE_H;
-            draw_ui_text_ex(
-                "_",
-                x + w + 4.0,
-                prompt_y,
-                TextStyle::new(16.0, term::primary()).params(),
-            );
         }
     }
 }
