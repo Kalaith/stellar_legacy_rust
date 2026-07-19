@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1 + M4.2 curve done)
+## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1, M4.2 curve, M4.3 done)
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -22,7 +22,7 @@ to a new ship and new people. Design in `gdd.md §3.1`; the code-grounded build 
 **M4** below. This is now the active work; the ko-fi/index.html marketing screenshots
 (item 9) remain the only human-gated leftover from M3.
 
-Verified: `cargo test` (**49 tests green**, incl. a 250-year soak/integration
+Verified: `cargo test` (**52 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
 fmt` (applied), WASM target checks (`cargo check --release --target
 wasm32-unknown-unknown`), and headless UI captures for ~20 scenes under
@@ -311,19 +311,21 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    timer + a human playthrough (headless captures can't measure wall-clock play). Mission
    lengths were left as-is (22–60 yr) pending that; do the length / decision-density tuning
    in the same pass that builds M4.7.
-3. **M4.3 — Two repair regimes: field (underway) vs full (port).** The owner split these:
-   *underway* the ship can only be kept limping; the *full* refit is port-only. Build both:
-   - **Field repair** — `UiAction::FieldRepair(RepairKind)` (Hull / LifeSupport), allowed
-     while `sim.contract.is_some()`. Consumes **carried consumables** (`spare_parts` +
-     minerals) rather than being a pure credit sink, restores its stat *partially and to a
-     capped ceiling below 1.0* (you cannot make a ship pristine in the black — that's what
-     port is for). Ties to M4.2's per-year spare-parts burn: field repair is the sink that
-     makes restocking matter.
-   - **Full repair** — restore hull/life-support/fuel to 1.0 and fully restock spare parts,
-     **port-only** (`sim.contract.is_none()`), priced in credits+minerals. Either a set of
-     `Repair(kind)` verbs or a single "full refit" purchase.
-   Dispatch next to `purchase_component` (`game.rs:906-935`), gated by `resources.can_afford`
-   and the port/underway check.
+3. ~~**M4.3 — Two repair regimes: field (underway) vs full (port).**~~ **DONE
+   (2026-07-19).** Both verbs live in `simulation/ship.rs` (testable, like `market::buy`)
+   and dispatch from `game.rs`, with a new `RepairKind` enum. **Field repair**
+   (`ship::field_repair`, `UiAction::FieldRepair(RepairKind)`) patches Hull/LifeSupport by
+   `field_gain` (0.12) up to `field_ceiling` (0.75) — never pristine — for `field_parts_cost`
+   (4) spare parts + `field_minerals_cost` (150) minerals; it is the sink that makes M4.2's
+   parts matter. **Full repair** (`ship::full_repair`, `UiAction::FullRepair`) restores
+   hull/life-support/fuel to 1.0 and tops parts back to `full_parts_restock` (20) for
+   `full_credits_cost` (1500) + `full_minerals_cost` (500), **refused while
+   `contract.is_some()`** ("in port only"). New `data::RepairConfig` + `game_config.json →
+   repair` block. The dashboard SHIP STATUS panel gained a MAINTENANCE section (two field
+   buttons + a full-refit button) that enables per state — the `gameplay` capture shows the
+   field buttons disabled on a pristine ship and FULL REFIT — PORT ONLY disabled while a
+   charter is active. 3 unit tests (field caps below pristine; refused without parts; full
+   refit port-only + restores all). Verified build/clippy/fmt/52 tests.
 4. **M4.4 — Found parts + gated field install.** New content channel + mechanic. Let
    event/contract outcomes **grant a component** (a salvaged part) into a new
    `sim.ship.salvage: Vec<String>` inventory (add a `grant_component: Option<String>` to the

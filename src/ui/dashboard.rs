@@ -1,5 +1,6 @@
 //! Dashboard: ship vitals, population, advance-time control, ship's log.
 
+use crate::simulation::ship::RepairKind;
 use crate::state::sim::PopulationState;
 use crate::state::Screen;
 use crate::ui::{
@@ -86,6 +87,67 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
         term::accent(),
     );
     y += 44.0;
+
+    // Maintenance (PLAN M4.3). Field repairs patch the ship underway from
+    // spare parts + minerals but can't reach pristine; a full refit is
+    // port-only. Buttons enable only when the action is currently possible.
+    let repair = ctx.data.config.repair;
+    let in_port = sim.contract.is_none();
+    draw_ui_text_ex(
+        "MAINTENANCE",
+        content.x,
+        y,
+        TextStyle::new(15.0, term::dim()).params(),
+    );
+    y += 22.0;
+    let field_affordable = |stat: f32| {
+        stat < repair.field_ceiling
+            && sim.ship.spare_parts >= repair.field_parts_cost
+            && sim.resources.minerals >= repair.field_minerals_cost
+    };
+    if term_button(
+        Rect::new(content.x, y, content.w, 26.0),
+        &format!(
+            "FIELD REPAIR HULL ({}p·{}min)",
+            repair.field_parts_cost, repair.field_minerals_cost
+        ),
+        field_affordable(sim.ship.hull_integrity),
+        mouse,
+    ) {
+        actions.push(UiAction::FieldRepair(RepairKind::Hull));
+    }
+    y += 30.0;
+    if term_button(
+        Rect::new(content.x, y, content.w, 26.0),
+        &format!(
+            "FIELD REPAIR LIFE SPT ({}p·{}min)",
+            repair.field_parts_cost, repair.field_minerals_cost
+        ),
+        field_affordable(sim.ship.life_support),
+        mouse,
+    ) {
+        actions.push(UiAction::FieldRepair(RepairKind::LifeSupport));
+    }
+    y += 30.0;
+    let full_label = if in_port {
+        format!(
+            "FULL REFIT ({}cr·{}min)",
+            repair.full_credits_cost, repair.full_minerals_cost
+        )
+    } else {
+        "FULL REFIT — PORT ONLY".to_owned()
+    };
+    let full_ok = in_port
+        && sim.resources.credits >= repair.full_credits_cost
+        && sim.resources.minerals >= repair.full_minerals_cost;
+    if term_button(
+        Rect::new(content.x, y, content.w, 26.0),
+        &full_label,
+        full_ok,
+        mouse,
+    ) {
+        actions.push(UiAction::FullRepair);
+    }
 
     // Extinction is handled by the full-screen game-over takeover
     // (`ui::game_over`), so the dashboard never renders in that state.

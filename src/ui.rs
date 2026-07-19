@@ -166,6 +166,8 @@ pub enum UiAction {
     SelectHeir(u32),
     AcceptContract(String),
     PurchaseComponent(ComponentKind, String),
+    FieldRepair(crate::simulation::ship::RepairKind),
+    FullRepair,
     Buy(TradeResource, i64),
     Sell(TradeResource, i64),
     ToggleDelegation(EventCategory),

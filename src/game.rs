@@ -802,6 +802,29 @@ impl Game {
                 self.purchase_component(kind, &id);
                 None
             }
+            UiAction::FieldRepair(kind) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crate::simulation::ship::field_repair(
+                        &mut gameplay.sim,
+                        &self.data.config,
+                        kind,
+                    ) {
+                        Ok(()) => self.notifications.success("Field repair complete."),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
+            UiAction::FullRepair => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crate::simulation::ship::full_repair(&mut gameplay.sim, &self.data.config)
+                    {
+                        Ok(()) => self.notifications.success("Full refit complete."),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
             UiAction::Buy(resource, amount) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     match market::buy(&mut gameplay.sim, resource, amount) {

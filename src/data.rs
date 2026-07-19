@@ -115,6 +115,8 @@ pub struct GameConfig {
     pub ship: ShipConfig,
     /// Per-year population drift over a voyage (PLAN M4.1).
     pub voyage_drift: VoyageDrift,
+    /// Field-vs-port repair tunables (PLAN M4.3).
+    pub repair: RepairConfig,
     /// Heritage tiers (GDD §7), ascending by `min_renown`. The highest tier a
     /// new dynasty's accumulated Chronicle renown clears grants its bonus.
     pub heritage: Vec<HeritageTier>,
@@ -171,6 +173,22 @@ pub struct VoyageDrift {
     pub unity_strain_per_year: f32,
     /// Legacy id → magnitude multiplier for the identity terms.
     pub legacy_multipliers: HashMap<String, f32>,
+}
+
+/// Field-vs-port repair tunables (PLAN M4.3). Underway, `field_repair` patches
+/// a stat by `field_gain` up to `field_ceiling` (never pristine) for
+/// `field_parts_cost` spare parts + `field_minerals_cost` minerals. In port,
+/// `full_repair` restores everything to whole for `full_credits_cost` +
+/// `full_minerals_cost` and tops parts back up to `full_parts_restock`.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct RepairConfig {
+    pub field_ceiling: f32,
+    pub field_gain: f32,
+    pub field_parts_cost: i64,
+    pub field_minerals_cost: i64,
+    pub full_credits_cost: i64,
+    pub full_minerals_cost: i64,
+    pub full_parts_restock: i64,
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per

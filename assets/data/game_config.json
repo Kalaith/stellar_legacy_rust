@@ -81,6 +81,15 @@
       "wanderers": 1.0
     }
   },
+  "repair": {
+    "field_ceiling": 0.75,
+    "field_gain": 0.12,
+    "field_parts_cost": 4,
+    "field_minerals_cost": 150,
+    "full_credits_cost": 1500,
+    "full_minerals_cost": 500,
+    "full_parts_restock": 20
+  },
   "heritage": [
     { "min_renown": 0, "name": "Founding" },
     { "min_renown": 100, "name": "Remembered", "credits": 500, "tradition": 5 },

@@ -6,8 +6,97 @@
 //! stats — no RNG.
 
 use crate::data::ship_components::{ComponentKind, ComponentStats};
-use crate::data::{GameData, ResourceDelta};
+use crate::data::{GameConfig, GameData, ResourceDelta};
 use crate::state::sim::SimState;
+
+/// Which ship subsystem a repair verb targets (PLAN M4.3).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RepairKind {
+    Hull,
+    LifeSupport,
+}
+
+impl RepairKind {
+    fn label(self) -> &'static str {
+        match self {
+            RepairKind::Hull => "Hull",
+            RepairKind::LifeSupport => "Life support",
+        }
+    }
+}
+
+/// Field repair (underway, PLAN M4.3): patch a subsystem from carried
+/// consumables — spare parts + minerals — by `field_gain`, but only up to
+/// `field_ceiling` (a ship can never be made pristine in the black; that is
+/// what port is for). Returns an error message on refusal.
+pub fn field_repair(
+    sim: &mut SimState,
+    config: &GameConfig,
+    kind: RepairKind,
+) -> Result<(), String> {
+    let cfg = &config.repair;
+    let current = match kind {
+        RepairKind::Hull => sim.ship.hull_integrity,
+        RepairKind::LifeSupport => sim.ship.life_support,
+    };
+    if current >= cfg.field_ceiling {
+        return Err("Field repairs won't hold past a point — that needs a drydock.".to_owned());
+    }
+    if sim.ship.spare_parts < cfg.field_parts_cost {
+        return Err("Not enough spare parts for a field repair.".to_owned());
+    }
+    let minerals = ResourceDelta {
+        minerals: -cfg.field_minerals_cost,
+        ..Default::default()
+    };
+    if !sim.resources.can_afford(&minerals) {
+        return Err("Not enough minerals for a field repair.".to_owned());
+    }
+    sim.resources.apply(&minerals);
+    sim.ship.spare_parts -= cfg.field_parts_cost;
+    match kind {
+        RepairKind::Hull => {
+            sim.ship.hull_integrity =
+                (sim.ship.hull_integrity + cfg.field_gain).min(cfg.field_ceiling)
+        }
+        RepairKind::LifeSupport => {
+            sim.ship.life_support = (sim.ship.life_support + cfg.field_gain).min(cfg.field_ceiling)
+        }
+    }
+    sim.push_log(format!(
+        "{} patched in the field — it will hold, for now.",
+        kind.label()
+    ));
+    Ok(())
+}
+
+/// Full refit (port-only, PLAN M4.3): restore hull, life support, and fuel to
+/// whole and top the spare-parts stores back up, for credits + minerals. Only
+/// available between missions (`contract == None`) — the drydock the field kit
+/// can't stand in for.
+pub fn full_repair(sim: &mut SimState, config: &GameConfig) -> Result<(), String> {
+    if sim.contract.is_some() {
+        return Err("A full refit can only be done in port, between missions.".to_owned());
+    }
+    let cfg = &config.repair;
+    let cost = ResourceDelta {
+        credits: -cfg.full_credits_cost,
+        minerals: -cfg.full_minerals_cost,
+        ..Default::default()
+    };
+    if !sim.resources.can_afford(&cost) {
+        return Err("The treasury cannot cover a full refit.".to_owned());
+    }
+    sim.resources.apply(&cost);
+    sim.ship.hull_integrity = 1.0;
+    sim.ship.life_support = 1.0;
+    sim.ship.fuel = 1.0;
+    if sim.ship.spare_parts < cfg.full_parts_restock {
+        sim.ship.spare_parts = cfg.full_parts_restock;
+    }
+    sim.push_log("Full refit complete in drydock — the ship is whole again.");
+    Ok(())
+}
 
 /// Sum the stats of every currently installed component.
 pub fn loadout_stats(sim: &SimState, data: &GameData) -> ComponentStats {
@@ -65,6 +154,66 @@ mod tests {
         assert_eq!(stats.cargo, 200); // colony_barge
         assert_eq!(stats.speed, 2); // ion_drive
         assert_eq!(stats.combat, 0); // no weapon
+    }
+
+    #[test]
+    fn field_repair_patches_but_never_reaches_pristine() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        sim.ship.hull_integrity = 0.3;
+        sim.ship.spare_parts = 100;
+        sim.resources.minerals = 100_000;
+
+        for _ in 0..20 {
+            let _ = field_repair(&mut sim, &data.config, RepairKind::Hull);
+        }
+        let ceiling = data.config.repair.field_ceiling;
+        assert!(
+            (sim.ship.hull_integrity - ceiling).abs() < 1e-4,
+            "field repair tops out at the ceiling ({ceiling}), got {}",
+            sim.ship.hull_integrity
+        );
+        assert!(sim.ship.hull_integrity < 1.0, "never pristine in the black");
+        assert!(sim.ship.spare_parts < 100, "field repair spends parts");
+    }
+
+    #[test]
+    fn field_repair_refused_without_parts() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        sim.ship.hull_integrity = 0.3;
+        sim.ship.spare_parts = 0;
+        sim.resources.minerals = 100_000;
+        assert!(field_repair(&mut sim, &data.config, RepairKind::Hull).is_err());
+    }
+
+    #[test]
+    fn full_repair_is_port_only_and_restores_everything() {
+        use crate::simulation::contract::start_contract;
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        sim.ship.hull_integrity = 0.3;
+        sim.ship.life_support = 0.4;
+        sim.ship.fuel = 0.2;
+        sim.ship.spare_parts = 0;
+        sim.resources.credits = 100_000;
+        sim.resources.minerals = 100_000;
+
+        // Underway: refused.
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        assert!(
+            full_repair(&mut sim, &data.config).is_err(),
+            "no full refit underway"
+        );
+
+        // In port: restores the ship to whole and tops parts back up.
+        sim.contract = None;
+        full_repair(&mut sim, &data.config).unwrap();
+        assert_eq!(sim.ship.hull_integrity, 1.0);
+        assert_eq!(sim.ship.life_support, 1.0);
+        assert_eq!(sim.ship.fuel, 1.0);
+        assert!(sim.ship.spare_parts >= data.config.repair.full_parts_restock);
     }
 
     #[test]
