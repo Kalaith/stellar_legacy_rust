@@ -468,6 +468,20 @@ like every sibling game — commit work there. In this workspace, prefer
 `cargo fmt -p stellar_legacy [-- --check]` (bare `cargo fmt` can intermittently
 report "Failed to find targets" across the multi-crate workspace).
 
+## Known issues
+
+- ~~**WASM/web crash on first load** (`Cannot read properties of undefined (reading
+  'length')` → later a bogus `focus` "already borrowed" panic)~~ **FIXED (2026-07-19,
+  toolkit).** Root cause was a **`macroquad-toolkit::wasm_storage::storage_get`** bug, not a
+  missing asset: a persisted key absent from localStorage (any first-run web load) made JS
+  `getItem` return `null`, which `to_string`'d via `js_string_length(undefined)` and threw —
+  unwinding the miniquad frame and poisoning the event-handler `RefCell`, so the next browser
+  focus event aborted with the misleading "already borrowed" panic. Only this game tripped it
+  because `Game::new()` eagerly loads chronicle/display/delegation/achievements at startup.
+  Fixed in `macroquad-toolkit` (`storage_get` now gates on `storage_exists`, commit `58a05f5`);
+  `cargo check --release --target wasm32-unknown-unknown` clean. **Re-publish (`.\publish.ps1`,
+  which rebuilds the wasm) to pick up the fix** — the change is compiled into the binary.
+
 ## Known cosmetic nits (fine to fix opportunistically)
 
 - ~~Meter color logic treats <35% as "critical" red — inverted for
