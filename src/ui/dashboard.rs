@@ -48,12 +48,19 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
     );
     y += 40.0;
 
+    // Spare parts ease yearly wear (PLAN M4.2); when the stores hit zero the
+    // ship wears at full rate, so flag it red.
+    let parts_dry = sim.ship.spare_parts <= 0;
     stat_line(
         content.x,
         y,
         "SPARE PARTS",
         &sim.ship.spare_parts.to_string(),
-        term::accent(),
+        if parts_dry {
+            term::alert()
+        } else {
+            term::accent()
+        },
     );
     y += 26.0;
     let contract_line = sim

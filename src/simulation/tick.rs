@@ -69,9 +69,23 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
         sim.population.unity = (sim.population.unity + recovery).min(1.0);
     }
 
-    // Ship wear.
-    sim.ship.hull_integrity = (sim.ship.hull_integrity - config.hull_decay_per_year).max(0.0);
-    sim.ship.life_support = (sim.ship.life_support - config.life_support_decay_per_year).max(0.0);
+    // Ship wear, eased while spare parts remain for upkeep (PLAN M4.2). Once
+    // the stores run dry the ship wears at full rate — the "held together on
+    // hope and prayers" end of a long, unresupplied voyage. Field repair
+    // (M4.3) will be the sink that keeps the stores topped up.
+    let maintained = sim.ship.spare_parts >= config.parts_upkeep_per_year;
+    if maintained {
+        sim.ship.spare_parts -= config.parts_upkeep_per_year;
+    }
+    let wear = if maintained {
+        1.0 - config.maintenance_decay_relief
+    } else {
+        1.0
+    };
+    sim.ship.hull_integrity =
+        (sim.ship.hull_integrity - config.hull_decay_per_year * wear).max(0.0);
+    sim.ship.life_support =
+        (sim.ship.life_support - config.life_support_decay_per_year * wear).max(0.0);
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,
@@ -230,6 +244,32 @@ mod tests {
         ] {
             assert!((0.0..=1.0).contains(&v), "drift stays a 0-1 fraction: {v}");
         }
+    }
+
+    #[test]
+    fn a_long_voyage_leaves_the_ship_worn_and_out_of_parts() {
+        // Events off + well-fed isolates the wear curve (PLAN M4.2).
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        let mut sim = SimState::new_campaign(&data, "preservers", 5);
+        sim.resources.food = 1_000_000;
+
+        for _ in 0..55 {
+            advance_year(&mut sim, &data);
+        }
+
+        assert_eq!(
+            sim.ship.spare_parts, 0,
+            "a 55-year voyage exhausts the spare-parts stores"
+        );
+        // Worn but still flying — well below the old 0.005/yr curve (~0.72).
+        assert!(
+            (0.40..=0.56).contains(&sim.ship.hull_integrity),
+            "the ship comes home held together on hope and prayers: hull {}",
+            sim.ship.hull_integrity
+        );
     }
 
     #[test]

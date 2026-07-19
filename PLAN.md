@@ -4,7 +4,7 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1 done)
+## Current status: M1–M3 complete; M4 (the refit loop) in progress (M4.1 + M4.2 curve done)
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
@@ -22,7 +22,7 @@ to a new ship and new people. Design in `gdd.md §3.1`; the code-grounded build 
 **M4** below. This is now the active work; the ko-fi/index.html marketing screenshots
 (item 9) remain the only human-gated leftover from M3.
 
-Verified: `cargo test` (**48 tests green**, incl. a 250-year soak/integration
+Verified: `cargo test` (**49 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
 fmt` (applied), WASM target checks (`cargo check --release --target
 wasm32-unknown-unknown`), and headless UI captures for ~20 scenes under
@@ -296,15 +296,21 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    Adaptors change faster than Preservers. Verified build/clippy/fmt/48 tests + `gameplay`
    capture. **Numbers are a conservative first pass — tune against a real playthrough with
    the M4.7 timer.**
-2. **M4.2 — Honest degradation curve + the 30-min floor.** Retune (config-only where
-   possible) so a single long mission ends ~40–55% hull — "held together on hope and
-   prayers." Raise `hull_decay_per_year`/`life_support_decay_per_year` and/or widen the
-   default mission length so wear is felt; add a small per-year `spare_parts` consumption
-   (today `spare_parts` moves only via events) so restocking matters. Decay already
-   compounds across missions in one `SimState` (nothing resets it), so skipping repairs
-   bites. **This item also owns the pacing floor:** size the default mission length (in
-   years) so even brisk, decisive play cannot clear a successful run in under ~30 min, with
-   the ~1-hr soft cap as the upper band. Measure against the M4.7 run timer and adjust.
+2. **M4.2 — Honest degradation curve + the 30-min floor.** *Degradation curve DONE
+   (2026-07-19); the real-time floor calibration is deferred — see below.* Wear now bites
+   and spare parts matter: `hull_decay_per_year` 0.005→0.011,
+   `life_support_decay_per_year` 0.004→0.008, plus a parts-maintenance rule in
+   `tick.rs` — each year the ship spends `parts_upkeep_per_year` (1) spare parts on upkeep
+   and, *while parts remain*, eases that year's decay by `maintenance_decay_relief` (0.4);
+   once the stores run dry it wears at full rate. So a fresh ship (20 parts) coasts ~20
+   years, then grinds down: a 55-year voyage ends ~48% hull with parts exhausted (unit-test
+   `a_long_voyage_leaves_the_ship_worn_and_out_of_parts`), and unrepaired wear compounds
+   across missions in one `SimState`. Dashboard flags SPARE PARTS red at zero. Verified
+   build/clippy/fmt/49 tests (soak still green). **Deferred — the ~30-min real-time
+   floor:** it can only be set by measuring actual play time, which needs the M4.7 run
+   timer + a human playthrough (headless captures can't measure wall-clock play). Mission
+   lengths were left as-is (22–60 yr) pending that; do the length / decision-density tuning
+   in the same pass that builds M4.7.
 3. **M4.3 — Two repair regimes: field (underway) vs full (port).** The owner split these:
    *underway* the ship can only be kept limping; the *full* refit is port-only. Build both:
    - **Field repair** — `UiAction::FieldRepair(RepairKind)` (Hull / LifeSupport), allowed

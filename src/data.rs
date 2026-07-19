@@ -94,6 +94,13 @@ pub struct GameConfig {
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,
     pub life_support_decay_per_year: f32,
+    /// Spare parts spent per year keeping the ship maintained (PLAN M4.2).
+    /// While parts remain to cover it, yearly wear is eased by
+    /// `maintenance_decay_relief`; once the stores run dry, wear is full rate.
+    pub parts_upkeep_per_year: i64,
+    /// Fraction of a year's hull/life-support decay avoided while the ship is
+    /// maintained (0 = no relief, 0.4 = 40% less wear that year).
+    pub maintenance_decay_relief: f32,
     pub generation_interval_years: u32,
     pub leader_retirement_age: u32,
     pub heir_min_age: u32,
