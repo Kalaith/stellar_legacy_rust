@@ -4,14 +4,21 @@
 document maps the GDD onto what already exists in code and what the next agent
 should build, in order.*
 
-## Current status: content- and feature-complete (through M3); polish/marketing only
+## Current status: M1–M3 complete; M4 (the refit loop) newly specified, not yet built
 
 *Status refreshed 2026-07-19 (this doc opens with the original 2026-07-18 framework
 snapshot; the numbered log below records what shipped since).* Every numbered item
-(1–10) and all three cosmetic nits are **done**; the one open thread is the
-ko-fi/index.html marketing screenshots (item 9, human-gated). The game is
+(1–10, the original M1–M3 scope) and all three cosmetic nits are **done**; the game is
 content-complete against GDD §8 (and past several minimums) — 46 events, 5/5/5
 components, 8 contracts, 8 dilemmas per legacy, doubled name pools.
+
+**New direction (owner-directed 2026-07-19):** a **Voyage-and-Return Refit Loop** —
+one *run* = one mission flown by a persistent ship that leaves fresh and hopeful and
+arrives back worn and changed, with a between-missions **drydock** economy (repair /
+upgrade / commission a new ship) funding the next run, paced to ~45–75 min. Design
+captured in `gdd.md §3.1`; the code-grounded build order is **M4** below. This is now the
+active work; the ko-fi/index.html marketing screenshots (item 9) remain the only
+human-gated leftover from M3.
 
 Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
@@ -249,6 +256,74 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
     persists under its own `achievements` key (cosmetic — no sim effect). Shown
     as a `MILESTONES` panel on the Chronicle screen (unlocked N/M + `[x]/[ ]`
     list). New `chronicle` capture scene; 3 unit tests.
+
+## M4 — The Voyage-and-Return Refit Loop (owner-directed 2026-07-19)
+
+*Design intent in `gdd.md §3.1`. This section is the code-grounded build order. Nothing
+here is built yet — items are ordered so each is shippable and verifiable on its own.*
+
+**Why this is a small build, not a rewrite.** The persistent ship the owner wants already
+exists in the code: a contract completes and **auto-continues in the same `SimState`**
+(`game.rs:853-903` clears `sim.contract` and banks `template.reward`, no menu round-trip,
+no reset), and the whole `SimState` — ship loadout, population, dynasty — is already
+autosaved to `save_slot` (`save.rs`; autosave on `ToMenu` at `game.rs:617-624`). So the
+"persistent ship across missions" needs **no new carry channel**, and "in drydock between
+missions" is simply the state `sim.contract == None`. Extinction (`dynasty.extinct`,
+`game_over.rs`) stays the true game-over. The work is to make the *arc* felt and give the
+*port phase* real verbs.
+
+**Working assumption (see gdd.md §12 Q4):** a run = one mission on a persistent ship
+(recommended). If the owner instead wants runs to be disposable campaigns with the ship
+carried across *campaigns*, M4.3–M4.5 still hold but would need a ship-carry channel like
+Heritage — flag before building if that's the intent.
+
+1. **M4.1 — Voyage drift (the people change).** The one genuinely new sim mechanic. Add
+   a `game_config.json → voyage_drift` block and apply it per year in
+   `simulation/tick.rs` (alongside the hull/life-support decay at `tick.rs:73-74`): small
+   deltas that raise `population.adaptation` and `cultural_drift`, nudge `legacy_loyalty`
+   toward the faction pull, and slightly erode `morale`/`unity` under voyage strain,
+   scaled by a per-legacy modifier (Adaptors fastest, Preservers slowest). Deterministic
+   (no RNG), clamped via `PopulationState::apply` (`sim.rs:80-88`). Today
+   `adaptation`/`cultural_drift`/`legacy_loyalty`/`stability` move *only* on events — this
+   makes the crew visibly diverge over a long run even with no events. Surface a "distance
+   from the founders" readout on the dashboard. Test: over N years drift accrues
+   monotonically and stays in 0–1.
+2. **M4.2 — Honest degradation curve.** Retune (config-only where possible) so a single
+   long mission ends ~40–55% hull — "held together on hope and prayers." Raise
+   `hull_decay_per_year`/`life_support_decay_per_year` and/or widen the default mission
+   length so wear is felt; add a small per-year `spare_parts` consumption (today
+   `spare_parts` moves only via events) so restocking matters. Decay already compounds
+   across missions in one `SimState` (nothing resets it), so skipping repairs bites.
+3. **M4.3 — Repair verbs (drydock sink).** New `UiAction::Repair(RepairKind)` (Hull /
+   LifeSupport / Fuel / Parts) dispatched next to `purchase_component`
+   (`game.rs:906-935`): each costs credits+minerals from config, restores its stat toward
+   1.0 partially per purchase, gated by `resources.can_afford`. Priced-anytime, but
+   foregrounded in port.
+4. **M4.4 — Commission a new ship.** New `UiAction::CommissionShip(hull_id)`: a
+   large-credit purchase that swaps `ship.hull`, restores hull/life-support/fuel/parts to
+   full, and grants a one-time morale/hope lift — but does **not** reset
+   `cultural_drift`/`adaptation` (a new ship, never new people). Log a christening line.
+   This is the owner's "buy a new ship for the next run."
+5. **M4.5 — The drydock phase.** When `sim.contract == None` and the dynasty lives,
+   frame the arrival-and-refit beat: a one-time **Homecoming** summary on arrival (years
+   this mission, hull + population change since departure, reward banked) and an "IN
+   DRYDOCK" hub surfacing repair / upgrade / commission / accept-next-charter. Simplest
+   build: a between-missions banner + summary on the existing Contract/Ship/Market
+   screens; optionally a dedicated `Screen::Drydock` (`gameplay.rs:9-26`). UI stays a pure
+   view — new `UiAction`s only. Capture a `drydock` + `homecoming` scene.
+6. **M4.6 — Run framing + pace instrumentation.** A cosmetic wall-clock run timer on the
+   HUD and in the Homecoming/Chronicle summary (elapsed real time for the mission) — not
+   background sim; time still only moves on `AdvanceYear`. Record per-mission real and
+   in-game duration into the `ChronicleEntry` (`chronicle.rs:13-49`). Use it to tune M4.2
+   and decision density toward the ~45–75 min target.
+7. **M4.7 — (Stretch) Charter tiering by renown.** Gate larger/richer charters behind
+   accumulated renown or missions-completed (ties into `heritage::derive`,
+   `heritage.rs:43-65`) so later runs escalate. Keep flat for v1; add tiers only if runs
+   start to feel same-y.
+
+**Open questions for the owner** (don't block M4.1–M4.2 on these): run-model interpretation
+(gdd.md §12 Q4); is 1 hour a soft target (recommended, tuned via M4.2/M4.6) or a hard cap;
+should repair/commission be port-only or priced-anytime (recommended anytime).
 
 ## Conventions the framework already follows (keep them)
 

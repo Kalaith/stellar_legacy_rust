@@ -150,6 +150,47 @@ prototype/full split):
    save; the Chronicle then offers a small set of Heritage modifiers for a new
    playthrough (§7).
 
+### 3.1 The Voyage-and-Return Refit Loop (v2 direction, 2026-07-19)
+
+*Owner-directed refinement of the campaign loop above. The intent: make one **mission
+run** the unit of play, felt as a departure-and-homecoming arc, with a between-missions
+refit economy that gives past success somewhere to go.*
+
+- **A run = one mission (charter) flown by a persistent ship.** The ship is a single
+  continuous `SimState` across missions — it is not rebuilt between charters. Accepting a
+  charter is *casting off*; the contract's `return → completion` phases are the ship
+  *arriving back*; the moment `contract == None` again is *in drydock*.
+- **The arc within a run — hope in, wear out.** A ship leaves port fresh and whole
+  (pristine hull/life-support, high morale and unity, a population still close to the
+  founders). Over the mission's decades the hull decays, spare parts are spent, and — new
+  in v2 — the *people themselves drift* year over year: adaptation and cultural drift rise,
+  legacy loyalty shifts toward the faction's pull, and the strain of a long voyage erodes
+  morale and unity. The crew that comes home is measurably not the crew that left; the ship
+  comes home "held together on hope and prayers." Legacy flavors the rate (Adaptors embrace
+  the drift and change fastest; Preservers resist it; Wanderers wear it as identity).
+- **Homecoming → drydock → cast off again.** On arrival the run resolves to a *Homecoming*
+  summary (years elapsed, hull and population change since departure, reward banked). The
+  reward is then spent in **drydock** on three verbs before the next charter:
+  - **Repair** — restore hull integrity, life support, fuel, and spare parts toward whole
+    (a resource sink; partial per purchase).
+  - **Upgrade** — install better hull/engine/weapon components (the existing Ship Builder).
+  - **Commission a new ship** — a large purchase that swaps the hull and returns the vessel
+    to pristine condition with a one-time morale/hope lift, for when repairs can no longer
+    keep the old hull flying. A new *ship*, never new *people*: cultural drift does not
+    reset — the dynasty and its changed population always carry forward.
+- **What persists, what ends.** Ship condition, loadout, resources, the dynasty and its
+  drifted population all persist across missions (they already live in the one saved
+  `SimState`; wear that is not repaired compounds run over run). Only **dynasty extinction**
+  ends the line — that remains the true game-over. Renown still accrues to the Chronicle and
+  can gate larger, richer charters for later runs (escalation, not reset).
+- **Pacing target.** One mission run should pace to roughly **45–75 minutes** of real play,
+  reached by tuning mission length (in-game years) against decision density (events,
+  dilemmas) plus the drydock phase — **not** by any real-time/background simulation, which
+  stays a non-goal (§12). Time still advances only on an explicit *Advance* (Pillar 4). A
+  cosmetic wall-clock run timer may surface so pacing can be measured and felt.
+
+See PLAN.md "M4 — The Voyage-and-Return Refit Loop" for the code-grounded build order.
+
 ---
 
 ## 4. Player Role & Verbs
@@ -518,6 +559,13 @@ src/
      summary feels thin.
   3. Exact automation/delegation UI — how many domains can be delegated simultaneously,
      and does delegating everything trivialize the "century-scale" pacing goal?
+  4. **(v2, §3.1)** Is "a run = one mission on a persistent ship" the intended unit, or
+     should a run be a whole campaign with the ship carried across *campaigns*? Leaning
+     strongly toward the former — it needs no new persistence channel (the ship already
+     lives in one saved `SimState`, and "between missions" falls out of `contract == None`),
+     and it matches "buy upgrades/repairs for the next run" cleanly. The latter would
+     require a ship-carry channel analogous to Heritage/Chronicle. Revisit only if the
+     owner wants runs to be shorter, disposable campaigns rather than legs of one voyage.
 
 ---
 
