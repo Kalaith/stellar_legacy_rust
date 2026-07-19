@@ -44,8 +44,12 @@ fn draw_log(ctx: &GameplayCtx<'_>, area: Rect) {
         );
         draw_ui_text_ex(
             &format!(
-                "   {} charter · gen {} · under {} · score {:.2}",
-                entry.objective, entry.generation, entry.leader_name, entry.score
+                "   {} charter · {} yr · gen {} · under {} · score {:.2}",
+                entry.objective,
+                entry.duration_years,
+                entry.generation,
+                entry.leader_name,
+                entry.score
             ),
             content.x,
             y + 18.0,

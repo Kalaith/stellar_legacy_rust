@@ -399,7 +399,10 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    `drydock` captures. **The ~30-min floor is now fully tooled but its calibration stays a
    human task:** play a run, watch `RUN`, and if a successful run finishes under ~30 min,
    lengthen the mission band / decision density (config-only) — I can't measure wall-clock
-   play headlessly.
+   play headlessly. **Follow-up (2026-07-19):** the Chronicle screen now displays each
+   entry's `duration_years` ("Mining charter · **40 yr** · gen 5 · under … · score 0.92"),
+   surfacing the recorded mission length that was previously stored but never shown;
+   `chronicle` capture updated.
 8. ~~**M4.8 — Charter tiering by renown.**~~ **DONE (2026-07-19).** New
    `ContractTemplate.min_renown` (serde-default 0); richer charters gate behind accumulated
    Chronicle renown (`heritage::renown`, the existing score→points sum): tier-0 (the modest
