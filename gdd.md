@@ -168,16 +168,26 @@ refit economy that gives past success somewhere to go.*
   morale and unity. The crew that comes home is measurably not the crew that left; the ship
   comes home "held together on hope and prayers." Legacy flavors the rate (Adaptors embrace
   the drift and change fastest; Preservers resist it; Wanderers wear it as identity).
+- **Underway vs. in port — two toolsets, and the split is the point.** *During a mission*
+  (`contract == Some`) the ship can only be kept limping: **field repairs** patch hull and
+  life support using what the ship *carries* (spare parts, minerals) and never restore it to
+  pristine, and a component **found on the voyage** (salvaged from a derelict or an event)
+  *may* be field-installed — but only if the crew and the part allow it: a capable engineer
+  aboard, a part that tolerates a field swap, and the spare parts to do it. There is no
+  catalog shopping in the black. A long mission is therefore a slow problem of keeping a
+  decaying ship alive on what you brought and what you find. *In port* everything opens up
+  (next bullet).
 - **Homecoming → drydock → cast off again.** On arrival the run resolves to a *Homecoming*
-  summary (years elapsed, hull and population change since departure, reward banked). The
-  reward is then spent in **drydock** on three verbs before the next charter:
-  - **Repair** — restore hull integrity, life support, fuel, and spare parts toward whole
-    (a resource sink; partial per purchase).
-  - **Upgrade** — install better hull/engine/weapon components (the existing Ship Builder).
+  summary (years elapsed, hull and population change since departure, reward banked). Only in
+  **drydock** (`contract == None`) can the ship be fully set right, spending the reward on:
+  - **Full repair** — restore hull integrity, life support, fuel, and spare parts to whole
+    (port-only; the field kit underway can't reach pristine).
+  - **Full loadout** — install any hull/engine/weapon from the whole component catalog
+    (the existing Ship Builder), plus freely fit any parts salvaged underway. Port-only.
   - **Commission a new ship** — a large purchase that swaps the hull and returns the vessel
     to pristine condition with a one-time morale/hope lift, for when repairs can no longer
-    keep the old hull flying. A new *ship*, never new *people*: cultural drift does not
-    reset — the dynasty and its changed population always carry forward.
+    keep the old hull flying. Port-only. A new *ship*, never new *people*: cultural drift does
+    not reset — the dynasty and its changed population always carry forward.
 - **What persists, what ends — carry on success, reset only on game-over.** When a run
   ends in *success* (the mission completes), the ship, its loadout, resources, and above all
   the **dynasty and its drifted population carry across** to the next mission — the people
@@ -570,8 +580,10 @@ src/
      continue to build the legacy, and only game-over (extinction) resets to a new ship and
      new people. This needs no new persistence channel (the ship already lives in one saved
      `SimState`; "between missions" is `contract == None`). Also settled: ~1 hour is a soft
-     cap and a run has a ~30-minute floor (sub-30 only via game-over). Still open: are
-     repair/commission verbs port-only or priced-anytime (leaning priced-anytime).
+     cap and a run has a ~30-minute floor (sub-30 only via game-over); and the repair/loadout
+     split — **underway** allows only field repairs (from carried consumables, never to
+     pristine) and gated install of parts *found* on the voyage (if crew + part allow),
+     while **full repair, full loadout, and commissioning a new ship are port-only**.
 
 ---
 

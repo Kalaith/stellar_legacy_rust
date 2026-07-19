@@ -300,38 +300,62 @@ mission length/decision density (M4.2) must be sized to guarantee the floor.
    compounds across missions in one `SimState` (nothing resets it), so skipping repairs
    bites. **This item also owns the pacing floor:** size the default mission length (in
    years) so even brisk, decisive play cannot clear a successful run in under ~30 min, with
-   the ~1-hr soft cap as the upper band. Measure against the M4.6 run timer and adjust.
-3. **M4.3 — Repair verbs (drydock sink).** New `UiAction::Repair(RepairKind)` (Hull /
-   LifeSupport / Fuel / Parts) dispatched next to `purchase_component`
-   (`game.rs:906-935`): each costs credits+minerals from config, restores its stat toward
-   1.0 partially per purchase, gated by `resources.can_afford`. Priced-anytime, but
-   foregrounded in port.
-4. **M4.4 — Commission a new ship.** New `UiAction::CommissionShip(hull_id)`: a
-   large-credit purchase that swaps `ship.hull`, restores hull/life-support/fuel/parts to
-   full, and grants a one-time morale/hope lift — but does **not** reset
-   `cultural_drift`/`adaptation` (a new ship, never new people). Log a christening line.
-   This is the owner's "buy a new ship for the next run."
-5. **M4.5 — The drydock phase.** When `sim.contract == None` and the dynasty lives,
-   frame the arrival-and-refit beat: a one-time **Homecoming** summary on arrival (years
-   this mission, hull + population change since departure, reward banked) and an "IN
-   DRYDOCK" hub surfacing repair / upgrade / commission / accept-next-charter. Simplest
-   build: a between-missions banner + summary on the existing Contract/Ship/Market
-   screens; optionally a dedicated `Screen::Drydock` (`gameplay.rs:9-26`). UI stays a pure
-   view — new `UiAction`s only. Capture a `drydock` + `homecoming` scene.
-6. **M4.6 — Run framing + pace instrumentation.** A cosmetic wall-clock run timer on the
+   the ~1-hr soft cap as the upper band. Measure against the M4.7 run timer and adjust.
+3. **M4.3 — Two repair regimes: field (underway) vs full (port).** The owner split these:
+   *underway* the ship can only be kept limping; the *full* refit is port-only. Build both:
+   - **Field repair** — `UiAction::FieldRepair(RepairKind)` (Hull / LifeSupport), allowed
+     while `sim.contract.is_some()`. Consumes **carried consumables** (`spare_parts` +
+     minerals) rather than being a pure credit sink, restores its stat *partially and to a
+     capped ceiling below 1.0* (you cannot make a ship pristine in the black — that's what
+     port is for). Ties to M4.2's per-year spare-parts burn: field repair is the sink that
+     makes restocking matter.
+   - **Full repair** — restore hull/life-support/fuel to 1.0 and fully restock spare parts,
+     **port-only** (`sim.contract.is_none()`), priced in credits+minerals. Either a set of
+     `Repair(kind)` verbs or a single "full refit" purchase.
+   Dispatch next to `purchase_component` (`game.rs:906-935`), gated by `resources.can_afford`
+   and the port/underway check.
+4. **M4.4 — Found parts + gated field install.** New content channel + mechanic. Let
+   event/contract outcomes **grant a component** (a salvaged part) into a new
+   `sim.ship.salvage: Vec<String>` inventory (add a `grant_component: Option<String>` to the
+   event-outcome / milestone-reward schema; wire in `event_resolver`/`advance_contract`). A
+   found part can be **field-installed underway only if the crew and the part allow it** —
+   a `can_field_install(component, &crew, &resources) -> bool` gate keyed on: (a) the
+   *part* — new `ShipComponent.field_installable: bool` (or an install-difficulty rating);
+   (b) the *crew* — a qualified engineer aboard (a `CrewMember` on the engineer post with
+   skill ≥ a config threshold); (c) *consumables* — a spare-parts/minerals cost.
+   `UiAction::InstallSalvage(id)`; at port any salvaged/owned part installs freely (no crew
+   gate). Surface the salvage inventory + per-part install-eligibility ("needs drydock" /
+   "needs a chief engineer" / "install") on the Ship screen. This is where "if a new part is
+   found during the mission it might be installable, depending on the crew, item, etc." lives.
+5. **M4.5 — Commission a new ship (port-only).** New `UiAction::CommissionShip(hull_id)`,
+   allowed only when `sim.contract.is_none()`: a large-credit purchase that swaps `ship.hull`,
+   restores hull/life-support/fuel/parts to full, and grants a one-time morale/hope lift —
+   but does **not** reset `cultural_drift`/`adaptation` (a new ship, never new people). Log a
+   christening line. This is the owner's "buy a new ship for the next run."
+6. **M4.6 — The drydock phase + the port/underway gate.** When `sim.contract == None` and
+   the dynasty lives, frame the arrival-and-refit beat: a one-time **Homecoming** summary on
+   arrival (years this mission, hull + population change since departure, reward banked) and
+   an "IN DRYDOCK" hub surfacing full-repair / full-loadout / commission / accept-next-charter.
+   **This item owns the port-only gate:** catalog loadout changes (`PurchaseComponent`), full
+   repair (M4.3), and commission (M4.5) require `contract.is_none()`; underway the only ship
+   verbs are field repair (M4.3) and gated found-part install (M4.4). Simplest build: a
+   between-missions banner + summary on the existing Contract/Ship/Market screens; optionally
+   a dedicated `Screen::Drydock` (`gameplay.rs:9-26`). UI stays a pure view — new `UiAction`s
+   only. Capture a `drydock` + `homecoming` scene.
+7. **M4.7 — Run framing + pace instrumentation.** A cosmetic wall-clock run timer on the
    HUD and in the Homecoming/Chronicle summary (elapsed real time for the mission) — not
    background sim; time still only moves on `AdvanceYear`. Record per-mission real and
    in-game duration into the `ChronicleEntry` (`chronicle.rs:13-49`). Use it to tune M4.2
-   and decision density toward the ~45–75 min target.
-7. **M4.7 — (Stretch) Charter tiering by renown.** Gate larger/richer charters behind
+   and decision density toward the **30–60 min** band (~30-min floor, ~1-hr soft cap).
+8. **M4.8 — (Stretch) Charter tiering by renown.** Gate larger/richer charters behind
    accumulated renown or missions-completed (ties into `heritage::derive`,
    `heritage.rs:43-65`) so later runs escalate. Keep flat for v1; add tiers only if runs
    start to feel same-y.
 
 **Resolved (2026-07-19):** run-model = persistent ship, carry on success / reset only on
-game-over (gdd.md §12 Q4); pacing = ~30-min floor, ~1-hr soft cap. **Still open** (doesn't
-block M4.1–M4.2): should repair/commission be port-only or priced-anytime (leaning
-priced-anytime).
+game-over (gdd.md §12 Q4); pacing = ~30-min floor, ~1-hr soft cap; **repair/loadout split —
+field repair + gated found-part install underway, full repair + full loadout + commission
+port-only** (M4.3/M4.4/M4.6). No open questions block M4.1–M4.2.
 
 ## Conventions the framework already follows (keep them)
 
