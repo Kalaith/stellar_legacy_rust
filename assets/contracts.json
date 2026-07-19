@@ -408,5 +408,153 @@
       "credits": 7000,
       "influence": 150
     }
+  },
+  {
+    "id": "starfall_beacon",
+    "name": "Beacon Line: The Starfall Verge",
+    "objective": "exploration",
+    "description": "Fifty years laying a chain of relay beacons out to the Starfall Verge, so the ships that come after need not cross the dark blind.",
+    "target_duration_years": 50,
+    "milestones": [
+      {
+        "id": "first_beacon",
+        "name": "First beacon seated",
+        "progress_threshold": 0.2
+      },
+      {
+        "id": "midline",
+        "name": "Midline relay online",
+        "progress_threshold": 0.55,
+        "reward": {
+          "influence": 55
+        }
+      },
+      {
+        "id": "verge_reached",
+        "name": "Verge beacon lit",
+        "progress_threshold": 0.8,
+        "reward": {
+          "credits": 400
+        }
+      },
+      {
+        "id": "line_closed",
+        "name": "Beacon line closed and keyed",
+        "progress_threshold": 1.0
+      }
+    ],
+    "success_metrics": [
+      {
+        "id": "population_survival",
+        "kind": "population_survival",
+        "name": "Population survival",
+        "weight": 0.2,
+        "target": 0.8
+      },
+      {
+        "id": "mission_completion",
+        "kind": "mission_completion",
+        "name": "Mission completion",
+        "weight": 0.45,
+        "target": 1.0
+      },
+      {
+        "id": "resource_efficiency",
+        "kind": "resource_efficiency",
+        "name": "Resource efficiency",
+        "weight": 0.2,
+        "target": 0.7
+      },
+      {
+        "id": "social_cohesion",
+        "kind": "social_cohesion",
+        "name": "Social cohesion",
+        "weight": 0.15,
+        "target": 0.55
+      }
+    ],
+    "failure_risks": [
+      "navigation_error",
+      "hull_breach",
+      "supply_shortfall"
+    ],
+    "reward": {
+      "credits": 5200,
+      "influence": 210
+    }
+  },
+  {
+    "id": "hollow_fleet",
+    "name": "Recovery Writ: The Hollow Fleet",
+    "objective": "rescue",
+    "description": "A refugee convoy broke apart in transit a generation ago, its lifeboats still drifting on dead reckoning. Find what holds air, and choose which to reach first.",
+    "target_duration_years": 28,
+    "milestones": [
+      {
+        "id": "wreck_line",
+        "name": "Convoy wreck-line plotted",
+        "progress_threshold": 0.15
+      },
+      {
+        "id": "first_boat",
+        "name": "First lifeboat matched and boarded",
+        "progress_threshold": 0.5,
+        "reward": {
+          "influence": 60
+        }
+      },
+      {
+        "id": "last_holdout",
+        "name": "Last holdout recovered",
+        "progress_threshold": 0.85,
+        "reward": {
+          "credits": 450
+        }
+      },
+      {
+        "id": "manifest_closed",
+        "name": "Recovery manifest closed",
+        "progress_threshold": 1.0
+      }
+    ],
+    "success_metrics": [
+      {
+        "id": "population_survival",
+        "kind": "population_survival",
+        "name": "Population survival",
+        "weight": 0.4,
+        "target": 0.9
+      },
+      {
+        "id": "mission_completion",
+        "kind": "mission_completion",
+        "name": "Mission completion",
+        "weight": 0.3,
+        "target": 1.0
+      },
+      {
+        "id": "resource_efficiency",
+        "kind": "resource_efficiency",
+        "name": "Resource efficiency",
+        "weight": 0.1,
+        "target": 0.6
+      },
+      {
+        "id": "social_cohesion",
+        "kind": "social_cohesion",
+        "name": "Social cohesion",
+        "weight": 0.2,
+        "target": 0.6
+      }
+    ],
+    "failure_risks": [
+      "life_support_failure",
+      "overcrowding",
+      "moral_injury"
+    ],
+    "reward": {
+      "credits": 3800,
+      "influence": 320
+    }
   }
 ]

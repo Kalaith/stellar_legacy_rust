@@ -11,7 +11,7 @@ snapshot; the numbered log below records what shipped since).* Every numbered it
 (1–10) and all three cosmetic nits are **done**; the one open thread is the
 ko-fi/index.html marketing screenshots (item 9, human-gated). The game is
 content-complete against GDD §8 (and past several minimums) — 46 events, 5/5/5
-components, 6 contracts, 8 dilemmas per legacy, doubled name pools.
+components, 8 contracts, 8 dilemmas per legacy, doubled name pools.
 
 Verified: `cargo test` (**46 tests green**, incl. a 250-year soak/integration
 test), `cargo clippy --all-targets --all-features -- -D warnings` (clean), `cargo
@@ -157,10 +157,13 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
    each with real stat tradeoffs that feed the item-3 hooks; the Ship Builder
    card was compacted (96px, cost folded into the button) so a five-deep column
    fits, and the data-load test asserts 5/5/5. **6-8 contracts DONE
-   (2026-07-19)** — added `coronal_tap` (mining) and `seedfall` (colonization)
-   for **6** total (in the §8 6-8 band), each with milestone rewards; the
-   available-charters card was compacted (78px) so 6-8 fit, data-load test
-   asserts ≥6. **Dilemmas DONE (§8 target 6, since deepened to 8 per legacy)** —
+   (2026-07-19)** — added `coronal_tap` (mining), `seedfall` (colonization),
+   `starfall_beacon` (exploration), and `hollow_fleet` (rescue) for **8 total,
+   two per objective (mining/colonization/exploration/rescue)**, each with
+   milestone rewards; the available-charters list was converted to a
+   **two-column grid** (`contract_systems::draw_available`) so it scales past
+   six without a scrollbar (4 rows of 2, with headroom for more), data-load
+   test asserts ≥8. **Dilemmas DONE (§8 target 6, since deepened to 8 per legacy)** —
    the §8 pass brought each legacy to 6, then a depth pass added two more each
    (Preservers `forbidden_deck`/`the_apostate`; Adaptors `the_symbiont`/
    `the_backup`; Wanderers `the_amnesty`/`the_prize_court`) for **8 each, 24
@@ -172,10 +175,9 @@ human-gated ko-fi/index.html marketing screenshots noted under item 9.
    each legacy's flavor); data-load test asserts the doubled counts. Pure
    `assets/*.json`; schemas unchanged. **Item 8 complete — all §8 content
    targets met, several since exceeded (46 events / 5-5-5 components /
-   6 contracts / 8 dilemmas per legacy / doubled name pools). Contracts are
-   currently UI-capped at 6 by the available-charters list (78px cards fit ~6;
-   growing past that needs a scrollable charter list — a future UI task, not a
-   content one).**
+   8 contracts / 8 dilemmas per legacy / doubled name pools). The
+   available-charters list is now a two-column grid, so contracts can grow
+   further (the grid has room for several more rows) without more UI work.**
 9. **Terminal polish**: monospace bitmap font (default font is close but not
    monospace), ~~flicker fx~~ **CRT overlay DONE (2026-07-18)** —
    `macroquad_toolkit::fx::CrtOverlay`/`CrtStyle` (new toolkit module

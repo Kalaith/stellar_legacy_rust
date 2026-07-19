@@ -154,14 +154,28 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
 fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     term_panel(area, Some("AVAILABLE CHARTERS"));
     let content = area.inset(20.0);
-    let mut y = content.y + 42.0;
+    let top = content.y + 42.0;
 
-    for id in GameData::sorted_ids(&ctx.data.contracts) {
+    // Two-column charter grid so the list scales past six charters without a
+    // scrollbar (each column is half-width; four rows fit comfortably).
+    const GAP: f32 = 16.0;
+    let col_w = (content.w - GAP) / 2.0;
+
+    for (i, id) in GameData::sorted_ids(&ctx.data.contracts)
+        .into_iter()
+        .enumerate()
+    {
         let Some(template) = ctx.data.contracts.get(&id) else {
             continue;
         };
-        // Compact cards so a six-to-eight charter list fits without overflow.
-        let card = Rect::new(content.x, y, content.w, 78.0);
+        let col = (i % 2) as f32;
+        let row = (i / 2) as f32;
+        let card = Rect::new(
+            content.x + col * (col_w + GAP),
+            top + row * 82.0,
+            col_w,
+            78.0,
+        );
         draw_surface(
             card,
             &SurfaceStyle::new(term::surface_inset()).with_border(1.0, term::faint()),
@@ -201,6 +215,5 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
         ) {
             actions.push(UiAction::AcceptContract(id.clone()));
         }
-        y += 82.0;
     }
 }
