@@ -1,0 +1,17 @@
+{
+  "title": "Stellar Legacy",
+  "status": { "text": "Playable", "class": "playable" },
+  "canvas_rendering": "pixelated",
+  "about": [
+    "A generational starship strategy game. Command the standing council of a vessel whose missions outlive the people who accept them — captains age out, heirs inherit, and every promise your ship makes will be kept (or broken) by someone else's grandchildren."
+  ],
+  "controls": [
+    { "key": "Mouse", "desc": "All interaction — tabs, buttons, decisions" }
+  ],
+  "details": [
+    { "label": "Genre", "value": "Generational Strategy" },
+    { "label": "Engine", "value": "Macroquad + Toolkit" },
+    { "label": "Platform", "value": "Browser, Windows" }
+  ],
+  "repository": "https://github.com/Kalaith/stellar_legacy_rust"
+}
