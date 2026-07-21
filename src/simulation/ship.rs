@@ -233,6 +233,28 @@ pub fn refuel(sim: &mut SimState, config: &GameConfig) -> Result<(), String> {
     Ok(())
 }
 
+/// Stock spare parts in drydock (port-only, W4 provisioning): buy `amount`
+/// parts at the configured credit price. Underway the stores only drain — the
+/// black sells nothing.
+pub fn buy_parts(sim: &mut SimState, config: &GameConfig, amount: i64) -> Result<(), String> {
+    if sim.contract.is_some() {
+        return Err("Spare parts are stocked in port, between missions.".to_owned());
+    }
+    if amount <= 0 {
+        return Err("The stores are already stocked.".to_owned());
+    }
+    let cost = amount * config.provisioning.part_cost_credits;
+    if sim.resources.credits < cost {
+        return Err(format!("Stocking {amount} parts needs {cost} credits."));
+    }
+    sim.resources.credits -= cost;
+    sim.ship.spare_parts += amount;
+    sim.push_log(format!(
+        "{amount} spare parts craned aboard and racked for the voyage."
+    ));
+    Ok(())
+}
+
 /// Full refit (port-only, PLAN M4.3): restore hull, life support, and fuel to
 /// whole and top the spare-parts stores back up, for credits + minerals. Only
 /// available between missions (`contract == None`) — the drydock the field kit
@@ -568,6 +590,39 @@ mod tests {
             credits + stats.speed as i64 * data.config.ship.credits_per_speed
         );
         assert!(sim.resources.minerals > minerals, "cargo yields minerals");
+    }
+
+    #[test]
+    fn buying_parts_is_port_only_and_charges_per_part() {
+        use crate::simulation::contract::start_contract;
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.resources.credits = 10_000;
+        let parts_before = sim.ship.spare_parts;
+
+        // Underway: refused.
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        assert!(buy_parts(&mut sim, &data.config, 10).is_err());
+
+        // In port: parts land, credits leave at the configured price.
+        sim.contract = None;
+        buy_parts(&mut sim, &data.config, 10).unwrap();
+        assert_eq!(sim.ship.spare_parts, parts_before + 10);
+        assert_eq!(
+            sim.resources.credits,
+            10_000 - 10 * data.config.provisioning.part_cost_credits
+        );
+
+        // Zero or unaffordable orders are refused whole.
+        assert!(buy_parts(&mut sim, &data.config, 0).is_err());
+        sim.resources.credits = 5;
+        assert!(buy_parts(&mut sim, &data.config, 10).is_err());
     }
 
     #[test]

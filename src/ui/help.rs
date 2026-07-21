@@ -7,7 +7,7 @@ use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
 const KEYS: &[(&str, &str)] = &[
-    ("1 - 6", "Switch screen tabs"),
+    ("1 - 7", "Switch screen tabs"),
     ("SPACE / ENTER", "Advance time at the chosen speed"),
     ("1 - 9", "Choose an option in a council modal"),
     ("F1", "Display & delegation settings"),

@@ -289,6 +289,19 @@ impl Game {
                 }
                 None
             }
+            UiAction::BuyParts(amount) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crate::simulation::ship::buy_parts(
+                        &mut gameplay.sim,
+                        &self.data.config,
+                        amount,
+                    ) {
+                        Ok(()) => self.notifications.success("Spare parts stocked."),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
             UiAction::PurchaseComponent(kind, id) => {
                 self.purchase_component(kind, &id);
                 None

@@ -47,7 +47,8 @@
   "provisioning": {
     "fuel_burn_per_travel_month": 0.0035,
     "fuel_cost_credits_per_point": 30,
-    "no_fuel_decay_multiplier": 2.0
+    "no_fuel_decay_multiplier": 2.0,
+    "part_cost_credits": 12
   },
   "subsystems": {
     "knowledge_start": 0.7,

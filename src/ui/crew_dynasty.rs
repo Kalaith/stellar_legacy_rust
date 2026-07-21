@@ -12,8 +12,11 @@ use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.55, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
-    let roster = Rect::new(left.x, left.y, left.w, left.h * 0.40);
-    let posts = Rect::new(left.x, roster.bottom() + 8.0, left.w, left.h * 0.30);
+    // Posts is sized to exactly one row per archetype — as a fixed ratio its
+    // last TRAIN/RECRUIT button bled into the PEOPLES panel below.
+    let posts_h = 78.0 + (ctx.data.crew_archetypes.len().saturating_sub(1)) as f32 * 24.0;
+    let roster = Rect::new(left.x, left.y, left.w, left.h * 0.325);
+    let posts = Rect::new(left.x, roster.bottom() + 8.0, left.w, posts_h);
     let factions = Rect::new(
         left.x,
         posts.bottom() + 8.0,
@@ -42,52 +45,49 @@ fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut V
         .map(|f| f.members)
         .sum();
 
-    for fs in &sim.factions {
-        let name = ctx
-            .data
+    let faction_name = |id: &str| {
+        ctx.data
             .factions
-            .get(&fs.faction_id)
+            .get(id)
             .map(|d| d.name.clone())
-            .unwrap_or_else(|| fs.faction_id.clone());
-        if fs.is_aboard() {
-            let share = if total_aboard > 0 {
-                fs.members as f32 / total_aboard as f32 * 100.0
-            } else {
-                0.0
-            };
-            draw_ui_text_ex(
-                &format!("{name} — {} ({share:.0}%)", fs.members),
-                content.x,
-                y,
-                TextStyle::new(13.0, term::primary()).params(),
-            );
+            .unwrap_or_else(|| id.to_owned())
+    };
+
+    // The peoples still aboard come first — they are the living ship.
+    for fs in sim.factions.iter().filter(|f| f.is_aboard()) {
+        let share = if total_aboard > 0 {
+            fs.members as f32 / total_aboard as f32 * 100.0
         } else {
-            draw_ui_text_ex(
-                &format!("{name} — {}", fs.status.label()),
-                content.x,
-                y,
-                TextStyle::new(12.0, term::faint()).params(),
-            );
-        }
+            0.0
+        };
+        draw_ui_text_ex(
+            &format!(
+                "{} — {} ({share:.0}%)",
+                faction_name(&fs.faction_id),
+                fs.members
+            ),
+            content.x,
+            y,
+            TextStyle::new(13.0, term::primary()).params(),
+        );
         y += 22.0;
     }
 
-    // Recruit a fresh people in drydock when the ship is short (W7).
+    // Recruit a fresh people in drydock when the ship is short (W7) — the verb
+    // outranks the memorial rows below when space runs out.
     let cfg = &ctx.data.config.factions;
     if sim.contract.is_none() && sim.aboard_faction_count() < cfg.starting_count {
         for id in sim.recruitable_faction_ids(ctx.data) {
             if y > content.bottom() - 26.0 {
                 break;
             }
-            let name = ctx
-                .data
-                .factions
-                .get(&id)
-                .map(|d| d.name.clone())
-                .unwrap_or_else(|| id.clone());
             if term_button(
                 Rect::new(content.x, y + 2.0, content.w, 24.0),
-                &format!("RECRUIT {name} ({} CR)", cfg.recruit_group_cost_credits),
+                &format!(
+                    "RECRUIT {} ({} CR)",
+                    faction_name(&id),
+                    cfg.recruit_group_cost_credits
+                ),
                 sim.resources.credits >= cfg.recruit_group_cost_credits,
                 mouse,
             ) {
@@ -95,6 +95,21 @@ fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut V
             }
             y += 28.0;
         }
+    }
+
+    // Lost peoples dim out below, clamped to the panel — they must never spill
+    // into whatever sits underneath.
+    for fs in sim.factions.iter().filter(|f| !f.is_aboard()) {
+        if y > content.bottom() - 4.0 {
+            break;
+        }
+        draw_ui_text_ex(
+            &format!("{} — {}", faction_name(&fs.faction_id), fs.status.label()),
+            content.x,
+            y,
+            TextStyle::new(12.0, term::faint()).params(),
+        );
+        y += 20.0;
     }
 }
 
@@ -168,7 +183,7 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec
 fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     term_panel(rect, Some("SHIP POSTS"));
     let content = rect.inset(18.0);
-    let mut y = content.y + 40.0;
+    let mut y = content.y + 30.0;
 
     let crew_cfg = &ctx.data.config.crew;
     for archetype in &ctx.data.crew_archetypes {
@@ -214,7 +229,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<
                 }
             }
         }
-        y += 27.0;
+        y += 24.0;
     }
 }
 

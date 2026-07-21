@@ -7,7 +7,7 @@ use crate::state::sim::ActiveContract;
 use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
-use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
+use macroquad_toolkit::ui::{draw_ui_text_ex, measure_ui_text, RectExt};
 
 /// A compact ` → +N res` suffix for a milestone's one-time reward (empty when
 /// there is none).
@@ -282,9 +282,26 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
     draw_charter_cards(ctx, cards, mouse, actions);
 }
 
+/// Ellipsis-truncate `text` so it renders within `max_w` at the UI font size.
+fn fit_text(text: &str, size: u16, max_w: f32) -> String {
+    if measure_ui_text(text, None, size, 1.0).width <= max_w {
+        return text.to_owned();
+    }
+    let mut cut: String = text.to_owned();
+    while cut.pop().is_some() {
+        let candidate = format!("{}...", cut.trim_end());
+        if measure_ui_text(&candidate, None, size, 1.0).width <= max_w {
+            return candidate;
+        }
+    }
+    "...".to_owned()
+}
+
 /// The two-column charter grid (W4-shared): each card SELECTs its charter and
 /// highlights the one under consideration. Locked charters show their renown
-/// gate. Scales past six charters without a scrollbar.
+/// gate. Scales past six charters without a scrollbar. A narrow area (the PREP
+/// swap column) gets a compact whole-card-clickable layout — the wide layout's
+/// side button and description don't fit and would overlap the title.
 pub(crate) fn draw_charter_cards(
     ctx: &GameplayCtx<'_>,
     area: Rect,
@@ -294,6 +311,7 @@ pub(crate) fn draw_charter_cards(
     let renown = crate::heritage::renown(ctx.chronicle);
     const GAP: f32 = 16.0;
     let col_w = (area.w - GAP) / 2.0;
+    let compact = area.w < 900.0;
 
     for (i, id) in GameData::sorted_ids(&ctx.data.contracts)
         .into_iter()
@@ -312,8 +330,11 @@ pub(crate) fn draw_charter_cards(
             col_w,
             78.0,
         );
+        let hovered = compact && !locked && card.contains_point(mouse);
         let fill = if selected {
             term::surface_active()
+        } else if hovered {
+            term::surface_hover()
         } else {
             term::surface_inset()
         };
@@ -328,29 +349,65 @@ pub(crate) fn draw_charter_cards(
                 },
             ),
         );
+        let title_color = if locked {
+            term::faint()
+        } else if selected {
+            term::accent()
+        } else {
+            term::primary()
+        };
+        let meta = format!(
+            "{} · {} YEARS · reward {} cr",
+            template.objective.label().to_uppercase(),
+            template.target_duration_years,
+            template.reward.credits
+        );
+
+        if compact {
+            // Compact card: title / meta / status stacked, the whole card is
+            // the SELECT button.
+            draw_ui_text_ex(
+                &fit_text(&template.name, 13, card.w - 24.0),
+                card.x + 12.0,
+                card.y + 20.0,
+                TextStyle::new(13.0, title_color).params(),
+            );
+            draw_ui_text_ex(
+                &fit_text(&meta, 11, card.w - 24.0),
+                card.x + 12.0,
+                card.y + 40.0,
+                TextStyle::new(11.0, term::dim()).params(),
+            );
+            let (status, status_color) = if locked {
+                (
+                    format!("LOCKED · RENOWN {}", template.min_renown),
+                    term::faint(),
+                )
+            } else if selected {
+                ("[ SELECTED ]".to_owned(), term::accent())
+            } else {
+                ("[ SELECT ]".to_owned(), term::dim())
+            };
+            draw_ui_text_ex(
+                &status,
+                card.x + 12.0,
+                card.y + 62.0,
+                TextStyle::new(11.0, status_color).params(),
+            );
+            if hovered && is_mouse_button_released(MouseButton::Left) {
+                actions.push(UiAction::SelectCharter(id.clone()));
+            }
+            continue;
+        }
+
         draw_ui_text_ex(
             &template.name,
             card.x + 14.0,
             card.y + 22.0,
-            TextStyle::new(
-                16.0,
-                if locked {
-                    term::faint()
-                } else if selected {
-                    term::accent()
-                } else {
-                    term::primary()
-                },
-            )
-            .params(),
+            TextStyle::new(16.0, title_color).params(),
         );
         draw_ui_text_ex(
-            &format!(
-                "{} · {} YEARS · reward {} cr",
-                template.objective.label().to_uppercase(),
-                template.target_duration_years,
-                template.reward.credits
-            ),
+            &meta,
             card.x + 14.0,
             card.y + 40.0,
             TextStyle::new(12.0, term::dim()).params(),

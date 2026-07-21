@@ -178,6 +178,8 @@ pub enum UiAction {
     Launch,
     /// Refuel to a full tank in drydock (W4).
     Refuel,
+    /// Stock spare parts in drydock (W4 provisioning, PREP screen).
+    BuyParts(i64),
     PurchaseComponent(ComponentKind, String),
     FieldRepair(crate::simulation::ship::RepairKind),
     FullRepair,

@@ -243,6 +243,8 @@ pub struct ProvisioningConfig {
     pub fuel_cost_credits_per_point: i64,
     /// Hull/life-support decay multiplier for a year in which the tank ran dry.
     pub no_fuel_decay_multiplier: f32,
+    /// Credits per spare part when stocking up in drydock (PREP screen).
+    pub part_cost_credits: i64,
 }
 
 /// archetype; recruiting fills a vacancy, training raises the holder's
