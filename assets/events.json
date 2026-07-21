@@ -3561,5 +3561,101 @@
     "log": "The navigators bent the course well around the wrong young star and its restless light. The physicists filed complaints; the captain filed them away."
    }
   ]
+ },
+ {
+  "id": "the_stationkeepers",
+  "category": "legacy_moment",
+  "title": "The Stationkeepers",
+  "description": "Parked at the worksite for lifetimes, a generation comes of age that has never seen the ship move. To them the mission is not a voyage but a place — this orbit, this labor, this sky that never changes.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "long_station"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "honor_the_work",
+    "label": "Make the work their identity",
+    "description": "Let them be stationkeepers, proud of the labor for its own sake.",
+    "population_delta": {
+     "stability": 0.06,
+     "cultural_drift": 0.06,
+     "morale": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The council blessed the stationkeepers' pride, and a people who had forgotten they were travelers worked the vein like a homeland. Home would be a strange word to them later."
+   },
+   {
+    "id": "remind_them_of_home",
+    "label": "Keep the voyage alive in them",
+    "description": "Drill the return into every child. This is a stop, not a home.",
+    "population_delta": {
+     "legacy_loyalty": 0.07,
+     "morale": -0.04,
+     "unity": 0.03
+    },
+    "log": "The elders held the return before the stationkeepers like a promise, and taught children born to the worksite to ache for a home none of them had seen."
+   }
+  ]
+ },
+ {
+  "id": "the_idle_hull",
+  "category": "immediate_crisis",
+  "title": "The Idle Hull",
+  "description": "A ship parked for centuries suffers what a moving one never does — seals set, bearings seize, whole systems forget their purpose from disuse. The idle hull is quietly rotting at anchor.",
+  "requires_decision": true,
+  "family": "engineering",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "long_station"
+  ],
+  "outcomes": [
+   {
+    "id": "cycle_the_systems",
+    "label": "Run everything on a duty cycle",
+    "description": "Spend parts and hands keeping every system exercised.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.05
+     }
+    ],
+    "log": "The engineers put the whole idle ship on a duty cycle, waking each system in turn so nothing seized. It cost parts and vigilance and it kept the hull from rotting at anchor."
+   },
+   {
+    "id": "let_it_sleep",
+    "label": "Let the unused systems sleep",
+    "description": "Power down what the camp doesn't need and accept the rot.",
+    "ship_delta": {
+     "hull_integrity": -0.08
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.1
+     },
+     {
+      "id": "life_support_habitat",
+      "condition": -0.06
+     }
+    ],
+    "log": "The camp shut down every system it wasn't using, and the sleeping parts of the ship set and seized in the cold. Waking them later would be its own long ordeal."
+   }
+  ]
  }
 ]

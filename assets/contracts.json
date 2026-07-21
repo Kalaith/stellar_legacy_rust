@@ -921,5 +921,191 @@
    "long_haul",
    "uncharted"
   ]
+ },
+ {
+  "id": "the_deep_camp",
+  "name": "Deep Camp: The Cinder Vein",
+  "objective": "mining",
+  "description": "Sail ninety years to a metal-rich cinder world and then stay — three centuries camped in orbit, working the vein dry, while whole generations are born and die having known only the worksite and the dark.",
+  "target_duration_years": 480,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 90
+   },
+   {
+    "kind": "operation",
+    "years": 300
+   },
+   {
+    "kind": "return",
+    "years": 90
+   }
+  ],
+  "objective_target": 40000,
+  "objective_unit": "tonnes extracted",
+  "milestones": [
+   {
+    "id": "arrival",
+    "name": "Camp established at the vein",
+    "progress_threshold": 0.2
+   },
+   {
+    "id": "first_holds",
+    "name": "Holds first filled",
+    "progress_threshold": 0.45,
+    "reward": {
+     "minerals": 200
+    }
+   },
+   {
+    "id": "vein_worked",
+    "name": "Vein worked to the marginal seams",
+    "progress_threshold": 0.8
+   },
+   {
+    "id": "camp_struck",
+    "name": "Camp struck, holds full",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.3,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.25,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "cabin_fever",
+   "succession_crisis"
+  ],
+  "reward": {
+   "credits": 9000,
+   "minerals": 600
+  },
+  "min_renown": 100,
+  "tags": [
+   "mining",
+   "deep_space",
+   "long_station"
+  ]
+ },
+ {
+  "id": "hearthfall_accord",
+  "name": "Residency: The Hearthfall Accord",
+  "objective": "rescue",
+  "description": "Carry an embassy to a struggling inhabited world and live among them for eight generations — not a landing and a departure but a long residency, tending a fragile people until an accord can hold, then coming home.",
+  "target_duration_years": 460,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 110
+   },
+   {
+    "kind": "operation",
+    "years": 240
+   },
+   {
+    "kind": "return",
+    "years": 110
+   }
+  ],
+  "objective_target": 8000,
+  "objective_unit": "souls sustained",
+  "milestones": [
+   {
+    "id": "landfall",
+    "name": "Embassy established",
+    "progress_threshold": 0.24
+   },
+   {
+    "id": "first_winter",
+    "name": "First shared winter weathered",
+    "progress_threshold": 0.5,
+    "reward": {
+     "influence": 40
+    }
+   },
+   {
+    "id": "accord_drafted",
+    "name": "Accord drafted",
+    "progress_threshold": 0.82
+   },
+   {
+    "id": "accord_signed",
+    "name": "Accord signed, embassy withdrawn",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.3,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.3,
+    "target": 0.65
+   }
+  ],
+  "failure_risks": [
+   "famine",
+   "cultural_capture",
+   "succession_crisis"
+  ],
+  "reward": {
+   "credits": 8500,
+   "influence": 160
+  },
+  "min_renown": 250,
+  "tags": [
+   "relief",
+   "inhabited",
+   "long_station"
+  ]
  }
 ]

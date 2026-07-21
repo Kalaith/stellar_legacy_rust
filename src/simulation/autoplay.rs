@@ -258,6 +258,32 @@ mod tests {
         );
     }
 
+    /// Soak the long-station charter shape (content-depth): the 480-year Deep
+    /// Camp spends most of its length parked on-station rather than in transit.
+    /// It must resolve legally (complete or lose the line), never run the clock
+    /// out mid-voyage, with all per-year invariants holding across 19+
+    /// generations.
+    #[test]
+    fn the_deep_camp_resolves_over_a_long_station_voyage() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            51,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+
+        let outcome = play_mission(&mut sim, &data, "the_deep_camp", 560);
+
+        assert!(
+            outcome.completed || outcome.extinct,
+            "the deep camp should resolve, not run out the clock (year {}, completed {}, extinct {})",
+            outcome.final_year,
+            outcome.completed,
+            outcome.extinct
+        );
+    }
+
     /// The 600-year Long Dark is allowed to end either way: completion or the
     /// total loss of the line. This test only pins the invariants (asserted in
     /// `play_mission`) and that the run terminates in one of the two legal
