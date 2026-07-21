@@ -68,6 +68,13 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
             _ => return false,
         }
     }
+    if !template
+        .requires_consequence
+        .iter()
+        .all(|tag| sim.consequences.contains(tag))
+    {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -280,6 +287,29 @@ mod tests {
         assert!(
             passes_gate(&sim, schism),
             "the schism enters the pool once drift is high enough"
+        );
+    }
+
+    #[test]
+    fn a_consequence_gate_holds_the_payoff_until_the_setup_choice_fires() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 5, &picks);
+        // `the_ward_reopens` is the payoff half of the `sealed_ward` chain
+        // (content-depth iteration): it may not fire until sealing the ward
+        // recorded that consequence.
+        let payoff = data.events.get("the_ward_reopens").unwrap();
+        assert_eq!(payoff.requires_consequence, vec!["sealed_ward".to_string()]);
+        sim.dynasty.generation = 5; // clear its min_generation gate
+
+        assert!(
+            !passes_gate(&sim, payoff),
+            "the reopening stays out of the pool before the ward was ever sealed"
+        );
+        sim.consequences.push("sealed_ward".to_string());
+        assert!(
+            passes_gate(&sim, payoff),
+            "sealing the ward unlocks the reopening decades later"
         );
     }
 

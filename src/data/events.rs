@@ -87,6 +87,13 @@ pub struct EventTemplate {
     pub min_generation: u32,
     #[serde(default)]
     pub min_cultural_drift: f32,
+    /// Consequence chain gate (content-depth iteration): the event stays out of
+    /// the pool until a prior outcome has recorded every tag listed here in
+    /// `sim.consequences`. This is how an early choice re-fires a consequence
+    /// decades later — the payoff half of `EventOutcome::long_term_consequences`.
+    /// Empty = ungated.
+    #[serde(default)]
+    pub requires_consequence: Vec<String>,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,

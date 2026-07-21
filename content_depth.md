@@ -137,3 +137,4 @@ adds depth. One deliberate coupling per iteration is a good bar.
 *(append one line per iteration: date · axis · what landed)*
 
 - 2026-07-21 · (bootstrap) · baseline captured, this document created.
+- 2026-07-21 · event families + coupling · added `requires_consequence` gate (schema + `passes_gate` wiring) so an early choice can unlock a later event; authored the `sealed_ward → the_ward_reopens` chain plus 5 parity events (biology_medical 6→8, survival/mystery/diplomacy/comedy/science_anomaly 6→7). Events 72→79. Couplings used: consequence chain, `faction_loss` on harsh rationing, fuel/drift trade, gated salvage grant. +1 test (92 total).
