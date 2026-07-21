@@ -607,6 +607,15 @@ mod tests {
                     "subsystem '{id}' tier cost must be positive"
                 );
             }
+            // Content-depth subsystem coverage: every subsystem has at least one
+            // knowledge-crisis event, so a module's know-how decaying always has
+            // a beat to surface.
+            assert!(
+                data.events
+                    .iter()
+                    .any(|(_, e)| e.knowledge_below.iter().any(|g| &g.id == id)),
+                "subsystem '{id}' has no knowledge_below crisis event"
+            );
         }
 
         assert_eq!(data.ship_components.hulls.len(), 5);

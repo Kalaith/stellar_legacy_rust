@@ -3867,5 +3867,267 @@
     "log": "The council let the Ascension Circle run its program at full tilt. A generation changed fast and unevenly, and the Accord filed its objections in triplicate, unread."
    }
   ]
+ },
+ {
+  "id": "the_breath_keepers",
+  "category": "immediate_crisis",
+  "title": "The Breath Keepers",
+  "description": "The atmosphere plant runs on rote now — the last technicians who truly understood the scrubber chemistry are gone, and the current keepers follow checklists they cannot explain. A drift in the CO2 numbers has no one who knows why.",
+  "requires_decision": true,
+  "family": "engineering",
+  "knowledge_below": [
+   {
+    "id": "life_support_habitat",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "reverse_engineer_it",
+    "label": "Tear it down and relearn it",
+    "description": "Strip the plant to first principles and rebuild the understanding.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "ship_delta": {
+     "life_support": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "knowledge": 0.35
+     }
+    ],
+    "log": "The keepers pulled the whole atmosphere plant apart and learned it again from the metal up. The air thinned dangerously for a season, then came back cleaner than it had in generations."
+   },
+   {
+    "id": "follow_the_checklist",
+    "label": "Trust the checklists",
+    "description": "Don't touch what you don't understand. Follow the steps and hope.",
+    "population_delta": {
+     "count": -25,
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.08,
+      "knowledge": -0.05
+     }
+    ],
+    "log": "The keepers followed the old checklists by faith and buried the ones the bad air took. The plant kept running, a black box no living soul could open."
+   }
+  ]
+ },
+ {
+  "id": "the_unlearned_watch",
+  "category": "generational_challenge",
+  "title": "The Unlearned Watch",
+  "description": "Generations of peace have hollowed out the security corps — the watch stands its posts by tradition, drills half-remembered, nobody left who has trained for a real breach. A rowdy dispute nearly turns to blood before anyone knows how to stop it.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "knowledge_below": [
+   {
+    "id": "security",
+    "below": 0.3
+   }
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "rebuild_the_corps",
+    "label": "Rebuild the corps properly",
+    "description": "Pull the old manuals, run real drills, restore the discipline.",
+    "resource_delta": {
+     "credits": -350
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "knowledge": 0.3,
+      "condition": 0.05
+     }
+    ],
+    "log": "The watch drilled in earnest for the first time in living memory. The corridors felt safer and a little more guarded, and the corps remembered what it was for."
+   },
+   {
+    "id": "keep_it_ceremonial",
+    "label": "Leave the watch ceremonial",
+    "description": "There has been no trouble in a century. Why break the peace to prepare for it?",
+    "population_delta": {
+     "morale": 0.03,
+     "stability": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "knowledge": -0.08
+     }
+    ],
+    "log": "The watch kept its polished buttons and its empty drills. The ship felt calm and was not ready, and the knowledge of how to hold a breach slid another notch toward myth."
+   }
+  ]
+ },
+ {
+  "id": "the_teachers_gap",
+  "category": "legacy_moment",
+  "title": "The Teachers' Gap",
+  "description": "The schools have been coasting — teaching the shape of knowledge without its substance, graduating cohorts who can recite but not reason. One generation more of this and the ship forgets how to teach itself anything.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "knowledge_below": [
+   {
+    "id": "education_culture",
+    "below": 0.25
+   }
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "refound_the_schools",
+    "label": "Refound the schools",
+    "description": "Pull the best minds from every deck to teach, at a cost to the work.",
+    "resource_delta": {
+     "credits": -400,
+     "influence": 20
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.35
+     }
+    ],
+    "log": "The council pulled its finest hands off the line and set them to teaching. Output dipped for a generation and the ship recovered its ability to make more of itself than it had been."
+   },
+   {
+    "id": "let_the_schools_coast",
+    "label": "Let the schools coast",
+    "description": "There is work to do. The children can learn the essentials on the job.",
+    "population_delta": {
+     "cultural_drift": 0.06,
+     "legacy_loyalty": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.08
+     }
+    ],
+    "log": "The schools kept coasting and the cohorts kept reciting. The ship lost, quietly, a little more of its capacity to understand itself — a debt that would come due in some later crisis."
+   }
+  ]
+ },
+ {
+  "id": "the_lost_gardeners",
+  "category": "generational_challenge",
+  "title": "The Lost Gardeners",
+  "description": "The grow-decks yield less every cycle, and the reason is quiet: the master gardeners' craft — the reading of soil and light and blight — was never fully passed on. The beds are tended by rote, and the harvests know it.",
+  "requires_decision": true,
+  "family": "survival",
+  "knowledge_below": [
+   {
+    "id": "agriculture",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "apprentice_the_gardeners",
+    "label": "Apprentice a new generation of gardeners",
+    "description": "Set the young to the beds under what few masters remain.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "knowledge": 0.3
+     }
+    ],
+    "log": "The last master gardeners took apprentices to the beds and taught the reading of soil and rot. The next harvest was thin; the ones after that were not."
+   },
+   {
+    "id": "industrialize_the_beds",
+    "label": "Automate the beds instead",
+    "description": "Replace craft with machinery and standing recipes.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -150
+    },
+    "population_delta": {
+     "adaptation": 0.04,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.05,
+      "knowledge": -0.05
+     }
+    ],
+    "log": "The beds were handed to machines and fixed recipes, and the gardener's craft became a museum piece. The yields steadied — brittle, blind, and wholly dependent on the machinery holding."
+   }
+  ]
+ },
+ {
+  "id": "the_hungry_wards",
+  "category": "immediate_crisis",
+  "title": "The Hungry Wards",
+  "description": "A run of poor harvests has left the ship not starving but malnourished, and the toll is landing in the infirmary: weakened immune systems, slow-healing injuries, a fragile population filling beds the medics cannot empty.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "food_below": 3000,
+  "outcomes": [
+   {
+    "id": "divert_to_nutrition",
+    "label": "Divert everything to nutrition",
+    "description": "Pour resources into food quality and let other work slide.",
+    "resource_delta": {
+     "credits": -500,
+     "food": 400
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.06
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The ship threw everything at the harvests and the ration quality climbed. The wards slowly emptied as the population regained its strength, and the deferred work waited its turn."
+   },
+   {
+    "id": "medicate_through_it",
+    "label": "Medicate through the shortage",
+    "description": "Prop up the sick with the infirmary's reserves and ride it out.",
+    "population_delta": {
+     "count": -30,
+     "morale": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.1
+     }
+    ],
+    "log": "The infirmary spent its reserves holding a malnourished ship together. The medics kept most of them alive, and the medical bay came out of the lean years worn thin and short on supply."
+   }
+  ]
  }
 ]
