@@ -4,7 +4,7 @@
 //! out of `tick.rs` to keep the advance loop readable and the file under the
 //! size limit.
 
-use crate::data::{GameConfig, GameData, PopulationDelta, ResourceDelta};
+use crate::data::{FlavorConfig, GameConfig, GameData, PopulationDelta, ResourceDelta};
 use crate::simulation::{crew, legacy, market, ship, subsystems, succession};
 use crate::state::sim::SimState;
 
@@ -107,17 +107,27 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
             sim.push_log(format!("{name} stood down from their post."));
         }
         let generation = succession::process_generation(sim, data);
-        for name in &generation.deaths {
-            sim.push_log(format!("{name} was laid to rest among the stars."));
+        let gen_index = sim.dynasty.generation as usize;
+        let flavor = &data.config.flavor;
+        for (i, name) in generation.deaths.iter().enumerate() {
+            if let Some(line) = FlavorConfig::line_with_name(&flavor.obituary, gen_index + i, name)
+            {
+                sim.push_log(line);
+            }
         }
         if let Some(name) = &generation.new_leader {
-            sim.push_log(format!("{name} assumed leadership of the dynasty."));
+            if let Some(line) = FlavorConfig::line_with_name(&flavor.succession, gen_index, name) {
+                sim.push_log(line);
+            }
         }
         if generation.births > 0 {
-            sim.push_log(format!(
-                "Generation {} came of age: {} new dynasty member(s).",
-                sim.dynasty.generation, generation.births
-            ));
+            let pool = &flavor.coming_of_age;
+            if !pool.is_empty() {
+                let line = pool[gen_index % pool.len()]
+                    .replace("{generation}", &sim.dynasty.generation.to_string())
+                    .replace("{births}", &generation.births.to_string());
+                sim.push_log(line);
+            }
         }
         if generation.extinct {
             sim.push_log("The dynasty has no heirs. The line ends here.");

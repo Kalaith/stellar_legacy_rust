@@ -129,6 +129,9 @@ pub struct GameConfig {
     pub subsystems: SubsystemsConfig,
     /// Seeded-campaign-skeleton beat pools + era layering (content-depth).
     pub campaign_skeleton: CampaignSkeletonConfig,
+    /// Generational obituary/succession/coming-of-age flavor pools (content-depth
+    /// voice iteration).
+    pub flavor: FlavorConfig,
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
@@ -249,6 +252,30 @@ pub struct ProvisioningConfig {
     pub no_fuel_decay_multiplier: f32,
     /// Credits per spare part when stocking up in drydock (PREP screen).
     pub part_cost_credits: i64,
+}
+
+/// Generational-flavor line pools (content-depth voice iteration): the
+/// most-repeated text in the game — the obituary, succession, and coming-of-age
+/// lines that fire every generation — moved out of Rust so they can vary instead
+/// of reading the same three strings a dozen times a voyage. Lines are picked
+/// deterministically (by generation index, no RNG), so a seed still replays
+/// exactly. `{name}` / `{generation}` / `{births}` placeholders are substituted.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FlavorConfig {
+    /// A dynasty member laid to rest. Placeholder: `{name}`.
+    pub obituary: Vec<String>,
+    /// A new head of the dynasty takes over. Placeholder: `{name}`.
+    pub succession: Vec<String>,
+    /// A new cohort comes of age. Placeholders: `{generation}`, `{births}`.
+    pub coming_of_age: Vec<String>,
+}
+
+impl FlavorConfig {
+    /// Deterministic pick from `pool` by rotating index `n`, with `{name}`
+    /// substituted. Returns `None` only when the pool is empty.
+    pub fn line_with_name(pool: &[String], n: usize, name: &str) -> Option<String> {
+        (!pool.is_empty()).then(|| pool[n % pool.len()].replace("{name}", name))
+    }
 }
 
 /// Seeded-campaign-skeleton tunables (content-depth iteration): the phase→family
@@ -374,6 +401,25 @@ impl GameData {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn flavor_lines_rotate_deterministically_and_substitute_name() {
+        let pool = vec!["A {name}".to_string(), "B {name}".to_string()];
+        // Rotates by index, wraps, and substitutes — no RNG, so a seed replays.
+        assert_eq!(
+            FlavorConfig::line_with_name(&pool, 0, "Vale").unwrap(),
+            "A Vale"
+        );
+        assert_eq!(
+            FlavorConfig::line_with_name(&pool, 1, "Vale").unwrap(),
+            "B Vale"
+        );
+        assert_eq!(
+            FlavorConfig::line_with_name(&pool, 2, "Vale").unwrap(),
+            "A Vale"
+        );
+        assert!(FlavorConfig::line_with_name(&[], 0, "Vale").is_none());
+    }
 
     #[test]
     fn embedded_data_loads() {
@@ -610,6 +656,21 @@ mod tests {
                 "campaign_skeleton pool family '{fam}' has no events"
             );
         }
+        // Content-depth voice: every generational-flavor pool must be non-empty
+        // (or a generation turns over in silence) and carry its placeholder.
+        let fl = &data.config.flavor;
+        assert!(
+            fl.obituary.iter().any(|s| s.contains("{name}")),
+            "obituary flavor needs a {{name}} line"
+        );
+        assert!(
+            fl.succession.iter().any(|s| s.contains("{name}")),
+            "succession flavor needs a {{name}} line"
+        );
+        assert!(
+            !fl.coming_of_age.is_empty(),
+            "coming_of_age flavor must not be empty"
+        );
     }
 
     #[test]

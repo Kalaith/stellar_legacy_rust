@@ -126,6 +126,31 @@
     "early_fraction": 0.2,
     "late_fraction": 0.8
   },
+  "flavor": {
+    "obituary": [
+      "{name} was laid to rest among the stars.",
+      "{name} died in the deep, and the ship kept a minute of dark in their name.",
+      "{name} was given to the recyclers with full honors; nothing aboard is ever truly lost.",
+      "The bells rang once for {name}, who had never known a sky.",
+      "{name} passed in their sleep, older than anyone left who remembered the launch.",
+      "They committed {name} to the void through the aft lock, wrapped in the mission colors."
+    ],
+    "succession": [
+      "{name} assumed leadership of the dynasty.",
+      "{name} took up the founding charter and the weight that comes with it.",
+      "The council confirmed {name} as head of the line, hand on the old ship's log.",
+      "{name} inherited the name, the duty, and the long dark ahead.",
+      "By quiet consent the dynasty turned to {name} to lead it onward.",
+      "{name} stepped into the first chair, younger than the post deserved."
+    ],
+    "coming_of_age": [
+      "Generation {generation} came of age: {births} new dynasty member(s).",
+      "Generation {generation} took their places on the decks — {births} of them, born to the voyage.",
+      "The nurseries emptied into the corridors: {births} children of Generation {generation} grown.",
+      "{births} new hands joined the work as Generation {generation} came into its own.",
+      "Generation {generation} numbered {births} strong, a cohort who would never see the world that sent them."
+    ]
+  },
   "crew": {
     "starting_posts": [
       "commander",
