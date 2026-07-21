@@ -156,6 +156,19 @@
       "The nurseries emptied into the corridors: {births} children of Generation {generation} grown.",
       "{births} new hands joined the work as Generation {generation} came into its own.",
       "Generation {generation} numbered {births} strong, a cohort who would never see the world that sent them."
+    ],
+    "ambient_gap_years": 8,
+    "ambient": [
+      "A generation that has never seen a planet paints one, wrong and beautiful, across a cargo-bay wall.",
+      "The corridors are quiet. Somewhere a child is taught the names of stars none aboard will ever reach.",
+      "Maintenance crews find graffiti from a hand three generations dead and leave it untouched.",
+      "The long watches pass. The hum of the reactor has become the sound the ship calls silence.",
+      "An old song surfaces in a new dialect, its meaning drifted, its tune intact.",
+      "The gardens turn another slow season. Someone marks a harvest festival no calendar remembers ordering.",
+      "A keeper updates the founding log and pauses, unsure which parts are still true.",
+      "Two children race the length of a deck their great-grandparents surveyed, and win against nothing but time.",
+      "The stars outside have rearranged by degrees no living eye can catch. The ship notes it and flies on.",
+      "A quiet year. The ledgers balance, the air holds, and the voyage simply continues, as it has and will."
     ]
   },
   "crew": {

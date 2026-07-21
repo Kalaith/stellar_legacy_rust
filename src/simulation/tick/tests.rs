@@ -411,6 +411,40 @@ fn a_drift_threshold_beat_fires_when_the_people_have_changed_enough() {
     );
 }
 
+#[test]
+fn ambient_flavor_surfaces_during_a_long_quiet_stretch() {
+    // No events, no dilemmas, no drift beats: a pure quiet run. An ambient line
+    // must appear once the event-less gap reaches ambient_gap_years.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    let gap = data.config.flavor.ambient_gap_years;
+    assert!(gap > 0, "this test needs ambient flavor enabled");
+    let ambient: std::collections::HashSet<String> =
+        data.config.flavor.ambient.iter().cloned().collect();
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        21,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    for _ in 0..(gap + 1) {
+        advance_year(&mut sim, &data);
+    }
+    assert!(
+        sim.log.iter().any(|e| ambient.contains(&e.text)),
+        "a quiet stretch of {gap}+ years should surface an ambient flavor line"
+    );
+}
+
 fn provisioned(seed: u64, fuel: f32) -> (GameData, SimState) {
     let mut data = GameData::load().unwrap();
     data.config.event_chance_base = 0.0;

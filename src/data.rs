@@ -268,6 +268,14 @@ pub struct FlavorConfig {
     pub succession: Vec<String>,
     /// A new cohort comes of age. Placeholders: `{generation}`, `{births}`.
     pub coming_of_age: Vec<String>,
+    /// Atmospheric "life aboard" lines surfaced during long event-less stretches
+    /// (content-depth voice round 2), so the passing centuries read as lived-in
+    /// rather than empty. Dated by the log itself, indexed by year (no RNG).
+    #[serde(default)]
+    pub ambient: Vec<String>,
+    /// Years of event-less quiet between ambient lines (0 = ambient off).
+    #[serde(default)]
+    pub ambient_gap_years: u32,
 }
 
 impl FlavorConfig {
@@ -733,6 +741,14 @@ mod tests {
             !fl.coming_of_age.is_empty(),
             "coming_of_age flavor must not be empty"
         );
+        // Content-depth voice round 2: if ambient flavor is switched on, it needs
+        // lines to draw from.
+        if fl.ambient_gap_years > 0 {
+            assert!(
+                !fl.ambient.is_empty(),
+                "ambient_gap_years is set but the ambient pool is empty"
+            );
+        }
     }
 
     #[test]

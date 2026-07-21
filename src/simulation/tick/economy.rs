@@ -163,6 +163,19 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         }
     }
 
+    // Content-depth voice (round 2): during a long event-less stretch, surface an
+    // atmospheric "life aboard" line so the passing centuries read as lived-in.
+    // Deterministic — fires once per `ambient_gap_years` of quiet, indexed by
+    // year, no RNG, and never resets the event ramp.
+    let fl = &config.flavor;
+    if fl.ambient_gap_years > 0 && !fl.ambient.is_empty() {
+        let years_since = sim.month_clock.saturating_sub(sim.last_event_month_clock) / 12;
+        if years_since > 0 && years_since.is_multiple_of(fl.ambient_gap_years) {
+            let idx = (sim.year() / fl.ambient_gap_years) as usize % fl.ambient.len();
+            sim.push_log(fl.ambient[idx].clone());
+        }
+    }
+
     // Market drift closes the economic year. Contract progress is monthly (W2)
     // and the event roll is monthly (W3) — both live in `advance` now; log
     // trimming happens once there too.
