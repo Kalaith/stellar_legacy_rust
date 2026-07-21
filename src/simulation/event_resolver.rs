@@ -562,6 +562,48 @@ mod tests {
     }
 
     #[test]
+    fn the_castaways_can_grow_the_ship_at_a_provisioning_cost() {
+        // Content-depth provisioning round 4: the population-gain opportunity —
+        // every prior provisioning beat shed people; this one can take them ON,
+        // trading berths for stores. The two choices genuinely diverge: aboard
+        // grows the crew and spends food; stores-only shrinks nothing and banks
+        // food. Locks the new provisioning→population coupling.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let base = SimState::new_campaign(&data, "adaptors", 71, &picks);
+        let event = data.events.get("the_castaways").unwrap();
+
+        let mut aboard = base.clone();
+        let take = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "take_them_aboard")
+            .unwrap();
+        apply_outcome(&mut aboard, &data, event, take);
+
+        let mut trade = base.clone();
+        let stores = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "take_the_stores_only")
+            .unwrap();
+        apply_outcome(&mut trade, &data, event, stores);
+
+        assert!(
+            aboard.population.count > base.population.count,
+            "taking the castaways aboard grows the ship"
+        );
+        assert!(
+            aboard.resources.food < trade.resources.food,
+            "the berths cost food the stores-only trade instead banks"
+        );
+        assert_eq!(
+            trade.population.count, base.population.count,
+            "trading for stores adds no mouths"
+        );
+    }
+
+    #[test]
     fn a_shortage_gate_holds_an_opportunity_until_the_ship_runs_low() {
         let data = GameData::load().unwrap();
         let picks = crate::state::sim::founding_faction_ids(&data);

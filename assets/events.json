@@ -6188,5 +6188,160 @@
     "log": "The midpoint got a line in the log and a single raised cup on each mess deck, and then the watch went back on. It was the sort of restraint the founders would have approved of, and the sort the party faction has not entirely forgiven."
    }
   ]
+ },
+ {
+  "id": "the_castaways",
+  "category": "immediate_crisis",
+  "title": "The Castaways",
+  "description": "A distress beacon resolves into a crippled boat — the last of some other venture's people, generations adrift on failing air, with a hold of preserved stores they can no longer eat fast enough to matter. They ask to be taken aboard. Every berth given is another mouth for the rest of the crossing.",
+  "requires_decision": true,
+  "family": "survival",
+  "outcomes": [
+   {
+    "id": "take_them_aboard",
+    "label": "Take them aboard",
+    "description": "Open the locks. More hands, more mouths, and a debt of mercy the ship will carry — and feed — the rest of the way.",
+    "resource_delta": {
+     "food": -300
+    },
+    "population_delta": {
+     "count": 80,
+     "morale": 0.04,
+     "unity": -0.02
+    },
+    "log": "The locks opened and the castaways came aboard, gaunt and grateful, and the ship was suddenly larger and hungrier and a little more crowded in every corridor. The galley redid its arithmetic for the rest of the crossing, and no one aboard regretted the choice, exactly, though everyone felt it at the table."
+   },
+   {
+    "id": "take_the_stores_only",
+    "label": "Take the stores, not the people",
+    "description": "Trade for their preserved cargo and leave them their boat. The ship cannot feed everyone who is starving in the dark.",
+    "resource_delta": {
+     "food": 500,
+     "minerals": 100
+    },
+    "population_delta": {
+     "morale": -0.05,
+     "stability": 0.03
+    },
+    "log": "The ship took the castaways' stores at a fair rate and left them their boat and their heading, and pulled away from the beacon before it stopped transmitting. The larder was fuller for it. The crew that made the trade did not talk about it much, then or after."
+   }
+  ]
+ },
+ {
+  "id": "the_windfall_harvest",
+  "category": "mission_milestone",
+  "title": "The Windfall Harvest",
+  "description": "The garden world beneath is more generous than the survey promised — a growing season the ship could gorge on for a decade. But there is far more here than the holds can carry, and only so long before the ship must break orbit. A glut is its own kind of problem.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_charter_tag": [
+   "garden"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "put_up_the_stores",
+    "label": "Preserve it for the long haul",
+    "description": "Dry, salt, and vault everything the holds will take. The crews will relearn the old craft of putting food up against a lean century.",
+    "resource_delta": {
+     "food": 4000
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "knowledge": 0.08
+     }
+    ],
+    "log": "The whole ship turned to the harvest — picking, drying, salting, vaulting — until the holds groaned full and the crews had, between them, remembered how a people feeds itself across a barren stretch. The larder will outlast the memory of this world, and the craft of filling it was worth as much as the food."
+   },
+   {
+    "id": "trade_the_surplus",
+    "label": "Take what stores, sell the rest forward",
+    "description": "Load the holds and log the surplus as a manifest to trade at the next port of call. Food now, credits later, and none of it put up for a crisis.",
+    "resource_delta": {
+     "food": 2200,
+     "credits": 900
+    },
+    "log": "The ship took its fill and struck a forward contract on the rest — a manifest of the windfall to be redeemed at a port a century downstream. The holds are full enough and the writ is worth a good sum, and if a lean year comes before the port does, well, the ledger looked handsome at the time."
+   }
+  ]
+ },
+ {
+  "id": "the_recyclers_gambit",
+  "category": "immediate_crisis",
+  "title": "The Recycler's Gambit",
+  "description": "Spare stock has run out, and the reclamation crews have made a proposal the council does not like: there are decks aboard that are not load-bearing — the old chapel, the founders' museum, the memorial arboretum — and they are full of metal and mass the ship could melt down and use.",
+  "requires_decision": true,
+  "family": "engineering",
+  "spare_parts_below": 15,
+  "outcomes": [
+   {
+    "id": "melt_the_shrines",
+    "label": "Feed the shrines to the foundry",
+    "description": "Strip the chapel, the museum, the memorial deck. They are only metal, and metal is what the ship is short of.",
+    "ship_delta": {
+     "spare_parts": 55
+    },
+    "resource_delta": {
+     "minerals": 200
+    },
+    "population_delta": {
+     "morale": -0.06,
+     "cultural_drift": 0.04
+    },
+    "log": "The reclamation crews took the chapel first, then the museum, then the memorial arboretum where the founders' names were grown into the living wall. The ship ate its own shrines and made spars and fittings of them, and was sound of hull and poorer of soul, and did not entirely forgive the necessity."
+   },
+   {
+    "id": "spare_the_shrines",
+    "label": "Hold the line, stay short",
+    "description": "Some mass is not for melting. Make do with less, and keep the places that make the ship more than a machine.",
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.02
+    },
+    "log": "The council refused the foundry its shrines, and the ship stayed short of parts and whole of heart, patching with wire and patience what it could not cast new. The reclamation crews grumbled at the waste of good metal, and the memorial arboretum kept the founders' names another generation."
+   }
+  ]
+ },
+ {
+  "id": "the_black_market",
+  "category": "generational_challenge",
+  "title": "The Ration Market",
+  "description": "Rationing has done what rationing does: a quiet market has grown in the gaps of it, ration chits changing hands at three times face, the well-connected eating better than the fair share the council swore everyone would keep. The quartermasters want to know what the council intends to see.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2500,
+  "outcomes": [
+   {
+    "id": "break_the_market",
+    "label": "Break the market",
+    "description": "Raid the caches, void the hoarded chits, and make an example. Everyone back to the fair share, at the point of it if need be.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": -0.03,
+     "stability": -0.02
+    },
+    "log": "Security walked the black market down in a week of hard searches and voided chits, and the fair share held again, resented and enforced. The ship ate equal and unhappy, and the ones who had been eating well remembered who had taken it from them."
+   },
+   {
+    "id": "license_the_market",
+    "label": "License it and tax it",
+    "description": "You cannot stop it, so make it pay. Legalize the trade, skim it for the common stores, and call the pragmatism a policy.",
+    "resource_delta": {
+     "credits": 250,
+     "food": -150
+    },
+    "population_delta": {
+     "stability": 0.04,
+     "unity": -0.04
+    },
+    "log": "The council licensed the ration market rather than fight it, taxed it for the common stores, and let a ship that was supposed to share alike learn to price its hunger instead. It kept the peace and paid a little into the tins, and it settled something about the ship that the founders had meant to be otherwise."
+   }
+  ]
  }
 ]
