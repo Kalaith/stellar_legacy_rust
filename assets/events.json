@@ -4348,5 +4348,296 @@
     "log": "The ship gave the dead hulk a wide berth and its lockers stayed thin. Some called it superstition; the elders called it the reason they were still alive to argue about it."
    }
   ]
+ },
+ {
+  "id": "the_wayfarers",
+  "category": "legacy_moment",
+  "title": "The Wayfarers",
+  "description": "Another ship hails across the dark — a generation vessel like our own, centuries into its own long errand, its people as strange and as familiar as a reflection. They propose an exchange of charts, craft, and stories.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "open_the_exchange",
+    "label": "Open the exchange",
+    "description": "Trade knowledge freely with a fellow wanderer.",
+    "resource_delta": {
+     "influence": 60,
+     "credits": 400
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "cultural_drift": 0.05,
+     "adaptation": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.06
+     }
+    ],
+    "log": "For a month the two ships flew as one, trading charts and songs and the hard-won tricks of the long dark. Both sailed on richer, and a little changed by the meeting."
+   },
+   {
+    "id": "keep_our_distance",
+    "label": "Keep our distance",
+    "description": "Exchange pleasantries and nothing more. Trust is a luxury.",
+    "population_delta": {
+     "unity": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The two ships exchanged careful greetings and careful silences, and parted with charts unshared. The elders called it prudence; the young called it a door left shut."
+   }
+  ]
+ },
+ {
+  "id": "the_wary_frontier",
+  "category": "generational_challenge",
+  "title": "The Wary Frontier",
+  "description": "The ship enters the claimed space of a civilization that has clearly been burned before — their hails are demands, their escorts are armed, their welcome is a warning. They want to know exactly what this vessel is and why it is here.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "full_transparency",
+    "label": "Answer with full honesty",
+    "description": "Open the logs. Let them see the mission entire.",
+    "resource_delta": {
+     "influence": 40
+    },
+    "population_delta": {
+     "stability": 0.04
+    },
+    "log": "The council opened the ship's records to the wary locals, mission and all. The escorts stood down by degrees, and safe passage was granted to a vessel that had nothing to hide."
+   },
+   {
+    "id": "guarded_answers",
+    "label": "Give guarded answers",
+    "description": "Reveal only what safety requires. Keep the rest close.",
+    "population_delta": {
+     "unity": 0.04,
+     "morale": -0.02
+    },
+    "long_term_consequences": [
+     "frontier_suspicion"
+    ],
+    "log": "The ship gave the frontier only what it had to and slipped through under a cloud of suspicion. The locals logged this hull as one that keeps secrets, and passed the word ahead."
+   }
+  ]
+ },
+ {
+  "id": "the_young_world",
+  "category": "legacy_moment",
+  "title": "The Young World",
+  "description": "The route passes a world of people who have not yet left their atmosphere — pre-industrial, unaware, gazing up at a new star that is really our drive-flare. To reveal ourselves would change their history forever; to hide is its own kind of choice.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "make_contact",
+    "label": "Reveal ourselves",
+    "description": "Descend, and become gods or teachers in their sky.",
+    "resource_delta": {
+     "influence": 80
+    },
+    "population_delta": {
+     "cultural_drift": 0.08,
+     "legacy_loyalty": -0.05,
+     "morale": 0.03
+    },
+    "long_term_consequences": [
+     "touched_a_young_world"
+    ],
+    "log": "The ship revealed itself to the young world and watched its own arrival become the founding myth of another people. Whether gift or wound, it could never be taken back."
+   },
+   {
+    "id": "pass_unseen",
+    "label": "Pass unseen",
+    "description": "Douse the flare, run dark, leave their sky unchanged.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.05,
+     "stability": 0.03
+    },
+    "log": "The ship ran dark past the young world and let it keep its innocent sky. Some aboard grieved the hands they did not extend; the council called restraint its own kind of gift."
+   }
+  ]
+ },
+ {
+  "id": "the_silent_monuments",
+  "category": "mission_milestone",
+  "title": "The Silent Monuments",
+  "description": "Drifting in the deep are the works of a people long gone — vast, patient structures of unknown purpose, older than the ship's whole line of ancestors. They could hold knowledge, danger, or only echoes.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "study_the_ruins",
+    "label": "Send teams into the ruins",
+    "description": "Spend the time and the risk to learn what the builders left.",
+    "resource_delta": {
+     "influence": 50,
+     "minerals": 200
+    },
+    "population_delta": {
+     "count": -15,
+     "cultural_drift": 0.05
+    },
+    "grant_component": "mass_driver",
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.08
+     }
+    ],
+    "log": "The teams went into the silent monuments and came back awed, laden, and fewer. What they learned reshaped the ship's understanding of the dark; what took the lost, they never named."
+   },
+   {
+    "id": "record_and_leave",
+    "label": "Record them and move on",
+    "description": "Scan from range. Some tombs are best left sealed.",
+    "resource_delta": {
+     "influence": 20
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The ship mapped the monuments from a respectful distance and left them to their long silence. The archives gained a mystery and the crew kept its full number."
+   }
+  ]
+ },
+ {
+  "id": "the_last_broadcast",
+  "category": "mission_milestone",
+  "title": "The Last Broadcast",
+  "description": "A beacon drifts on the lane, still faithfully repeating a message in no known tongue after who knows how many centuries alone. Its makers are surely dust. The signal waits for an answer it was built to expect.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "answer_the_beacon",
+    "label": "Answer the beacon",
+    "description": "Send the reply it has waited eons for, wherever it goes.",
+    "resource_delta": {
+     "energy": -200,
+     "influence": 40
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.04
+    },
+    "log": "The ship broadcast an answer into the dark on the beacon's own frequency, completing a handshake begun before the founders were born. Nothing replied. It felt, somehow, like a kindness owed."
+   },
+   {
+    "id": "silence_the_beacon",
+    "label": "Take it and go silent",
+    "description": "Recover the beacon's tech; leave no trace of ourselves.",
+    "ship_delta": {
+     "spare_parts": 6
+    },
+    "resource_delta": {
+     "minerals": 150
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "adaptation": 0.03
+    },
+    "log": "The salvage crews took the beacon apart for its patient, ancient tech and left the lane silent behind them. The message it had carried for eons ended, unanswered, in a cargo hold."
+   }
+  ]
+ },
+ {
+  "id": "the_wandering_comet",
+  "category": "mission_milestone",
+  "title": "The Wandering Comet",
+  "description": "A comet on a wild hyperbolic path will cross the ship's course exactly once, trailing volatiles and stranger compounds no survey has catalogued. It will not pass this way again in a hundred lifetimes.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "chase_the_comet",
+    "label": "Match course and sample it",
+    "description": "Burn fuel to ride alongside and harvest what it carries.",
+    "ship_delta": {
+     "fuel": -0.1
+    },
+    "resource_delta": {
+     "minerals": 300,
+     "energy": 200,
+     "influence": 30
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "log": "The ship chased the wandering comet down and rode its tail for a season, harvesting ice and rarer things. The tanks ran lower and the holds ran richer, and the comet fled on into the dark forever."
+   },
+   {
+    "id": "let_it_pass",
+    "label": "Let it pass",
+    "description": "Log its path and keep the fuel for the mission.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The astronomers tracked the comet's once-in-a-hundred-lifetimes pass and let it go untouched. Its data filled a page; its ices filled no hold."
+   }
+  ]
+ },
+ {
+  "id": "the_great_bake_off",
+  "category": "legacy_moment",
+  "title": "The Great Bake-Off",
+  "description": "A friendly rivalry between two galley decks over the ship's best ration-loaf has escalated into a full-blown culinary schism, complete with partisans, sabotage, and a contested trophy. The council is asked, with total seriousness, to adjudicate.",
+  "requires_decision": true,
+  "family": "comedy",
+  "outcomes": [
+   {
+    "id": "crown_a_winner",
+    "label": "Judge the contest",
+    "description": "Taste, deliberate, and crown a champion loaf.",
+    "resource_delta": {
+     "food": -100
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "unity": 0.03
+    },
+    "log": "The council convened a solemn tasting and crowned a champion loaf to citywide acclaim and one deck's lasting grievance. Morale soared on a tide of bread."
+   },
+   {
+    "id": "declare_a_tie",
+    "label": "Declare it a tie",
+    "description": "Diplomatically insist both loaves are equally supreme.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.02,
+     "stability": 0.02
+    },
+    "log": "The council declared the bake-off a perfect tie, and both galley decks united in shared disappointment at the cowardice of it. Peace, of a grumbling sort, was kept."
+   }
+  ]
  }
 ]
