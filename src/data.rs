@@ -300,6 +300,16 @@ pub struct CampaignSkeletonConfig {
     pub late_pool: Vec<String>,
     pub early_fraction: f32,
     pub late_fraction: f32,
+    /// Cultural-drift thresholds (ascending) that each fire one beat the first
+    /// time the voyage crosses them (content-depth round 2). This is how the
+    /// signature Long-Term Expedition beats read as *consequences of the long
+    /// voyage* — the people having drifted far enough — rather than random
+    /// rolls. Empty = no drift beats.
+    #[serde(default)]
+    pub drift_beats: Vec<f32>,
+    /// The family a drift-threshold beat draws from.
+    #[serde(default)]
+    pub drift_beat_family: String,
 }
 
 /// One step of the first-voyage checklist. The `id` binds it to a completion
@@ -689,6 +699,23 @@ mod tests {
             assert!(
                 families.contains(fam),
                 "campaign_skeleton pool family '{fam}' has no events"
+            );
+        }
+        // Content-depth drift beats: the family they draw from must have events,
+        // and thresholds must be ascending in (0, 1] so each fires once in order.
+        if !sk.drift_beats.is_empty() {
+            assert!(
+                families.contains(&sk.drift_beat_family),
+                "campaign_skeleton drift_beat_family '{}' has no events",
+                sk.drift_beat_family
+            );
+            assert!(
+                sk.drift_beats.windows(2).all(|w| w[0] < w[1]),
+                "campaign_skeleton drift_beats must be strictly ascending"
+            );
+            assert!(
+                sk.drift_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton drift_beats must be within (0, 1]"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

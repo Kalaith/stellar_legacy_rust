@@ -70,6 +70,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && report.contract_completed.is_none()
             && !report.dynasty_extinct
             && !fire_due_beat(sim, data, &mut report)
+            && !fire_drift_beat(sim, data, &mut report)
         {
             roll_monthly_event(sim, data, &mut report);
         }
@@ -174,6 +175,31 @@ fn fire_due_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -
     // A beat draws from its family (plus gates); if that leaves nothing, fall
     // through to the reactive roll so a beat never crashes or stalls.
     let pending = event_resolver::roll_event_in_family(sim, data, &family)
+        .or_else(|| event_resolver::roll_event(sim, data));
+    if let Some(pending) = pending {
+        apply_pending_event(sim, data, pending, report);
+    }
+    true
+}
+
+/// Fire a cultural-drift threshold beat (content-depth round 2): the first month
+/// the people's `cultural_drift` reaches the next authored threshold, force a beat
+/// from the drift family so the Long-Term Expedition beats read as consequences
+/// of how far the voyage has changed the crew. Fires at most one threshold per
+/// month; returns whether it replaced the reactive roll.
+fn fire_drift_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.drift_beats_fired as usize) < cfg.drift_beats.len()
+            && sim.population.cultural_drift >= cfg.drift_beats[c.drift_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.drift_beats_fired += 1;
+    }
+    let pending = event_resolver::roll_event_in_family(sim, data, &cfg.drift_beat_family)
         .or_else(|| event_resolver::roll_event(sim, data));
     if let Some(pending) = pending {
         apply_pending_event(sim, data, pending, report);

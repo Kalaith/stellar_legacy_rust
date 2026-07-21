@@ -81,6 +81,11 @@ pub struct ActiveContract {
     /// `EventTemplate::requires_charter_tag`.
     #[serde(default)]
     pub tags: Vec<String>,
+    /// How many cultural-drift threshold beats have fired so far (content-depth
+    /// round 2). Thresholds are ascending, so this doubles as the index of the
+    /// next threshold to watch — each drift beat fires exactly once.
+    #[serde(default)]
+    pub drift_beats_fired: u32,
 }
 
 impl ActiveContract {

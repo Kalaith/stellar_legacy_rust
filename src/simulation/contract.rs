@@ -103,6 +103,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         healthy_food_months: 0,
         healthy_energy_months: 0,
         tags: template.tags.clone(),
+        drift_beats_fired: 0,
     }
 }
 

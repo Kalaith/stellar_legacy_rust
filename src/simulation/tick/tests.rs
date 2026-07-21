@@ -175,6 +175,9 @@ fn contract_completes_at_target_duration() {
     data.config.event_chance_base = 0.0;
     data.config.event_chance_cap = 0.0;
     data.config.dilemma_chance_per_generation = 0.0;
+    // Drift-threshold beats fire independent of event chance (content-depth
+    // round 2); clear them too so the timeline stays uninterrupted.
+    data.config.campaign_skeleton.drift_beats.clear();
     let mut sim = SimState::new_campaign(
         &data,
         "preservers",
@@ -372,6 +375,39 @@ fn a_fired_event_is_dated_in_the_log() {
     assert!(
         sim.log.iter().any(|e| e.year == year && e.month == month),
         "the fired event must leave a log line dated Y{year}·M{month:02}"
+    );
+}
+
+#[test]
+fn a_drift_threshold_beat_fires_when_the_people_have_changed_enough() {
+    // Reactive rolls and dilemmas off, so the only thing that can fire is the
+    // drift-threshold beat (content-depth round 2).
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    let first = data.config.campaign_skeleton.drift_beats[0];
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        4,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    // No scheduled beats laid out (LAUNCH would add them); push the people just
+    // past the first drift threshold.
+    sim.contract.as_mut().unwrap().beats.clear();
+    sim.population.cultural_drift = first + 0.02;
+
+    advance_year(&mut sim, &data);
+
+    assert_eq!(
+        sim.contract.as_ref().unwrap().drift_beats_fired,
+        1,
+        "crossing the first drift threshold fires exactly one drift beat"
     );
 }
 

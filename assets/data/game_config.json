@@ -124,7 +124,14 @@
       "ethics"
     ],
     "early_fraction": 0.2,
-    "late_fraction": 0.8
+    "late_fraction": 0.8,
+    "drift_beats": [
+      0.3,
+      0.5,
+      0.7,
+      0.85
+    ],
+    "drift_beat_family": "legacy_drift"
   },
   "flavor": {
     "obituary": [
