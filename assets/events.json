@@ -5145,5 +5145,199 @@
     "log": "Rather than toughen the people, the ship perfected the machines that kept them soft, layering failsafe on failsafe. The lungs stayed quiet and the whole survival of the line came to rest on the air plant never, ever stopping."
    }
   ]
+ },
+ {
+  "id": "the_long_winter",
+  "category": "immediate_crisis",
+  "title": "The Long Winter",
+  "description": "Thin stores and a browning reactor at once — the galley cannot cook what the fields cannot grow, and the cold is creeping into the habitat decks. A ship can survive hunger or dark for a while, but rarely both together.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2500,
+  "energy_below": 1500,
+  "outcomes": [
+   {
+    "id": "ration_and_huddle",
+    "label": "Ration hard and huddle close",
+    "description": "Cut portions, concentrate warmth, and endure it as one.",
+    "population_delta": {
+     "count": -40,
+     "morale": -0.06,
+     "unity": 0.06
+    },
+    "log": "The ship pulled its people into the warm decks and thinned every plate, and the long winter took its toll in the old and the unlucky. Those who came through it came through it together."
+   },
+   {
+    "id": "spend_the_reserves",
+    "label": "Burn the reserves to break it",
+    "description": "Spend everything at once to end the crisis fast, cost be damned.",
+    "resource_delta": {
+     "credits": -700,
+     "food": 600,
+     "energy": 500
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "The council threw the whole reserve at the long winter and broke it in a season, leaving the coffers bare and the ship warm. It was reckless and it worked, which is its own kind of tradition now."
+   }
+  ]
+ },
+ {
+  "id": "the_lean_pact",
+  "category": "generational_challenge",
+  "title": "The Lean Pact",
+  "description": "With the stores thin, the whole ship swears a rationing pact — equal shares, no exceptions, officers and infants alike. It is a hard, proud thing, and how it is remembered will shape the people for generations.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2000,
+  "outcomes": [
+   {
+    "id": "swear_the_pact",
+    "label": "Swear the pact ship-wide",
+    "description": "Equal shares for all, sealed by oath.",
+    "resource_delta": {
+     "food": 300
+    },
+    "population_delta": {
+     "unity": 0.07,
+     "morale": -0.03
+    },
+    "long_term_consequences": [
+     "lean_pact_sworn"
+    ],
+    "log": "The whole ship swore the lean pact, and for one hungry generation nobody ate a bite more than anyone else. It was remembered afterward as the year the crew became one people."
+   },
+   {
+    "id": "protect_the_essential",
+    "label": "Feed the essential crew first",
+    "description": "Keep the specialists strong; ration the rest harder.",
+    "resource_delta": {
+     "food": 200
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "unity": -0.05,
+     "morale": -0.04
+    },
+    "log": "The council fed its specialists first and let the pact fail before it was sworn. The ship kept its experts sharp and its people divided into those who ate and those who watched."
+   }
+  ]
+ },
+ {
+  "id": "the_pact_remembered",
+  "category": "legacy_moment",
+  "title": "The Pact Remembered",
+  "description": "Generations after the lean years, the rationing pact has hardened into the ship's founding virtue — equal shares is not policy now but identity. A proposal to reward exceptional work with extra ration lands like heresy.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_consequence": [
+   "lean_pact_sworn"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "keep_the_pact_sacred",
+    "label": "Keep the pact sacred",
+    "description": "Equal shares forever. The pact is who we are.",
+    "population_delta": {
+     "unity": 0.06,
+     "legacy_loyalty": 0.06,
+     "adaptation": -0.04
+    },
+    "log": "The ship reaffirmed the old pact as gospel, and equal shares became a thing beyond questioning. It bound the people tight and left no room for the ambitious, which most of them counted a fair trade."
+   },
+   {
+    "id": "reward_the_exceptional",
+    "label": "Allow earned rewards",
+    "description": "Let merit buy a little more. Loosen the old oath.",
+    "resource_delta": {
+     "credits": 300
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.05,
+     "unity": -0.05
+    },
+    "log": "The council let merit earn a larger plate, and the lean pact cracked at last into something more ordinary and less holy. The productive prospered; an old unity quietly dissolved."
+   }
+  ]
+ },
+ {
+  "id": "the_trade_convoy",
+  "category": "mission_milestone",
+  "title": "The Trade Convoy",
+  "description": "On the homeward leg the ship falls in with a trade convoy working the lane — they have fuel, parts, and fresh stock, and an appetite for the minerals and salvage filling the holds. The exchange rate is theirs to set.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "trade_the_holds",
+    "label": "Trade cargo for provisions",
+    "description": "Sell minerals and salvage; buy fuel, parts, and food.",
+    "resource_delta": {
+     "minerals": -300,
+     "food": 500
+    },
+    "ship_delta": {
+     "fuel": 0.2,
+     "spare_parts": 10
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "The ship traded a hold of minerals to the convoy for full tanks and stocked lockers. The exchange favored the convoy, as it always does, and the homeward leg felt suddenly survivable."
+   },
+   {
+    "id": "keep_the_cargo",
+    "label": "Keep the cargo for port",
+    "description": "The minerals are worth more sold at home. Decline.",
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council waved the convoy off and held its cargo for a better price at home. The holds stayed full and the lockers stayed thin, a gamble on making it back before either mattered."
+   }
+  ]
+ },
+ {
+  "id": "the_drifting_tanker",
+  "category": "mission_milestone",
+  "title": "The Drifting Tanker",
+  "description": "A fuel tanker drifts dead on the lane, its crew long gone but its tanks — the sensors insist — still substantially full. Boarding a derelict is never free, but a low tank makes the risk look reasonable.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "fuel_below": 0.35,
+  "outcomes": [
+   {
+    "id": "pump_the_tanker",
+    "label": "Board and pump the tanks",
+    "description": "Cross to the derelict and take the reaction mass.",
+    "ship_delta": {
+     "fuel": 0.5
+    },
+    "population_delta": {
+     "count": -8
+    },
+    "log": "The crews crossed to the dead tanker and pumped its tanks dry into their own. The ship came away fuelled for a decade and short a few who went aboard and did not radio back."
+   },
+   {
+    "id": "leave_the_tanker",
+    "label": "Leave it drifting",
+    "description": "A dead ship's full tanks are a bad kind of luck. Pass it by.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.02
+    },
+    "log": "The navigators logged the drifting tanker and its too-convenient bounty and steered well clear. The old hands nodded; a full derelict is a story that rarely ends well."
+   }
+  ]
  }
 ]

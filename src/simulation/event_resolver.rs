@@ -491,6 +491,38 @@ mod tests {
     }
 
     #[test]
+    fn a_double_shortage_gate_needs_both_shortages_at_once() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 29, &picks);
+        // `the_long_winter` gates on low food AND low energy together.
+        let event = data.events.get("the_long_winter").unwrap();
+        assert!(event.food_below.is_some() && event.energy_below.is_some());
+        let (food_t, energy_t) = (event.food_below.unwrap(), event.energy_below.unwrap());
+
+        // Only one shortage → still out of the pool.
+        sim.resources.food = food_t - 1;
+        sim.resources.energy = energy_t + 1000;
+        assert!(
+            !passes_gate(&sim, event),
+            "low food alone is not the long winter"
+        );
+        sim.resources.food = food_t + 1000;
+        sim.resources.energy = energy_t - 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "low energy alone is not the long winter"
+        );
+        // Both short → it fires.
+        sim.resources.food = food_t - 1;
+        sim.resources.energy = energy_t - 1;
+        assert!(
+            passes_gate(&sim, event),
+            "hunger and cold together bring it"
+        );
+    }
+
+    #[test]
     fn a_condition_gate_waits_for_a_module_to_break_down() {
         let data = GameData::load().unwrap();
         let picks = crate::state::sim::founding_faction_ids(&data);
