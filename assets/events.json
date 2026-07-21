@@ -3319,5 +3319,247 @@
     "log": "A hired escort shadowed the ship home for a cut of the cargo. The prize came in smaller and whole, which the council judged a fair trade."
    }
   ]
+ },
+ {
+  "id": "the_stowaway",
+  "category": "generational_challenge",
+  "title": "The Stowaway",
+  "description": "A headcount turns up one person too many — a soul on no manifest, born in a maintenance crawlway to parents who hid a pregnancy from the census. By the ship's own law they were never meant to exist.",
+  "requires_decision": true,
+  "family": "ethics",
+  "outcomes": [
+   {
+    "id": "enroll_them",
+    "label": "Enroll them fully",
+    "description": "Tear up the census rule. A person is a person.",
+    "population_delta": {
+     "count": 1,
+     "morale": 0.05,
+     "legacy_loyalty": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The council struck the birth-quota from the code and enrolled the stowaway with a name and a berth. The old rule never recovered its authority."
+   },
+   {
+    "id": "uphold_the_quota",
+    "label": "Uphold the quota",
+    "description": "The rule exists for the ship's survival. Make an example.",
+    "population_delta": {
+     "count": 1,
+     "morale": -0.07,
+     "unity": -0.04,
+     "stability": 0.05
+    },
+    "log": "The quota held and the stowaway was raised a ward of the ship, unpersoned in the ledgers. The decks did not forget the coldness of it."
+   }
+  ]
+ },
+ {
+  "id": "the_mercy_dose",
+  "category": "immediate_crisis",
+  "title": "The Mercy Dose",
+  "description": "A wasting illness with no cure spreads among the eldest, and the physicians ask a question no one wants: should the dying be helped to go quickly, to spare both them and the stretched infirmary?",
+  "requires_decision": true,
+  "family": "ethics",
+  "knowledge_below": [
+   {
+    "id": "medical_bay",
+    "below": 0.5
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "permit_mercy",
+    "label": "Permit the mercy dose",
+    "description": "Let those who choose it end their suffering.",
+    "population_delta": {
+     "count": -30,
+     "morale": 0.03,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The council permitted the mercy dose to those who asked for it. The infirmary emptied and something in the ship's conscience shifted, quietly, for good."
+   },
+   {
+    "id": "forbid_mercy",
+    "label": "Forbid it — care to the last",
+    "description": "No hastened deaths. Bear the cost of caring for every one.",
+    "resource_delta": {
+     "credits": -400,
+     "food": -200
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "unity": 0.05,
+     "legacy_loyalty": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The council forbade the mercy dose and the wards ran full and grieving to the end. It cost the ship dearly and it kept a line the elders would not cross."
+   }
+  ]
+ },
+ {
+  "id": "the_archive_lie",
+  "category": "legacy_moment",
+  "title": "The Archive Lie",
+  "description": "An archivist discovers the founding logs were doctored generations ago — the mission's origin was uglier than the story every child is taught. She asks whether the truth should be restored, or the kind lie left to hold.",
+  "requires_decision": true,
+  "family": "ethics",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "restore_the_truth",
+    "label": "Restore the true record",
+    "description": "The people deserve their real history, however it lands.",
+    "population_delta": {
+     "legacy_loyalty": -0.08,
+     "cultural_drift": 0.07,
+     "unity": -0.04,
+     "adaptation": 0.05
+    },
+    "long_term_consequences": [
+     "truth_restored"
+    ],
+    "log": "The archivist published the true founding, and a comfortable myth died in an afternoon. The ship was more honest and less certain of itself ever after."
+   },
+   {
+    "id": "keep_the_myth",
+    "label": "Let the kind lie stand",
+    "description": "Some fictions hold a people together. Seal the record.",
+    "population_delta": {
+     "unity": 0.05,
+     "stability": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council resealed the doctored logs and let the founding myth stand. The archivist kept her silence, and the ship kept its comfortable story."
+   }
+  ]
+ },
+ {
+  "id": "the_mutineers_sentence",
+  "category": "immediate_crisis",
+  "title": "The Mutineers' Sentence",
+  "description": "A short, ugly mutiny is put down within a day. Now the ringleaders stand before the council, and the sentence set today will be remembered for generations.",
+  "requires_decision": true,
+  "family": "ethics",
+  "outcomes": [
+   {
+    "id": "exile_the_ringleaders",
+    "label": "Exile them in a lifeboat",
+    "description": "Give them a shuttle and a heading and let the void judge them.",
+    "population_delta": {
+     "count": -20,
+     "unity": 0.05,
+     "morale": -0.04,
+     "stability": 0.05
+    },
+    "faction_loss": "departed",
+    "long_term_consequences": [
+     "mutineers_exiled"
+    ],
+    "log": "The ringleaders were sealed into a lifeboat and cast off with a week of air and a prayer. The ship flew on, orderly and a little colder, and watched their light dwindle."
+   },
+   {
+    "id": "pardon_the_ringleaders",
+    "label": "Pardon them into service",
+    "description": "Bind them to the mission with mercy instead of fear.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The council pardoned the mutineers and set them to the hardest, humblest work aboard. Most were broken by gratitude; the ship gambled on mercy and mostly won."
+   }
+  ]
+ },
+ {
+  "id": "the_exiles_return",
+  "category": "legacy_moment",
+  "title": "The Exiles' Return",
+  "description": "Long after the mutiny that history half-forgot, sensors catch a battered craft matching the old lifeboat's transponder — and aboard it, the descendants of the exiled, who never forgot which ship left their forebears to die.",
+  "requires_decision": true,
+  "family": "ethics",
+  "requires_consequence": [
+   "mutineers_exiled"
+  ],
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "take_them_in",
+    "label": "Take them aboard",
+    "description": "Answer the old wrong with an open lock.",
+    "population_delta": {
+     "count": 60,
+     "legacy_loyalty": -0.05,
+     "cultural_drift": 0.08,
+     "unity": -0.04
+    },
+    "log": "The descendants of the exiled came aboard wary and armed with a century of grievance. The ship absorbed its own old sin, and grew stranger and larger for it."
+   },
+   {
+    "id": "turn_them_away",
+    "label": "Turn them away again",
+    "description": "The lifeboat was a sentence. Let it stand.",
+    "population_delta": {
+     "morale": -0.08,
+     "stability": 0.04,
+     "legacy_loyalty": 0.04
+    },
+    "long_term_consequences": [
+     "exiles_twice_wronged"
+    ],
+    "log": "The council refused the exiles a second time, and the battered craft fell away astern. Some aboard called it justice; more of them could not meet each other's eyes."
+   }
+  ]
+ },
+ {
+  "id": "the_second_star",
+  "category": "mission_milestone",
+  "title": "The Second Star",
+  "description": "A star that is not on any chart brightens dead ahead — young, wrong, and radiating on frequencies that make the physicists argue and the navigators nervous.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "study_the_star",
+    "label": "Hold and study it",
+    "description": "Spend the time. A thing like this may never be seen again.",
+    "resource_delta": {
+     "influence": 60,
+     "energy": 200
+    },
+    "population_delta": {
+     "cultural_drift": 0.05,
+     "morale": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship held station and drank the strange star in through every instrument. The data would feed the archives for centuries; the schedule never quite recovered the lost years."
+   },
+   {
+    "id": "give_it_wide_berth",
+    "label": "Give it a wide berth",
+    "description": "Whatever it is, it is not the mission. Steer clear.",
+    "ship_delta": {
+     "fuel": -80
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The navigators bent the course well around the wrong young star and its restless light. The physicists filed complaints; the captain filed them away."
+   }
+  ]
  }
 ]

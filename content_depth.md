@@ -32,10 +32,10 @@ than last iteration, still coherent."
 
 *Origin baseline 2026-07-21: 72 events, 10 charters, 6 factions, 6 subsystems, no event gates beyond phase/year/generation/drift.*
 
-| Axis | Current (updated 2026-07-21, after iteration 4) |
+| Axis | Current (updated 2026-07-21, after iteration 8) |
 | --- | --- |
-| Events | **91** total — legacy_drift 16, engineering 12, survival 10, biology_medical 10, mystery 8, diplomacy 8, exploration_first_contact 7, comedy 7, science_anomaly 7, ethics 6 |
-| Event gates | phase, min_year/gen/drift, **consequence chains**, **charter tags**, **dominant faction**, **factions aboard**, **knowledge-below crisis** |
+| Events | **100** total — legacy_drift 16, engineering 13, survival 11, ethics 11, biology_medical 10, diplomacy 9, mystery 8, science_anomaly 8, exploration_first_contact 7, comedy 7 |
+| Event gates | phase, min_year/gen/drift, **consequence chains**, **charter tags**, **dominant faction**, **factions aboard**, **knowledge-below crisis**, **provisioning shortage** (food/fuel/parts) |
 | Charters | **10** in `assets/contracts.json`, all destination-`tags`-annotated |
 | Factions | **6** authored (pick 3), structure-first v1 (no approval meters yet) |
 | Subsystems | **6** (medical, life-support, agriculture, security, education, engineering) with decay + knowledge-gated repair; events can now `subsystem_deltas` condition/knowledge |
@@ -147,3 +147,4 @@ adds depth. One deliberate coupling per iteration is a good bar.
 - 2026-07-21 · campaign skeleton · made the seeded-beat pools data-driven — lifted the hardcoded Rust phase→family tables into a `campaign_skeleton` config block (honoring the data-driven hard rule) — and added **era layering**: beats in the first 20% of the voyage also draw a founding-era pool (exploration/anomaly/comedy), beats in the last 20% a homecoming-era pool (legacy_drift/ethics). `generate_beats` now takes the config; all 3 call sites updated. Data-load check rejects pool families with no events. +2 tests (96 total). No new events this pass (structural).
 - 2026-07-21 · provisioning + coupling · provisioning↔event coupling: `food_below`/`fuel_below`/`spare_parts_below` shortage gates on events, wired into `passes_gate`. Retro-fitted the existing opportunity events so they now fire *because* you're short (garden_world food≤4000, fuel_skim fuel≤0.45, resupply_cache food≤5000) rather than at random. Authored 3 new shortage beats (the-dry-tank fuel crisis strips the ship for mass, the-empty-lockers parts foundry, the-laden-return cargo/escort risk on the Return leg). Events 91→94. +1 test (97 total).
 - 2026-07-21 · voice · killed the game's worst repetition tell: the obituary / succession / coming-of-age lines fire every generation (12+×/voyage) and were 3 hardcoded Rust strings. Lifted them into a data-driven `flavor` config block with 6/6/5 authored variants, indexed by generation (deterministic, no RNG perturbation) so a seed still replays exactly. Placeholders `{name}`/`{generation}`/`{births}` substituted. Data-load check + helper unit test (98 total). This completes one full rotation through all 7 axes.
+- 2026-07-21 · event families (round 2) · brought **ethics** to parity (6→11, the thinnest family) leaning on round-one mechanics: the-stowaway census dilemma, the-mercy-dose (gated on low medical knowledge, dents the bay), the-archive-lie, a century-spanning consequence chain (the-mutineers-sentence exiles a faction → the-exiles-return generations later via `requires_consequence`), plus science_anomaly parity (the-second-star). Events 94→**100**. Added a data-load provenance check: every `requires_consequence` tag must be produced by some outcome (typo guard). No new test fn (content pass); 98 total. Refreshed baseline table.

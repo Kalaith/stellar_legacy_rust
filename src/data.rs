@@ -534,6 +534,23 @@ mod tests {
                 );
             }
         }
+        // Content-depth consequence chains: every tag a payoff event gates on
+        // (`requires_consequence`) must be produced by some outcome's
+        // `long_term_consequences`, or the payoff can never fire (typo guard).
+        let produced: std::collections::HashSet<&String> = data
+            .events
+            .iter()
+            .flat_map(|(_, e)| e.outcomes.iter())
+            .flat_map(|o| o.long_term_consequences.iter())
+            .collect();
+        for (id, e) in data.events.iter() {
+            for tag in &e.requires_consequence {
+                assert!(
+                    produced.contains(tag),
+                    "event '{id}' gates on consequence '{tag}' no outcome records"
+                );
+            }
+        }
         // W7: six authored founding factions, ideology within [-1, 1]. The
         // registry keys on id, so a count of six also proves the ids are unique.
         assert_eq!(data.factions.len(), 6, "six founding factions");
