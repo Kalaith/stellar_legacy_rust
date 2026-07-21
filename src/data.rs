@@ -262,8 +262,10 @@ pub struct TutorialStep {
 /// mission (or the player dismisses it); all text is data, per the hard rule.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TutorialConfig {
-    /// One-line hint over the drydock charter list before any charter is chosen.
+    /// One-line hint over the drydock charter list on a first voyage.
     pub drydock_hint: String,
+    /// The same line's everyday text once the tutorial is over.
+    pub drydock_refit_hint: String,
     /// Ordered pre-launch checklist steps for the PREP screen.
     pub steps: Vec<TutorialStep>,
 }
@@ -586,6 +588,7 @@ mod tests {
         let data = GameData::load().unwrap();
         let tutorial = &data.config.tutorial;
         assert!(!tutorial.drydock_hint.trim().is_empty());
+        assert!(!tutorial.drydock_refit_hint.trim().is_empty());
         // The PREP checklist binds these ids to completion checks — the
         // authored steps must match them exactly, in launch order.
         let ids: Vec<&str> = tutorial.steps.iter().map(|s| s.id.as_str()).collect();

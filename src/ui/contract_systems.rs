@@ -268,18 +268,13 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
     );
     y += 20.0;
     // On a brand-new campaign the line becomes the tutorial's pointer toward
-    // the PREP screen (authored in game_config).
+    // the PREP screen; both variants are authored in game_config.
+    let tutorial = &ctx.data.config.tutorial;
     let tutorial_active = !sim.tutorial_dismissed && ctx.chronicle.entries.is_empty();
     let (hint, hint_color) = if tutorial_active {
-        (
-            ctx.data.config.tutorial.drydock_hint.as_str(),
-            term::accent(),
-        )
+        (tutorial.drydock_hint.as_str(), term::accent())
     } else {
-        (
-            "Repair or refit on the SHIP screen, then choose the next charter:",
-            term::faint(),
-        )
+        (tutorial.drydock_refit_hint.as_str(), term::faint())
     };
     draw_ui_text_ex(
         hint,

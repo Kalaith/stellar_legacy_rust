@@ -52,6 +52,7 @@
   },
   "tutorial": {
     "drydock_hint": "FIRST VOYAGE - Select a charter below to open the PREP screen and ready the ship.",
+    "drydock_refit_hint": "Repair or refit on the SHIP screen, then choose the next charter:",
     "steps": [
       {
         "id": "choose_charter",
