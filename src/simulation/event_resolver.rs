@@ -562,6 +562,53 @@ mod tests {
     }
 
     #[test]
+    fn the_triage_rule_pays_off_generations_after_it_is_written() {
+        // Content-depth event-families round 5: a chain payoff completing a
+        // formerly-dangling consequence. The cold triage rule (set by
+        // `triage_rule`) re-fires as `the_rule_comes_due` only once that choice
+        // was made — and its two ways out genuinely diverge (honor the cold law
+        // vs break it, opposite morale/stability swings).
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 83, &picks);
+        let payoff = data.events.get("the_rule_comes_due").unwrap();
+        assert_eq!(
+            payoff.requires_consequence,
+            vec!["cold_triage_rule".to_string()]
+        );
+        sim.dynasty.generation = 4; // clear min_generation
+
+        // Without the setup choice on record, the payoff stays out of the pool.
+        assert!(
+            !passes_gate(&sim, payoff),
+            "the reckoning cannot fire before the cold rule was ever written"
+        );
+        // Writing the cold rule (the setup's consequence) unlocks it.
+        sim.consequences.push("cold_triage_rule".to_string());
+        assert!(passes_gate(&sim, payoff), "the written rule comes due");
+
+        // The two resolutions move morale in opposite directions.
+        let mut honor = sim.clone();
+        let apply = payoff
+            .outcomes
+            .iter()
+            .position(|o| o.id == "apply_the_rule")
+            .unwrap();
+        apply_outcome(&mut honor, &data, payoff, apply);
+        let mut refuse = sim.clone();
+        let brk = payoff
+            .outcomes
+            .iter()
+            .position(|o| o.id == "break_the_rule")
+            .unwrap();
+        apply_outcome(&mut refuse, &data, payoff, brk);
+        assert!(
+            refuse.population.morale > honor.population.morale,
+            "breaking the cold law lifts morale where honoring it costs it"
+        );
+    }
+
+    #[test]
     fn the_castaways_can_grow_the_ship_at_a_provisioning_cost() {
         // Content-depth provisioning round 4: the population-gain opportunity —
         // every prior provisioning beat shed people; this one can take them ON,

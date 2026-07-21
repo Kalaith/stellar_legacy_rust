@@ -6343,5 +6343,118 @@
     "log": "The council licensed the ration market rather than fight it, taxed it for the common stores, and let a ship that was supposed to share alike learn to price its hunger instead. It kept the peace and paid a little into the tins, and it settled something about the ship that the founders had meant to be otherwise."
    }
   ]
+ },
+ {
+  "id": "the_dark_body_returns",
+  "category": "legacy_moment",
+  "title": "The Answer",
+  "description": "Generations ago the ship painted an ancient dark mass with an active pulse — a thing old and not natural, left well astern. Now the long array wakes the watch: a signal has arrived on the exact frequency of that pulse, from dead ahead, weaker and slower and changed, as though the ship's own question has been all this time coming back an answer.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "min_generation": 4,
+  "requires_consequence": [
+   "the_dark_body"
+  ],
+  "outcomes": [
+   {
+    "id": "answer_the_answer",
+    "label": "Answer it",
+    "description": "The ship asked, once. Something answered. Reply, and learn what asks back across the dark.",
+    "resource_delta": {
+     "influence": 90
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "cultural_drift": 0.04
+    },
+    "log": "The ship replied to the thing that had replied to it, and spent a generation listening to the slow exchange sharpen — question, answer, question — with something that did not think in years. What was learned was worth a fortune to the archives and cost the crew their sleep, and the dark body passed into the ship's oldest ghost stories, verified."
+   },
+   {
+    "id": "silence_the_frequency",
+    "label": "Never on that frequency again",
+    "description": "The founders should never have pinged it. Strike the frequency from the arrays, seal the old scan, and let the answer go unanswered forever.",
+    "population_delta": {
+     "unity": 0.04,
+     "stability": 0.03
+    },
+    "log": "The council forbade the frequency, sealed the founders' scan under the oldest lock the archive had, and let the slow answer arrive to a ship that would not hear it. Whatever had been reaching back reached into silence, and the watch that made the choice slept better for a thing it chose not to know."
+   }
+  ]
+ },
+ {
+  "id": "the_mirror",
+  "category": "mission_milestone",
+  "title": "The Mirror",
+  "description": "The forward array returns something impossible: a perfect echo of the ship itself, dead ahead and closing — same mass, same drive-signature, same running lights, as if an identical vessel were bearing down on a head-on course. The navigators are fairly sure it is the ship's own emissions, folded back by something massive between here and there. Fairly sure.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "hail_the_mirror",
+    "label": "Hail it",
+    "description": "Whatever is folding the ship's light back is worth understanding. Open a channel to the thing wearing the ship's face.",
+    "resource_delta": {
+     "energy": -200,
+     "influence": 50
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The ship hailed its own reflection and mapped the lens that made it — a knot of bent space the charts had missed, worth every watt to have measured. For a week the crew watched their own hail come back a heartbeat late, mouthing their own words, and were glad when the lens fell astern."
+   },
+   {
+    "id": "log_the_lensing",
+    "label": "Log it and pass",
+    "description": "It is a lensing artifact and nothing more. Note the phenomenon, hold the course, and do not stare at it.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The navigators logged the mirror as a gravitational artifact, held their heading straight through the ghost of their own ship, and did not dwell on how, for the span of the crossing, something ahead had matched them turn for turn."
+   }
+  ]
+ },
+ {
+  "id": "the_rule_comes_due",
+  "category": "immediate_crisis",
+  "title": "The Rule Comes Due",
+  "description": "A deck fire has filled the wards past what the medics can treat, and the cold rule the council wrote generations ago — the skilled saved first, the needed before the loved — is no longer a line in the archive. It is a list, and the medics are standing over it, waiting to be told whether the ship still means what it wrote.",
+  "requires_decision": true,
+  "family": "ethics",
+  "min_generation": 3,
+  "requires_consequence": [
+   "cold_triage_rule"
+  ],
+  "outcomes": [
+   {
+    "id": "apply_the_rule",
+    "label": "Apply the rule as written",
+    "description": "The ship decided this in cold blood generations ago so it would not have to decide it now. Honor the law. Save the needed.",
+    "population_delta": {
+     "stability": 0.04,
+     "morale": -0.06,
+     "adaptation": 0.03,
+     "unity": -0.03
+    },
+    "log": "The medics worked the list as written, saving the skilled and the needed and passing by the rest, and the ship became, in one smoke-filled shift, exactly the machine its ancestors had coldly designed it to be. It survived intact and efficient, and something in it that had argued the rule was cruel stopped arguing."
+   },
+   {
+    "id": "break_the_rule",
+    "label": "Break your own law",
+    "description": "Save whoever is nearest, skilled or not, needed or not. A law that can do this does not deserve to be kept.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "stability": -0.05,
+     "legacy_loyalty": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The medics threw the list away and saved whoever their hands reached first, and the ship broke its own oldest law in the smoke and did not regret it. It lost some it could not afford to lose and strained the wards to breaking, and learned that a rule written to be obeyed once can, once, be refused."
+   }
+  ]
  }
 ]
