@@ -633,6 +633,38 @@ mod tests {
     }
 
     #[test]
+    fn a_broken_garden_breakdown_couples_agriculture_to_the_medical_bay() {
+        // Content-depth subsystems round 4: the agriculture breakdown gates on a
+        // physically failing grow-deck, and its "fall back to soil" outcome is a
+        // data-expressed cross-coupling — the lean years dent BOTH agriculture
+        // and the medical bay (malnutrition load), the doc's canonical example.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 37, &picks);
+        let event = data.events.get("the_broken_beds").unwrap();
+        assert_eq!(event.condition_below[0].id, "agriculture");
+
+        // A sound garden keeps it away; a failing one surfaces it.
+        sim.subsystems.get_mut("agriculture").unwrap().condition = 0.9;
+        assert!(!passes_gate(&sim, event), "a sound garden keeps it away");
+        sim.subsystems.get_mut("agriculture").unwrap().condition = 0.2;
+        assert!(passes_gate(&sim, event), "a failing garden surfaces it");
+
+        // The soil-farming fall-back touches two subsystems at once.
+        let soil = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "fall_back_to_soil")
+            .expect("the broken beds can fall back to soil");
+        let med_before = sim.subsystems["medical_bay"].condition;
+        apply_outcome(&mut sim, &data, event, soil);
+        assert!(
+            sim.subsystems["medical_bay"].condition < med_before,
+            "the lean years load the medical bay, not just the gardens"
+        );
+    }
+
+    #[test]
     fn an_energy_shortage_gate_waits_for_a_browning_reactor() {
         let data = GameData::load().unwrap();
         let picks = crate::state::sim::founding_faction_ids(&data);

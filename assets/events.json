@@ -5915,5 +5915,172 @@
     "log": "The eternal fire kept its full burn, and the faithful were honored, and the grow-decks stayed dim and thin. The Kin logged the harvest shortfall against the shrine and did not forget it, and the ship ate a little less to keep a fire lit."
    }
   ]
+ },
+ {
+  "id": "the_failing_ward",
+  "category": "immediate_crisis",
+  "title": "The Failing Ward",
+  "description": "The medical bay has decayed past patching — the sterile fields flicker, the surgical suite can no longer be trusted to hold clean, the old diagnostic beds read false. It is becoming a place people go to and do not come back from.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "condition_below": [
+   {
+    "id": "medical_bay",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_theatre",
+    "label": "Strip the ship to rebuild the theatre",
+    "description": "Tear clean plate and working parts from wherever you can and make the ward whole again.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -250
+    },
+    "ship_delta": {
+     "spare_parts": -14
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": 0.32
+     }
+    ],
+    "log": "They cannibalized three decks for clean plate and sound seals and rebuilt the surgical suite from the hull in. The ward holds sterile again, and the ship that gave up its spares to do it will feel the lack elsewhere for a generation."
+   },
+   {
+    "id": "triage_only",
+    "label": "Fall back to triage medicine",
+    "description": "Do what can be done with clean hands and boiled water. Let the rest go.",
+    "population_delta": {
+     "count": -50,
+     "morale": -0.06
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": 0.08
+     }
+    ],
+    "log": "Medicine fell back to what a steady hand and boiled water could manage, and the ship relearned which illnesses it could no longer treat. The ward kept working, after a fashion, and the burial detail kept working too."
+   }
+  ]
+ },
+ {
+  "id": "the_broken_beds",
+  "category": "immediate_crisis",
+  "title": "The Broken Beds",
+  "description": "The hydroponics decks have gone too long unmended — bed liners split, nutrient loops crusted shut, the circulation pumps seizing one by one. The gardens are dying faster than they can be picked, and a dying garden is a starving ship a few years on.",
+  "requires_decision": true,
+  "family": "survival",
+  "condition_below": [
+   {
+    "id": "agriculture",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_beds",
+    "label": "Rebuild the hydroponics",
+    "description": "Spend the parts and the power to re-lay the beds and re-seat the pumps. Modern farming, kept alive.",
+    "resource_delta": {
+     "energy": -350,
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -12
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.3
+     }
+    ],
+    "log": "The grow-decks were torn out and re-laid, pump by pump, liner by liner, until the water ran clean and green again. It cost the ship a fortune in parts and power, and it bought back the one thing the ship cannot buy: next year's food."
+   },
+   {
+    "id": "fall_back_to_soil",
+    "label": "Fall back to soil farming",
+    "description": "Abandon the failed hydroponics for low-tech soil beds. Hardier, hungrier on space, and a lean few years while it takes.",
+    "resource_delta": {
+     "food": -400
+    },
+    "population_delta": {
+     "count": -30,
+     "cultural_drift": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.14
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The ship gave up on the high hydroponics and turned to soil — dirt beds in every spare corridor, a way of farming the founders had thought left behind. It will feed the ship in time, but the lean years between broke some health that the crowded, hungry wards could not mend."
+   }
+  ]
+ },
+ {
+  "id": "the_crumbling_archive",
+  "category": "legacy_moment",
+  "title": "The Crumbling Archive",
+  "description": "It is not that the teachers have forgotten — it is that the archive itself is dying. The data-looms fail, the record substrate flakes and greys, whole shelves of the founding library reading back as noise. The ship's memory is rotting on its racks.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "condition_below": [
+   {
+    "id": "education_culture",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "the_great_copying",
+    "label": "Mount the great copying",
+    "description": "Set a generation to hand-copying the failing archive onto fresh media before it is lost. A vast, patient labor.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.28,
+      "knowledge": 0.06
+     }
+    ],
+    "log": "A whole cohort gave its youth to the copying — reading the greying archive aloud and writing it fresh, shelf by failing shelf, before the noise took it. The library will outlive them now, in a hand not its own, and the ship kept its memory whole."
+   },
+   {
+    "id": "let_the_oldest_go",
+    "label": "Let the oldest records go",
+    "description": "Save what is used; let the deep archive — the parts no one has opened in lifetimes — fade.",
+    "population_delta": {
+     "cultural_drift": 0.06
+    },
+    "long_term_consequences": [
+     "the_lost_archive"
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.12,
+      "knowledge": -0.08
+     }
+    ],
+    "log": "The council saved the working records and let the deep archive go — the founding debates, the old star-charts, the names of worlds no one was steering for anymore. The ship reads lighter now, and remembers less of why it ever left."
+   }
+  ]
  }
 ]

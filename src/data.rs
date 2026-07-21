@@ -657,6 +657,15 @@ mod tests {
                     .any(|(_, e)| e.knowledge_below.iter().any(|g| &g.id == id)),
                 "subsystem '{id}' has no knowledge_below crisis event"
             );
+            // Content-depth subsystem coverage (round 4): and at least one
+            // condition-breakdown event, so a module physically rotting always
+            // has a beat to surface — the parallel to the knowledge crisis above.
+            assert!(
+                data.events
+                    .iter()
+                    .any(|(_, e)| e.condition_below.iter().any(|g| &g.id == id)),
+                "subsystem '{id}' has no condition_below breakdown event"
+            );
         }
 
         assert_eq!(data.ship_components.hulls.len(), 5);
