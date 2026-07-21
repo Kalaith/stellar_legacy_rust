@@ -538,9 +538,11 @@ mod tests {
         data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 0.0;
         // Threshold beats fire independent of event chance and would block this
-        // resolve-nothing timeline loop; clear them (content-depth rounds 2-3).
+        // resolve-nothing timeline loop; clear them (content-depth rounds 2-3),
+        // and switch off the round-5 dead-air backstop for the same reason.
         data.config.campaign_skeleton.drift_beats.clear();
         data.config.campaign_skeleton.adaptation_beats.clear();
+        data.config.campaign_skeleton.dead_air_years = 0;
         let picks = crate::state::sim::founding_faction_ids(&data);
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
 

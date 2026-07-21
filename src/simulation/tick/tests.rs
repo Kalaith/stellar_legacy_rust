@@ -176,9 +176,12 @@ fn contract_completes_at_target_duration() {
     data.config.event_chance_cap = 0.0;
     data.config.dilemma_chance_per_generation = 0.0;
     // Threshold beats fire independent of event chance (content-depth rounds
-    // 2-3); clear them too so the timeline stays uninterrupted.
+    // 2-3); clear them too so the timeline stays uninterrupted. The dead-air
+    // backstop (round 5) is another event source that ignores event chance —
+    // switch it off so the silent run stays silent.
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.dead_air_years = 0;
     let mut sim = SimState::new_campaign(
         &data,
         "preservers",
@@ -439,6 +442,58 @@ fn an_adaptation_threshold_beat_fires_as_the_people_grow_shipborn() {
         sim.contract.as_ref().unwrap().adaptation_beats_fired,
         1,
         "crossing the first adaptation threshold fires exactly one adaptation beat"
+    );
+}
+
+#[test]
+fn dead_air_forces_a_beat_after_too_long_a_silence() {
+    // Everything that could fire an event is off: no reactive rolls, no drift or
+    // adaptation beats, no scheduled beats. The only thing left that can break
+    // the silence is the dead-air backstop (content-depth round 5) — and it must,
+    // once the eventless gap exceeds `dead_air_years`.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    let dead = data.config.campaign_skeleton.dead_air_years;
+    assert!(
+        dead > 0 && !data.config.campaign_skeleton.dead_air_pool.is_empty(),
+        "this test needs the dead-air backstop enabled"
+    );
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        12,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Well short of the backstop: the silence stands, the event clock untouched.
+    for _ in 0..(dead - 1) {
+        advance_year(&mut sim, &data);
+    }
+    assert_eq!(
+        sim.last_event_month_clock, 0,
+        "nothing should force an event before the dead-air gap is reached"
+    );
+
+    // Cross the backstop: a beat is forced, which resets the event clock.
+    for _ in 0..3 {
+        if let Some(pending) = sim.pending_event.clone() {
+            let t = data.events.get(&pending.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+        }
+        advance_year(&mut sim, &data);
+    }
+    assert!(
+        sim.last_event_month_clock > 0,
+        "a silence longer than the dead-air gap must force a beat"
     );
 }
 

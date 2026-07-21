@@ -72,6 +72,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_due_beat(sim, data, &mut report)
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
+            && !fire_dead_air_beat(sim, data, &mut report)
         {
             roll_monthly_event(sim, data, &mut report);
         }
@@ -229,6 +230,31 @@ fn fire_adaptation_beat(sim: &mut SimState, data: &GameData, report: &mut TickRe
         contract.adaptation_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.adaptation_beat_family, report);
+    true
+}
+
+/// Fire a dead-air backstop beat (content-depth round 5): once more than
+/// `dead_air_years` have passed with no event, guarantee one rather than let the
+/// voyage drift on empty — long eventless stretches are a coverage bug, not a
+/// mercy. The family is drawn from `dead_air_pool` via the state RNG (so a seed
+/// still replays), and forcing a beat resets the event clock. Only while a
+/// contract is under way; off when `dead_air_years` is 0. Returns whether it
+/// replaced this month's reactive roll.
+fn fire_dead_air_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.dead_air_years == 0 || cfg.dead_air_pool.is_empty() || sim.contract.is_none() {
+        return false;
+    }
+    let gap_months = sim.month_clock.saturating_sub(sim.last_event_month_clock);
+    if gap_months < cfg.dead_air_years * 12 {
+        return false;
+    }
+    let pick = sim.rng.below(cfg.dead_air_pool.len());
+    let family = cfg.dead_air_pool[pick].clone();
+    force_family_beat(sim, data, &family, report);
+    // Reset the gap even if the pick found no candidate this month, so a genuinely
+    // over-gated moment waits another full interval rather than retrying monthly.
+    sim.last_event_month_clock = sim.month_clock;
     true
 }
 

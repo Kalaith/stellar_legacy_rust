@@ -142,7 +142,14 @@
       0.6,
       0.8
     ],
-    "adaptation_beat_family": "biology_medical"
+    "adaptation_beat_family": "biology_medical",
+    "dead_air_years": 30,
+    "dead_air_pool": [
+      "survival",
+      "engineering",
+      "mystery",
+      "legacy_drift"
+    ]
   },
   "flavor": {
     "obituary": [

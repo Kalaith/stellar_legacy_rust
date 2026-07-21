@@ -369,6 +369,16 @@ pub struct CampaignSkeletonConfig {
     /// The family an adaptation-threshold beat draws from.
     #[serde(default)]
     pub adaptation_beat_family: String,
+    /// Dead-air backstop (content-depth round 5): the most years the voyage may
+    /// pass with no event before the skeleton *forces* one. Long eventless
+    /// stretches are a content-coverage bug, not a mercy — beyond this gap a beat
+    /// is guaranteed. 0 = no backstop.
+    #[serde(default)]
+    pub dead_air_years: u32,
+    /// Families a forced dead-air beat may draw from (one picked via state RNG,
+    /// so it stays deterministic). Must be non-empty when `dead_air_years` > 0.
+    #[serde(default)]
+    pub dead_air_pool: Vec<String>,
 }
 
 /// One step of the first-voyage checklist. The `id` binds it to a completion
@@ -804,11 +814,21 @@ mod tests {
             .chain(&sk.return_pool)
             .chain(&sk.any_pool)
             .chain(&sk.early_pool)
+            .chain(&sk.mid_pool)
             .chain(&sk.late_pool)
+            .chain(&sk.dead_air_pool)
         {
             assert!(
                 families.contains(fam),
                 "campaign_skeleton pool family '{fam}' has no events"
+            );
+        }
+        // Content-depth round 5: the dead-air backstop needs a pool to draw from
+        // when it is switched on, or a forced beat has nothing to force.
+        if sk.dead_air_years > 0 {
+            assert!(
+                !sk.dead_air_pool.is_empty(),
+                "dead_air_years is set but dead_air_pool is empty"
             );
         }
         // Content-depth threshold beats: each family they draw from must have
