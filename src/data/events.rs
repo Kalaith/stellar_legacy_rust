@@ -156,6 +156,8 @@ pub struct EventTemplate {
     pub fuel_below: Option<f32>,
     #[serde(default)]
     pub spare_parts_below: Option<i64>,
+    #[serde(default)]
+    pub energy_below: Option<i64>,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,

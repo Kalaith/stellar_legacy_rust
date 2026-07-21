@@ -4129,5 +4129,224 @@
     "log": "The infirmary spent its reserves holding a malnourished ship together. The medics kept most of them alive, and the medical bay came out of the lean years worn thin and short on supply."
    }
   ]
+ },
+ {
+  "id": "the_dimming",
+  "category": "immediate_crisis",
+  "title": "The Dimming",
+  "description": "The reactor's output has sagged and the power budget no longer covers the whole ship. Something must be browned out — and the choice of what to starve of current says who the ship thinks it is.",
+  "requires_decision": true,
+  "family": "engineering",
+  "energy_below": 1200,
+  "outcomes": [
+   {
+    "id": "dim_the_habitats",
+    "label": "Brown out the habitats",
+    "description": "Keep the machines fed; let the living decks go dim and cold.",
+    "resource_delta": {
+     "energy": 400
+    },
+    "population_delta": {
+     "morale": -0.07,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.06
+     }
+    ],
+    "log": "The living decks went to half-light and the machine spaces stayed bright. The ship kept working and its people shivered through a long grey season."
+   },
+   {
+    "id": "dim_the_industry",
+    "label": "Brown out the workshops",
+    "description": "Keep the people warm; let production stall.",
+    "resource_delta": {
+     "energy": 300,
+     "credits": -400
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The workshops went dark to keep the habitats lit. The people stayed warm and fed and the quotas fell to nothing until the reactor could be coaxed back."
+   }
+  ]
+ },
+ {
+  "id": "the_ice_moon",
+  "category": "mission_milestone",
+  "title": "The Ice Moon",
+  "description": "A frozen moonlet drifts near the lane, its crust thick with the volatiles that make reaction mass. Stopping to mine it costs time and labor the charter did not budget for.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "fuel_below": 0.4,
+  "outcomes": [
+   {
+    "id": "mine_the_ice",
+    "label": "Stop and mine the ice",
+    "description": "Spend the weeks. Fill the tanks off the frozen moon.",
+    "ship_delta": {
+     "fuel": 0.4
+    },
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "cultural_drift": 0.02
+    },
+    "log": "The ship anchored to the ice moon and melted its crust into the tanks. The stop cost a season and bought a decade of range."
+   },
+   {
+    "id": "burn_on_past",
+    "label": "Burn on past it",
+    "description": "The charter waits for no moon. Keep the schedule.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The navigators logged the ice moon and did not slow for it. The tanks stayed low and the schedule stayed honest, and someone noted the coordinates for a leaner day."
+   }
+  ]
+ },
+ {
+  "id": "the_seed_corn",
+  "category": "generational_challenge",
+  "title": "The Seed Corn",
+  "description": "The stores are thin enough that the granary masters raise a forbidden option: eat the seed stock — the reserve meant to replant the grow-decks — and buy this generation's bellies against the next generation's harvests.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2000,
+  "outcomes": [
+   {
+    "id": "eat_the_seed",
+    "label": "Eat the seed corn",
+    "description": "Feed the living now. Gamble the future can be rebuilt.",
+    "resource_delta": {
+     "food": 1200
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "long_term_consequences": [
+     "seed_corn_eaten"
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.08
+     }
+    ],
+    "log": "The granaries opened the seed vaults and the ship ate its own future. Bellies filled; the master gardeners wept over emptied reserves that had crossed light-years unbroken."
+   },
+   {
+    "id": "hold_the_seed",
+    "label": "Hold the seed stock",
+    "description": "The reserve is sacred. Bear the hunger.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "count": -30,
+     "morale": -0.05,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The council held the seed vaults shut and let the lean season take who it took. The grow-decks would replant; the graves would be remembered as the price of it."
+   }
+  ]
+ },
+ {
+  "id": "the_barren_decks",
+  "category": "legacy_moment",
+  "title": "The Barren Decks",
+  "description": "A generation after the seed vaults were emptied, the grow-decks still yield thin and wrong — the strains that crossed the stars are gone, replaced by whatever could be scraped together. The ship tastes the old decision at every meal.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_consequence": [
+   "seed_corn_eaten"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "buy_new_stock",
+    "label": "Trade dearly for new seed",
+    "description": "Spend whatever it takes to restock the vaults properly.",
+    "resource_delta": {
+     "credits": -1500,
+     "influence": -30
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.1,
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship spent a fortune on new seed stock from a passing convoy, and the grow-decks slowly greened into something worth eating again. The lesson stayed in the ledgers, underlined."
+   },
+   {
+    "id": "make_do",
+    "label": "Make do with what grows",
+    "description": "Adapt to the poorer strains. Save the credits.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "cultural_drift": 0.04,
+     "morale": -0.03
+    },
+    "log": "The ship made peace with its thin harvests and forgot, over a generation, that food had ever tasted otherwise. The seed corn was never mentioned; the flavor of the decision simply became normal."
+   }
+  ]
+ },
+ {
+  "id": "the_homeward_wreck",
+  "category": "mission_milestone",
+  "title": "The Homeward Wreck",
+  "description": "On the long leg home the ship passes a dead hulk, centuries derelict and picked at but not stripped. With the parts lockers thin, its bones are a temptation worth the risk of boarding.",
+  "requires_decision": true,
+  "family": "mystery",
+  "phases": [
+   "return"
+  ],
+  "spare_parts_below": 40,
+  "outcomes": [
+   {
+    "id": "strip_the_wreck",
+    "label": "Board and strip it",
+    "description": "Send crews across to salvage what the hulk still holds.",
+    "ship_delta": {
+     "spare_parts": 30
+    },
+    "resource_delta": {
+     "minerals": 200
+    },
+    "population_delta": {
+     "count": -10
+    },
+    "grant_component": "ramscoop_array",
+    "log": "The salvage crews crossed to the dead hulk and came back laden — parts, metal, and a working component nobody expected. Two never came back at all; the ship does not ask what took them."
+   },
+   {
+    "id": "leave_the_dead",
+    "label": "Leave the dead alone",
+    "description": "Whatever killed it may still be aboard. Sail on.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.02
+    },
+    "log": "The ship gave the dead hulk a wide berth and its lockers stayed thin. Some called it superstition; the elders called it the reason they were still alive to argue about it."
+   }
+  ]
  }
 ]

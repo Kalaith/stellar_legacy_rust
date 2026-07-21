@@ -109,6 +109,9 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
         || template
             .spare_parts_below
             .is_some_and(|t| sim.ship.spare_parts > t)
+        || template
+            .energy_below
+            .is_some_and(|t| sim.resources.energy > t)
     {
         return false;
     }
@@ -474,6 +477,24 @@ mod tests {
         );
         sim.ship.fuel = 0.1;
         assert!(passes_gate(&sim, event), "a near-dry tank surfaces it");
+    }
+
+    #[test]
+    fn an_energy_shortage_gate_waits_for_a_browning_reactor() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 17, &picks);
+        // `the_dimming` only enters the pool when energy is at or below 1200.
+        let event = data.events.get("the_dimming").unwrap();
+        assert_eq!(event.energy_below, Some(1200));
+
+        sim.resources.energy = 5000;
+        assert!(
+            !passes_gate(&sim, event),
+            "a full grid keeps the crisis away"
+        );
+        sim.resources.energy = 800;
+        assert!(passes_gate(&sim, event), "a browning grid surfaces it");
     }
 
     #[test]
