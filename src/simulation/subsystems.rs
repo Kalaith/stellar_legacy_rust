@@ -201,7 +201,15 @@ pub fn upgrade_subsystem(sim: &mut SimState, data: &GameData, id: &str) -> Resul
     if let Some(state) = sim.subsystems.get_mut(id) {
         state.tier += 1;
     }
-    sim.push_log(format!("The {name} is rebuilt stronger."));
+    // Tier-specific flavor (content-depth round 5): each module's rebuild reads
+    // in its own voice; an unauthored tier falls back to the generic line so the
+    // log never blanks.
+    let line = if next.flavor.is_empty() {
+        format!("The {name} is rebuilt stronger.")
+    } else {
+        next.flavor.clone()
+    };
+    sim.push_log(line);
     Ok(())
 }
 
@@ -434,6 +442,37 @@ mod tests {
             upgrade_subsystem(&mut sim, &data, "medical_bay").is_err(),
             "tier caps at 3"
         );
+    }
+
+    #[test]
+    fn an_upgrade_logs_its_tier_specific_flavor() {
+        // Content-depth subsystems round 5: each rebuild reads in the module's
+        // own voice, not the shared "rebuilt stronger" line — and the tiers read
+        // differently from one another (a real escalation, not a repeat).
+        let (data, mut sim) = campaign(9);
+        sim.resources.credits = 1_000_000;
+        sim.resources.minerals = 1_000_000;
+
+        let t1_flavor = data.subsystems.get("engineering_bay").unwrap().tiers[0]
+            .flavor
+            .clone();
+        assert!(!t1_flavor.is_empty());
+
+        upgrade_subsystem(&mut sim, &data, "engineering_bay").unwrap();
+        assert!(
+            sim.log.iter().any(|l| l.text == t1_flavor),
+            "the tier-1 rebuild logs its own flavor line"
+        );
+        assert!(
+            !sim.log.iter().any(|l| l.text.contains("rebuilt stronger")),
+            "an authored tier never falls back to the generic line"
+        );
+
+        // Tier 2 reads differently from tier 1 (escalation, no repetition tell).
+        let t2_flavor = data.subsystems.get("engineering_bay").unwrap().tiers[1]
+            .flavor
+            .clone();
+        assert_ne!(t1_flavor, t2_flavor);
     }
 
     #[test]

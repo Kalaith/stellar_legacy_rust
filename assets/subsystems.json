@@ -9,9 +9,9 @@
     "repair_minerals_cost": 100,
     "description": "The ship's green decks — grow-lamps, soil beds, and seed vaults. Well-tended, they turn a rationed voyage into a fed one.",
     "tiers": [
-      { "cost": { "credits": 1400, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
-      { "cost": { "credits": 2800, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
-      { "cost": { "credits": 5600, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+      { "cost": { "credits": 1400, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85, "flavor": "New grow-lamps and seed stock go in; the green decks come back brighter, and the galley plans a little less anxiously." },
+      { "cost": { "credits": 2800, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7, "flavor": "The hydroponics are rebuilt across a second ring of decks — the ship now grows more than it strictly must, and the surplus tastes like security." },
+      { "cost": { "credits": 5600, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55, "flavor": "The agriculture decks reach their fullest form: closed-loop, self-seeding, abundant. The ship will not go hungry while these decks turn." }
     ]
   },
   {
@@ -24,9 +24,9 @@
     "repair_minerals_cost": 90,
     "description": "Classrooms, libraries, and the rites that carry a craft from a dying hand to a young one. The subsystem that keeps every other subsystem knowable.",
     "tiers": [
-      { "cost": { "credits": 1600, "minerals": 200 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
-      { "cost": { "credits": 3200, "minerals": 400 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
-      { "cost": { "credits": 6400, "minerals": 800 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+      { "cost": { "credits": 1600, "minerals": 200 }, "severity_reduction": 0.15, "weight_multiplier": 0.85, "flavor": "New classrooms open and the archives are recopied; a little more of what the founders knew survives another generation." },
+      { "cost": { "credits": 3200, "minerals": 400 }, "severity_reduction": 0.3, "weight_multiplier": 0.7, "flavor": "The schools are rebuilt into a true academy — apprenticeships, examinations, a craft passed hand to hand on purpose rather than by luck." },
+      { "cost": { "credits": 6400, "minerals": 800 }, "severity_reduction": 0.45, "weight_multiplier": 0.55, "flavor": "The archive becomes the ship's deep memory, redundant and revered; nothing the founders understood need ever be wholly lost again." }
     ]
   },
   {
@@ -39,9 +39,9 @@
     "repair_minerals_cost": 150,
     "description": "Machine shops, spare-part fabricators, and the diagnostic rigs that catch a fault before it becomes a hull breach.",
     "tiers": [
-      { "cost": { "credits": 1800, "minerals": 400 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
-      { "cost": { "credits": 3600, "minerals": 800 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
-      { "cost": { "credits": 7200, "minerals": 1600 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+      { "cost": { "credits": 1800, "minerals": 400 }, "severity_reduction": 0.15, "weight_multiplier": 0.85, "flavor": "New tooling and a proper machine shop go in; the engineers stop improvising and start building." },
+      { "cost": { "credits": 3600, "minerals": 800 }, "severity_reduction": 0.3, "weight_multiplier": 0.7, "flavor": "The engineering bay is rebuilt into a full fabrication hall — the ship can now make the parts it once could only ration." },
+      { "cost": { "credits": 7200, "minerals": 1600 }, "severity_reduction": 0.45, "weight_multiplier": 0.55, "flavor": "The bay reaches its pinnacle: foundry, mill, and clean room together, able to remanufacture nearly anything the ship is made of." }
     ]
   },
   {
@@ -54,9 +54,9 @@
     "repair_minerals_cost": 130,
     "description": "Scrubbers, recyclers, and the sealed habitats that stand between the crew and the cold. A stronger habitat wears its life support down slower.",
     "tiers": [
-      { "cost": { "credits": 1700, "minerals": 350 }, "severity_reduction": 0.2, "weight_multiplier": 1.0 },
-      { "cost": { "credits": 3400, "minerals": 700 }, "severity_reduction": 0.35, "weight_multiplier": 1.0 },
-      { "cost": { "credits": 6800, "minerals": 1400 }, "severity_reduction": 0.5, "weight_multiplier": 1.0 }
+      { "cost": { "credits": 1700, "minerals": 350 }, "severity_reduction": 0.2, "weight_multiplier": 1.0, "flavor": "The scrubbers and circulators are overhauled; the air comes easier and the decks feel less like a machine and more like a home." },
+      { "cost": { "credits": 3400, "minerals": 700 }, "severity_reduction": 0.35, "weight_multiplier": 1.0, "flavor": "Life support is rebuilt with a second independent loop — a failure that would once have emptied a deck now merely inconveniences it." },
+      { "cost": { "credits": 6800, "minerals": 1400 }, "severity_reduction": 0.5, "weight_multiplier": 1.0, "flavor": "The habitat reaches its fullest: triple-redundant air, water, and warmth. The ship breathes as steadily as a world." }
     ]
   },
   {
@@ -69,9 +69,9 @@
     "repair_minerals_cost": 120,
     "description": "Surgeries, isolation wards, and gene-clinics. A well-equipped medical deck turns a plague into a scare.",
     "tiers": [
-      { "cost": { "credits": 1500, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
-      { "cost": { "credits": 3000, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
-      { "cost": { "credits": 6000, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+      { "cost": { "credits": 1500, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85, "flavor": "New surgical kit and clean fields go in; the medics stop losing patients they should have saved." },
+      { "cost": { "credits": 3000, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7, "flavor": "The medical bay is rebuilt into a true hospital — wards, a proper theatre, and a pharmacy the ship can actually stock." },
+      { "cost": { "credits": 6000, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55, "flavor": "The bay reaches its pinnacle: gene-clinic, surgical suite, and long-term wards together, a medicine equal to a century in the dark." }
     ]
   },
   {
@@ -84,9 +84,9 @@
     "repair_minerals_cost": 110,
     "description": "Peacekeepers, brig, and the councils that keep a fractious ship from turning on itself. Strong security cools a standoff before it burns.",
     "tiers": [
-      { "cost": { "credits": 1500, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
-      { "cost": { "credits": 3000, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
-      { "cost": { "credits": 6000, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+      { "cost": { "credits": 1500, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85, "flavor": "The watch is re-equipped and retrained; the corridors feel safer without feeling watched." },
+      { "cost": { "credits": 3000, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7, "flavor": "Security is rebuilt into a real peacekeeping service — mediation, patrol, and a jail the ship hopes never to fill." },
+      { "cost": { "credits": 6000, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55, "flavor": "The peacekeepers reach their fullest form: trusted, restrained, and capable — a force that keeps the peace mostly by being ready to." }
     ]
   }
 ]

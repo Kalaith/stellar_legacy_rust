@@ -15,6 +15,12 @@ pub struct SubsystemTier {
     pub severity_reduction: f32,
     /// Multiplier on a matching event's roll weight (0.8 = 20% rarer).
     pub weight_multiplier: f32,
+    /// In-universe log line when a drydock upgrade reaches this tier (content-
+    /// depth subsystems round 5: tier-specific flavor, replacing one generic
+    /// "rebuilt stronger" line shared by all 6 modules × 3 tiers). Empty falls
+    /// back to the built-in line so the log is never blank.
+    #[serde(default)]
+    pub flavor: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

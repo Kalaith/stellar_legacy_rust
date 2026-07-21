@@ -710,6 +710,13 @@ mod tests {
                     tier.cost.credits > 0,
                     "subsystem '{id}' tier cost must be positive"
                 );
+                // Content-depth subsystems round 5: every tier carries its own
+                // upgrade prose, so a rebuild never falls back to the generic
+                // shared line.
+                assert!(
+                    !tier.flavor.trim().is_empty(),
+                    "subsystem '{id}' has a tier with no upgrade flavor"
+                );
             }
             // Content-depth subsystem coverage: every subsystem has at least one
             // knowledge-crisis event, so a module's know-how decaying always has
