@@ -444,6 +444,19 @@ impl Game {
             // Freeze the run timer for the Homecoming (PLAN M4.7).
             self.last_mission_real_secs = self.mission_started.map(|t| (get_time() - t) as f32);
             self.mission_started = None;
+            // The homecoming is the campaign's emotional climax: lead with
+            // level-specific prose (content-depth voice round 4), then the
+            // compact record line. The prose is data, indexed by generation so a
+            // seed replays it; a missing pool just omits the prose line.
+            let level_key = entry.outcome.to_lowercase();
+            if let Some(line) = self.data.config.flavor.homecoming_line(
+                &level_key,
+                entry.generation as usize,
+                entry.duration_years,
+                entry.generation,
+            ) {
+                sim.push_log(line);
+            }
             sim.push_log(format!(
                 "Contract concluded: {} — {} (score {score:.2}).",
                 entry.contract_name, entry.outcome

@@ -202,6 +202,24 @@
       "preparation": [
         "Standing by for departure."
       ]
+    },
+    "homecoming": {
+      "complete": [
+        "After {years} years and {generation} generations, the ship came home to its berth — the charter met in full, the manifest closed, the founders' promise kept by hands that never knew them.",
+        "The ship made her home berth on schedule and on her word, {years} years out and whole. The generation that berthed her had heard of the launch the way others hear of scripture, and they brought her home entire."
+      ],
+      "partial": [
+        "The ship came home after {years} years with most of what she went for — not the whole of the charter, but enough to berth with heads up and holds not empty.",
+        "Twenty-odd decades out and back, the ship made berth having done the greater part of what was asked. The ledger was short a line or two; the crew that tied her up were not ashamed of it."
+      ],
+      "pyrrhic": [
+        "The ship limped into her berth after {years} years, the charter half-kept and the cost written in the thinned decks and the quiet at the tables. She came home. Some voyages, that is the whole of the victory.",
+        "After {years} bitter years the ship made berth, less than she set out to do and fewer than she set out with. They tied up in silence and were glad, mostly, to be tied up at all."
+      ],
+      "failure": [
+        "The ship returned after {years} years with the charter unmet — a voyage argued over for generations by people who had not been born when she launched, and were not believed when they said how far she had gone for so little.",
+        "{generation} generations spent, and the ship came home having failed the writ she carried. There was pay owed to none of it. There was, at least, a home berth, and a ship to tie to it."
+      ]
     }
   },
   "crew": {

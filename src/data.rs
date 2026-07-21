@@ -283,6 +283,14 @@ pub struct FlavorConfig {
     /// missing pool falls back to the built-in line.
     #[serde(default)]
     pub phase_lines: HashMap<String, Vec<String>>,
+    /// Homecoming prose pools keyed by mission success level (snake_case:
+    /// complete, partial, pyrrhic, failure), content-depth voice round 4. The
+    /// end of a centuries-long voyage is the campaign's emotional climax; this
+    /// gives it level-specific prose instead of one flat mechanical line.
+    /// Placeholders `{years}`, `{generation}`. Empty or missing pool falls back
+    /// to the built-in line so the log is never blank.
+    #[serde(default)]
+    pub homecoming: HashMap<String, Vec<String>>,
 }
 
 impl FlavorConfig {
@@ -290,6 +298,26 @@ impl FlavorConfig {
     /// substituted. Returns `None` only when the pool is empty.
     pub fn line_with_name(pool: &[String], n: usize, name: &str) -> Option<String> {
         (!pool.is_empty()).then(|| pool[n % pool.len()].replace("{name}", name))
+    }
+
+    /// Homecoming line for a mission that ended at `level_key` (the success
+    /// level, snake_case), indexed deterministically by `n` (the generation) so
+    /// a seed replays the same line, with `{years}`/`{generation}` substituted.
+    /// `None` when no pool is authored for that level — the caller keeps its
+    /// built-in line.
+    pub fn homecoming_line(
+        &self,
+        level_key: &str,
+        n: usize,
+        years: u32,
+        generation: u32,
+    ) -> Option<String> {
+        let pool = self.homecoming.get(level_key)?;
+        (!pool.is_empty()).then(|| {
+            pool[n % pool.len()]
+                .replace("{years}", &years.to_string())
+                .replace("{generation}", &generation.to_string())
+        })
     }
 }
 
@@ -460,6 +488,29 @@ mod tests {
             "A Vale"
         );
         assert!(FlavorConfig::line_with_name(&[], 0, "Vale").is_none());
+    }
+
+    #[test]
+    fn homecoming_lines_are_authored_for_every_success_level_and_substitute() {
+        // Content-depth voice round 4: every mission outcome the game can log
+        // must have homecoming prose, indexed deterministically and with the
+        // voyage's length/generation woven in.
+        let data = GameData::load().unwrap();
+        let flavor = &data.config.flavor;
+        for level in ["complete", "partial", "pyrrhic", "failure"] {
+            let line = flavor
+                .homecoming_line(level, 0, 450, 17)
+                .unwrap_or_else(|| panic!("no homecoming prose for '{level}'"));
+            assert!(
+                line.contains("450") || line.contains("17"),
+                "'{level}' homecoming should weave in the voyage's span: {line}"
+            );
+        }
+        // Deterministic rotation by the index, and an unknown level is None.
+        let a = flavor.homecoming_line("complete", 0, 300, 10);
+        let b = flavor.homecoming_line("complete", 0, 300, 10);
+        assert_eq!(a, b, "same index replays the same line");
+        assert!(flavor.homecoming_line("triumphant", 0, 300, 10).is_none());
     }
 
     #[test]
