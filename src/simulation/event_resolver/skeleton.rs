@@ -7,63 +7,62 @@
 //! here as a constant table.
 
 use crate::data::contracts::ContractPhase;
+use crate::data::CampaignSkeletonConfig;
 use crate::state::sim::{ActiveContract, CampaignBeat};
 use macroquad_toolkit::rng::SeededRng;
 
-/// Families a Travel-phase beat may draw from.
-const TRAVEL_POOL: &[&str] = &[
-    "exploration_first_contact",
-    "science_anomaly",
-    "diplomacy",
-    "mystery",
-    "engineering",
-];
-/// Families an Operation-phase beat may draw from.
-const OPERATION_POOL: &[&str] = &["survival", "diplomacy", "engineering", "mystery"];
-/// Families a Return-phase beat may draw from.
-const RETURN_POOL: &[&str] = &["legacy_drift", "ethics", "mystery"];
-/// Families allowed in any phase, always added to the draw.
-const ANY_POOL: &[&str] = &["biology_medical", "comedy"];
-
-const MONTHS_PER_WINDOW: u32 = 20 * 12;
-const SKIP_MONTHS: u32 = 5 * 12;
-
-fn pool_for_phase(phase: ContractPhase) -> &'static [&'static str] {
+fn pool_for_phase(cfg: &CampaignSkeletonConfig, phase: ContractPhase) -> &[String] {
     match phase {
-        ContractPhase::Travel | ContractPhase::Preparation => TRAVEL_POOL,
-        ContractPhase::Operation => OPERATION_POOL,
-        ContractPhase::Return | ContractPhase::Completion => RETURN_POOL,
+        ContractPhase::Travel | ContractPhase::Preparation => &cfg.travel_pool,
+        ContractPhase::Operation => &cfg.operation_pool,
+        ContractPhase::Return | ContractPhase::Completion => &cfg.return_pool,
     }
 }
 
-/// Lay out the campaign beats for `contract` (W6): one beat per full 20 years of
-/// mission duration, each placed uniformly at random within its own 20-year
-/// window (skipping the first 5 years overall), drawing a family from the pool
-/// for the phase active at that month plus the any-phase families. Deterministic
-/// for a given rng state.
-pub fn generate_beats(rng: &mut SeededRng, contract: &ActiveContract) -> Vec<CampaignBeat> {
+/// Lay out the campaign beats for `contract` (W6): one beat per full
+/// `months_per_window` of mission duration, each placed uniformly at random
+/// within its own window (skipping the first `skip_months` overall), drawing a
+/// family from the phase pool active at that month, the any-phase families, and
+/// — depending where in the voyage the beat lands — the founding-era or
+/// homecoming-era pool (content-depth era layering). Deterministic for a given
+/// rng state.
+pub fn generate_beats(
+    rng: &mut SeededRng,
+    contract: &ActiveContract,
+    cfg: &CampaignSkeletonConfig,
+) -> Vec<CampaignBeat> {
     let total_months = contract.total_months();
-    let windows = total_months / MONTHS_PER_WINDOW;
+    let windows = total_months / cfg.months_per_window;
+    let early_cutoff = (total_months as f32 * cfg.early_fraction) as u32;
+    let late_cutoff = (total_months as f32 * cfg.late_fraction) as u32;
     let mut beats = Vec::with_capacity(windows as usize);
     for i in 0..windows {
-        let window_start = i * MONTHS_PER_WINDOW;
-        let lo = window_start.max(SKIP_MONTHS);
-        let hi = window_start + MONTHS_PER_WINDOW;
+        let window_start = i * cfg.months_per_window;
+        let lo = window_start.max(cfg.skip_months);
+        let hi = window_start + cfg.months_per_window;
         if lo >= hi {
             continue;
         }
         let month = lo + rng.below((hi - lo) as usize) as u32;
         let (_, phase) = contract.phase_at(month + 1);
-        let pool = pool_for_phase(phase);
-        let idx = rng.below(pool.len() + ANY_POOL.len());
-        let family = if idx < pool.len() {
-            pool[idx]
-        } else {
-            ANY_POOL[idx - pool.len()]
-        };
+        // Build the eligible draw for this beat: phase pool + any-phase, plus the
+        // era pool for where it lands. Order is deterministic, so a fixed rng
+        // state yields a fixed schedule.
+        let mut draw: Vec<&str> = pool_for_phase(cfg, phase)
+            .iter()
+            .chain(cfg.any_pool.iter())
+            .map(String::as_str)
+            .collect();
+        if month < early_cutoff {
+            draw.extend(cfg.early_pool.iter().map(String::as_str));
+        }
+        if month >= late_cutoff {
+            draw.extend(cfg.late_pool.iter().map(String::as_str));
+        }
+        let family = draw[rng.below(draw.len())].to_owned();
         beats.push(CampaignBeat {
             month_clock: month,
-            family: family.to_owned(),
+            family,
             fired: false,
         });
     }
@@ -83,10 +82,11 @@ mod tests {
         let picks = founding_faction_ids(&data);
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
 
+        let cfg = &data.config.campaign_skeleton;
         let schedule = || {
             let mut sim = SimState::new_campaign(&data, "preservers", 99, &picks);
             let contract = start_contract(&template, &sim);
-            generate_beats(&mut sim.rng, &contract)
+            generate_beats(&mut sim.rng, &contract, cfg)
         };
         let a = schedule();
         let b = schedule();
@@ -104,21 +104,39 @@ mod tests {
         };
         assert_eq!(flat(&a), flat(&b), "same seed replays the same schedule");
 
-        // Beats are ordered, skip the first five years, and only draw valid
-        // phase-appropriate families.
-        let valid: std::collections::HashSet<&str> = TRAVEL_POOL
+        // Beats are ordered, skip the opening window, and only draw families the
+        // config declares (phase pools + any-phase + both era pools).
+        let valid: std::collections::HashSet<&str> = cfg
+            .travel_pool
             .iter()
-            .chain(OPERATION_POOL)
-            .chain(RETURN_POOL)
-            .chain(ANY_POOL)
-            .copied()
+            .chain(&cfg.operation_pool)
+            .chain(&cfg.return_pool)
+            .chain(&cfg.any_pool)
+            .chain(&cfg.early_pool)
+            .chain(&cfg.late_pool)
+            .map(String::as_str)
             .collect();
         for beat in &a {
             assert!(
-                beat.month_clock >= SKIP_MONTHS,
-                "no beat in the first 5 years"
+                beat.month_clock >= cfg.skip_months,
+                "no beat before the skip window"
             );
             assert!(valid.contains(beat.family.as_str()));
+        }
+    }
+
+    #[test]
+    fn era_layering_tints_the_ends_of_a_voyage() {
+        let data = GameData::load().unwrap();
+        let cfg = &data.config.campaign_skeleton;
+        // Founding-era and homecoming-era pools must be authored for the layering
+        // to mean anything, and must be real event families.
+        assert!(!cfg.early_pool.is_empty() && !cfg.late_pool.is_empty());
+        for fam in cfg.early_pool.iter().chain(&cfg.late_pool) {
+            assert!(
+                data.events.iter().any(|(_, e)| &e.family == fam),
+                "era family '{fam}' has no events"
+            );
         }
     }
 }

@@ -127,6 +127,8 @@ pub struct GameConfig {
     pub tutorial: TutorialConfig,
     /// Ship-subsystem knowledge/training tunables (W5).
     pub subsystems: SubsystemsConfig,
+    /// Seeded-campaign-skeleton beat pools + era layering (content-depth).
+    pub campaign_skeleton: CampaignSkeletonConfig,
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
@@ -247,6 +249,30 @@ pub struct ProvisioningConfig {
     pub no_fuel_decay_multiplier: f32,
     /// Credits per spare part when stocking up in drydock (PREP screen).
     pub part_cost_credits: i64,
+}
+
+/// Seeded-campaign-skeleton tunables (content-depth iteration): the phase→family
+/// beat pools, moved out of Rust so the campaign's shape is data like everything
+/// else, plus era layering that tints founding-era and homecoming-era beats.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CampaignSkeletonConfig {
+    /// One beat per this many months of mission duration.
+    pub months_per_window: u32,
+    /// No beats before this many months into the voyage.
+    pub skip_months: u32,
+    /// Family pools drawn from by the phase a beat lands in.
+    pub travel_pool: Vec<String>,
+    pub operation_pool: Vec<String>,
+    pub return_pool: Vec<String>,
+    /// Families eligible in any phase, always added to the draw.
+    pub any_pool: Vec<String>,
+    /// Extra families layered in for beats in the first `early_fraction` of the
+    /// voyage (founding-era texture) and the last `late_fraction`→end
+    /// (homecoming-era texture).
+    pub early_pool: Vec<String>,
+    pub late_pool: Vec<String>,
+    pub early_fraction: f32,
+    pub late_fraction: f32,
 }
 
 /// One step of the first-voyage checklist. The `id` binds it to a completion
@@ -565,6 +591,25 @@ mod tests {
             "expected >= 46 event templates, found {}",
             data.events.len()
         );
+        // Content-depth campaign-skeleton coupling: every family a beat pool can
+        // draw must have authored events, or a beat could land on an empty pool.
+        let families: std::collections::HashSet<&String> =
+            data.events.iter().map(|(_, e)| &e.family).collect();
+        let sk = &data.config.campaign_skeleton;
+        for fam in sk
+            .travel_pool
+            .iter()
+            .chain(&sk.operation_pool)
+            .chain(&sk.return_pool)
+            .chain(&sk.any_pool)
+            .chain(&sk.early_pool)
+            .chain(&sk.late_pool)
+        {
+            assert!(
+                families.contains(fam),
+                "campaign_skeleton pool family '{fam}' has no events"
+            );
+        }
     }
 
     #[test]

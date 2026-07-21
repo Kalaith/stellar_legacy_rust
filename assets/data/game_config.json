@@ -89,8 +89,49 @@
     "train_cost_credits": 600,
     "agriculture_food_bonus_per_tier": 0.05
   },
+  "campaign_skeleton": {
+    "months_per_window": 240,
+    "skip_months": 60,
+    "travel_pool": [
+      "exploration_first_contact",
+      "science_anomaly",
+      "diplomacy",
+      "mystery",
+      "engineering"
+    ],
+    "operation_pool": [
+      "survival",
+      "diplomacy",
+      "engineering",
+      "mystery"
+    ],
+    "return_pool": [
+      "legacy_drift",
+      "ethics",
+      "mystery"
+    ],
+    "any_pool": [
+      "biology_medical",
+      "comedy"
+    ],
+    "early_pool": [
+      "exploration_first_contact",
+      "science_anomaly",
+      "comedy"
+    ],
+    "late_pool": [
+      "legacy_drift",
+      "ethics"
+    ],
+    "early_fraction": 0.2,
+    "late_fraction": 0.8
+  },
   "crew": {
-    "starting_posts": ["commander", "engineer", "agronomist"],
+    "starting_posts": [
+      "commander",
+      "engineer",
+      "agronomist"
+    ],
     "recruit_cost_credits": 800,
     "train_cost_credits": 400,
     "train_skill_gain": 6,
@@ -155,11 +196,37 @@
     "hope_unity": 0.08
   },
   "heritage": [
-    { "min_renown": 0, "name": "Founding" },
-    { "min_renown": 100, "name": "Remembered", "credits": 500, "tradition": 5 },
-    { "min_renown": 250, "name": "Storied", "credits": 1500, "influence": 100, "tradition": 15 },
-    { "min_renown": 500, "name": "Renowned", "credits": 3000, "influence": 200, "tradition": 30 },
-    { "min_renown": 900, "name": "Mythic", "credits": 6000, "influence": 400, "tradition": 50 }
+    {
+      "min_renown": 0,
+      "name": "Founding"
+    },
+    {
+      "min_renown": 100,
+      "name": "Remembered",
+      "credits": 500,
+      "tradition": 5
+    },
+    {
+      "min_renown": 250,
+      "name": "Storied",
+      "credits": 1500,
+      "influence": 100,
+      "tradition": 15
+    },
+    {
+      "min_renown": 500,
+      "name": "Renowned",
+      "credits": 3000,
+      "influence": 200,
+      "tradition": 30
+    },
+    {
+      "min_renown": 900,
+      "name": "Mythic",
+      "credits": 6000,
+      "influence": 400,
+      "tradition": 50
+    }
   ],
   "log_limit": 200
 }

@@ -56,7 +56,11 @@ pub fn play_mission(
     sim.contract = Some(start_contract(&template, sim));
     // Lay out the seeded campaign skeleton at LAUNCH (W6).
     if let Some(c) = sim.contract.as_mut() {
-        c.beats = event_resolver::skeleton::generate_beats(&mut sim.rng, c);
+        c.beats = event_resolver::skeleton::generate_beats(
+            &mut sim.rng,
+            c,
+            &data.config.campaign_skeleton,
+        );
     }
     sim.selected_charter = None;
     // Fly at full speed: each Advance covers up to a decade but hard-stops on
@@ -351,7 +355,11 @@ mod tests {
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
         if let Some(c) = sim.contract.as_mut() {
-            c.beats = crate::simulation::event_resolver::skeleton::generate_beats(&mut sim.rng, c);
+            c.beats = crate::simulation::event_resolver::skeleton::generate_beats(
+                &mut sim.rng,
+                c,
+                &data.config.campaign_skeleton,
+            );
         }
         // Absurd food so the run never dies to famine — we only care about beats.
         sim.resources.food = 100_000_000;

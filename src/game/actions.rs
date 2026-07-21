@@ -258,7 +258,11 @@ impl Game {
                             sim.contract = Some(contract::start_contract(template, sim));
                             // Lay out the seeded campaign skeleton at LAUNCH (W6).
                             if let Some(c) = sim.contract.as_mut() {
-                                c.beats = event_resolver::skeleton::generate_beats(&mut sim.rng, c);
+                                c.beats = event_resolver::skeleton::generate_beats(
+                                    &mut sim.rng,
+                                    c,
+                                    &self.data.config.campaign_skeleton,
+                                );
                             }
                             sim.selected_charter = None;
                             sim.push_log(format!(
