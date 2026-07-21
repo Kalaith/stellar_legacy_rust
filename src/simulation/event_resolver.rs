@@ -2,6 +2,7 @@
 
 use crate::data::events::{EventCategory, EventOutcome, EventTemplate};
 use crate::data::{GameConfig, GameData};
+use crate::simulation::subsystems;
 use crate::state::sim::{PendingEvent, SimState};
 
 /// `event_chance = min(cap, base + years_since_event*0.1 + contract_progress*0.2)`.
@@ -93,9 +94,14 @@ pub fn roll_event(sim: &mut SimState, data: &GameData) -> Option<PendingEvent> {
     }
 
     let legacy_id = sim.legacy.legacy_id.as_str();
+    // Legacy affinity × the buffering subsystem's rarefying factor (W5): a
+    // strong medical bay makes biology events rarer, and so on.
     let template_weights: Vec<f32> = candidates
         .iter()
-        .map(|(_, t)| *t.legacy_weight_modifiers.get(legacy_id).unwrap_or(&1.0))
+        .map(|(_, t)| {
+            *t.legacy_weight_modifiers.get(legacy_id).unwrap_or(&1.0)
+                * subsystems::family_weight_factor(sim, data, &t.family)
+        })
         .collect();
     let weight_total: f32 = template_weights.iter().sum();
     let mut roll = sim.rng.next_f32() * weight_total;
@@ -148,9 +154,19 @@ pub fn apply_outcome(
     let Some(outcome) = template.outcomes.get(outcome_index) else {
         return;
     };
-    sim.resources.apply(&outcome.resource_delta);
-    sim.ship.apply(&outcome.ship_delta);
-    sim.population.apply(&outcome.population_delta);
+    // A subsystem buffering this event's family softens its harm (W5): every
+    // negative delta is scaled down; the boons land in full.
+    let (resource_delta, ship_delta, population_delta) = subsystems::buffered_deltas(
+        sim,
+        data,
+        &template.family,
+        outcome.resource_delta,
+        outcome.ship_delta,
+        outcome.population_delta,
+    );
+    sim.resources.apply(&resource_delta);
+    sim.ship.apply(&ship_delta);
+    sim.population.apply(&population_delta);
     sim.consequences
         .extend(outcome.long_term_consequences.iter().cloned());
     // A salvaged component drops into the hold, to be installed later

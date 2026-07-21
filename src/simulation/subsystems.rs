@@ -1,0 +1,469 @@
+//! Ship-subsystem services (W5): yearly decay, generational knowledge transfer,
+//! the repair/upgrade/train verbs, and the event buffering each module family
+//! provides. All balance comes from data; this only reads ids and applies it.
+
+use crate::data::subsystems::SubsystemDef;
+use crate::data::{GameData, PopulationDelta, ResourceDelta, ShipDelta};
+use crate::state::sim::subsystems::SubsystemState;
+use crate::state::sim::SimState;
+
+/// The catalog subsystem whose `buffers_family` matches `family`, in sorted-id
+/// order (deterministic). `None` for the empty family or no match.
+fn buffering_def<'a>(data: &'a GameData, family: &str) -> Option<&'a SubsystemDef> {
+    if family.is_empty() {
+        return None;
+    }
+    GameData::sorted_ids(&data.subsystems)
+        .into_iter()
+        .find_map(|id| {
+            data.subsystems
+                .get(&id)
+                .filter(|d| d.buffers_family == family)
+        })
+}
+
+/// Effective buffer strength (0-1) a subsystem provides right now: its current
+/// tier's `severity_reduction` scaled by condition. Baseline tier 0 gives 0.
+fn effective_severity(def: &SubsystemDef, state: &SubsystemState) -> f32 {
+    match def.tier_stats(state.tier) {
+        Some(tier) => (tier.severity_reduction * state.condition).clamp(0.0, 1.0),
+        None => 0.0,
+    }
+}
+
+/// Roll-weight factor for an event of `family` (W5): a buffering subsystem makes
+/// its family rarer, scaled by condition — `1 - (1 - weight_multiplier) × cond`.
+pub fn family_weight_factor(sim: &SimState, data: &GameData, family: &str) -> f32 {
+    let Some(def) = buffering_def(data, family) else {
+        return 1.0;
+    };
+    let Some(state) = sim.subsystems.get(&def.id) else {
+        return 1.0;
+    };
+    let Some(tier) = def.tier_stats(state.tier) else {
+        return 1.0;
+    };
+    1.0 - (1.0 - tier.weight_multiplier) * state.condition
+}
+
+/// Scale every NEGATIVE component of an outcome's deltas by the subsystem
+/// buffering `family` (W5). Positive components are untouched. Returns the
+/// buffered copies to apply.
+pub fn buffered_deltas(
+    sim: &SimState,
+    data: &GameData,
+    family: &str,
+    resource: ResourceDelta,
+    ship: ShipDelta,
+    population: PopulationDelta,
+) -> (ResourceDelta, ShipDelta, PopulationDelta) {
+    let factor = match buffering_def(data, family) {
+        Some(def) => match sim.subsystems.get(&def.id) {
+            Some(state) => 1.0 - effective_severity(def, state),
+            None => 1.0,
+        },
+        None => 1.0,
+    };
+    if factor >= 1.0 {
+        return (resource, ship, population);
+    }
+    (
+        scale_resource(resource, factor),
+        scale_ship(ship, factor),
+        scale_population(population, factor),
+    )
+}
+
+fn soften_i64(x: i64, factor: f32) -> i64 {
+    if x < 0 {
+        (x as f32 * factor) as i64
+    } else {
+        x
+    }
+}
+fn soften_i32(x: i32, factor: f32) -> i32 {
+    if x < 0 {
+        (x as f32 * factor) as i32
+    } else {
+        x
+    }
+}
+fn soften_f32(x: f32, factor: f32) -> f32 {
+    if x < 0.0 {
+        x * factor
+    } else {
+        x
+    }
+}
+
+fn scale_resource(d: ResourceDelta, f: f32) -> ResourceDelta {
+    ResourceDelta {
+        credits: soften_i64(d.credits, f),
+        energy: soften_i64(d.energy, f),
+        minerals: soften_i64(d.minerals, f),
+        food: soften_i64(d.food, f),
+        influence: soften_i64(d.influence, f),
+    }
+}
+fn scale_ship(d: ShipDelta, f: f32) -> ShipDelta {
+    ShipDelta {
+        hull_integrity: soften_f32(d.hull_integrity, f),
+        life_support: soften_f32(d.life_support, f),
+        fuel: soften_f32(d.fuel, f),
+        spare_parts: soften_i32(d.spare_parts, f),
+    }
+}
+fn scale_population(d: PopulationDelta, f: f32) -> PopulationDelta {
+    PopulationDelta {
+        count: soften_i32(d.count, f),
+        morale: soften_f32(d.morale, f),
+        unity: soften_f32(d.unity, f),
+        stability: soften_f32(d.stability, f),
+        legacy_loyalty: soften_f32(d.legacy_loyalty, f),
+        adaptation: soften_f32(d.adaptation, f),
+        cultural_drift: soften_f32(d.cultural_drift, f),
+    }
+}
+
+// --- Verbs (dispatched from game/actions.rs) ---
+
+/// Repair a subsystem (W5), underway or in port. Requires living expertise —
+/// knowledge >= the subsystem's threshold — then spends parts + minerals to
+/// restore condition (field ceiling underway, whole in port).
+pub fn repair_subsystem(sim: &mut SimState, data: &GameData, id: &str) -> Result<(), String> {
+    let Some(def) = data.subsystems.get(id) else {
+        return Err("Unknown subsystem.".to_owned());
+    };
+    let knowledge = sim.subsystems.get(id).map(|s| s.knowledge).unwrap_or(0.0);
+    if knowledge < def.repair_knowledge_required {
+        return Err(format!(
+            "No one aboard remembers how to mend the {}.",
+            def.name
+        ));
+    }
+    let current = sim.subsystems.get(id).map(|s| s.condition).unwrap_or(0.0);
+    let in_port = sim.contract.is_none();
+    let ceiling = if in_port {
+        1.0
+    } else {
+        data.config.repair.field_ceiling
+    };
+    if current >= ceiling {
+        return Err("It is already as sound as this can make it here.".to_owned());
+    }
+    let minerals = ResourceDelta {
+        minerals: -def.repair_minerals_cost,
+        ..Default::default()
+    };
+    if sim.ship.spare_parts < def.repair_parts_cost || !sim.resources.can_afford(&minerals) {
+        return Err("Not enough spare parts or minerals to mend it.".to_owned());
+    }
+    sim.resources.apply(&minerals);
+    sim.ship.spare_parts -= def.repair_parts_cost;
+    let restored = if in_port {
+        1.0
+    } else {
+        (current + data.config.repair.field_gain).min(ceiling)
+    };
+    let name = def.name.clone();
+    if let Some(state) = sim.subsystems.get_mut(id) {
+        state.condition = restored;
+    }
+    sim.push_log(format!("The {name} is patched back toward working order."));
+    Ok(())
+}
+
+/// Upgrade a subsystem one tier (W5), port only. Pays the next tier's cost.
+/// Tiers cap at 3.
+pub fn upgrade_subsystem(sim: &mut SimState, data: &GameData, id: &str) -> Result<(), String> {
+    if sim.contract.is_some() {
+        return Err("Subsystems are rebuilt in drydock, between missions.".to_owned());
+    }
+    let Some(def) = data.subsystems.get(id) else {
+        return Err("Unknown subsystem.".to_owned());
+    };
+    let name = def.name.clone();
+    let tier = sim.subsystems.get(id).map(|s| s.tier).unwrap_or(0);
+    let Some(next) = def.tiers.get(tier as usize) else {
+        return Err(format!("The {name} is already at its highest tier."));
+    };
+    let cost = ResourceDelta {
+        credits: -next.cost.credits,
+        energy: -next.cost.energy,
+        minerals: -next.cost.minerals,
+        food: -next.cost.food,
+        influence: -next.cost.influence,
+    };
+    if !sim.resources.can_afford(&cost) {
+        return Err("The treasury cannot cover that upgrade.".to_owned());
+    }
+    sim.resources.apply(&cost);
+    if let Some(state) = sim.subsystems.get_mut(id) {
+        state.tier += 1;
+    }
+    sim.push_log(format!("The {name} is rebuilt stronger."));
+    Ok(())
+}
+
+/// Train institutional knowledge for a subsystem (W5), anytime — the mid-voyage
+/// recovery path when the experts have died out.
+pub fn train_subsystem_knowledge(
+    sim: &mut SimState,
+    data: &GameData,
+    id: &str,
+) -> Result<(), String> {
+    let Some(def) = data.subsystems.get(id) else {
+        return Err("Unknown subsystem.".to_owned());
+    };
+    let cfg = &data.config.subsystems;
+    let cost = ResourceDelta {
+        credits: -cfg.train_cost_credits,
+        ..Default::default()
+    };
+    if !sim.resources.can_afford(&cost) {
+        return Err(format!(
+            "Training a new cohort needs {} credits.",
+            cfg.train_cost_credits
+        ));
+    }
+    sim.resources.apply(&cost);
+    let name = def.name.clone();
+    if let Some(state) = sim.subsystems.get_mut(id) {
+        state.knowledge = (state.knowledge + cfg.train_knowledge_gain).min(1.0);
+    }
+    sim.push_log(format!("A new cohort trains up on the {name}."));
+    Ok(())
+}
+
+// --- Year-boundary tick helpers ---
+
+/// Yearly subsystem condition decay (W5), eased by the same maintained/relief
+/// `wear` factor the hull uses.
+pub fn decay_subsystems(sim: &mut SimState, data: &GameData, wear: f32) {
+    for id in GameData::sorted_ids(&data.subsystems) {
+        let Some(def) = data.subsystems.get(&id) else {
+            continue;
+        };
+        let decay = def.decay_per_year;
+        if let Some(state) = sim.subsystems.get_mut(&id) {
+            state.condition = (state.condition - decay * wear).max(0.0);
+        }
+    }
+}
+
+/// Generation-boundary knowledge change (W5): knowledge dies with the people
+/// (`-knowledge_decay_per_generation`) but the education subsystem transmits it
+/// forward (`education_tier × education_transmission_per_tier`). Clamped 0-1.
+pub fn transmit_knowledge(sim: &mut SimState, data: &GameData) {
+    let cfg = &data.config.subsystems;
+    let education_tier = sim
+        .subsystems
+        .get("education_culture")
+        .map(|s| s.tier)
+        .unwrap_or(0);
+    let delta = -cfg.knowledge_decay_per_generation
+        + education_tier as f32 * cfg.education_transmission_per_tier;
+    for id in GameData::sorted_ids(&data.subsystems) {
+        if let Some(state) = sim.subsystems.get_mut(&id) {
+            state.knowledge = (state.knowledge + delta).clamp(0.0, 1.0);
+        }
+    }
+}
+
+/// Extra food-production fraction from the agriculture subsystem (W5):
+/// `tier × agriculture_food_bonus_per_tier`.
+pub fn agriculture_food_bonus(sim: &SimState, data: &GameData) -> f32 {
+    let tier = sim
+        .subsystems
+        .get("agriculture")
+        .map(|s| s.tier)
+        .unwrap_or(0);
+    tier as f32 * data.config.subsystems.agriculture_food_bonus_per_tier
+}
+
+/// Fraction by which the life-support/habitat subsystem slows life-support
+/// decay (W5): its current tier's `severity_reduction × condition`.
+pub fn life_support_decay_reduction(sim: &SimState, data: &GameData) -> f32 {
+    let Some(def) = data.subsystems.get("life_support_habitat") else {
+        return 0.0;
+    };
+    let Some(state) = sim.subsystems.get("life_support_habitat") else {
+        return 0.0;
+    };
+    effective_severity(def, state)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::sim::founding_faction_ids;
+
+    fn campaign(seed: u64) -> (GameData, SimState) {
+        let data = GameData::load().unwrap();
+        let picks = founding_faction_ids(&data);
+        let sim = SimState::new_campaign(&data, "preservers", seed, &picks);
+        (data, sim)
+    }
+
+    #[test]
+    fn condition_decays_and_knowledge_transmits_with_education() {
+        let (data, mut sim) = campaign(1);
+
+        let before = sim.subsystems["medical_bay"].condition;
+        decay_subsystems(&mut sim, &data, 1.0);
+        assert!(
+            sim.subsystems["medical_bay"].condition < before,
+            "condition falls with the years"
+        );
+
+        // No schooling: a generation loses knowledge.
+        let k0 = sim.subsystems["medical_bay"].knowledge;
+        transmit_knowledge(&mut sim, &data);
+        assert!(
+            sim.subsystems["medical_bay"].knowledge < k0,
+            "knowledge dies with an untaught generation"
+        );
+
+        // Max education tier: transmission outweighs the decay (net positive).
+        sim.subsystems.get_mut("education_culture").unwrap().tier = 3;
+        let k1 = sim.subsystems["medical_bay"].knowledge;
+        transmit_knowledge(&mut sim, &data);
+        assert!(
+            sim.subsystems["medical_bay"].knowledge > k1,
+            "a schooled generation carries knowledge forward"
+        );
+    }
+
+    #[test]
+    fn repair_needs_living_expertise() {
+        let (data, mut sim) = campaign(2);
+        sim.resources.minerals = 100_000;
+        sim.ship.spare_parts = 100;
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.3;
+
+        // Below the knowledge threshold: refused, and nothing is spent.
+        sim.subsystems.get_mut("medical_bay").unwrap().knowledge = 0.1;
+        let minerals_before = sim.resources.minerals;
+        assert!(repair_subsystem(&mut sim, &data, "medical_bay").is_err());
+        assert_eq!(
+            sim.resources.minerals, minerals_before,
+            "a refused repair charges nothing"
+        );
+
+        // Above it: the repair lands and spends consumables.
+        sim.subsystems.get_mut("medical_bay").unwrap().knowledge = 0.9;
+        repair_subsystem(&mut sim, &data, "medical_bay").unwrap();
+        assert!(sim.subsystems["medical_bay"].condition > 0.3);
+        assert!(sim.resources.minerals < minerals_before);
+    }
+
+    #[test]
+    fn a_stronger_medical_bay_softens_biology_damage() {
+        let (data, mut sim) = campaign(3);
+
+        // Baseline tier 0 buffers nothing.
+        let (r0, _, _) = buffered_deltas(
+            &sim,
+            &data,
+            "biology_medical",
+            ResourceDelta {
+                food: -100,
+                ..Default::default()
+            },
+            ShipDelta::default(),
+            PopulationDelta::default(),
+        );
+        assert_eq!(r0.food, -100, "tier 0 leaves the harm in full");
+
+        // Tier 2 at full condition scales negatives by 1 - severity_reduction;
+        // positive components pass untouched.
+        {
+            let s = sim.subsystems.get_mut("medical_bay").unwrap();
+            s.tier = 2;
+            s.condition = 1.0;
+        }
+        let sr = data.subsystems.get("medical_bay").unwrap().tiers[1].severity_reduction;
+        let factor = 1.0 - sr;
+        let (r2, _, p2) = buffered_deltas(
+            &sim,
+            &data,
+            "biology_medical",
+            ResourceDelta {
+                food: -100,
+                ..Default::default()
+            },
+            ShipDelta::default(),
+            PopulationDelta {
+                count: -50,
+                morale: 0.1,
+                ..Default::default()
+            },
+        );
+        assert_eq!(r2.food, (-100.0f32 * factor) as i64, "negative food scaled");
+        assert_eq!(
+            p2.count,
+            (-50.0f32 * factor) as i32,
+            "negative count scaled"
+        );
+        assert_eq!(p2.morale, 0.1, "positive morale untouched");
+        assert!(
+            r2.food > r0.food,
+            "the upgrade measurably reduces the damage"
+        );
+    }
+
+    #[test]
+    fn upgrade_is_port_only_and_caps_at_tier_three() {
+        use crate::simulation::contract::start_contract;
+        let (data, mut sim) = campaign(4);
+        sim.resources.credits = 1_000_000;
+        sim.resources.minerals = 1_000_000;
+
+        // Underway: refused.
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        assert!(upgrade_subsystem(&mut sim, &data, "medical_bay").is_err());
+
+        // In port: climbs to tier 3 then caps.
+        sim.contract = None;
+        for _ in 0..3 {
+            upgrade_subsystem(&mut sim, &data, "medical_bay").unwrap();
+        }
+        assert_eq!(sim.subsystems["medical_bay"].tier, 3);
+        assert!(
+            upgrade_subsystem(&mut sim, &data, "medical_bay").is_err(),
+            "tier caps at 3"
+        );
+    }
+
+    #[test]
+    fn an_untrained_line_loses_then_relearns_the_repair() {
+        let (data, mut sim) = campaign(5);
+        sim.resources.minerals = 100_000;
+        sim.ship.spare_parts = 100;
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.3;
+        let required = data
+            .subsystems
+            .get("medical_bay")
+            .unwrap()
+            .repair_knowledge_required;
+
+        // Education tier 0, no training: knowledge falls below the threshold and
+        // the subsystem becomes unrepairable.
+        for _ in 0..3 {
+            transmit_knowledge(&mut sim, &data);
+        }
+        assert!(sim.subsystems["medical_bay"].knowledge < required);
+        assert!(
+            repair_subsystem(&mut sim, &data, "medical_bay").is_err(),
+            "no one remembers how to mend it"
+        );
+
+        // Training a new cohort rebuilds the knowledge and the ability.
+        sim.resources.credits = 100_000;
+        for _ in 0..3 {
+            train_subsystem_knowledge(&mut sim, &data, "medical_bay").unwrap();
+        }
+        assert!(repair_subsystem(&mut sim, &data, "medical_bay").is_ok());
+    }
+}

@@ -115,6 +115,31 @@ impl Game {
                 gameplay.screen = Screen::ShipBuilder;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
+            "subsystems" => {
+                // The subsystems screen (W5) with mixed tiers, worn condition,
+                // and a knowledge stat dipping below a repair threshold.
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
+                if let Some(s) = sim.subsystems.get_mut("medical_bay") {
+                    s.tier = 2;
+                    s.condition = 0.44;
+                    s.knowledge = 0.22;
+                }
+                if let Some(s) = sim.subsystems.get_mut("engineering_bay") {
+                    s.tier = 1;
+                    s.condition = 0.71;
+                }
+                if let Some(s) = sim.subsystems.get_mut("agriculture") {
+                    s.tier = 3;
+                }
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = Screen::Subsystems;
+                self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
+            }
             "market" => {
                 let sim = SimState::new_campaign(
                     &self.data,

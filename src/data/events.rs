@@ -72,6 +72,10 @@ pub struct EventTemplate {
     pub description: String,
     #[serde(default)]
     pub requires_decision: bool,
+    /// Event family (W5, filled by W6). Matches a subsystem's `buffers_family`
+    /// so the right module can soften or rarefy it. Empty = untagged.
+    #[serde(default)]
+    pub family: String,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,

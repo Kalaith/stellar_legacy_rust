@@ -6,6 +6,7 @@ pub mod events;
 pub mod factions;
 pub mod legacies;
 pub mod ship_components;
+pub mod subsystems;
 
 use std::collections::HashMap;
 
@@ -21,6 +22,7 @@ use events::EventTemplate;
 use factions::{FactionConfig, FactionDef};
 use legacies::LegacyDef;
 use ship_components::ShipComponentCatalog;
+use subsystems::{SubsystemDef, SubsystemsConfig};
 
 const GAME_CONFIG_JSON: &str = include_str!("../assets/data/game_config.json");
 const TEXTURE_MANIFEST_JSON: &str = include_str!("../assets/data/texture_manifest.json");
@@ -29,6 +31,7 @@ const EVENTS_JSON: &str = include_str!("../assets/events.json");
 const LEGACIES_JSON: &str = include_str!("../assets/legacies.json");
 const CONTRACTS_JSON: &str = include_str!("../assets/contracts.json");
 const FACTIONS_JSON: &str = include_str!("../assets/factions.json");
+const SUBSYSTEMS_JSON: &str = include_str!("../assets/subsystems.json");
 const DYNASTY_NAMES_JSON: &str = include_str!("../assets/dynasty_names.json");
 const CREW_ARCHETYPES_JSON: &str = include_str!("../assets/crew_archetypes.json");
 
@@ -120,6 +123,8 @@ pub struct GameConfig {
     pub factions: FactionConfig,
     /// Pre-launch provisioning + fuel-as-consumable tunables (W4).
     pub provisioning: ProvisioningConfig,
+    /// Ship-subsystem knowledge/training tunables (W5).
+    pub subsystems: SubsystemsConfig,
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
@@ -283,6 +288,7 @@ pub struct GameData {
     pub legacies: DataRegistry<LegacyDef>,
     pub contracts: DataRegistry<ContractTemplate>,
     pub factions: DataRegistry<FactionDef>,
+    pub subsystems: DataRegistry<SubsystemDef>,
     pub dynasty_names: DynastyNamePools,
     pub crew_archetypes: Vec<CrewArchetype>,
     pub texture_manifest: Vec<TextureConfig>,
@@ -297,6 +303,7 @@ impl GameData {
             legacies: DataRegistry::from_embedded_json(LEGACIES_JSON, "id")?,
             contracts: DataRegistry::from_embedded_json(CONTRACTS_JSON, "id")?,
             factions: DataRegistry::from_embedded_json(FACTIONS_JSON, "id")?,
+            subsystems: DataRegistry::from_embedded_json(SUBSYSTEMS_JSON, "id")?,
             dynasty_names: load_embedded_json_labeled("dynasty_names", DYNASTY_NAMES_JSON)?,
             crew_archetypes: load_embedded_json_labeled("crew_archetypes", CREW_ARCHETYPES_JSON)?,
             texture_manifest: load_embedded_json(TEXTURE_MANIFEST_JSON)?,
@@ -401,6 +408,44 @@ mod tests {
                 "faction '{id}' ideology out of range: {}",
                 faction.ideology
             );
+        }
+
+        // W5: six subsystems load; each non-empty buffered family is one of the
+        // canonical W6 family strings; tiers are well-formed (3, positive cost).
+        let canonical_families: std::collections::HashSet<&str> = [
+            "exploration_first_contact",
+            "diplomacy",
+            "engineering",
+            "biology_medical",
+            "science_anomaly",
+            "survival",
+            "mystery",
+            "comedy",
+            "ethics",
+            "legacy_drift",
+        ]
+        .into_iter()
+        .collect();
+        assert_eq!(data.subsystems.len(), 6, "six ship subsystems");
+        for (id, sub) in data.subsystems.iter() {
+            if !sub.buffers_family.is_empty() {
+                assert!(
+                    canonical_families.contains(sub.buffers_family.as_str()),
+                    "subsystem '{id}' buffers a non-canonical family '{}'",
+                    sub.buffers_family
+                );
+            }
+            assert_eq!(
+                sub.tiers.len(),
+                3,
+                "subsystem '{id}' has three upgrade tiers"
+            );
+            for tier in &sub.tiers {
+                assert!(
+                    tier.cost.credits > 0,
+                    "subsystem '{id}' tier cost must be positive"
+                );
+            }
         }
 
         assert_eq!(data.ship_components.hulls.len(), 5);

@@ -7,8 +7,10 @@
 use crate::data::{GameData, PopulationDelta, ProductionRates, ResourceDelta, ShipDelta};
 use macroquad_toolkit::rng::SeededRng;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 pub mod factions;
+pub mod subsystems;
 
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 pub struct ResourcePool {
@@ -459,6 +461,9 @@ pub struct SimState {
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
     pub factions: Vec<factions::FactionState>,
+    /// Ship subsystems keyed by catalog id (W5): tier, condition, knowledge.
+    #[serde(default)]
+    pub subsystems: HashMap<String, subsystems::SubsystemState>,
     pub log: Vec<LogEntry>,
 }
 
@@ -536,6 +541,7 @@ impl SimState {
             pending_dilemma: None,
             consequences: Vec::new(),
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
+            subsystems: subsystems::build_founding_subsystems(data),
             log: Vec::new(),
         };
         // Founding senior staff fill the configured starting posts.

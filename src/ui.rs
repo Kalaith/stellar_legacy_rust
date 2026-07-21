@@ -15,6 +15,7 @@ pub mod market;
 pub mod prep;
 pub mod settings;
 pub mod ship_builder;
+pub mod subsystems;
 
 use crate::chronicle::ChronicleStore;
 use crate::data::events::EventCategory;
@@ -184,6 +185,10 @@ pub enum UiAction {
     CommissionShip(String),
     /// Recruit a fresh people in drydock when short of the founding count (W7).
     RecruitFactionGroup(String),
+    /// Subsystem verbs (W5): mend, upgrade (port), or train its knowledge.
+    RepairSubsystem(String),
+    UpgradeSubsystem(String),
+    TrainSubsystemKnowledge(String),
     Buy(TradeResource, i64),
     Sell(TradeResource, i64),
     ToggleDelegation(EventCategory),
@@ -554,6 +559,7 @@ pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
     match ctx.screen {
         Screen::Dashboard => dashboard::draw(&ctx, content, mouse, &mut actions),
         Screen::ShipBuilder => ship_builder::draw(&ctx, content, mouse, &mut actions),
+        Screen::Subsystems => subsystems::draw(&ctx, content, mouse, &mut actions),
         Screen::CrewDynasty => crew_dynasty::draw(&ctx, content, mouse, &mut actions),
         Screen::Contract => contract_systems::draw(&ctx, content, mouse, &mut actions),
         Screen::Market => market::draw(&ctx, content, mouse, &mut actions),

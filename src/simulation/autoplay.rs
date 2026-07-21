@@ -14,7 +14,7 @@
 use crate::data::GameData;
 use crate::simulation::contract::start_contract;
 use crate::simulation::tick::advance;
-use crate::simulation::{event_resolver, legacy, market, ship};
+use crate::simulation::{event_resolver, legacy, market, ship, subsystems};
 use crate::state::sim::{SimState, SpeedStep, TradeResource};
 
 /// How a played-out mission ended.
@@ -93,6 +93,26 @@ pub fn play_mission(
         }
         if sim.resources.food < data.config.low_food_threshold {
             let _ = market::buy(sim, TradeResource::Food, 1000);
+        }
+        // Keep the subsystems mended and their knowledge alive when it's cheap
+        // and needed (W5) — train up before the experts die out, patch what
+        // slips. Both verbs refuse harmlessly when they can't be paid for.
+        for id in crate::data::GameData::sorted_ids(&data.subsystems) {
+            let Some(sub) = sim.subsystems.get(&id) else {
+                continue;
+            };
+            let (condition, knowledge) = (sub.condition, sub.knowledge);
+            let required = data
+                .subsystems
+                .get(&id)
+                .map(|d| d.repair_knowledge_required)
+                .unwrap_or(1.0);
+            if knowledge < required && sim.resources.credits > 20_000 {
+                let _ = subsystems::train_subsystem_knowledge(sim, data, &id);
+            }
+            if condition < 0.5 {
+                let _ = subsystems::repair_subsystem(sim, data, &id);
+            }
         }
 
         let report = advance(sim, data);
@@ -176,6 +196,21 @@ fn assert_year_invariants(sim: &SimState) {
                 faction.faction_id
             );
         }
+    }
+    // W5: subsystem condition and knowledge stay 0-1 forever.
+    for (id, sub) in &sim.subsystems {
+        assert!(
+            (0.0..=1.0).contains(&sub.condition),
+            "subsystem {id} condition {} escaped 0-1 (year {})",
+            sub.condition,
+            sim.year()
+        );
+        assert!(
+            (0.0..=1.0).contains(&sub.knowledge),
+            "subsystem {id} knowledge {} escaped 0-1 (year {})",
+            sub.knowledge,
+            sim.year()
+        );
     }
 }
 

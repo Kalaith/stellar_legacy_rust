@@ -49,6 +49,14 @@
     "fuel_cost_credits_per_point": 30,
     "no_fuel_decay_multiplier": 2.0
   },
+  "subsystems": {
+    "knowledge_start": 0.7,
+    "knowledge_decay_per_generation": 0.15,
+    "education_transmission_per_tier": 0.08,
+    "train_knowledge_gain": 0.1,
+    "train_cost_credits": 600,
+    "agriculture_food_bonus_per_tier": 0.05
+  },
   "crew": {
     "starting_posts": ["commander", "engineer", "agronomist"],
     "recruit_cost_credits": 800,

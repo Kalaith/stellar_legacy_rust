@@ -7,7 +7,7 @@ use super::Game;
 use crate::chronicle::ChronicleEntry;
 use crate::data::ship_components::ComponentKind;
 use crate::save;
-use crate::simulation::{contract, crew, event_resolver, legacy, market, tick};
+use crate::simulation::{contract, crew, event_resolver, legacy, market, subsystems, tick};
 use crate::state::{GameState, MenuState, StateTransition};
 use crate::ui::UiAction;
 use macroquad::prelude::get_time;
@@ -146,6 +146,26 @@ impl Game {
                         Err(err) => self.notifications.warning(err),
                     }
                 }
+                None
+            }
+            UiAction::RepairSubsystem(id) => {
+                self.subsystem_verb(subsystems::repair_subsystem, &id, "Subsystem mended.");
+                None
+            }
+            UiAction::UpgradeSubsystem(id) => {
+                self.subsystem_verb(
+                    subsystems::upgrade_subsystem,
+                    &id,
+                    "Subsystem rebuilt stronger.",
+                );
+                None
+            }
+            UiAction::TrainSubsystemKnowledge(id) => {
+                self.subsystem_verb(
+                    subsystems::train_subsystem_knowledge,
+                    &id,
+                    "A new cohort takes up the craft.",
+                );
                 None
             }
             UiAction::ResolveEvent(index) => {
@@ -427,6 +447,26 @@ impl Game {
             }
             self.notifications
                 .success("Contract concluded — see the Chronicle.");
+        }
+    }
+
+    /// Run a subsystem verb (W5) against the sim and surface its result. Keeps
+    /// the three dispatch arms thin (ground rule 2).
+    fn subsystem_verb(
+        &mut self,
+        verb: fn(
+            &mut crate::state::sim::SimState,
+            &crate::data::GameData,
+            &str,
+        ) -> Result<(), String>,
+        id: &str,
+        ok_msg: &str,
+    ) {
+        if let GameState::Gameplay(gameplay) = &mut self.state {
+            match verb(&mut gameplay.sim, &self.data, id) {
+                Ok(()) => self.notifications.success(ok_msg.to_owned()),
+                Err(err) => self.notifications.warning(err),
+            }
         }
     }
 

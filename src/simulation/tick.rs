@@ -9,7 +9,9 @@
 use crate::data::contracts::ContractPhase;
 use crate::data::{GameConfig, GameData, PopulationDelta, ResourceDelta};
 use crate::simulation::contract::SuccessLevel;
-use crate::simulation::{contract, crew, event_resolver, legacy, market, ship, succession};
+use crate::simulation::{
+    contract, crew, event_resolver, legacy, market, ship, subsystems, succession,
+};
 use crate::state::sim::{SimState, SpeedStep};
 
 /// Everything a single year produced that the caller (game.rs) must react
@@ -104,13 +106,15 @@ fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickRepo
     let config = &data.config;
 
     // Production (GDD §5.1: floor(rate * years), one year per tick),
-    // multiplied by the serving crew's skills (PLAN item 2).
+    // multiplied by the serving crew's skills (PLAN item 2). The agriculture
+    // subsystem lifts food yield per tier (W5).
     let crew_mult = crew::production_multipliers(sim, data);
+    let agri_bonus = subsystems::agriculture_food_bonus(sim, data);
     let produced = ResourceDelta {
         credits: (sim.production.credits * crew_mult.credits).floor() as i64,
         energy: (sim.production.energy * crew_mult.energy).floor() as i64,
         minerals: (sim.production.minerals * crew_mult.minerals).floor() as i64,
-        food: (sim.production.food * crew_mult.food).floor() as i64,
+        food: (sim.production.food * crew_mult.food * (1.0 + agri_bonus)).floor() as i64,
         influence: (sim.production.influence * crew_mult.influence).floor() as i64,
     };
     sim.resources.apply(&produced);
@@ -161,16 +165,22 @@ fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickRepo
     } else {
         1.0
     };
+    // A stronger life-support/habitat subsystem slows the life-support wear (W5).
+    let ls_reduction = subsystems::life_support_decay_reduction(sim, data);
     sim.ship.hull_integrity =
         (sim.ship.hull_integrity - config.hull_decay_per_year * wear * fuel_factor).max(0.0);
-    sim.ship.life_support =
-        (sim.ship.life_support - config.life_support_decay_per_year * wear * fuel_factor).max(0.0);
+    sim.ship.life_support = (sim.ship.life_support
+        - config.life_support_decay_per_year * wear * fuel_factor * (1.0 - ls_reduction))
+        .max(0.0);
     if sim.fuel_stalled_this_year {
         sim.push_log(
             "The tanks ran dry in transit — the ship coasted, and its systems strained in the cold.",
         );
     }
     sim.fuel_stalled_this_year = false;
+
+    // The rest of the ship's subsystems wear with the years too (W5).
+    subsystems::decay_subsystems(sim, data, wear);
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,
@@ -206,6 +216,9 @@ fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickRepo
         // larger one (W7 soft assimilation).
         if !generation.extinct {
             sim.assimilate_drifted_factions(data);
+            // Knowledge dies with the people; the education subsystem passes it
+            // forward (W5). A generation with no schooling loses expertise.
+            subsystems::transmit_knowledge(sim, data);
         }
 
         // Each new generation may confront its legacy's defining dilemma

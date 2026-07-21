@@ -9,6 +9,7 @@ use crate::state::sim::SimState;
 pub enum Screen {
     Dashboard,
     ShipBuilder,
+    Subsystems,
     CrewDynasty,
     Contract,
     Market,
@@ -16,9 +17,10 @@ pub enum Screen {
 }
 
 impl Screen {
-    pub const ALL: [Screen; 6] = [
+    pub const ALL: [Screen; 7] = [
         Screen::Dashboard,
         Screen::ShipBuilder,
+        Screen::Subsystems,
         Screen::CrewDynasty,
         Screen::Contract,
         Screen::Market,
@@ -29,6 +31,7 @@ impl Screen {
         match self {
             Screen::Dashboard => "DASHBOARD",
             Screen::ShipBuilder => "SHIP",
+            Screen::Subsystems => "SUBSYSTEMS",
             Screen::CrewDynasty => "CREW & DYNASTY",
             Screen::Contract => "CONTRACT",
             Screen::Market => "MARKET",

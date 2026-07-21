@@ -1,0 +1,92 @@
+[
+  {
+    "id": "agriculture",
+    "name": "Hydroponics & Agriculture",
+    "buffers_family": "survival",
+    "decay_per_year": 0.005,
+    "repair_knowledge_required": 0.3,
+    "repair_parts_cost": 3,
+    "repair_minerals_cost": 100,
+    "description": "The ship's green decks — grow-lamps, soil beds, and seed vaults. Well-tended, they turn a rationed voyage into a fed one.",
+    "tiers": [
+      { "cost": { "credits": 1400, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
+      { "cost": { "credits": 2800, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
+      { "cost": { "credits": 5600, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+    ]
+  },
+  {
+    "id": "education_culture",
+    "name": "Schools & Archives",
+    "buffers_family": "legacy_drift",
+    "decay_per_year": 0.004,
+    "repair_knowledge_required": 0.25,
+    "repair_parts_cost": 3,
+    "repair_minerals_cost": 90,
+    "description": "Classrooms, libraries, and the rites that carry a craft from a dying hand to a young one. The subsystem that keeps every other subsystem knowable.",
+    "tiers": [
+      { "cost": { "credits": 1600, "minerals": 200 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
+      { "cost": { "credits": 3200, "minerals": 400 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
+      { "cost": { "credits": 6400, "minerals": 800 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+    ]
+  },
+  {
+    "id": "engineering_bay",
+    "name": "Engineering Bay",
+    "buffers_family": "engineering",
+    "decay_per_year": 0.006,
+    "repair_knowledge_required": 0.4,
+    "repair_parts_cost": 5,
+    "repair_minerals_cost": 150,
+    "description": "Machine shops, spare-part fabricators, and the diagnostic rigs that catch a fault before it becomes a hull breach.",
+    "tiers": [
+      { "cost": { "credits": 1800, "minerals": 400 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
+      { "cost": { "credits": 3600, "minerals": 800 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
+      { "cost": { "credits": 7200, "minerals": 1600 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+    ]
+  },
+  {
+    "id": "life_support_habitat",
+    "name": "Life Support & Habitat",
+    "buffers_family": "",
+    "decay_per_year": 0.004,
+    "repair_knowledge_required": 0.35,
+    "repair_parts_cost": 4,
+    "repair_minerals_cost": 130,
+    "description": "Scrubbers, recyclers, and the sealed habitats that stand between the crew and the cold. A stronger habitat wears its life support down slower.",
+    "tiers": [
+      { "cost": { "credits": 1700, "minerals": 350 }, "severity_reduction": 0.2, "weight_multiplier": 1.0 },
+      { "cost": { "credits": 3400, "minerals": 700 }, "severity_reduction": 0.35, "weight_multiplier": 1.0 },
+      { "cost": { "credits": 6800, "minerals": 1400 }, "severity_reduction": 0.5, "weight_multiplier": 1.0 }
+    ]
+  },
+  {
+    "id": "medical_bay",
+    "name": "Medical Bay",
+    "buffers_family": "biology_medical",
+    "decay_per_year": 0.004,
+    "repair_knowledge_required": 0.35,
+    "repair_parts_cost": 4,
+    "repair_minerals_cost": 120,
+    "description": "Surgeries, isolation wards, and gene-clinics. A well-equipped medical deck turns a plague into a scare.",
+    "tiers": [
+      { "cost": { "credits": 1500, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
+      { "cost": { "credits": 3000, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
+      { "cost": { "credits": 6000, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+    ]
+  },
+  {
+    "id": "security",
+    "name": "Security & Peacekeeping",
+    "buffers_family": "diplomacy",
+    "decay_per_year": 0.005,
+    "repair_knowledge_required": 0.3,
+    "repair_parts_cost": 3,
+    "repair_minerals_cost": 110,
+    "description": "Peacekeepers, brig, and the councils that keep a fractious ship from turning on itself. Strong security cools a standoff before it burns.",
+    "tiers": [
+      { "cost": { "credits": 1500, "minerals": 300 }, "severity_reduction": 0.15, "weight_multiplier": 0.85 },
+      { "cost": { "credits": 3000, "minerals": 600 }, "severity_reduction": 0.3, "weight_multiplier": 0.7 },
+      { "cost": { "credits": 6000, "minerals": 1200 }, "severity_reduction": 0.45, "weight_multiplier": 0.55 }
+    ]
+  }
+]
