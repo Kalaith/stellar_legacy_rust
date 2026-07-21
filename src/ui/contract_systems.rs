@@ -1,7 +1,9 @@
 //! Contract & Systems: active-contract progress or available charters.
 //! The "systems" list stays a plain panel, not a starmap (GDD §7, open q. 1).
 
+use crate::data::contracts::ContractPhase;
 use crate::data::{GameData, ResourceDelta};
+use crate::state::sim::ActiveContract;
 use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
@@ -31,12 +33,44 @@ fn reward_hint(reward: &ResourceDelta) -> String {
 
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     match &ctx.sim.contract {
-        Some(_) => draw_active(ctx, area),
+        Some(_) => draw_active(ctx, area, mouse, actions),
         None => draw_available(ctx, area, mouse, actions),
     }
 }
 
-fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
+/// Draw the authored phase timeline (W2): one bar per Travel/Operation/Return
+/// segment, widths proportional to their years, the current segment lit.
+fn draw_phase_timeline(contract: &ActiveContract, rect: Rect) {
+    let total = contract.target_duration_years.max(1) as f32;
+    let mut x = rect.x;
+    for (i, segment) in contract.phases.iter().enumerate() {
+        let w = rect.w * (segment.years as f32 / total);
+        let seg_rect = Rect::new(x, rect.y, (w - 3.0).max(1.0), rect.h);
+        let current = i == contract.phase_index
+            && !matches!(
+                contract.phase,
+                ContractPhase::Preparation | ContractPhase::Completion
+            );
+        let fill = if current {
+            term::accent()
+        } else {
+            term::surface_inset()
+        };
+        draw_surface(
+            seg_rect,
+            &SurfaceStyle::new(fill).with_border(1.0, term::faint()),
+        );
+        draw_ui_text_ex(
+            &format!("{} {}y", segment.kind.label().to_uppercase(), segment.years),
+            seg_rect.x + 5.0,
+            seg_rect.y + seg_rect.h * 0.5 + 4.0,
+            TextStyle::new(10.0, if current { term::bg() } else { term::dim() }).params(),
+        );
+        x += w;
+    }
+}
+
+fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     let contract = ctx.sim.contract.as_ref().unwrap();
     let left = Rect::new(area.x, area.y, area.w * 0.6, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
@@ -57,7 +91,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
             "{} · PHASE: {} · YEAR {}/{}",
             contract.objective.label().to_uppercase(),
             contract.phase.label().to_uppercase(),
-            contract.years_elapsed,
+            contract.months_elapsed / 12,
             contract.target_duration_years
         ),
         content.x,
@@ -74,18 +108,23 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
         Some(&format!("PROGRESS {:.0}%", contract.progress() * 100.0)),
     );
     y += 34.0;
-    if contract.bonus_progress > 0.0 {
-        draw_ui_text_ex(
-            &format!(
-                "DRIVE ASSIST: +{:.1} yr from ship speed",
-                contract.bonus_progress
-            ),
-            content.x,
-            y,
-            TextStyle::new(12.0, term::accent()).params(),
-        );
-    }
-    y += 22.0;
+
+    // Authored phase timeline (W2).
+    draw_phase_timeline(contract, Rect::new(content.x, y, content.w, 20.0));
+    y += 30.0;
+
+    // Quantified objective counter (W2) — pay tracks this fraction, not the clock.
+    meter(
+        Rect::new(content.x, y, content.w, 22.0),
+        contract.objective_fraction(),
+        1.0,
+        term::accent(),
+        Some(&format!(
+            "OBJECTIVE {:.0} / {:.0} {}",
+            contract.objective_progress, contract.objective_target, contract.objective_unit
+        )),
+    );
+    y += 30.0;
 
     draw_ui_text_ex(
         "MILESTONES",
@@ -133,6 +172,26 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect) {
             )),
         );
         y += 28.0;
+    }
+
+    // [ TURN BACK ] (W2): available only underway (Travel/Operation), anchored
+    // to the panel bottom so it never collides with the growing metric list.
+    let underway = matches!(
+        contract.phase,
+        ContractPhase::Travel | ContractPhase::Operation
+    );
+    let abort = Rect::new(content.x, content.bottom() - 40.0, content.w, 32.0);
+    if underway {
+        if term_button(
+            abort,
+            "[ TURN BACK ]  ·  pay prorated to progress",
+            true,
+            mouse,
+        ) {
+            actions.push(UiAction::AbortMission);
+        }
+    } else {
+        term_button(abort, "— HOMEBOUND —", false, mouse);
     }
 
     term_panel(right, Some("RELEVANT SYSTEMS"));

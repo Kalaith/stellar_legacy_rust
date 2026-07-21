@@ -35,20 +35,6 @@ pub enum ContractPhase {
 }
 
 impl ContractPhase {
-    /// Phase for a 0-1 progress fraction. Preparation is only the pre-launch
-    /// state (progress 0 with no years elapsed is handled by the caller).
-    pub fn for_progress(progress: f32) -> Self {
-        if progress >= 1.0 {
-            ContractPhase::Completion
-        } else if progress >= 0.8 {
-            ContractPhase::Return
-        } else if progress >= 0.2 {
-            ContractPhase::Operation
-        } else {
-            ContractPhase::Travel
-        }
-    }
-
     pub fn label(self) -> &'static str {
         match self {
             ContractPhase::Preparation => "Preparation",
@@ -91,6 +77,17 @@ pub struct MilestoneDef {
     pub reward: ResourceDelta,
 }
 
+/// One authored segment of a charter's fixed timeline (W2). The charter, never
+/// the player, sets phase lengths; the years across a charter's segments sum
+/// exactly to its `target_duration_years`. Only Travel / Operation / Return are
+/// valid here — Preparation and Completion are the pre-launch and post-return
+/// bookends, not authored segments.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PhaseDef {
+    pub kind: ContractPhase,
+    pub years: u32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ContractTemplate {
     pub id: String,
@@ -98,6 +95,16 @@ pub struct ContractTemplate {
     pub objective: ContractObjective,
     pub description: String,
     pub target_duration_years: u32,
+    /// Authored travel → operation → return timeline (W2). Sums to
+    /// `target_duration_years`.
+    pub phases: Vec<PhaseDef>,
+    /// Quantified objective amount the mission must reach for full pay (W2):
+    /// mine X, land X, chart X. Accrued only during Operation; pay is strictly
+    /// proportional to the fraction of this reached.
+    pub objective_target: f32,
+    /// Human unit for the objective counter ("proof-of-yield cores", "settlers
+    /// landed", "systems charted", "souls recovered").
+    pub objective_unit: String,
     pub milestones: Vec<MilestoneDef>,
     pub success_metrics: Vec<MetricDef>,
     #[serde(default)]

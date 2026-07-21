@@ -712,6 +712,19 @@
           "scarred_reactor"
         ],
         "log": "The engineers hot-restarted the core over its own objections. It runs; it grumbles."
+      },
+      {
+        "id": "limp_home",
+        "label": "Scram for good — turn back",
+        "description": "The core won't be trusted again. Cut the mission and limp home on what power remains.",
+        "resource_delta": {
+          "energy": -500
+        },
+        "population_delta": {
+          "morale": -0.06
+        },
+        "force_return": true,
+        "log": "The council will not gamble the ship on a scarred core. The mission is cut short — the long road home begins on battery and prayer."
       }
     ]
   },
@@ -911,6 +924,20 @@
           "legacy_loyalty": 0.02
         },
         "log": "The cache drifted past, unopened. The ship needs nothing yet, and the founders keep their gift."
+      },
+      {
+        "id": "the_mother_lode",
+        "label": "A fortune — sail home on it",
+        "description": "Far richer than charted. With holds full and a windfall aboard, the charter is as good as met.",
+        "resource_delta": {
+          "credits": 3000,
+          "minerals": 800
+        },
+        "population_delta": {
+          "morale": 0.05
+        },
+        "force_return": true,
+        "log": "The cache was no mere resupply but a mother lode — metals and salvage worth more than the whole charter. The council turns the ship for home, holds heavy with fortune."
       }
     ]
   },

@@ -50,6 +50,11 @@ pub struct EventOutcome {
     /// A ship component id this outcome drops into the salvage hold (PLAN M4.4).
     #[serde(default)]
     pub grant_component: Option<String>,
+    /// When set, an applied outcome turns an active mission for home early (W2):
+    /// the contract jumps to its Return segment. Fits both catastrophe (a crisis
+    /// forcing withdrawal) and fortune (a find rich enough to sail back on).
+    #[serde(default)]
+    pub force_return: bool,
     #[serde(default)]
     pub log: String,
 }

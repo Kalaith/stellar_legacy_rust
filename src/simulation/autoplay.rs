@@ -189,4 +189,54 @@ mod tests {
             outcome.extinct
         );
     }
+
+    /// Turning back at year 150 banks only part of the objective, and pay is
+    /// strictly proportional — a truncated run earns less than a full term (W2).
+    #[test]
+    fn aborting_at_year_150_reduces_the_pay() {
+        use crate::simulation::contract::{advance_contract, jump_to_return, prorated_reward};
+
+        let data = GameData::load().unwrap();
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+
+        // Fly the contract clock straight through — no economy needed to measure
+        // the objective the timeline banks.
+        let full_fraction = {
+            let mut sim = SimState::new_campaign(&data, "preservers", 2024);
+            sim.contract = Some(start_contract(&template, &sim));
+            let total = sim.contract.as_ref().unwrap().total_months();
+            while sim.contract.as_ref().unwrap().months_elapsed < total {
+                advance_contract(&mut sim, &data.config, 0);
+            }
+            sim.contract.as_ref().unwrap().objective_fraction()
+        };
+        assert!(full_fraction >= 0.99, "a full term meets the objective");
+
+        let abort_fraction = {
+            let mut sim = SimState::new_campaign(&data, "preservers", 2024);
+            sim.contract = Some(start_contract(&template, &sim));
+            while sim.contract.as_ref().unwrap().months_elapsed < 150 * 12 {
+                advance_contract(&mut sim, &data.config, 0);
+            }
+            assert!(jump_to_return(&mut sim), "turning back at year 150");
+            let total = sim.contract.as_ref().unwrap().total_months();
+            while sim.contract.as_ref().unwrap().months_elapsed < total {
+                advance_contract(&mut sim, &data.config, 0);
+            }
+            sim.contract.as_ref().unwrap().objective_fraction()
+        };
+
+        assert!(
+            abort_fraction > 0.0 && abort_fraction < full_fraction,
+            "aborting at year 150 banks some but not all of the objective: {abort_fraction} vs {full_fraction}"
+        );
+        let full_pay = prorated_reward(&template.reward, full_fraction);
+        let abort_pay = prorated_reward(&template.reward, abort_fraction);
+        assert!(
+            abort_pay.credits < full_pay.credits,
+            "a truncated mission pays less: {} vs {}",
+            abort_pay.credits,
+            full_pay.credits
+        );
+    }
 }

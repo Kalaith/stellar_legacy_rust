@@ -318,11 +318,38 @@ mod tests {
             "some charters should be available from the founding"
         );
         // W1-rescale: every charter is now a generational voyage (>= 300 yr).
+        // W2: authored phases sum exactly to the duration, only Travel/Operation/
+        // Return kinds, at least one Operation segment, and a real objective.
+        use contracts::ContractPhase;
         for (id, c) in data.contracts.iter() {
             assert!(
                 c.target_duration_years >= 300,
                 "charter '{id}' must be a generational voyage (>= 300 yr), is {}",
                 c.target_duration_years
+            );
+            let phase_years: u32 = c.phases.iter().map(|p| p.years).sum();
+            assert_eq!(
+                phase_years, c.target_duration_years,
+                "charter '{id}' phase years {phase_years} must sum to its duration {}",
+                c.target_duration_years
+            );
+            for phase in &c.phases {
+                assert!(
+                    matches!(
+                        phase.kind,
+                        ContractPhase::Travel | ContractPhase::Operation | ContractPhase::Return
+                    ),
+                    "charter '{id}' has an invalid authored phase kind {:?}",
+                    phase.kind
+                );
+            }
+            assert!(
+                c.phases.iter().any(|p| p.kind == ContractPhase::Operation),
+                "charter '{id}' must have at least one Operation segment"
+            );
+            assert!(
+                c.objective_target > 0.0,
+                "charter '{id}' must have a positive objective target"
             );
         }
         // Salvage pool (PLAN M4.4): several event outcomes drop a found part,

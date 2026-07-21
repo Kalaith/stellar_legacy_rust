@@ -5,6 +5,13 @@
     "objective": "colonization",
     "description": "Carry ten thousand embryos, a seed vault, and a legal charter four and a half centuries to Meridian Reach, and leave a living settlement behind.",
     "target_duration_years": 450,
+    "phases": [
+      { "kind": "travel", "years": 150 },
+      { "kind": "operation", "years": 150 },
+      { "kind": "return", "years": 150 }
+    ],
+    "objective_target": 10000,
+    "objective_unit": "settlers landed",
     "milestones": [
       {
         "id": "departure",
@@ -77,6 +84,13 @@
     "objective": "mining",
     "description": "Three and a half centuries threading the Karst Belt, charting extractable veins and shipping proof-of-yield cores back by relay.",
     "target_duration_years": 340,
+    "phases": [
+      { "kind": "travel", "years": 110 },
+      { "kind": "operation", "years": 120 },
+      { "kind": "return", "years": 110 }
+    ],
+    "objective_target": 1200,
+    "objective_unit": "proof-of-yield cores",
     "milestones": [
       {
         "id": "belt_entry",
@@ -143,6 +157,13 @@
     "objective": "exploration",
     "description": "Nearly four centuries into the unmapped dark past the last relay, charting a lightless expanse the founders only ever named. Bring back the map, and the naming rights.",
     "target_duration_years": 360,
+    "phases": [
+      { "kind": "travel", "years": 130 },
+      { "kind": "operation", "years": 100 },
+      { "kind": "return", "years": 130 }
+    ],
+    "objective_target": 40,
+    "objective_unit": "systems charted",
     "milestones": [
       {
         "id": "last_relay",
@@ -215,6 +236,13 @@
     "objective": "rescue",
     "description": "A generation ship went silent in the Tarssen Drift, three centuries down the dark. Someone may still be breathing when you reach them. Take aboard who remains, and answer for every berth you cannot fill.",
     "target_duration_years": 300,
+    "phases": [
+      { "kind": "travel", "years": 120 },
+      { "kind": "operation", "years": 60 },
+      { "kind": "return", "years": 120 }
+    ],
+    "objective_target": 800,
+    "objective_unit": "souls recovered",
     "milestones": [
       {
         "id": "distress_fix",
@@ -288,6 +316,13 @@
     "objective": "mining",
     "description": "Three centuries skimming a red dwarf's corona for raw energy, feeding a collector array the size of a city block.",
     "target_duration_years": 320,
+    "phases": [
+      { "kind": "travel", "years": 110 },
+      { "kind": "operation", "years": 100 },
+      { "kind": "return", "years": 110 }
+    ],
+    "objective_target": 2000,
+    "objective_unit": "terajoules tapped",
     "milestones": [
       {
         "id": "array_deployed",
@@ -354,6 +389,13 @@
     "objective": "colonization",
     "description": "A four-century drop of a second settlement — a hedge against the first. Half the charter, twice the doubt.",
     "target_duration_years": 420,
+    "phases": [
+      { "kind": "travel", "years": 150 },
+      { "kind": "operation", "years": 120 },
+      { "kind": "return", "years": 150 }
+    ],
+    "objective_target": 6000,
+    "objective_unit": "settlers landed",
     "milestones": [
       {
         "id": "course_locked",
@@ -421,6 +463,13 @@
     "objective": "exploration",
     "description": "Four centuries laying a chain of relay beacons out to the Starfall Verge, so the ships that come after need not cross the dark blind.",
     "target_duration_years": 400,
+    "phases": [
+      { "kind": "travel", "years": 130 },
+      { "kind": "operation", "years": 140 },
+      { "kind": "return", "years": 130 }
+    ],
+    "objective_target": 24,
+    "objective_unit": "beacons seated",
     "milestones": [
       {
         "id": "first_beacon",
@@ -496,6 +545,13 @@
     "objective": "rescue",
     "description": "A refugee convoy broke apart in transit generations ago, its lifeboats still drifting on dead reckoning three centuries down the dark. Find what holds air, and choose which to reach first.",
     "target_duration_years": 310,
+    "phases": [
+      { "kind": "travel", "years": 120 },
+      { "kind": "operation", "years": 70 },
+      { "kind": "return", "years": 120 }
+    ],
+    "objective_target": 600,
+    "objective_unit": "survivors recovered",
     "milestones": [
       {
         "id": "wreck_line",
@@ -571,6 +627,13 @@
     "objective": "rescue",
     "description": "Near four centuries standing guard over a lawless shipping lane — escorting convoys, answering distress calls, and pulling the wrecked from the dark before the scavengers do.",
     "target_duration_years": 380,
+    "phases": [
+      { "kind": "travel", "years": 120 },
+      { "kind": "operation", "years": 140 },
+      { "kind": "return", "years": 120 }
+    ],
+    "objective_target": 50,
+    "objective_unit": "convoys escorted",
     "min_renown": 100,
     "milestones": [
       {
@@ -646,6 +709,13 @@
     "objective": "exploration",
     "description": "Six centuries to the galaxy's ragged edge and back, charting the black between the last stars. The founders dreamed of this run and never dared it. Only a storied ship should.",
     "target_duration_years": 600,
+    "phases": [
+      { "kind": "travel", "years": 250 },
+      { "kind": "operation", "years": 100 },
+      { "kind": "return", "years": 250 }
+    ],
+    "objective_target": 30,
+    "objective_unit": "systems charted",
     "min_renown": 400,
     "milestones": [
       {

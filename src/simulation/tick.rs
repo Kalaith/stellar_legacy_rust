@@ -6,8 +6,9 @@
 //! progress, market) and rolling for a dated event every month — hard-stopping
 //! the instant a decision, completion, or extinction lands (W3).
 
+use crate::data::contracts::ContractPhase;
 use crate::data::{GameConfig, GameData, PopulationDelta, ResourceDelta};
-use crate::simulation::contract::{score_success, SuccessLevel};
+use crate::simulation::contract::SuccessLevel;
 use crate::simulation::{contract, crew, event_resolver, legacy, market, ship, succession};
 use crate::state::sim::{SimState, SpeedStep};
 
@@ -24,6 +25,9 @@ pub struct TickReport {
     /// Months actually advanced by this call before it stopped (W3). Less than
     /// the speed step's span whenever a decision hard-stops the advance early.
     pub months_advanced: u32,
+    /// Set when the active contract crossed into a new authored phase this call
+    /// (W2) — a hard-stop for the fast-forward, like a decision.
+    pub phase_changed: Option<ContractPhase>,
 }
 
 /// Advance time by the current speed step (W3). Steps month by month, applying
@@ -48,6 +52,10 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             year_boundary_tick(sim, data, &mut report);
         }
 
+        // Monthly contract progress (W2): objective accrual on-station, the
+        // authored phase timeline, milestones, and completion all step here.
+        month_of_contract(sim, data, &mut report);
+
         // Monthly event roll (GDD §5.4), dated to this exact month. Skipped on a
         // month that already produced a blocking dilemma, a completion, or an
         // extinction — one decision at a time, never piled onto a finished year.
@@ -58,8 +66,12 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             roll_monthly_event(sim, data, &mut report);
         }
 
-        // Hard-stop the fast-forward the instant something needs attention.
-        if report.decision_required || report.contract_completed.is_some() || report.dynasty_extinct
+        // Hard-stop the fast-forward the instant something needs attention — a
+        // decision, a completion, an extinction, or crossing a phase boundary.
+        if report.decision_required
+            || report.contract_completed.is_some()
+            || report.dynasty_extinct
+            || report.phase_changed.is_some()
         {
             break;
         }
@@ -190,21 +202,32 @@ fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickRepo
         }
     }
 
-    // Contract progress and completion (GDD §5.2). Ship speed adds bonus
-    // progress (PLAN item 3).
-    let contract_speed = ship::loadout_stats(sim, data).speed;
-    for milestone in contract::advance_contract(sim, config, contract_speed) {
+    // Market drift closes the economic year. Contract progress is monthly (W2)
+    // and the event roll is monthly (W3) — both live in `advance` now; log
+    // trimming happens once there too.
+    market::drift_prices(sim);
+}
+
+/// One month of contract progress (W2): objective accrual on-station, the
+/// authored phase timeline, milestone payouts, and completion detection. Logs
+/// milestones and phase crossings; surfaces a phase change and completion on
+/// the report so the fast-forward can hard-stop.
+fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
+    if sim.contract.is_none() {
+        return;
+    }
+    let speed = ship::loadout_stats(sim, data).speed;
+    let progress = contract::advance_contract(sim, &data.config, speed);
+    for milestone in &progress.reached_milestones {
         sim.push_log(format!("Milestone reached: {milestone}"));
     }
-    if let Some(active) = &sim.contract {
-        if active.years_elapsed >= active.target_duration_years {
-            report.contract_completed = Some(score_success(&active.metrics));
-        }
+    if let Some(phase) = progress.phase_changed {
+        sim.push_log(contract::phase_transition_line(phase));
+        report.phase_changed = Some(phase);
     }
-
-    // Market drift closes the economic year. The event roll is monthly now and
-    // lives in `advance`; log trimming happens once there too (W3).
-    market::drift_prices(sim);
+    if let Some(result) = progress.completed {
+        report.contract_completed = Some(result);
+    }
 }
 
 fn roll_monthly_event(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
@@ -387,8 +410,8 @@ mod tests {
 
     #[test]
     fn contract_completes_at_target_duration() {
-        // Events off so every advance_year completes a full year — the loop
-        // then crosses exactly target_duration_years boundaries (W3).
+        // Events off isolates the timeline; advance_year now hard-stops on phase
+        // boundaries too (W2), so loop to completion rather than a fixed count.
         let mut data = GameData::load().unwrap();
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
@@ -400,7 +423,9 @@ mod tests {
         sim.resources.food = 1_000_000;
 
         let mut completed = None;
-        for _ in 0..template.target_duration_years {
+        // Each advance_year covers up to a year; the cap comfortably exceeds the
+        // calls needed to reach target_duration_years * 12 months.
+        for _ in 0..(template.target_duration_years * 12) {
             let report = advance_year(&mut sim, &data);
             if report.contract_completed.is_some() {
                 completed = report.contract_completed;
@@ -410,12 +435,18 @@ mod tests {
         let (score, _) = completed.expect("contract must complete at its target duration");
         assert!(score > 0.0);
         let active = sim.contract.as_ref().unwrap();
+        assert_eq!(
+            active.months_elapsed,
+            template.target_duration_years * 12,
+            "completes exactly at the authored duration"
+        );
         assert!(active.milestones.iter().all(|m| m.reached));
     }
 
     #[test]
-    fn ship_speed_adds_bonus_contract_progress() {
-        // Events off so the year boundary (and its contract advance) runs whole.
+    fn a_phase_boundary_hard_stops_the_fast_forward() {
+        // Events off + a fresh charter: a 10-yr advance departs and hard-stops
+        // on the very first phase crossing (Preparation → Travel) after 1 month.
         let mut data = GameData::load().unwrap();
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
@@ -424,17 +455,15 @@ mod tests {
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
         sim.resources.food = 1_000_000;
+        sim.speed = SpeedStep::TenYears;
 
-        advance_year(&mut sim, &data);
-
-        let contract = sim.contract.as_ref().unwrap();
-        assert!(
-            contract.bonus_progress > 0.0,
-            "the founding loadout's speed should add bonus progress"
+        let report = advance(&mut sim, &data);
+        assert_eq!(report.months_advanced, 1, "departure is a hard-stop");
+        assert_eq!(
+            report.phase_changed,
+            Some(crate::data::contracts::ContractPhase::Travel)
         );
-        // Progress outruns the naive years/duration thanks to the speed bonus.
-        let naive = contract.years_elapsed as f32 / contract.target_duration_years as f32;
-        assert!(contract.progress() > naive);
+        assert_eq!(sim.contract.as_ref().unwrap().phase, ContractPhase::Travel);
     }
 
     #[test]

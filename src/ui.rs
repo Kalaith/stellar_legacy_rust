@@ -160,6 +160,8 @@ pub enum UiAction {
     // Gameplay verbs (GDD §4)
     Advance,
     SetSpeed(SpeedStep),
+    /// Turn the current mission for home early (W2). Only emitted underway.
+    AbortMission,
     ResolveEvent(usize),
     ResolveDilemma(usize),
     RecruitCrew(String),

@@ -160,6 +160,11 @@ pub fn apply_outcome(sim: &mut SimState, template: &EventTemplate, outcome_index
         outcome.log.clone()
     };
     sim.push_log(text);
+    // An outcome may turn the mission for home early (W2) — the outcome's own
+    // deltas carry the flavor; this just bends the voyage onto its return leg.
+    if outcome.force_return {
+        crate::simulation::contract::jump_to_return(sim);
+    }
     sim.pending_event = None;
 }
 
@@ -234,5 +239,39 @@ mod tests {
             .consequences
             .contains(&"deferred_maintenance".to_owned()));
         assert!(sim.ship.life_support < 1.0);
+    }
+
+    #[test]
+    fn a_force_return_outcome_turns_the_ship_home() {
+        use crate::data::contracts::ContractPhase;
+        use crate::simulation::contract::{advance_contract, start_contract};
+
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 5);
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+
+        // Put the ship on-station so there is a Return leg to jump to.
+        loop {
+            let p = advance_contract(&mut sim, &data.config, 0);
+            if p.phase_changed == Some(ContractPhase::Operation) {
+                break;
+            }
+        }
+
+        // The catastrophic reactor-scram outcome forces the mission home early.
+        let scram = data.events.get("reactor_scram").unwrap().clone();
+        let idx = scram
+            .outcomes
+            .iter()
+            .position(|o| o.force_return)
+            .expect("reactor_scram carries a force_return outcome");
+        apply_outcome(&mut sim, &scram, idx);
+
+        assert_eq!(
+            sim.contract.as_ref().unwrap().phase,
+            ContractPhase::Return,
+            "a force_return outcome jumps the contract onto its return leg"
+        );
     }
 }

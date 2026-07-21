@@ -98,6 +98,19 @@ impl Game {
                 }
                 None
             }
+            UiAction::AbortMission => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    let sim = &mut gameplay.sim;
+                    // The council turns the ship for home; pay will be prorated
+                    // to whatever objective progress was banked (W2).
+                    if contract::jump_to_return(sim) {
+                        sim.push_log("The council votes to turn back.");
+                        self.notifications
+                            .warning("Turning for home — pay will be prorated.");
+                    }
+                }
+                None
+            }
             UiAction::ResolveEvent(index) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     let sim = &mut gameplay.sim;
@@ -305,7 +318,7 @@ impl Game {
                 duration_years: sim
                     .contract
                     .as_ref()
-                    .map(|c| c.years_elapsed)
+                    .map(|c| c.months_elapsed / 12)
                     .unwrap_or_default(),
             };
             // Freeze the run timer for the Homecoming (PLAN M4.7).
@@ -315,15 +328,18 @@ impl Game {
                 "Contract concluded: {} — {} (score {score:.2}).",
                 entry.contract_name, entry.outcome
             ));
-            // Reward on any non-failure outcome.
-            if level != contract::SuccessLevel::Failure {
-                if let Some(template) = sim
-                    .contract
-                    .as_ref()
-                    .and_then(|c| self.data.contracts.get(&c.template_id))
-                {
-                    sim.resources.apply(&template.reward);
-                }
+            // Pay is strictly proportional to objective completion (W2): a
+            // full-term run pays in full, a truncated one pays its fraction, and
+            // zero objective progress pays nothing. The failure band no longer
+            // zeroes pay by itself — objective progress alone decides it.
+            let payout = sim.contract.as_ref().and_then(|c| {
+                self.data
+                    .contracts
+                    .get(&c.template_id)
+                    .map(|t| contract::prorated_reward(&t.reward, c.objective_fraction()))
+            });
+            if let Some(payout) = payout {
+                sim.resources.apply(&payout);
             }
             sim.contract = None;
 
