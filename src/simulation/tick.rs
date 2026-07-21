@@ -154,10 +154,23 @@ fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickRepo
     } else {
         1.0
     };
+    // A year spent coasting on empty tanks strains the ship harder — systems
+    // shut down and wear runs at the no-fuel multiplier (W4).
+    let fuel_factor = if sim.fuel_stalled_this_year {
+        config.provisioning.no_fuel_decay_multiplier
+    } else {
+        1.0
+    };
     sim.ship.hull_integrity =
-        (sim.ship.hull_integrity - config.hull_decay_per_year * wear).max(0.0);
+        (sim.ship.hull_integrity - config.hull_decay_per_year * wear * fuel_factor).max(0.0);
     sim.ship.life_support =
-        (sim.ship.life_support - config.life_support_decay_per_year * wear).max(0.0);
+        (sim.ship.life_support - config.life_support_decay_per_year * wear * fuel_factor).max(0.0);
+    if sim.fuel_stalled_this_year {
+        sim.push_log(
+            "The tanks ran dry in transit — the ship coasted, and its systems strained in the cold.",
+        );
+    }
+    sim.fuel_stalled_this_year = false;
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,
@@ -226,9 +239,30 @@ fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickRepo
 /// milestones and phase crossings; surfaces a phase change and completion on
 /// the report so the fast-forward can hard-stop.
 fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
-    if sim.contract.is_none() {
-        return;
+    // Fuel is only spent while under way toward the destination (W4): the phase
+    // the month about to be processed falls in tells us whether we're burning.
+    let travel_this_month = {
+        let Some(contract) = sim.contract.as_ref() else {
+            return;
+        };
+        contract.phase_at(contract.months_elapsed + 1).1 == ContractPhase::Travel
+    };
+
+    if travel_this_month {
+        let burn = data.config.provisioning.fuel_burn_per_travel_month;
+        if sim.ship.fuel < burn {
+            // A dry tank in transit: the ship coasts. No progress toward the
+            // destination this month (the voyage stretches), and this year's
+            // systems decay will double — "the ship may not reach its
+            // destination" (W4).
+            sim.ship.fuel = 0.0;
+            sim.stalled_months = sim.stalled_months.saturating_add(1);
+            sim.fuel_stalled_this_year = true;
+            return;
+        }
+        sim.ship.fuel = (sim.ship.fuel - burn).max(0.0);
     }
+
     let speed = ship::loadout_stats(sim, data).speed;
     let progress = contract::advance_contract(sim, &data.config, speed);
     for milestone in &progress.reached_milestones {
@@ -656,6 +690,61 @@ mod tests {
         assert!(
             sim.log.iter().any(|e| e.year == year && e.month == month),
             "the fired event must leave a log line dated Y{year}·M{month:02}"
+        );
+    }
+
+    fn provisioned(seed: u64, fuel: f32) -> (GameData, SimState) {
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", seed, &picks);
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        sim.resources.food = 10_000_000;
+        sim.ship.fuel = fuel;
+        (data, sim)
+    }
+
+    #[test]
+    fn fuel_is_spent_in_travel_but_not_on_station() {
+        // A travel month burns fuel.
+        let (data, mut sim) = provisioned(5, 1.0);
+        sim.speed = SpeedStep::OneMonth;
+        advance(&mut sim, &data);
+        assert!(sim.ship.fuel < 1.0, "the first travel month burns fuel");
+
+        // An operation month burns none.
+        let (data, mut sim) = provisioned(5, 1.0);
+        sim.contract.as_mut().unwrap().months_elapsed = 110 * 12; // end of Travel
+        sim.speed = SpeedStep::OneMonth;
+        advance(&mut sim, &data);
+        assert_eq!(sim.ship.fuel, 1.0, "on-station months burn no fuel");
+    }
+
+    #[test]
+    fn a_dry_tank_stalls_travel_and_doubles_systems_decay() {
+        // Launch dry: every travel month coasts until the year-boundary regen
+        // frees one, so the voyage barely moves and the year's decay doubles.
+        let (data, mut sim) = provisioned(5, 0.0);
+        advance_year(&mut sim, &data);
+
+        assert_eq!(sim.stalled_months, 11, "eleven months coasted before regen");
+        assert_eq!(sim.month_clock, 12, "a full calendar year passed");
+        assert_eq!(
+            sim.contract.as_ref().unwrap().months_elapsed,
+            1,
+            "but the contract barely advanced"
+        );
+        let expected_hull = 1.0
+            - data.config.hull_decay_per_year
+                * (1.0 - data.config.maintenance_decay_relief)
+                * data.config.provisioning.no_fuel_decay_multiplier;
+        assert!(
+            (sim.ship.hull_integrity - expected_hull).abs() < 1e-5,
+            "a dry year wears the ship at the no-fuel rate: {} vs {expected_hull}",
+            sim.ship.hull_integrity
         );
     }
 }

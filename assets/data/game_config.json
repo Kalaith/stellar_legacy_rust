@@ -44,6 +44,11 @@
     "recruit_group_cost_credits": 2500,
     "recruit_group_size": 300
   },
+  "provisioning": {
+    "fuel_burn_per_travel_month": 0.0035,
+    "fuel_cost_credits_per_point": 30,
+    "no_fuel_decay_multiplier": 2.0
+  },
   "crew": {
     "starting_posts": ["commander", "engineer", "agronomist"],
     "recruit_cost_credits": 800,

@@ -32,9 +32,13 @@ fn reward_hint(reward: &ResourceDelta) -> String {
 }
 
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
-    match &ctx.sim.contract {
-        Some(_) => draw_active(ctx, area, mouse, actions),
-        None => draw_available(ctx, area, mouse, actions),
+    match (&ctx.sim.contract, &ctx.sim.selected_charter) {
+        // Underway: the active-contract view.
+        (Some(_), _) => draw_active(ctx, area, mouse, actions),
+        // A charter under consideration in port → the PREP screen (W4).
+        (None, Some(_)) => crate::ui::prep::draw(ctx, area, mouse, actions),
+        // In port, nothing selected → the available-charter list.
+        (None, None) => draw_available(ctx, area, mouse, actions),
     }
 }
 
@@ -264,17 +268,32 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
     );
     y += 20.0;
     draw_ui_text_ex(
-        "Repair or refit on the SHIP screen, then accept the next charter:",
+        "Repair or refit on the SHIP screen, then choose the next charter:",
         content.x,
         y,
         TextStyle::new(12.0, term::faint()).params(),
     );
-    let top = y + 26.0;
+    let cards = Rect::new(
+        content.x,
+        y + 26.0,
+        content.w,
+        content.bottom() - (y + 26.0),
+    );
+    draw_charter_cards(ctx, cards, mouse, actions);
+}
 
-    // Two-column charter grid so the list scales past six charters without a
-    // scrollbar (each column is half-width; four rows fit comfortably).
+/// The two-column charter grid (W4-shared): each card SELECTs its charter and
+/// highlights the one under consideration. Locked charters show their renown
+/// gate. Scales past six charters without a scrollbar.
+pub(crate) fn draw_charter_cards(
+    ctx: &GameplayCtx<'_>,
+    area: Rect,
+    mouse: Vec2,
+    actions: &mut Vec<UiAction>,
+) {
+    let renown = crate::heritage::renown(ctx.chronicle);
     const GAP: f32 = 16.0;
-    let col_w = (content.w - GAP) / 2.0;
+    let col_w = (area.w - GAP) / 2.0;
 
     for (i, id) in GameData::sorted_ids(&ctx.data.contracts)
         .into_iter()
@@ -284,17 +303,30 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
             continue;
         };
         let locked = template.min_renown > renown;
+        let selected = ctx.sim.selected_charter.as_deref() == Some(id.as_str());
         let col = (i % 2) as f32;
         let row = (i / 2) as f32;
         let card = Rect::new(
-            content.x + col * (col_w + GAP),
-            top + row * 82.0,
+            area.x + col * (col_w + GAP),
+            area.y + row * 82.0,
             col_w,
             78.0,
         );
+        let fill = if selected {
+            term::surface_active()
+        } else {
+            term::surface_inset()
+        };
         draw_surface(
             card,
-            &SurfaceStyle::new(term::surface_inset()).with_border(1.0, term::faint()),
+            &SurfaceStyle::new(fill).with_border(
+                1.0,
+                if selected {
+                    term::primary()
+                } else {
+                    term::faint()
+                },
+            ),
         );
         draw_ui_text_ex(
             &template.name,
@@ -304,6 +336,8 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
                 16.0,
                 if locked {
                     term::faint()
+                } else if selected {
+                    term::accent()
                 } else {
                     term::primary()
                 },
@@ -333,15 +367,17 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
         );
         let btn = Rect::new(card.right() - 170.0, card.y + 24.0, 156.0, 30.0);
         if locked {
-            // Reads like a terminal access gate — the escalation path in view.
             term_button(
                 btn,
                 &format!("LOCKED · RENOWN {}", template.min_renown),
                 false,
                 mouse,
             );
-        } else if term_button(btn, "ACCEPT CHARTER", true, mouse) {
-            actions.push(UiAction::AcceptContract(id.clone()));
+        } else {
+            let label = if selected { "SELECTED" } else { "SELECT" };
+            if term_button(btn, label, true, mouse) {
+                actions.push(UiAction::SelectCharter(id.clone()));
+            }
         }
     }
 }

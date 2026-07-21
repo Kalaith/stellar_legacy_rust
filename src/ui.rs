@@ -12,6 +12,7 @@ pub mod event_modal;
 pub mod game_over;
 pub mod help;
 pub mod market;
+pub mod prep;
 pub mod settings;
 pub mod ship_builder;
 
@@ -169,7 +170,13 @@ pub enum UiAction {
     RecruitCrew(String),
     TrainCrew(String),
     SelectHeir(u32),
-    AcceptContract(String),
+    /// Put a charter under consideration in port — never starts it (W4).
+    SelectCharter(String),
+    /// Commit the selected charter and begin the voyage (W4) — the sole path
+    /// that starts a contract.
+    Launch,
+    /// Refuel to a full tank in drydock (W4).
+    Refuel,
     PurchaseComponent(ComponentKind, String),
     FieldRepair(crate::simulation::ship::RepairKind),
     FullRepair,

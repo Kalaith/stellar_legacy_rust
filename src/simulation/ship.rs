@@ -210,6 +210,29 @@ pub fn commission_ship(sim: &mut SimState, data: &GameData, hull_id: &str) -> Re
     Ok(())
 }
 
+/// Refuel to a full tank in drydock (port-only, W4). Costs
+/// `fuel_cost_credits_per_point` credits per whole fuel point restored (the
+/// missing fraction × 100 integer credits). Underway the only fuel is the slow
+/// engine regen — a dry tank between systems is exactly the peril W4 adds.
+pub fn refuel(sim: &mut SimState, config: &GameConfig) -> Result<(), String> {
+    if sim.contract.is_some() {
+        return Err("Refuelling is a drydock job, between missions.".to_owned());
+    }
+    let missing = 1.0 - sim.ship.fuel;
+    if missing <= 0.0 {
+        return Err("The tanks are already full.".to_owned());
+    }
+    let cost =
+        (config.provisioning.fuel_cost_credits_per_point as f32 * missing * 100.0).ceil() as i64;
+    if sim.resources.credits < cost {
+        return Err(format!("Refuelling the tanks needs {cost} credits."));
+    }
+    sim.resources.credits -= cost;
+    sim.ship.fuel = 1.0;
+    sim.push_log("Tanks topped off in drydock — full and cold and ready.");
+    Ok(())
+}
+
 /// Full refit (port-only, PLAN M4.3): restore hull, life support, and fuel to
 /// whole and top the spare-parts stores back up, for credits + minerals. Only
 /// available between missions (`contract == None`) — the drydock the field kit
@@ -545,5 +568,39 @@ mod tests {
             credits + stats.speed as i64 * data.config.ship.credits_per_speed
         );
         assert!(sim.resources.minerals > minerals, "cargo yields minerals");
+    }
+
+    #[test]
+    fn refuel_is_port_only_and_charges_by_the_missing_fraction() {
+        use crate::simulation::contract::start_contract;
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.resources.credits = 100_000;
+        sim.ship.fuel = 0.5;
+
+        // Underway: refused.
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        assert!(
+            refuel(&mut sim, &data.config).is_err(),
+            "no refuel underway"
+        );
+
+        // In port: tops to full and charges missing × cost/point × 100.
+        sim.contract = None;
+        let before = sim.resources.credits;
+        refuel(&mut sim, &data.config).unwrap();
+        assert_eq!(sim.ship.fuel, 1.0);
+        let expected = (data.config.provisioning.fuel_cost_credits_per_point as f32 * 0.5 * 100.0)
+            .ceil() as i64;
+        assert_eq!(before - sim.resources.credits, expected);
+
+        // Already full: refused.
+        assert!(refuel(&mut sim, &data.config).is_err());
     }
 }

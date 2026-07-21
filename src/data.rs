@@ -118,6 +118,8 @@ pub struct GameConfig {
     pub dilemma_chance_per_generation: f32,
     /// Founding-faction tunables (W7).
     pub factions: FactionConfig,
+    /// Pre-launch provisioning + fuel-as-consumable tunables (W4).
+    pub provisioning: ProvisioningConfig,
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
@@ -226,6 +228,18 @@ pub struct CommissionConfig {
 }
 
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per
+/// Provisioning + fuel tunables (W4). Fuel is a consumable voyage store burned
+/// during Travel; an empty tank stalls travel and doubles systems decay.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct ProvisioningConfig {
+    /// Fuel fraction burned each Travel-phase month.
+    pub fuel_burn_per_travel_month: f32,
+    /// Credits to refuel one whole fuel point (a full 0→1 tank).
+    pub fuel_cost_credits_per_point: i64,
+    /// Hull/life-support decay multiplier for a year in which the tank ran dry.
+    pub no_fuel_decay_multiplier: f32,
+}
+
 /// archetype; recruiting fills a vacancy, training raises the holder's
 /// skill toward the archetype cap.
 #[derive(Debug, Clone, Serialize, Deserialize)]

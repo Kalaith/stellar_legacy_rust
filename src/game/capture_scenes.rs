@@ -138,6 +138,23 @@ impl Game {
                 gameplay.screen = Screen::Contract;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
+            "prep" => {
+                // A charter under consideration in port (W4): the PREP screen,
+                // with deliberately mixed provisioning so shortfalls show red.
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "wanderers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
+                sim.selected_charter = Some("deep_vein_survey".to_owned());
+                sim.ship.fuel = 0.6;
+                sim.resources.food = 800;
+                sim.ship.spare_parts = 45;
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = Screen::Contract;
+                self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
+            }
             "drydock" => {
                 // Home from a mission (M4.6): no active contract, a worn ship,
                 // and a concluded charter in the Chronicle → the Homecoming banner.

@@ -207,25 +207,61 @@ impl Game {
                 }
                 None
             }
-            UiAction::AcceptContract(id) => {
-                let mut accepted = false;
-                // Charter tiering (PLAN M4.8): richer charters need renown.
+            UiAction::SelectCharter(id) => {
+                // Selecting a charter never starts it (W4) — it only puts it
+                // under consideration on the PREP screen. Renown gates exactly
+                // as before; re-selecting swaps the choice.
                 let renown = crate::heritage::renown(&self.chronicle);
                 if let (GameState::Gameplay(gameplay), Some(template)) =
                     (&mut self.state, self.data.contracts.get(&id))
                 {
                     let sim = &mut gameplay.sim;
                     if sim.contract.is_none() && renown >= template.min_renown {
-                        sim.contract = Some(contract::start_contract(template, sim));
-                        sim.push_log(format!("Charter accepted: {}", template.name));
-                        accepted = true;
+                        sim.selected_charter = Some(id.clone());
+                        sim.push_log(format!("Charter under consideration: {}", template.name));
                     }
                 }
-                if accepted {
+                None
+            }
+            UiAction::Launch => {
+                // The one and only path that starts a contract (W4).
+                let mut launched = false;
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    let sim = &mut gameplay.sim;
+                    let selected = if sim.contract.is_none() {
+                        sim.selected_charter.clone()
+                    } else {
+                        None
+                    };
+                    if let Some(id) = selected {
+                        if let Some(template) = self.data.contracts.get(&id) {
+                            sim.contract = Some(contract::start_contract(template, sim));
+                            sim.selected_charter = None;
+                            sim.push_log(format!(
+                                "LAUNCH. {} — {} years. May the line hold.",
+                                template.name, template.target_duration_years
+                            ));
+                            launched = true;
+                        }
+                    }
+                }
+                if launched {
                     // Start the cosmetic run timer for this mission (PLAN M4.7).
                     self.mission_started = Some(get_time());
                     self.last_mission_real_secs = None;
-                    self.notifications.success("Charter accepted.");
+                    self.notifications.success("Launched. The voyage begins.");
+                } else {
+                    self.notifications
+                        .warning("Select a charter in port before launching.");
+                }
+                None
+            }
+            UiAction::Refuel => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match crate::simulation::ship::refuel(&mut gameplay.sim, &self.data.config) {
+                        Ok(()) => self.notifications.success("Tanks topped off."),
+                        Err(err) => self.notifications.warning(err),
+                    }
                 }
                 None
             }

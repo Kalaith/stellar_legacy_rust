@@ -435,6 +435,18 @@ pub struct SimState {
     pub next_crew_id: u32,
     pub legacy: LegacyTrack,
     pub contract: Option<ActiveContract>,
+    /// A charter under consideration in port before launch (W4). Cleared when
+    /// the mission launches; only ever set while `contract.is_none()`.
+    #[serde(default)]
+    pub selected_charter: Option<String>,
+    /// Total Travel months spent coasting on a dry tank (W4) — calendar time
+    /// that bought no progress toward the destination.
+    #[serde(default)]
+    pub stalled_months: u32,
+    /// Set the moment a Travel month stalls for want of fuel; read (and reset)
+    /// at the year boundary to double that year's systems decay (W4).
+    #[serde(default)]
+    pub fuel_stalled_this_year: bool,
     pub market: MarketState,
     pub delegation: DelegationSettings,
     pub pending_event: Option<PendingEvent>,
@@ -515,6 +527,9 @@ impl SimState {
                 piracy_reputation: 0.0,
             },
             contract: None,
+            selected_charter: None,
+            stalled_months: 0,
+            fuel_stalled_this_year: false,
             market,
             delegation: DelegationSettings::default(),
             pending_event: None,

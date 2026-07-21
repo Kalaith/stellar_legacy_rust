@@ -49,7 +49,12 @@ pub fn play_mission(
         .get(contract_id)
         .expect("autoplay contract id must resolve to a charter")
         .clone();
+    // Provision and launch explicitly (W4): top the tank in port, put the
+    // charter under consideration, then commit — no silent contract start.
+    sim.ship.fuel = 1.0;
+    sim.selected_charter = Some(contract_id.to_owned());
     sim.contract = Some(start_contract(&template, sim));
+    sim.selected_charter = None;
     // Fly at full speed: each Advance covers up to a decade but hard-stops on
     // the next decision, so the policy still resolves everything in order (W3).
     sim.speed = SpeedStep::TenYears;
@@ -293,6 +298,55 @@ mod tests {
             "a truncated mission pays less: {} vs {}",
             abort_pay.credits,
             full_pay.credits
+        );
+    }
+
+    /// A launch on a dry tank strands the ship in transit (W4): it stalls, so
+    /// after the same calendar span its contract has advanced measurably less
+    /// than a fully-fuelled run's, and it logged stalled months.
+    #[test]
+    fn an_under_fuelled_launch_stalls_and_falls_behind() {
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+
+        // Returns (calendar months, contract months, stalled months).
+        let run = |fuel: f32| -> (u32, u32, u32) {
+            let mut sim = SimState::new_campaign(&data, "preservers", 7, &picks);
+            sim.contract = Some(start_contract(&template, &sim));
+            sim.resources.food = 10_000_000;
+            sim.ship.fuel = fuel;
+            sim.speed = SpeedStep::TenYears;
+            while sim.month_clock < 50 * 12 {
+                advance(&mut sim, &data);
+            }
+            (
+                sim.month_clock,
+                sim.contract.as_ref().unwrap().months_elapsed,
+                sim.stalled_months,
+            )
+        };
+
+        let (fuelled_cal, fuelled_con, fuelled_stall) = run(1.0);
+        let (dry_cal, dry_con, dry_stall) = run(0.0);
+
+        assert_eq!(fuelled_stall, 0, "a full tank never stalls in transit");
+        assert_eq!(
+            fuelled_cal, fuelled_con,
+            "a fuelled voyage's calendar keeps pace with its contract clock"
+        );
+        assert!(dry_stall > 0, "a dry launch strands the ship");
+        assert!(
+            dry_cal > dry_con,
+            "the dry run's calendar outran its contract clock: {dry_cal} > {dry_con}"
+        );
+        assert_eq!(
+            dry_cal - dry_con,
+            dry_stall,
+            "the calendar/contract gap is exactly the stalled months"
         );
     }
 }

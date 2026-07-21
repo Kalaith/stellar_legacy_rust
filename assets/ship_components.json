@@ -75,13 +75,14 @@
     {
       "id": "ion_drive",
       "name": "Ion Drive",
-      "description": "Reliable, efficient, and slower than continental drift.",
+      "description": "Reliable, efficient, and slower than continental drift. Scavenges enough reaction mass underway to keep a full tank ahead of a steady burn — but never to refill a dry one quickly.",
       "cost": {
         "credits": 800,
         "minerals": 50
       },
       "stats": {
-        "speed": 2
+        "speed": 2,
+        "fuel_regen": 1
       },
       "field_installable": true
     },
