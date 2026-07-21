@@ -88,6 +88,29 @@ impl SimState {
         self.factions.iter().filter(|f| f.is_aboard()).count() as u32
     }
 
+    /// The id of the largest aboard faction — "who runs the ship" for
+    /// faction-colored event gating (content-depth iteration). Ties break on id
+    /// for determinism. `None` when no faction is aboard.
+    pub fn dominant_faction_id(&self) -> Option<&str> {
+        self.factions
+            .iter()
+            .filter(|f| f.is_aboard())
+            .max_by(|a, b| {
+                a.members
+                    .cmp(&b.members)
+                    .then_with(|| b.faction_id.cmp(&a.faction_id))
+            })
+            .map(|f| f.faction_id.as_str())
+    }
+
+    /// Whether a specific faction is still aboard (for inter-faction friction
+    /// event gating).
+    pub fn is_faction_aboard(&self, id: &str) -> bool {
+        self.factions
+            .iter()
+            .any(|f| f.faction_id == id && f.is_aboard())
+    }
+
     /// Faction ids that could still be recruited: known factions that have never
     /// been part of this campaign (chosen or lost). Sorted for a stable menu.
     pub fn recruitable_faction_ids(&self, data: &GameData) -> Vec<String> {

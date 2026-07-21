@@ -438,6 +438,17 @@ mod tests {
                     "event '{id}' requires charter tag '{tag}' no charter carries"
                 );
             }
+            // Content-depth faction↔event coupling: every faction an event gates
+            // on must be a real, authored faction.
+            for fid in std::iter::once(&e.requires_dominant_faction)
+                .filter(|f| !f.is_empty())
+                .chain(e.requires_factions_aboard.iter())
+            {
+                assert!(
+                    data.factions.get(fid).is_some(),
+                    "event '{id}' gates on unknown faction '{fid}'"
+                );
+            }
         }
         // W7: six authored founding factions, ideology within [-1, 1]. The
         // registry keys on id, so a count of six also proves the ids are unique.

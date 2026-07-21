@@ -101,6 +101,16 @@ pub struct EventTemplate {
     /// Empty = any charter (or none).
     #[serde(default)]
     pub requires_charter_tag: Vec<String>,
+    /// Faction-colored gate (content-depth iteration): the event only fires
+    /// while this faction is the largest aboard — its signature situations
+    /// surface when it runs the ship. Empty = any dominant faction.
+    #[serde(default)]
+    pub requires_dominant_faction: String,
+    /// Inter-faction friction gate: every faction id listed must still be
+    /// aboard for the event to fire (e.g. a quarrel between two rival groups).
+    /// Empty = no faction-presence requirement.
+    #[serde(default)]
+    pub requires_factions_aboard: Vec<String>,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,

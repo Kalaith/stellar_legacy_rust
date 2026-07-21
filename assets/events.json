@@ -2832,5 +2832,154 @@
     "log": "The council marked the find and held to the charter. Debts are debts; the richer prize would wait for whoever came after."
    }
   ]
+ },
+ {
+  "id": "the_rewriting",
+  "category": "generational_challenge",
+  "title": "The Rewriting",
+  "description": "With the Ascension Circle ascendant, a proposal reaches the council: open the augmentation clinics to every child at birth, not merely the willing adult.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_dominant_faction": "ascension_circle",
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "open_the_clinics",
+    "label": "Open the clinics",
+    "description": "Let the next generation be rewritten from the first breath.",
+    "population_delta": {
+     "adaptation": 0.1,
+     "cultural_drift": 0.09,
+     "unity": -0.05
+    },
+    "log": "The clinics opened to the cradle. A generation grew up already something more than human, and already something other than their grandparents."
+   },
+   {
+    "id": "consent_only",
+    "label": "Adults by consent only",
+    "description": "Hold the line at the age of choosing.",
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council held augmentation to the age of consent. The Circle called it timidity; the elders called it a boundary worth keeping."
+   }
+  ]
+ },
+ {
+  "id": "the_tended_flame",
+  "category": "legacy_moment",
+  "title": "The Tended Flame",
+  "description": "The Keepers of the First Flame hold the ship's oldest reactor sacred. When it needs invasive repair, they ask that it be honored with ritual first — and the ritual takes time the fault may not allow.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_dominant_faction": "first_flame",
+  "outcomes": [
+   {
+    "id": "honor_the_rite",
+    "label": "Honor the rite first",
+    "description": "Let the Keepers tend the flame their way. The engineers wait.",
+    "ship_delta": {
+     "hull_integrity": -0.05
+    },
+    "population_delta": {
+     "unity": 0.07,
+     "legacy_loyalty": 0.06,
+     "morale": 0.03
+    },
+    "log": "The Keepers sang the reactor through its repair, and the work went slower and the ship held together in spirit if not in schedule."
+   },
+   {
+    "id": "engineers_first",
+    "label": "Send the engineers in now",
+    "description": "The fault won't wait for hymns.",
+    "ship_delta": {
+     "hull_integrity": 0.04,
+     "spare_parts": -3
+    },
+    "population_delta": {
+     "unity": -0.06,
+     "legacy_loyalty": -0.05,
+     "stability": 0.03
+    },
+    "log": "The engineers went in over the Keepers' objections. The reactor was saved and a sacrament was broken, and the First Flame did not forget."
+   }
+  ]
+ },
+ {
+  "id": "the_living_decks",
+  "category": "generational_challenge",
+  "title": "The Living Decks",
+  "description": "The Verdant Kin want to convert a cargo deck into gardens — more food, more air, more green — at the cost of the salvage bay the engineers rely on.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_dominant_faction": "verdant_kin",
+  "outcomes": [
+   {
+    "id": "grow_the_gardens",
+    "label": "Grow the gardens",
+    "description": "Trade the salvage bay for green.",
+    "resource_delta": {
+     "food": 400
+    },
+    "ship_delta": {
+     "spare_parts": -6
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "adaptation": 0.04
+    },
+    "log": "The cargo deck became a forest in miniature. The galley rejoiced and the machine shop mourned its lost bench space."
+   },
+   {
+    "id": "keep_the_bay",
+    "label": "Keep the salvage bay",
+    "description": "The ship runs on parts, not petals.",
+    "population_delta": {
+     "morale": -0.04,
+     "unity": -0.03,
+     "stability": 0.04
+    },
+    "log": "The salvage bay stayed. The Kin tended window-boxes instead of a forest, and remembered being told no."
+   }
+  ]
+ },
+ {
+  "id": "flame_and_ascension",
+  "category": "legacy_moment",
+  "title": "Flame and Ascension",
+  "description": "The augmented and the traditionalists share too few corridors. The Ascension Circle and the Keepers of the First Flame petition, each, for a deck of their own — a soft partition of the ship.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "ascension_circle",
+   "first_flame"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "grant_the_decks",
+    "label": "Grant the separate decks",
+    "description": "Let each keep its own quarter. Peace by distance.",
+    "population_delta": {
+     "stability": 0.06,
+     "cultural_drift": 0.07,
+     "unity": -0.05
+    },
+    "log": "The ship drew a quiet border down its middle. The corridors grew calmer and the two halves grew stranger to each other."
+   },
+   {
+    "id": "force_the_mixing",
+    "label": "Refuse — one ship, shared decks",
+    "description": "No partitions. They will learn to live shoulder to shoulder.",
+    "population_delta": {
+     "unity": 0.06,
+     "morale": -0.05,
+     "adaptation": 0.04
+    },
+    "log": "The council refused the partition and mixed the berth rolls on purpose. The friction stayed, and so, stubbornly, did the sense of one crew."
+   }
+  ]
  }
 ]

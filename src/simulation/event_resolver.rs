@@ -85,6 +85,18 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
             _ => return false,
         }
     }
+    if !template.requires_dominant_faction.is_empty()
+        && sim.dominant_faction_id() != Some(template.requires_dominant_faction.as_str())
+    {
+        return false;
+    }
+    if !template
+        .requires_factions_aboard
+        .iter()
+        .all(|id| sim.is_faction_aboard(id))
+    {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -355,6 +367,39 @@ mod tests {
         let mut active = crate::simulation::contract::start_contract(peaceful, &sim);
         active.phase = crate::data::contracts::ContractPhase::Travel;
         sim.contract = Some(active);
+        assert!(!passes_gate(&sim, event));
+    }
+
+    #[test]
+    fn a_dominant_faction_gate_colors_events_by_who_runs_the_ship() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 9, &picks);
+        // `the_rewriting` is Ascension-Circle-flavored augmentation zealotry.
+        let event = data.events.get("the_rewriting").unwrap();
+        assert_eq!(event.requires_dominant_faction, "ascension_circle");
+        sim.dynasty.generation = 3; // clear its min_generation gate
+
+        // Make the Ascension Circle the clear majority aboard.
+        for f in &mut sim.factions {
+            f.members = if f.faction_id == "ascension_circle" {
+                900
+            } else {
+                50
+            };
+        }
+        assert_eq!(sim.dominant_faction_id(), Some("ascension_circle"));
+        assert!(passes_gate(&sim, event));
+
+        // Shift dominance elsewhere: the event drops out of the pool.
+        for f in &mut sim.factions {
+            f.members = if f.faction_id == "ascension_circle" {
+                50
+            } else {
+                900
+            };
+        }
+        assert_ne!(sim.dominant_faction_id(), Some("ascension_circle"));
         assert!(!passes_gate(&sim, event));
     }
 
