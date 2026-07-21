@@ -235,7 +235,28 @@ pub fn prorated_reward(reward: &ResourceDelta, fraction: f32) -> ResourceDelta {
 }
 
 /// The log line narrating a crossing into `phase` (W2).
-pub fn phase_transition_line(phase: ContractPhase) -> &'static str {
+/// The log line for entering `phase` on its `occurrence`-th time this voyage
+/// (1-based). Draws from the data-driven `flavor.phase_lines` pool so a
+/// double-hop's second departure/arrival reads differently from the first
+/// (content-depth voice round 3); an empty or missing pool falls back to the
+/// built-in line so the log is never blank.
+pub fn phase_transition_line(
+    flavor: &crate::data::FlavorConfig,
+    phase: ContractPhase,
+    occurrence: usize,
+) -> String {
+    let key = match phase {
+        ContractPhase::Preparation => "preparation",
+        ContractPhase::Travel => "travel",
+        ContractPhase::Operation => "operation",
+        ContractPhase::Return => "return",
+        ContractPhase::Completion => "completion",
+    };
+    if let Some(pool) = flavor.phase_lines.get(key) {
+        if !pool.is_empty() {
+            return pool[occurrence.saturating_sub(1) % pool.len()].clone();
+        }
+    }
     match phase {
         ContractPhase::Preparation => "Standing by for departure.",
         ContractPhase::Travel => "Departure burn complete — the ship is underway.",
@@ -243,12 +264,30 @@ pub fn phase_transition_line(phase: ContractPhase) -> &'static str {
         ContractPhase::Return => "Objective work concluded — course set for home.",
         ContractPhase::Completion => "The ship returns to its home berth.",
     }
+    .to_string()
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::data::contracts::MetricKind;
+    use crate::data::GameData;
+
+    #[test]
+    fn a_double_hop_reads_a_different_line_on_its_second_departure() {
+        let data = GameData::load().unwrap();
+        let fl = &data.config.flavor;
+        // The twin_survey re-enters Travel and Operation; the second entry must
+        // not reprint the first entry's line (content-depth voice round 3).
+        let first_travel = phase_transition_line(fl, ContractPhase::Travel, 1);
+        let second_travel = phase_transition_line(fl, ContractPhase::Travel, 2);
+        assert_ne!(
+            first_travel, second_travel,
+            "a double-hop's second departure should read differently"
+        );
+        // Out-of-range occurrences wrap rather than panic.
+        let _ = phase_transition_line(fl, ContractPhase::Operation, 99);
+    }
 
     fn metric(weight: f32, target: f32, current: f32) -> MetricState {
         MetricState {

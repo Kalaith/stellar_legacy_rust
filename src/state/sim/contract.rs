@@ -160,6 +160,18 @@ impl ActiveContract {
         )
     }
 
+    /// How many times a phase of `kind` has been entered by the current segment
+    /// (1-based), for occurrence-aware phase-transition flavor (voice round 3):
+    /// the first Travel returns 1, a double-hop's second Travel returns 2.
+    pub fn phase_occurrence(&self, kind: crate::data::contracts::ContractPhase) -> usize {
+        let upto = self.phase_index.min(self.phases.len().saturating_sub(1));
+        self.phases[..=upto]
+            .iter()
+            .filter(|p| p.kind == kind)
+            .count()
+            .max(1)
+    }
+
     /// Index of the first Return segment, if the charter has one.
     pub fn first_return_index(&self) -> Option<usize> {
         self.phases

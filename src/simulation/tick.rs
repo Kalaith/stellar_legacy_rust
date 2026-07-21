@@ -141,7 +141,15 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
         sim.push_log(format!("Milestone reached: {milestone}"));
     }
     if let Some(phase) = progress.phase_changed {
-        sim.push_log(contract::phase_transition_line(phase));
+        let occurrence = sim
+            .contract
+            .as_ref()
+            .map_or(1, |c| c.phase_occurrence(phase));
+        sim.push_log(contract::phase_transition_line(
+            &data.config.flavor,
+            phase,
+            occurrence,
+        ));
         report.phase_changed = Some(phase);
     }
     if let Some(result) = progress.completed {

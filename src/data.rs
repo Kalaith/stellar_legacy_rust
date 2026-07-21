@@ -276,6 +276,13 @@ pub struct FlavorConfig {
     /// Years of event-less quiet between ambient lines (0 = ambient off).
     #[serde(default)]
     pub ambient_gap_years: u32,
+    /// Phase-transition line pools keyed by phase (snake_case: travel, operation,
+    /// return, completion, preparation), content-depth voice round 3. Indexed by
+    /// how many times that phase has been entered this voyage, so a double-hop's
+    /// second departure/arrival reads differently from the first. An empty or
+    /// missing pool falls back to the built-in line.
+    #[serde(default)]
+    pub phase_lines: HashMap<String, Vec<String>>,
 }
 
 impl FlavorConfig {
@@ -773,6 +780,16 @@ mod tests {
             assert!(
                 !fl.ambient.is_empty(),
                 "ambient_gap_years is set but the ambient pool is empty"
+            );
+        }
+        // Content-depth voice round 3: phase-line pool keys must be real phases.
+        for key in fl.phase_lines.keys() {
+            assert!(
+                matches!(
+                    key.as_str(),
+                    "preparation" | "travel" | "operation" | "return" | "completion"
+                ),
+                "flavor.phase_lines has an unknown phase key '{key}'"
             );
         }
     }

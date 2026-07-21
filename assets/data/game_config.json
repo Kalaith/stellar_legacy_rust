@@ -175,7 +175,29 @@
       "Two children race the length of a deck their great-grandparents surveyed, and win against nothing but time.",
       "The stars outside have rearranged by degrees no living eye can catch. The ship notes it and flies on.",
       "A quiet year. The ledgers balance, the air holds, and the voyage simply continues, as it has and will."
-    ]
+    ],
+    "phase_lines": {
+      "travel": [
+        "Departure burn complete — the ship is underway.",
+        "The drives light again — the ship burns onward toward the next waypoint.",
+        "Underway once more, deeper into the dark than any chart aboard reaches."
+      ],
+      "operation": [
+        "The ship makes station. On-site operations begin.",
+        "The ship makes station again, at the second site — the crews return to the work.",
+        "On station once more; the long labor resumes where the last generation left it."
+      ],
+      "return": [
+        "Objective work concluded — course set for home.",
+        "The work is done at last — the long course for home is laid in."
+      ],
+      "completion": [
+        "The ship returns to its home berth."
+      ],
+      "preparation": [
+        "Standing by for departure."
+      ]
+    }
   },
   "crew": {
     "starting_posts": [
