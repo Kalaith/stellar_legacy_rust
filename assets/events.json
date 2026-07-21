@@ -5725,5 +5725,195 @@
     "log": "The elders taught the new watch to work for the harbor at the end — a green world in the archives none of them would reach. It kept them steady and it kept them restless, a generation always half-turned toward a home that stayed a century off."
    }
   ]
+ },
+ {
+  "id": "the_forge_and_the_garden",
+  "category": "legacy_moment",
+  "title": "The Forge and the Garden",
+  "description": "The Steel Covenant wants a mid-ship deck stripped and re-plated for a heavy foundry. The Verdant Kin have spent four generations turning that same deck into a living arboretum. Neither will yield it, and the quarrel has stopped being about the deck.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_factions_aboard": [
+   "steel_covenant",
+   "verdant_kin"
+  ],
+  "min_cultural_drift": 0.45,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "partition_the_deck",
+    "label": "Partition the deck between them",
+    "description": "Spend the council's credit brokering a line down the middle. Half foundry, half garden, and a shared grievance.",
+    "resource_delta": {
+     "influence": -30
+    },
+    "population_delta": {
+     "unity": 0.05,
+     "cultural_drift": -0.03
+    },
+    "log": "The council ran a bulkhead down the contested deck — presses on one side, an arbor on the other, a sealed door between that both sides use and neither likes. The ship kept both its makers and its growers, and the credit it cost to keep them."
+   },
+   {
+    "id": "let_the_forge_go",
+    "label": "Let the Covenant found its foundry-world",
+    "description": "The machinists have long wanted a rock of their own to build on. Let them take a lifeboat and go.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.03
+    },
+    "faction_loss": "settled",
+    "faction_loss_id": "steel_covenant",
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": -0.08,
+      "condition": -0.03
+     }
+    ],
+    "log": "The Steel Covenant took a lifeboat down to a bare metal world and stayed to build. The ship sailed on quieter and lighter — and found, a generation later, that the best of its machinists' craft had walked off the hull with them, and no one left aboard quite remembered how the hard repairs were done."
+   }
+  ]
+ },
+ {
+  "id": "the_courts_and_the_creed",
+  "category": "legacy_moment",
+  "title": "The Courts and the Creed",
+  "description": "The Keepers of the First Flame have grown into the ship's moral authority, and they have run out of patience with the Meridian Accord's endless arbitration — courts that, they say, weigh every truth until it means nothing. They move to dissolve the Accord's standing tribunals.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_factions_aboard": [
+   "meridian_accord",
+   "first_flame"
+  ],
+  "min_cultural_drift": 0.5,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "keep_the_courts",
+    "label": "Keep the tribunals standing",
+    "description": "Spend the influence to defend the courts against the creed. A ship ruled by faith alone is a ship that stops asking questions.",
+    "resource_delta": {
+     "influence": -25
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "unity": 0.03
+    },
+    "log": "The council kept the Accord's tribunals open over the Flame's objection, and the ship stayed a place where a grievance could be weighed rather than judged. The Keepers withdrew, displeased but aboard, and the courts sat on."
+   },
+   {
+    "id": "dissolve_the_courts",
+    "label": "Let the creed rule",
+    "description": "Abolish the tribunals. The Accord will not serve a ship that has replaced its law with a fire.",
+    "population_delta": {
+     "cultural_drift": 0.04,
+     "stability": -0.04
+    },
+    "faction_loss": "departed",
+    "faction_loss_id": "meridian_accord",
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "knowledge": -0.06
+     }
+    ],
+    "log": "The tribunals were struck, and the Meridian Accord — arbiters with nothing left to arbitrate — asked for a hull and left rather than live under a law they could not question. The ship kept its creed and lost the quiet art of settling a quarrel before it drew blood."
+   }
+  ]
+ },
+ {
+  "id": "the_cold_table",
+  "category": "legacy_moment",
+  "title": "The Cold Table",
+  "description": "The Hearth Union's whole faith is the common table — that the ship eats as one people. But the Ascension Circle no longer eats, not as others do, and the Hearth has begun to wonder aloud what a table is for when a third of the ship will not sit at it.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "hearth_union",
+   "ascension_circle"
+  ],
+  "min_cultural_drift": 0.5,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "keep_one_table",
+    "label": "Set a place for those who cannot eat",
+    "description": "Spend the influence to keep the common table common — a seat kept even for the augmented who only sit, and do not eat.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "unity": 0.06,
+     "morale": 0.03
+    },
+    "log": "The Hearth kept its table whole, laying a place for the Circle who came, and sat, and did not eat, and were counted anyway. It cost the council to insist on it, and it held the ship together the way the table always had."
+   },
+   {
+    "id": "let_the_hearth_withdraw",
+    "label": "Let the Hearth keep its own table",
+    "description": "Let the Union take a hull where the old rite still means something and everyone at the table still eats.",
+    "population_delta": {
+     "morale": -0.06,
+     "unity": -0.03,
+     "stability": 0.02
+    },
+    "faction_loss": "settled",
+    "faction_loss_id": "hearth_union",
+    "log": "The Hearth Union settled a warm green world and kept its table there, among people who all still ate at it. The ship that sailed on was more efficient and colder for their going — no one now whose whole calling was to make the ship feel like a home."
+   }
+  ]
+ },
+ {
+  "id": "the_fire_and_the_field",
+  "category": "generational_challenge",
+  "title": "The Fire and the Field",
+  "description": "The First Flame keeps a shrine-burn lit off the reactor — an eternal fire that has not gone dark since launch. The Verdant Kin, short of light for the grow-decks, have asked for that power. Two faiths, one reactor, and only so many megawatts.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_factions_aboard": [
+   "first_flame",
+   "verdant_kin"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "share_the_fire",
+    "label": "Ration the reactor to the gardens",
+    "description": "Dim the shrine-burn and give the surplus to the grow-decks. The faithful will grumble; the gardens will grow.",
+    "resource_delta": {
+     "energy": -300,
+     "influence": -15
+    },
+    "population_delta": {
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.03
+     }
+    ],
+    "log": "The shrine-burn was banked to a low steady glow and its spared power run to the grow-decks. The Flame's faithful watched their eternal fire dim and said nothing kind, and the gardens, for the first time in a generation, had light enough to spare."
+   },
+   {
+    "id": "keep_the_shrine_burning",
+    "label": "Keep the eternal fire at full burn",
+    "description": "The flame has not gone dark since launch and will not now. The gardens will make do.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.03,
+     "unity": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.04
+     }
+    ],
+    "log": "The eternal fire kept its full burn, and the faithful were honored, and the grow-decks stayed dim and thin. The Kin logged the harvest shortfall against the shrine and did not forget it, and the ship ate a little less to keep a fire lit."
+   }
+  ]
  }
 ]

@@ -500,6 +500,60 @@ mod tests {
     }
 
     #[test]
+    fn a_friction_fracture_sheds_the_named_faction_and_its_craft() {
+        // Content-depth factions round 4: an inter-faction quarrel that gates on
+        // BOTH factions being aboard and whose "let it break" outcome sheds the
+        // named one via faction_loss_id AND carries its subsystem coupling — the
+        // machinists take their engineering know-how with them when they go.
+        let data = GameData::load().unwrap();
+        // Found a campaign that actually holds the quarrelling pair aboard.
+        let picks = vec![
+            "steel_covenant".to_string(),
+            "verdant_kin".to_string(),
+            "hearth_union".to_string(),
+        ];
+        let mut sim = SimState::new_campaign(&data, "adaptors", 41, &picks);
+        sim.dynasty.generation = 5;
+        sim.population.cultural_drift = 0.6;
+
+        let event = data.events.get("the_forge_and_the_garden").unwrap();
+        assert!(
+            passes_gate(&sim, event),
+            "the quarrel fires with both aboard"
+        );
+        // Make the Covenant the LARGEST, so a shed-the-smallest rule would spare
+        // it — proving the fracture targets the named faction, not the smallest.
+        for f in &mut sim.factions {
+            f.members = if f.faction_id == "steel_covenant" {
+                900
+            } else {
+                100
+            };
+        }
+        let before = sim.subsystems["engineering_bay"].knowledge;
+
+        let fracture = event
+            .outcomes
+            .iter()
+            .position(|o| o.faction_loss_id.as_deref() == Some("steel_covenant"))
+            .expect("the forge quarrel can end in the Covenant leaving");
+        apply_outcome(&mut sim, &data, event, fracture);
+
+        assert!(
+            !sim.is_faction_aboard("steel_covenant"),
+            "the named faction departs even as the largest aboard"
+        );
+        assert!(
+            sim.is_faction_aboard("verdant_kin"),
+            "the other quarreller stays"
+        );
+        assert!(
+            sim.subsystems["engineering_bay"].knowledge < before,
+            "the machinists' craft leaves with them"
+        );
+    }
+
+    #[test]
     fn a_shortage_gate_holds_an_opportunity_until_the_ship_runs_low() {
         let data = GameData::load().unwrap();
         let picks = crate::state::sim::founding_faction_ids(&data);
