@@ -37,7 +37,8 @@
         ],
         "log": "Power was rerouted around the failure. The bypass will outlive its welcome."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "population_growth",
@@ -70,7 +71,8 @@
         },
         "log": "Rations held steady through the birth cohort. Some decks kept score."
       }
-    ]
+    ],
+    "family": "survival"
   },
   {
     "id": "arrival_at_target",
@@ -91,7 +93,8 @@
         },
         "log": "The arrival burn went by the book. The observation decks were crowded for a week."
       }
-    ]
+    ],
+    "family": "exploration_first_contact"
   },
   {
     "id": "cultural_schism",
@@ -131,7 +134,8 @@
         "faction_loss": "departed",
         "log": "The schism was left to run its course. One faction would not be reconciled; they took a decommissioned shuttle and their grievances, and departed on their own course."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "micrometeoroid_storm",
@@ -169,7 +173,8 @@
         },
         "log": "A hard burn carried the ship clear of the debris front, at the cost of the fuel budget."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "coolant_breach",
@@ -205,7 +210,8 @@
         ],
         "log": "Engineers patched the breach by hand. The reactor runs, and runs hot."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "skills_drought",
@@ -243,7 +249,8 @@
         ],
         "log": "The crews leaned on the archives. Something in the doing, not the knowing, was lost."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "youth_unrest",
@@ -281,7 +288,8 @@
         ],
         "log": "The council held the founders' line. The corridors went quiet in a way that keeps."
       }
-    ]
+    ],
+    "family": "ethics"
   },
   {
     "id": "halfway_beacon",
@@ -304,7 +312,8 @@
         "log": "The ship marked the halfway crossing. For a day, the corridors felt like a procession — and the founders had left more than a marker: a ramscoop module, cached at the beacon, now folded into the salvage hold.",
         "grant_component": "ramscoop_array"
       }
-    ]
+    ],
+    "family": "exploration_first_contact"
   },
   {
     "id": "derelict_encounter",
@@ -344,7 +353,8 @@
         },
         "log": "The ship logged the derelict's position, spoke for its dead, and passed on."
       }
-    ]
+    ],
+    "family": "mystery"
   },
   {
     "id": "founders_creed",
@@ -382,7 +392,8 @@
         ],
         "log": "The charter was amended. The founders would not recognize the ship; the ship is not sure it minds."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "the_naming",
@@ -415,7 +426,8 @@
         },
         "log": "The ship named its own destination by vote. The charts bear a word no founder wrote."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "hull_fracture",
@@ -451,7 +463,8 @@
         },
         "log": "The crack was catalogued and left to grow. It will keep its appointment."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "contagion",
@@ -486,7 +499,8 @@
         },
         "log": "The ship worked through the sickness. The memorial wall did the accounting."
       }
-    ]
+    ],
+    "family": "biology_medical"
   },
   {
     "id": "birth_dearth",
@@ -520,7 +534,8 @@
         },
         "log": "The lean cohort grew up close-knit and few. The ship ran quieter, and shorter-handed."
       }
-    ]
+    ],
+    "family": "biology_medical"
   },
   {
     "id": "schooling_crisis",
@@ -542,7 +557,8 @@
         },
         "log": "New classrooms opened on a converted cargo deck. A generation will be better taught for it."
       }
-    ]
+    ],
+    "family": "ethics"
   },
   {
     "id": "course_correction",
@@ -577,7 +593,8 @@
         },
         "log": "The ship took the long safe arc. The schedule slipped; nothing else did."
       }
-    ]
+    ],
+    "family": "exploration_first_contact"
   },
   {
     "id": "relay_contact",
@@ -609,7 +626,8 @@
         },
         "log": "The ship passed the relay in silence. Whatever it wanted, it will keep wanting."
       }
-    ]
+    ],
+    "family": "diplomacy"
   },
   {
     "id": "first_death_in_space",
@@ -645,7 +663,8 @@
         },
         "log": "The ship spoke new words over its first spacers' dead. A tradition began that no founder wrote."
       }
-    ]
+    ],
+    "family": "ethics"
   },
   {
     "id": "veterans_petition",
@@ -677,7 +696,8 @@
         ],
         "log": "The amended charter was read instead. The last founders heard a mission they did not entirely recognize."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "reactor_scram",
@@ -727,7 +747,8 @@
         "force_return": true,
         "log": "The council will not gamble the ship on a scarred core. The mission is cut short — the long road home begins on battery and prayer."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "pirate_shadow",
@@ -761,7 +782,8 @@
         },
         "log": "The ship held course and the tail eventually fell away. The observation decks watched the whole time."
       }
-    ]
+    ],
+    "family": "diplomacy"
   },
   {
     "id": "scrubber_failure",
@@ -792,7 +814,8 @@
         },
         "log": "The ship moved at half-effort until the air cleared. Everyone learned to sit very still."
       }
-    ]
+    ],
+    "family": "biology_medical"
   },
   {
     "id": "idle_generation",
@@ -825,7 +848,8 @@
         },
         "log": "Left to themselves, the idle generation invented new things to be, some of them useful."
       }
-    ]
+    ],
+    "family": "comedy"
   },
   {
     "id": "apprentice_glut",
@@ -844,7 +868,8 @@
         },
         "log": "The posts were rotated so the trained could stay sharp. Nobody is idle; nobody is expert."
       }
-    ]
+    ],
+    "family": "comedy"
   },
   {
     "id": "slingshot",
@@ -875,7 +900,8 @@
         },
         "log": "The council skipped the slingshot and paid in fuel for the peace of mind."
       }
-    ]
+    ],
+    "family": "science_anomaly"
   },
   {
     "id": "dark_stretch",
@@ -894,7 +920,8 @@
         },
         "log": "The ship crossed the dark stretch on dead reckoning and old faith. It came out where the charts said it would."
       }
-    ]
+    ],
+    "family": "mystery"
   },
   {
     "id": "resupply_cache",
@@ -940,7 +967,8 @@
         "force_return": true,
         "log": "The cache was no mere resupply but a mother lode — metals and salvage worth more than the whole charter. The council turns the ship for home, holds heavy with fortune."
       }
-    ]
+    ],
+    "family": "survival"
   },
   {
     "id": "native_leader",
@@ -960,7 +988,8 @@
         },
         "log": "The ship marked its first wholly ship-born leader. Something ended quietly; something began louder."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "memory_wall",
@@ -998,7 +1027,8 @@
         ],
         "log": "The oldest names went to the archive to make room for the newly gone. The founders moved over, a little."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "debris_lattice",
@@ -1030,7 +1060,8 @@
         },
         "log": "The ship shouldered through the snare and came out the other side scored and free."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "power_cascade",
@@ -1062,7 +1093,8 @@
         },
         "log": "Engineers rebalanced the grid by hand, deck by deck, until the lights came back on together."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "the_prodigy",
@@ -1097,7 +1129,8 @@
         },
         "log": "The council let the prodigy grow up ordinary. The ship kept its gift in reserve, and its childhood intact."
       }
-    ]
+    ],
+    "family": "science_anomaly"
   },
   {
     "id": "aging_infrastructure",
@@ -1132,7 +1165,8 @@
         ],
         "log": "The ship patched only what failed and left the rest to the next generation, as had every generation before."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "the_named_star",
@@ -1152,7 +1186,8 @@
         },
         "log": "The ship crowded the observation decks to see its destination as a star. Some had waited their whole lives to look."
       }
-    ]
+    ],
+    "family": "exploration_first_contact"
   },
   {
     "id": "course_ratification",
@@ -1185,7 +1220,8 @@
         },
         "log": "The approach plan was amended with a lifetime of hard-won data. The founders would not recognize it; it is better."
       }
-    ]
+    ],
+    "family": "exploration_first_contact"
   },
   {
     "id": "returning_signal",
@@ -1218,7 +1254,9 @@
         },
         "log": "The message from home was logged and archived, unanswered. The ship's home is the ship now."
       }
-    ]
+    ],
+    "family": "legacy_drift",
+    "min_year": 100
   },
   {
     "id": "last_photograph",
@@ -1254,7 +1292,9 @@
         },
         "log": "The last photograph of an open sky was allowed to finish fading. The ship's children will never miss what they cannot picture."
       }
-    ]
+    ],
+    "family": "legacy_drift",
+    "min_year": 100
   },
   {
     "id": "coolant_freeze",
@@ -1287,7 +1327,8 @@
         },
         "log": "The frozen section was sealed off and abandoned. The main loop is safe; the ship is one deck smaller."
       }
-    ]
+    ],
+    "family": "engineering"
   },
   {
     "id": "water_bloom",
@@ -1322,7 +1363,8 @@
         ],
         "log": "The bloom was quarantined and studied rather than burned out. It is contained, for now, and the crew drink boiled water and worry."
       }
-    ]
+    ],
+    "family": "biology_medical"
   },
   {
     "id": "the_slowdown",
@@ -1355,7 +1397,8 @@
         },
         "log": "The council held the founders' terms. The slowdown ended in sullen compliance, and something between the decks did not fully mend."
       }
-    ]
+    ],
+    "family": "diplomacy"
   },
   {
     "id": "berth_lottery",
@@ -1400,7 +1443,8 @@
         "faction_loss": "settled",
         "log": "One people accepted a standing offer to make planetfall on a surveyed world. The berths are roomier now, and a light aboard has gone out for good."
       }
-    ]
+    ],
+    "family": "survival"
   },
   {
     "id": "scout_returns",
@@ -1433,7 +1477,8 @@
         },
         "log": "The council kept faith with the founders' charts. The probe's warnings were filed, and the ship held the course it was given."
       }
-    ]
+    ],
+    "family": "exploration_first_contact"
   },
   {
     "id": "midpoint_census",
@@ -1453,7 +1498,8 @@
         },
         "log": "The midpoint census was read aloud over three days, every name from the founders' manifest to the newest birth. The ship felt, briefly, like one thing."
       }
-    ]
+    ],
+    "family": "mystery"
   },
   {
     "id": "founders_ledger",
@@ -1487,7 +1533,8 @@
         },
         "log": "The ledger was sealed back into the archive. The founders keep their clean story, and the ship keeps the myth it steers by."
       }
-    ]
+    ],
+    "family": "legacy_drift"
   },
   {
     "id": "the_renaming",
@@ -1516,6 +1563,834 @@
           "cultural_drift": -0.03
         },
         "log": "The founders' name was kept. The ship still carries the word for a world none of its people will ever walk, because the founders asked it to."
+      }
+    ],
+    "family": "legacy_drift"
+  },
+  {
+    "id": "ion_reef",
+    "category": "mission_milestone",
+    "title": "The Ion Reef",
+    "description": "A shoal of charged plasma glitters across the bow, beautiful and unmapped. The instruments want a closer look; the pilots want a wide berth.",
+    "requires_decision": true,
+    "family": "science_anomaly",
+    "outcomes": [
+      {
+        "id": "chart_the_reef",
+        "label": "Chart it close",
+        "description": "Thread the shoal for the data.",
+        "resource_delta": {
+          "energy": 400,
+          "influence": 40
+        },
+        "ship_delta": {
+          "hull_integrity": -0.02
+        },
+        "log": "A week in the glow, and the survey banks a reef no chart has ever held."
+      },
+      {
+        "id": "skirt_the_reef",
+        "label": "Skirt it wide",
+        "description": "Log it and keep the distance.",
+        "population_delta": {
+          "stability": 0.02
+        },
+        "log": "The reef fell astern, unentered. The pilots slept easier for it."
+      }
+    ]
+  },
+  {
+    "id": "clock_disagreement",
+    "category": "legacy_moment",
+    "title": "The Clock Disagreement",
+    "description": "Two chronometers, once synchronized on the founding day, no longer agree. The dark has been bending time by fractions no one felt passing.",
+    "requires_decision": false,
+    "family": "science_anomaly",
+    "outcomes": [
+      {
+        "id": "recalibrate",
+        "label": "Recalibrate to the beacon",
+        "description": "Trust the outside clock.",
+        "population_delta": {
+          "stability": 0.03,
+          "cultural_drift": 0.02
+        },
+        "log": "The ship reset its calendar against the last known beacon. A handful of days simply vanished from the record."
+      },
+      {
+        "id": "keep_ship_time",
+        "label": "Keep ship-time",
+        "description": "The ship's own year is the true one now.",
+        "population_delta": {
+          "legacy_loyalty": -0.03,
+          "adaptation": 0.03
+        },
+        "log": "The council ruled that ship-time is the only time that matters out here. The old calendar became a story."
+      }
+    ]
+  },
+  {
+    "id": "dark_body",
+    "category": "mission_milestone",
+    "title": "The Dark Body",
+    "description": "Something crosses the star-field ahead — a mass that gives back no light, only a shadow where the stars should be.",
+    "requires_decision": true,
+    "family": "science_anomaly",
+    "outcomes": [
+      {
+        "id": "range_it",
+        "label": "Range it with active scan",
+        "description": "Paint it and learn what it is.",
+        "resource_delta": {
+          "influence": 60
+        },
+        "long_term_consequences": [
+          "the_dark_body"
+        ],
+        "log": "The pulse came back strange and slow. Whatever it is, it is old, and it is not natural."
+      },
+      {
+        "id": "run_dark",
+        "label": "Run dark past it",
+        "description": "Give it nothing to look back at.",
+        "population_delta": {
+          "unity": 0.02
+        },
+        "log": "The ship ran silent until the shadow was well astern. Some questions keep."
+      }
+    ]
+  },
+  {
+    "id": "singularity_whisper",
+    "category": "legacy_moment",
+    "title": "The Whisper",
+    "description": "A faint, patient tug on the ship's mass — a gravity that has no visible source. The astronomers argue in the corridors; the priests have already decided.",
+    "requires_decision": true,
+    "family": "science_anomaly",
+    "min_cultural_drift": 0.3,
+    "outcomes": [
+      {
+        "id": "study_the_whisper",
+        "label": "Study the whisper",
+        "description": "Turn every instrument on it.",
+        "resource_delta": {
+          "influence": 80
+        },
+        "population_delta": {
+          "cultural_drift": 0.03
+        },
+        "log": "Months of data, and only deeper questions. The whisper stayed a whisper — but the ship's scholars will chase it for generations."
+      },
+      {
+        "id": "look_away",
+        "label": "Look away",
+        "description": "Some things are not for us to weigh.",
+        "population_delta": {
+          "legacy_loyalty": 0.03
+        },
+        "log": "The instruments were turned elsewhere. The whisper went on tugging, unmeasured."
+      }
+    ]
+  },
+  {
+    "id": "lobites",
+    "category": "legacy_moment",
+    "title": "The Lobites",
+    "description": "A hold-stowed pair of lobites — soft, round, endlessly agreeable, and endlessly breeding — has become a hold-filling thousand. They eat little and purr, but there are so very many.",
+    "requires_decision": true,
+    "family": "comedy",
+    "outcomes": [
+      {
+        "id": "cull_the_lobites",
+        "label": "Cull the warren",
+        "description": "Thin them back to a manageable few.",
+        "population_delta": {
+          "morale": -0.03,
+          "stability": 0.03
+        },
+        "log": "The lobites were culled to a sensible number. The children cried; the quartermaster did not."
+      },
+      {
+        "id": "keep_the_lobites",
+        "label": "Keep them all",
+        "description": "Morale is worth a little spilled grain.",
+        "resource_delta": {
+          "food": -200
+        },
+        "population_delta": {
+          "morale": 0.05
+        },
+        "log": "The ship kept its lobites. The corridors are louder, warmer, and slightly stickier for it."
+      }
+    ]
+  },
+  {
+    "id": "bureaucrat_inspection",
+    "category": "mission_milestone",
+    "title": "The Inspection",
+    "description": "A charter clerk, aboard since departure and forgotten by everyone, has emerged to conduct the mandated mid-voyage audit. He has a clipboard. He is very serious.",
+    "requires_decision": true,
+    "family": "comedy",
+    "outcomes": [
+      {
+        "id": "humor_the_clerk",
+        "label": "Humor the audit",
+        "description": "Give him his forms and his afternoon.",
+        "resource_delta": {
+          "influence": 20
+        },
+        "population_delta": {
+          "stability": 0.02
+        },
+        "log": "The clerk filed a forty-page report no one will read. He seemed, at last, content."
+      },
+      {
+        "id": "lose_the_paperwork",
+        "label": "Lose the paperwork",
+        "description": "Regretfully, the archive ate his forms.",
+        "population_delta": {
+          "morale": 0.03
+        },
+        "log": "The audit was tragically lost to a filing error. The ship ran on, unaudited and unbothered."
+      }
+    ]
+  },
+  {
+    "id": "translation_mishap",
+    "category": "mission_milestone",
+    "title": "Lost in Translation",
+    "description": "An automated relay greeting, kept running for centuries, has been quietly mistranslating the ship's name as something deeply unflattering to everyone who hears it.",
+    "requires_decision": false,
+    "family": "comedy",
+    "outcomes": [
+      {
+        "id": "fix_the_greeting",
+        "label": "Rewrite the greeting",
+        "description": "Restore a little dignity.",
+        "population_delta": {
+          "stability": 0.02
+        },
+        "log": "The greeting was corrected. Somewhere, a relay operator stopped laughing at last."
+      }
+    ]
+  },
+  {
+    "id": "the_mascot",
+    "category": "legacy_moment",
+    "title": "The Ship's Cat",
+    "description": "A corridor animal — no one is certain what species — has adopted the bridge crew, the night shift, and, apparently, the entire ship. It answers to no name and every name.",
+    "requires_decision": false,
+    "family": "comedy",
+    "outcomes": [
+      {
+        "id": "adopt_it",
+        "label": "Make it official",
+        "description": "Enter it in the crew manifest.",
+        "population_delta": {
+          "morale": 0.04,
+          "unity": 0.02
+        },
+        "log": "The animal was entered on the manifest with the rank of Morale Officer. It has not reported for duty once, and morale has never been higher."
+      }
+    ]
+  },
+  {
+    "id": "convoy_hail",
+    "category": "generational_challenge",
+    "title": "The Convoy Hail",
+    "description": "A slower ship on a crossing course hails for trade — they have minerals to spare and a hunger for news and seed stock.",
+    "requires_decision": true,
+    "family": "diplomacy",
+    "outcomes": [
+      {
+        "id": "trade_with_them",
+        "label": "Open the holds",
+        "description": "Deal fairly and part friends.",
+        "resource_delta": {
+          "minerals": 400,
+          "food": -150,
+          "influence": 30
+        },
+        "log": "Goods and gossip changed hands across the dark. Both ships sailed on the richer for it."
+      },
+      {
+        "id": "wave_them_off",
+        "label": "Wave them off",
+        "description": "Keep to the schedule and the strangers at arm's length.",
+        "population_delta": {
+          "legacy_loyalty": 0.02
+        },
+        "log": "The hail went unanswered. The convoy dwindled astern, and the council wondered, later, what news it carried."
+      }
+    ]
+  },
+  {
+    "id": "boundary_claim",
+    "category": "generational_challenge",
+    "title": "The Boundary",
+    "description": "A beacon on the route broadcasts a claim: this stretch of empty dark belongs to a power no one aboard has heard of, and passage requires a toll.",
+    "requires_decision": true,
+    "family": "diplomacy",
+    "outcomes": [
+      {
+        "id": "pay_the_toll",
+        "label": "Pay the toll",
+        "description": "Cheaper than a fight, and faster.",
+        "resource_delta": {
+          "credits": -600
+        },
+        "log": "The toll was paid to a flag no one recognized. The ship passed unmolested, and a little poorer."
+      },
+      {
+        "id": "refuse_the_toll",
+        "label": "Refuse and press on",
+        "description": "No unseen flag rules the black.",
+        "population_delta": {
+          "unity": 0.03
+        },
+        "long_term_consequences": [
+          "ignored_boundary_claim"
+        ],
+        "log": "The ship pressed through the claimed dark, defiant. Nothing came of the threat — this time."
+      }
+    ]
+  },
+  {
+    "id": "asylum_request",
+    "category": "generational_challenge",
+    "title": "The Petitioners",
+    "description": "A battered craft matches speed and begs to come aboard — a handful of souls fleeing something they will not name.",
+    "requires_decision": true,
+    "family": "diplomacy",
+    "outcomes": [
+      {
+        "id": "take_them_in",
+        "label": "Take them aboard",
+        "description": "There is always room for a few more.",
+        "population_delta": {
+          "count": 60,
+          "unity": -0.02,
+          "morale": 0.02
+        },
+        "log": "The petitioners came aboard, grateful and guarded. The ship is more crowded, and less alone."
+      },
+      {
+        "id": "turn_them_away",
+        "label": "Turn them away",
+        "description": "The ship cannot carry every stray in the dark.",
+        "population_delta": {
+          "morale": -0.04,
+          "stability": 0.02
+        },
+        "long_term_consequences": [
+          "turned_away_petitioners"
+        ],
+        "log": "The council turned the petitioners away. The craft fell behind, and no one aboard spoke of it at supper."
+      }
+    ]
+  },
+  {
+    "id": "gene_ledger",
+    "category": "generational_challenge",
+    "title": "The Gene Ledger",
+    "description": "The medical council petitions to edit the line of the unborn — to trim the inherited frailties a closed gene-pool breeds. The Preservers call it a desecration.",
+    "requires_decision": true,
+    "family": "ethics",
+    "legacy_weight_modifiers": {
+      "adaptors": 1.4,
+      "preservers": 1.3
+    },
+    "outcomes": [
+      {
+        "id": "open_the_ledger",
+        "label": "Approve the edits",
+        "description": "Spare the children the old sicknesses.",
+        "population_delta": {
+          "adaptation": 0.05,
+          "legacy_loyalty": -0.04
+        },
+        "log": "The ledger was opened. The next cohort will be healthier, and something old and unrepeatable was closed forever."
+      },
+      {
+        "id": "seal_the_ledger",
+        "label": "Forbid the edits",
+        "description": "The line is the line, flaws and all.",
+        "population_delta": {
+          "legacy_loyalty": 0.04,
+          "adaptation": -0.02
+        },
+        "log": "The ledger was sealed. The frailties will pass on, and so will the founders' shape of a human being."
+      }
+    ]
+  },
+  {
+    "id": "frozen_debt",
+    "category": "generational_challenge",
+    "title": "The Frozen Debt",
+    "description": "A prisoner condemned before departure still sleeps in cryo, sentence unserved, crime almost forgotten. The pod is failing, and a decision can no longer be deferred.",
+    "requires_decision": true,
+    "family": "ethics",
+    "outcomes": [
+      {
+        "id": "wake_and_pardon",
+        "label": "Wake and pardon",
+        "description": "The crime belongs to a dead world.",
+        "population_delta": {
+          "count": 1,
+          "morale": 0.02,
+          "stability": -0.02
+        },
+        "log": "The prisoner woke to a ship that had never known their name. The old sentence died with the world that passed it."
+      },
+      {
+        "id": "let_the_pod_fail",
+        "label": "Let the pod fail",
+        "description": "The sentence was lawful. Let it stand.",
+        "population_delta": {
+          "morale": -0.04
+        },
+        "long_term_consequences": [
+          "kept_the_frozen_sentence"
+        ],
+        "log": "The pod was left to its failure. The law of a lost world was kept, coldly, to the letter."
+      }
+    ]
+  },
+  {
+    "id": "triage_rule",
+    "category": "generational_challenge",
+    "title": "The Triage Rule",
+    "description": "Care is finite and the ship is not young. The council is asked to write down, once and for all, who the medics save first when they cannot save everyone.",
+    "requires_decision": true,
+    "family": "ethics",
+    "outcomes": [
+      {
+        "id": "save_the_young",
+        "label": "The young first",
+        "description": "The future outweighs the past.",
+        "population_delta": {
+          "stability": 0.03,
+          "morale": -0.02
+        },
+        "log": "The rule was written: the young before the old. The elders signed it themselves, and said nothing."
+      },
+      {
+        "id": "save_the_skilled",
+        "label": "The needed first",
+        "description": "The ship keeps those it cannot run without.",
+        "population_delta": {
+          "unity": -0.03,
+          "adaptation": 0.02
+        },
+        "long_term_consequences": [
+          "cold_triage_rule"
+        ],
+        "log": "The rule named the skilled as first to be saved. It is efficient. No one is proud of it."
+      }
+    ]
+  },
+  {
+    "id": "garden_world",
+    "category": "immediate_crisis",
+    "title": "The Garden World",
+    "description": "A living world drifts across the route — blue water, breathable air, empty of people. It could refill the holds for a decade. Some aboard have already stopped calling it a stop.",
+    "requires_decision": true,
+    "family": "survival",
+    "phases": [
+      "travel",
+      "operation"
+    ],
+    "outcomes": [
+      {
+        "id": "resupply_and_go",
+        "label": "Resupply and go",
+        "description": "Fill the holds; keep the schedule.",
+        "resource_delta": {
+          "food": 3000,
+          "minerals": 500
+        },
+        "population_delta": {
+          "morale": 0.03
+        },
+        "log": "The ship gorged the world's bounty and pulled away before the temptation could set. The holds are full; the longing is not."
+      },
+      {
+        "id": "let_them_stay",
+        "label": "Let the willing stay",
+        "description": "A world like this asks to be lived on.",
+        "resource_delta": {
+          "food": 2000
+        },
+        "faction_loss": "settled",
+        "log": "A whole people chose the garden world over the dark. The ship sailed lighter, and grieved the leaving even as it filled its holds."
+      }
+    ]
+  },
+  {
+    "id": "fuel_skim",
+    "category": "immediate_crisis",
+    "title": "The Skim",
+    "description": "A gas giant sits astride the lane, its upper atmosphere thick with reaction mass. A skimming pass could top the tanks — if the hull can take the heat.",
+    "requires_decision": true,
+    "family": "survival",
+    "phases": [
+      "travel"
+    ],
+    "outcomes": [
+      {
+        "id": "skim_deep",
+        "label": "Skim deep",
+        "description": "Dip low and fill the tanks.",
+        "ship_delta": {
+          "fuel": 0.6,
+          "hull_integrity": -0.03
+        },
+        "log": "The ship dipped into the storm-lit clouds and came out streaked with soot and heavy with fuel."
+      },
+      {
+        "id": "skim_shallow",
+        "label": "Skim shallow",
+        "description": "A cautious pass; take what's safe.",
+        "ship_delta": {
+          "fuel": 0.25
+        },
+        "log": "A gentle skim gave the tanks a modest gift and the hull no new scars."
+      }
+    ]
+  },
+  {
+    "id": "crop_blight",
+    "category": "immediate_crisis",
+    "title": "The Blight",
+    "description": "A blight has taken the on-station crop and the seed vault with it. The mission's whole purpose here is rotting in the trays, and it will not come back this trip.",
+    "requires_decision": true,
+    "family": "survival",
+    "phases": [
+      "operation"
+    ],
+    "outcomes": [
+      {
+        "id": "scour_and_replant",
+        "label": "Scour and replant",
+        "description": "Burn it out and try once more.",
+        "resource_delta": {
+          "minerals": -300,
+          "food": -200
+        },
+        "ship_delta": {
+          "spare_parts": -4
+        },
+        "long_term_consequences": [
+          "blighted_seed_stock"
+        ],
+        "log": "The trays were scoured to bare metal and sown again from the last clean stock. It cost dearly, and it might yet hold."
+      },
+      {
+        "id": "abandon_the_site",
+        "label": "Cut losses and turn back",
+        "description": "There is nothing left to work for here.",
+        "resource_delta": {
+          "food": -400
+        },
+        "population_delta": {
+          "morale": -0.06
+        },
+        "force_return": true,
+        "log": "The blighted decks were sealed and the mission cut short. The ship came about, holds light and hopes lighter, for the long road home."
+      }
+    ]
+  },
+  {
+    "id": "ghost_signal",
+    "category": "mission_milestone",
+    "title": "The Ghost Signal",
+    "description": "A signal repeats on a dead channel — the ship's own call sign, in the ship's own voice, timestamped for a year that has not happened yet.",
+    "requires_decision": true,
+    "family": "mystery",
+    "outcomes": [
+      {
+        "id": "answer_the_ghost",
+        "label": "Answer it",
+        "description": "Speak back into the dark and see what speaks.",
+        "population_delta": {
+          "morale": -0.03,
+          "unity": 0.02
+        },
+        "long_term_consequences": [
+          "the_ghost_signal"
+        ],
+        "log": "The ship answered its own ghost. The channel went silent, and stayed silent, and no one aboard has slept quite the same."
+      },
+      {
+        "id": "silence_the_channel",
+        "label": "Kill the channel",
+        "description": "Some frequencies are best left dead.",
+        "population_delta": {
+          "stability": 0.03
+        },
+        "log": "The channel was shut and welded. Whatever was calling, the ship stopped listening."
+      }
+    ]
+  },
+  {
+    "id": "empty_suit",
+    "category": "mission_milestone",
+    "title": "The Empty Suit",
+    "description": "A routine spacewalk finds a hardsuit tethered to the hull — sealed, powered, and empty. The manifest lists no missing suit, and no missing soul.",
+    "requires_decision": true,
+    "family": "mystery",
+    "outcomes": [
+      {
+        "id": "bring_it_in",
+        "label": "Bring it aboard",
+        "description": "Whatever it is, it belongs to us now.",
+        "resource_delta": {
+          "minerals": 40
+        },
+        "long_term_consequences": [
+          "the_empty_suit"
+        ],
+        "log": "The empty suit was brought inside and logged. Its serial number matches no record the ship has ever kept."
+      },
+      {
+        "id": "cut_it_loose",
+        "label": "Cut it loose",
+        "description": "Let the dark keep its own puzzles.",
+        "population_delta": {
+          "morale": -0.02
+        },
+        "log": "The suit was cut from the tether and let drift. It fell away slowly, arms open, as if waving."
+      }
+    ]
+  },
+  {
+    "id": "the_hum",
+    "category": "mission_milestone",
+    "title": "The Hum",
+    "description": "A vibration has entered the hull — low, steady, and coming from nowhere the engineers can name. It is not dangerous. It is only always there.",
+    "requires_decision": false,
+    "family": "mystery",
+    "outcomes": [
+      {
+        "id": "chase_the_hum",
+        "label": "Chase it down",
+        "description": "Tear open the decks until it's found.",
+        "population_delta": {
+          "stability": 0.02
+        },
+        "log": "The decks were opened and closed and opened again. The hum was never found — but the crew stopped hearing it, in time."
+      }
+    ]
+  },
+  {
+    "id": "long_sleep",
+    "category": "immediate_crisis",
+    "title": "The Long Sleep",
+    "description": "A somnolence is spreading deck by deck — the afflicted sleep sixteen hours, then twenty, then do not fully wake. The medics have no name for it yet.",
+    "requires_decision": true,
+    "family": "biology_medical",
+    "outcomes": [
+      {
+        "id": "quarantine_the_sleepers",
+        "label": "Quarantine the afflicted",
+        "description": "Seal them off and study the sickness cold.",
+        "resource_delta": {
+          "credits": -200
+        },
+        "population_delta": {
+          "count": -20,
+          "morale": -0.03
+        },
+        "log": "The sleepers were sealed away and studied. The spread slowed; the ship grew quieter, ward by ward."
+      },
+      {
+        "id": "stimulant_regime",
+        "label": "Push through on stimulants",
+        "description": "Keep the ship awake by force.",
+        "population_delta": {
+          "morale": -0.04,
+          "stability": -0.02
+        },
+        "long_term_consequences": [
+          "stimulant_debt"
+        ],
+        "log": "The crew was driven awake with drugs and discipline. The work continued, hollow-eyed, on borrowed alertness."
+      }
+    ]
+  },
+  {
+    "id": "quiet_fever",
+    "category": "immediate_crisis",
+    "title": "The Quiet Fever",
+    "description": "A slow fever runs the corridors — never fatal, never quite gone, sapping the strength of a generation raised on recycled everything.",
+    "requires_decision": true,
+    "family": "biology_medical",
+    "outcomes": [
+      {
+        "id": "reseed_the_biome",
+        "label": "Reseed the ship's biome",
+        "description": "Rebuild the gut-flora from the vault.",
+        "resource_delta": {
+          "food": -300,
+          "credits": -150
+        },
+        "population_delta": {
+          "stability": 0.03
+        },
+        "log": "The living stores of the ship were reseeded from the founders' vault. The fever broke, slowly, and colour returned to the decks."
+      },
+      {
+        "id": "wait_it_out",
+        "label": "Wait it out",
+        "description": "The body will learn the ship, given time.",
+        "population_delta": {
+          "count": -15,
+          "adaptation": 0.03
+        },
+        "log": "The council chose patience. The fever lingered a generation, and the survivors carried its mark."
+      }
+    ]
+  },
+  {
+    "id": "the_lodestar",
+    "category": "mission_milestone",
+    "title": "The Lodestar",
+    "description": "The scouts find it on the outbound leg: a derelict archive-ship, holds heavy with charts and cold-stored fortune, drifting exactly where no chart said to look.",
+    "requires_decision": true,
+    "family": "exploration_first_contact",
+    "phases": [
+      "travel"
+    ],
+    "outcomes": [
+      {
+        "id": "log_and_press_on",
+        "label": "Log it and press on",
+        "description": "The charter comes first; mark it for the ships that follow.",
+        "resource_delta": {
+          "credits": 500,
+          "influence": 60
+        },
+        "log": "The lodestar was logged, sampled, and left for the ships that would come after. The charter still called, and the ship answered."
+      },
+      {
+        "id": "claim_the_lodestar",
+        "label": "Claim it and turn home",
+        "description": "A find this rich is a mission of its own.",
+        "resource_delta": {
+          "credits": 4000,
+          "minerals": 800,
+          "influence": 100
+        },
+        "population_delta": {
+          "morale": 0.05
+        },
+        "force_return": true,
+        "log": "The lodestar's holds gave up a fortune in charts and metal. With wealth like this aboard, the council saw no reason to sail farther — the ship came about for home, heavy and triumphant."
+      }
+    ]
+  },
+  {
+    "id": "the_faith",
+    "category": "generational_challenge",
+    "title": "The Mission Becomes Creed",
+    "description": "A generation that has never seen a planet has begun to worship the voyage itself — the charter read as scripture, the founders as saints, the destination as a promised land.",
+    "requires_decision": true,
+    "family": "legacy_drift",
+    "min_generation": 5,
+    "min_cultural_drift": 0.5,
+    "legacy_weight_modifiers": {
+      "preservers": 1.5
+    },
+    "outcomes": [
+      {
+        "id": "bless_the_faith",
+        "label": "Let the faith carry them",
+        "description": "A ship that believes is a ship that endures.",
+        "population_delta": {
+          "unity": 0.05,
+          "cultural_drift": 0.05,
+          "legacy_loyalty": -0.03
+        },
+        "log": "The council let the new faith grow. The crew sails on certain of its purpose, and a little further from the people who wrote the charter as a work order."
+      },
+      {
+        "id": "temper_the_faith",
+        "label": "Temper it with the record",
+        "description": "Keep the charter a charter, not a gospel.",
+        "population_delta": {
+          "stability": 0.03,
+          "unity": -0.03
+        },
+        "log": "The council read the charter aloud as the plain contract it was. Some were steadied; some felt something sacred quietly taken from them."
+      }
+    ]
+  },
+  {
+    "id": "home_silence",
+    "category": "generational_challenge",
+    "title": "The Silence From Home",
+    "description": "The long-range relays have gone quiet. Not jammed — quiet. The civilization that launched this ship has stopped answering, and no one aboard remembers its voice well enough to say when.",
+    "requires_decision": true,
+    "family": "legacy_drift",
+    "min_year": 100,
+    "outcomes": [
+      {
+        "id": "mourn_and_go_on",
+        "label": "Mourn, and go on",
+        "description": "Whatever waits at the end, we are its people now.",
+        "population_delta": {
+          "legacy_loyalty": -0.06,
+          "unity": 0.04,
+          "adaptation": 0.03
+        },
+        "log": "The ship held a wake for a home it could no longer hear. The mission stopped being an errand for someone else and became, simply, the ship's own life."
+      },
+      {
+        "id": "keep_the_watch",
+        "label": "Keep the watch",
+        "description": "Someone must still be listening. We keep calling.",
+        "population_delta": {
+          "legacy_loyalty": 0.04,
+          "morale": -0.03
+        },
+        "long_term_consequences": [
+          "the_home_silence"
+        ],
+        "log": "The relays were kept open, calling into a silence that never answered. It is a kind of loyalty, and a kind of grief."
+      }
+    ]
+  },
+  {
+    "id": "the_schism_deepens",
+    "category": "generational_challenge",
+    "title": "The Long Schism",
+    "description": "The decks that keep different calendars now keep different laws. What began as a cultural drift has hardened into two peoples sharing one hull, and one of them is packing.",
+    "requires_decision": true,
+    "family": "legacy_drift",
+    "min_cultural_drift": 0.6,
+    "outcomes": [
+      {
+        "id": "force_the_union",
+        "label": "Force the union",
+        "description": "One ship, one law — enforced.",
+        "population_delta": {
+          "unity": -0.02,
+          "stability": 0.04
+        },
+        "long_term_consequences": [
+          "forced_union"
+        ],
+        "log": "The council imposed a single law by force of the security decks. The union held. The resentment went underground and stayed there."
+      },
+      {
+        "id": "let_them_part",
+        "label": "Let the dissenters go",
+        "description": "Better a clean parting than a war in the corridors.",
+        "population_delta": {
+          "unity": 0.03
+        },
+        "faction_loss": "departed",
+        "log": "The dissenting faction took a lifeboat and the ship's blessing and struck out on their own heading. The hull is quieter, and smaller."
       }
     ]
   }

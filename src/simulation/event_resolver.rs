@@ -1,5 +1,7 @@
 //! Event rolling, outcome scoring, and resolution (GDD §5.4).
 
+pub mod skeleton;
+
 use crate::data::events::{EventCategory, EventOutcome, EventTemplate};
 use crate::data::{GameConfig, GameData};
 use crate::simulation::subsystems;
@@ -55,47 +57,36 @@ pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory,
     ]
 }
 
-/// Roll for a new event. Returns the pending event without applying anything;
-/// the caller decides whether it blocks or auto-resolves.
-pub fn roll_event(sim: &mut SimState, data: &GameData) -> Option<PendingEvent> {
-    let progress = sim.contract.as_ref().map_or(0.0, |c| c.progress());
-    // The ramp is still a per-year model; convert its whole-year gap and the
-    // resulting yearly chance to a per-month roll so expected events per year
-    // is preserved while events can now fire (and be dated) any month (W3).
-    let years_since = sim.month_clock.saturating_sub(sim.last_event_month_clock) / 12;
-    let monthly_chance = event_chance(&data.config, years_since, progress) / 12.0;
-    if !sim.rng.chance(monthly_chance) {
-        return None;
-    }
-
-    // Pick a category by weight, then a template within it (weighted by the
-    // template's modifier for the ship's legacy). Candidate lists are sorted
-    // by id so hash-map iteration order never touches the seeded RNG.
-    let weights = category_weights(sim, &data.config);
-    let total: f32 = weights.iter().map(|(_, w)| w).sum();
-    let mut pick = sim.rng.next_f32() * total;
-    let mut category = EventCategory::ImmediateCrisis;
-    for (cat, weight) in weights {
-        if pick < weight {
-            category = cat;
-            break;
+/// True if `template` clears its W6 phase + voyage gates for the current state:
+/// an empty `phases` fires in any phase, otherwise the contract must be active
+/// and its current phase listed; year / generation / cultural-drift gates must
+/// all be met.
+fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
+    if !template.phases.is_empty() {
+        match sim.contract.as_ref() {
+            Some(contract) if template.phases.contains(&contract.phase) => {}
+            _ => return false,
         }
-        pick -= weight;
     }
+    sim.year() >= template.min_year
+        && sim.dynasty.generation >= template.min_generation
+        && sim.population.cultural_drift >= template.min_cultural_drift
+}
 
-    let mut candidates: Vec<(&String, &EventTemplate)> = data
-        .events
-        .iter()
-        .filter(|(_, t)| t.category == category)
-        .collect();
+/// Weighted pick among already gate-cleared candidates (sorted by id for
+/// determinism): legacy affinity × the buffering subsystem's rarefying factor
+/// (W5). Records the fire on the sim and returns the pending event, or `None`
+/// when nothing survived the filter.
+fn pick_weighted(
+    sim: &mut SimState,
+    data: &GameData,
+    mut candidates: Vec<(&String, &EventTemplate)>,
+) -> Option<PendingEvent> {
     candidates.sort_by(|a, b| a.0.cmp(b.0));
     if candidates.is_empty() {
         return None;
     }
-
     let legacy_id = sim.legacy.legacy_id.as_str();
-    // Legacy affinity × the buffering subsystem's rarefying factor (W5): a
-    // strong medical bay makes biology events rarer, and so on.
     let template_weights: Vec<f32> = candidates
         .iter()
         .map(|(_, t)| {
@@ -113,12 +104,63 @@ pub fn roll_event(sim: &mut SimState, data: &GameData) -> Option<PendingEvent> {
         }
         roll -= weight;
     }
-
     sim.last_event_month_clock = sim.month_clock;
     Some(PendingEvent {
         template_id: chosen.id.clone(),
         rolled_month_clock: sim.month_clock,
     })
+}
+
+/// Roll for a reactive/filler event (W6): the monthly chance, a category by
+/// weight, then a gate-cleared template within it. Returns the pending event
+/// without applying anything; the caller decides block vs auto-resolve.
+pub fn roll_event(sim: &mut SimState, data: &GameData) -> Option<PendingEvent> {
+    let progress = sim.contract.as_ref().map_or(0.0, |c| c.progress());
+    // The ramp is still a per-year model; convert its whole-year gap and the
+    // resulting yearly chance to a per-month roll so expected events per year
+    // is preserved while events can now fire (and be dated) any month (W3).
+    let years_since = sim.month_clock.saturating_sub(sim.last_event_month_clock) / 12;
+    let monthly_chance = event_chance(&data.config, years_since, progress) / 12.0;
+    if !sim.rng.chance(monthly_chance) {
+        return None;
+    }
+
+    // Pick a category by weight; candidates are that category's gate-cleared
+    // templates (W6 phase/year/generation/drift filters).
+    let weights = category_weights(sim, &data.config);
+    let total: f32 = weights.iter().map(|(_, w)| w).sum();
+    let mut pick = sim.rng.next_f32() * total;
+    let mut category = EventCategory::ImmediateCrisis;
+    for (cat, weight) in weights {
+        if pick < weight {
+            category = cat;
+            break;
+        }
+        pick -= weight;
+    }
+
+    let candidates: Vec<(&String, &EventTemplate)> = data
+        .events
+        .iter()
+        .filter(|(_, t)| t.category == category && passes_gate(sim, t))
+        .collect();
+    pick_weighted(sim, data, candidates)
+}
+
+/// Roll a scheduled beat's event (W6): no chance roll — a beat always fires —
+/// filtering the catalog to `family` plus the W6 gates, then the normal
+/// weighting. `None` when the family is over-gated (caller falls through).
+pub fn roll_event_in_family(
+    sim: &mut SimState,
+    data: &GameData,
+    family: &str,
+) -> Option<PendingEvent> {
+    let candidates: Vec<(&String, &EventTemplate)> = data
+        .events
+        .iter()
+        .filter(|(_, t)| t.family == family && passes_gate(sim, t))
+        .collect();
+    pick_weighted(sim, data, candidates)
 }
 
 /// Score an outcome for auto-resolution (GDD §5.4). Higher is better.
@@ -219,6 +261,27 @@ mod tests {
     use super::*;
     use crate::data::GameData;
     use crate::state::sim::SimState;
+
+    #[test]
+    fn a_cultural_drift_gate_holds_a_template_until_the_drift_arrives() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 1, &picks);
+        // The Long Schism is gated at min_cultural_drift 0.6 (W6).
+        let schism = data.events.get("the_schism_deepens").unwrap();
+        assert!((schism.min_cultural_drift - 0.6).abs() < 1e-6);
+
+        sim.population.cultural_drift = 0.2;
+        assert!(
+            !passes_gate(&sim, schism),
+            "the schism stays out of the pool below its drift gate"
+        );
+        sim.population.cultural_drift = 0.7;
+        assert!(
+            passes_gate(&sim, schism),
+            "the schism enters the pool once drift is high enough"
+        );
+    }
 
     #[test]
     fn event_chance_is_capped() {

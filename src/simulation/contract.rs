@@ -97,6 +97,9 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         objective_target: template.objective_target,
         objective_unit: template.objective_unit.clone(),
         objective_progress: 0.0,
+        // Beats are laid out at LAUNCH by the caller (W6); a bare contract has
+        // none until then.
+        beats: Vec::new(),
     }
 }
 

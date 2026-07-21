@@ -54,6 +54,10 @@ pub fn play_mission(
     sim.ship.fuel = 1.0;
     sim.selected_charter = Some(contract_id.to_owned());
     sim.contract = Some(start_contract(&template, sim));
+    // Lay out the seeded campaign skeleton at LAUNCH (W6).
+    if let Some(c) = sim.contract.as_mut() {
+        c.beats = event_resolver::skeleton::generate_beats(&mut sim.rng, c);
+    }
     sim.selected_charter = None;
     // Fly at full speed: each Advance covers up to a decade but hard-stops on
     // the next decision, so the policy still resolves everything in order (W3).
@@ -333,6 +337,57 @@ mod tests {
             "a truncated mission pays less: {} vs {}",
             abort_pay.credits,
             full_pay.credits
+        );
+    }
+
+    /// A full mission fires its seeded campaign beats (W6): flown to completion
+    /// under the first-choice policy, every scheduled beat fires by mission end
+    /// — the campaign skeleton actually plays out.
+    #[test]
+    fn a_full_mission_fires_its_campaign_beats() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 2024, &picks);
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        sim.contract = Some(start_contract(&template, &sim));
+        if let Some(c) = sim.contract.as_mut() {
+            c.beats = crate::simulation::event_resolver::skeleton::generate_beats(&mut sim.rng, c);
+        }
+        // Absurd food so the run never dies to famine — we only care about beats.
+        sim.resources.food = 100_000_000;
+        sim.speed = SpeedStep::TenYears;
+        let total = sim.contract.as_ref().unwrap().beats.len();
+        assert_eq!(total, 17, "17 beats for a 340-yr charter");
+
+        // Fly the whole voyage, resolving every decision by first choice; keep
+        // the contract intact on completion so the beats can be inspected.
+        for _ in 0..5000 {
+            if sim.pending_dilemma.is_some() {
+                legacy::resolve_dilemma(&mut sim, &data, 0);
+            }
+            if let Some(pending) = sim.pending_event.clone() {
+                match data.events.get(&pending.template_id).cloned() {
+                    Some(t) => event_resolver::apply_outcome(&mut sim, &data, &t, 0),
+                    None => sim.pending_event = None,
+                }
+            }
+            if sim.dynasty.extinct {
+                break;
+            }
+            let report = advance(&mut sim, &data);
+            if report.contract_completed.is_some() {
+                break;
+            }
+        }
+
+        let fired = sim
+            .contract
+            .as_ref()
+            .map(|c| c.beats.iter().filter(|b| b.fired).count())
+            .unwrap_or(0);
+        assert!(
+            fired == total,
+            "all scheduled beats fire by mission end (fired {fired}/{total})"
         );
     }
 

@@ -58,12 +58,15 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
         // authored phase timeline, milestones, and completion all step here.
         month_of_contract(sim, data, &mut report);
 
-        // Monthly event roll (GDD §5.4), dated to this exact month. Skipped on a
+        // Monthly event step (GDD §5.4), dated to this exact month. Skipped on a
         // month that already produced a blocking dilemma, a completion, or an
         // extinction — one decision at a time, never piled onto a finished year.
+        // A due campaign beat (W6) replaces the random roll; otherwise the
+        // reactive/filler roll runs.
         if sim.pending_dilemma.is_none()
             && report.contract_completed.is_none()
             && !report.dynasty_extinct
+            && !fire_due_beat(sim, data, &mut report)
         {
             roll_monthly_event(sim, data, &mut report);
         }
@@ -292,20 +295,59 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
 
 fn roll_monthly_event(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
     if let Some(pending) = event_resolver::roll_event(sim, data) {
-        if let Some(template) = data.events.get(&pending.template_id).cloned() {
-            let delegated = sim.delegation.is_delegated(template.category);
-            if template.requires_decision && !delegated {
-                sim.push_log(format!("Council decision required: {}", template.title));
-                sim.pending_event = Some(pending);
-                report.decision_required = true;
-            } else {
-                let label = event_resolver::auto_resolve(sim, data, &template);
-                if delegated {
-                    sim.push_log(format!(
-                        "Delegated advisor resolved '{}' with: {label}",
-                        template.title
-                    ));
-                }
+        apply_pending_event(sim, data, pending, report);
+    }
+}
+
+/// Fire a due campaign beat (W6): if an unfired beat has come due this month,
+/// mark it and force an event from its family (falling through to a normal roll
+/// when the family is over-gated). Returns whether a beat replaced this month's
+/// random roll.
+fn fire_due_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let due = sim.contract.as_ref().and_then(|c| {
+        c.beats
+            .iter()
+            .position(|b| !b.fired && b.month_clock <= sim.month_clock)
+    });
+    let Some(idx) = due else {
+        return false;
+    };
+    let family = {
+        let contract = sim.contract.as_mut().expect("beat came from the contract");
+        contract.beats[idx].fired = true;
+        contract.beats[idx].family.clone()
+    };
+    // A beat draws from its family (plus gates); if that leaves nothing, fall
+    // through to the reactive roll so a beat never crashes or stalls.
+    let pending = event_resolver::roll_event_in_family(sim, data, &family)
+        .or_else(|| event_resolver::roll_event(sim, data));
+    if let Some(pending) = pending {
+        apply_pending_event(sim, data, pending, report);
+    }
+    true
+}
+
+/// Surface a rolled event: block for a council decision, or auto-resolve it
+/// (delegated / no-decision), logging either way.
+fn apply_pending_event(
+    sim: &mut SimState,
+    data: &GameData,
+    pending: crate::state::sim::PendingEvent,
+    report: &mut TickReport,
+) {
+    if let Some(template) = data.events.get(&pending.template_id).cloned() {
+        let delegated = sim.delegation.is_delegated(template.category);
+        if template.requires_decision && !delegated {
+            sim.push_log(format!("Council decision required: {}", template.title));
+            sim.pending_event = Some(pending);
+            report.decision_required = true;
+        } else {
+            let label = event_resolver::auto_resolve(sim, data, &template);
+            if delegated {
+                sim.push_log(format!(
+                    "Delegated advisor resolved '{}' with: {label}",
+                    template.title
+                ));
             }
         }
     }

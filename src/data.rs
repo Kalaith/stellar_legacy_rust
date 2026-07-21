@@ -503,4 +503,58 @@ mod tests {
             data.events.len()
         );
     }
+
+    #[test]
+    fn every_event_is_tagged_and_families_are_filled() {
+        use crate::data::contracts::ContractPhase;
+        use std::collections::HashMap;
+        let data = GameData::load().unwrap();
+        let canonical: std::collections::HashSet<&str> = [
+            "exploration_first_contact",
+            "diplomacy",
+            "engineering",
+            "biology_medical",
+            "science_anomaly",
+            "survival",
+            "mystery",
+            "comedy",
+            "ethics",
+            "legacy_drift",
+        ]
+        .into_iter()
+        .collect();
+
+        let mut counts: HashMap<String, usize> = HashMap::new();
+        for (id, e) in data.events.iter() {
+            assert!(!e.family.is_empty(), "event '{id}' has no family (W6)");
+            assert!(
+                canonical.contains(e.family.as_str()),
+                "event '{id}' family '{}' is not one of the canonical ten",
+                e.family
+            );
+            for phase in &e.phases {
+                assert!(
+                    matches!(
+                        phase,
+                        ContractPhase::Travel | ContractPhase::Operation | ContractPhase::Return
+                    ),
+                    "event '{id}' has a non-voyage phase gate {phase:?}"
+                );
+            }
+            *counts.entry(e.family.clone()).or_default() += 1;
+        }
+
+        assert!(
+            data.events.len() >= 60,
+            "W6 wants >= 60 templates, found {}",
+            data.events.len()
+        );
+        for family in &canonical {
+            let n = counts.get(*family).copied().unwrap_or(0);
+            assert!(
+                n >= 6,
+                "family '{family}' has only {n} templates (W6 wants >= 6)"
+            );
+        }
+    }
 }

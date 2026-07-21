@@ -76,6 +76,17 @@ pub struct EventTemplate {
     /// so the right module can soften or rarefy it. Empty = untagged.
     #[serde(default)]
     pub family: String,
+    /// Contract phases this event may fire in (W6). Empty = any phase.
+    #[serde(default)]
+    pub phases: Vec<crate::data::contracts::ContractPhase>,
+    /// Voyage gates (W6): the event stays out of the pool until the campaign has
+    /// reached these. 0 / 0.0 = ungated.
+    #[serde(default)]
+    pub min_year: u32,
+    #[serde(default)]
+    pub min_generation: u32,
+    #[serde(default)]
+    pub min_cultural_drift: f32,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,

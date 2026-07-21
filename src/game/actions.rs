@@ -256,6 +256,10 @@ impl Game {
                     if let Some(id) = selected {
                         if let Some(template) = self.data.contracts.get(&id) {
                             sim.contract = Some(contract::start_contract(template, sim));
+                            // Lay out the seeded campaign skeleton at LAUNCH (W6).
+                            if let Some(c) = sim.contract.as_mut() {
+                                c.beats = event_resolver::skeleton::generate_beats(&mut sim.rng, c);
+                            }
                             sim.selected_charter = None;
                             sim.push_log(format!(
                                 "LAUNCH. {} — {} years. May the line hold.",
