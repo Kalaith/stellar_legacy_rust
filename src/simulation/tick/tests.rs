@@ -175,9 +175,10 @@ fn contract_completes_at_target_duration() {
     data.config.event_chance_base = 0.0;
     data.config.event_chance_cap = 0.0;
     data.config.dilemma_chance_per_generation = 0.0;
-    // Drift-threshold beats fire independent of event chance (content-depth
-    // round 2); clear them too so the timeline stays uninterrupted.
+    // Threshold beats fire independent of event chance (content-depth rounds
+    // 2-3); clear them too so the timeline stays uninterrupted.
     data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
     let mut sim = SimState::new_campaign(
         &data,
         "preservers",
@@ -412,6 +413,36 @@ fn a_drift_threshold_beat_fires_when_the_people_have_changed_enough() {
 }
 
 #[test]
+fn an_adaptation_threshold_beat_fires_as_the_people_grow_shipborn() {
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    let first = data.config.campaign_skeleton.adaptation_beats[0];
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "adaptors",
+        24,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+    sim.population.adaptation = first + 0.02;
+
+    advance_year(&mut sim, &data);
+
+    assert_eq!(
+        sim.contract.as_ref().unwrap().adaptation_beats_fired,
+        1,
+        "crossing the first adaptation threshold fires exactly one adaptation beat"
+    );
+}
+
+#[test]
 fn ambient_flavor_surfaces_during_a_long_quiet_stretch() {
     // No events, no dilemmas, no drift beats: a pure quiet run. An ambient line
     // must appear once the event-less gap reaches ambient_gap_years.
@@ -420,6 +451,7 @@ fn ambient_flavor_surfaces_during_a_long_quiet_stretch() {
     data.config.event_chance_cap = 0.0;
     data.config.dilemma_chance_per_generation = 0.0;
     data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     assert!(gap > 0, "this test needs ambient flavor enabled");
     let ambient: std::collections::HashSet<String> =

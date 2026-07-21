@@ -86,6 +86,10 @@ pub struct ActiveContract {
     /// next threshold to watch — each drift beat fires exactly once.
     #[serde(default)]
     pub drift_beats_fired: u32,
+    /// How many adaptation-threshold beats have fired (content-depth round 3),
+    /// the physiological parallel to `drift_beats_fired`.
+    #[serde(default)]
+    pub adaptation_beats_fired: u32,
 }
 
 impl ActiveContract {

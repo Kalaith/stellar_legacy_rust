@@ -71,6 +71,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !report.dynasty_extinct
             && !fire_due_beat(sim, data, &mut report)
             && !fire_drift_beat(sim, data, &mut report)
+            && !fire_adaptation_beat(sim, data, &mut report)
         {
             roll_monthly_event(sim, data, &mut report);
         }
@@ -199,12 +200,38 @@ fn fire_drift_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport)
     if let Some(contract) = sim.contract.as_mut() {
         contract.drift_beats_fired += 1;
     }
-    let pending = event_resolver::roll_event_in_family(sim, data, &cfg.drift_beat_family)
+    force_family_beat(sim, data, &cfg.drift_beat_family, report);
+    true
+}
+
+/// Fire an adaptation threshold beat (content-depth round 3): the physiological
+/// parallel to `fire_drift_beat`. As the people's `adaptation` crosses each
+/// authored threshold, force a beat from the adaptation family — the descendants
+/// growing suited to the ship in body and instinct.
+fn fire_adaptation_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.adaptation_beats_fired as usize) < cfg.adaptation_beats.len()
+            && sim.population.adaptation >= cfg.adaptation_beats[c.adaptation_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.adaptation_beats_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.adaptation_beat_family, report);
+    true
+}
+
+/// Force one event from `family` (falling through to a normal reactive roll when
+/// the family is over-gated), applying it. Shared by the threshold-beat firers.
+fn force_family_beat(sim: &mut SimState, data: &GameData, family: &str, report: &mut TickReport) {
+    let pending = event_resolver::roll_event_in_family(sim, data, family)
         .or_else(|| event_resolver::roll_event(sim, data));
     if let Some(pending) = pending {
         apply_pending_event(sim, data, pending, report);
     }
-    true
 }
 
 /// Surface a rolled event: block for a council decision, or auto-resolve it

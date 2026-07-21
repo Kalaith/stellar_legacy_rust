@@ -131,7 +131,13 @@
       0.7,
       0.85
     ],
-    "drift_beat_family": "legacy_drift"
+    "drift_beat_family": "legacy_drift",
+    "adaptation_beats": [
+      0.35,
+      0.6,
+      0.8
+    ],
+    "adaptation_beat_family": "biology_medical"
   },
   "flavor": {
     "obituary": [

@@ -318,6 +318,15 @@ pub struct CampaignSkeletonConfig {
     /// The family a drift-threshold beat draws from.
     #[serde(default)]
     pub drift_beat_family: String,
+    /// Adaptation thresholds (ascending), the physiological/instinctive parallel
+    /// to `drift_beats` (content-depth round 3): each fires one beat the first
+    /// time the people's `adaptation` crosses it — the descendants growing suited
+    /// to the ship in body and habit. Empty = no adaptation beats.
+    #[serde(default)]
+    pub adaptation_beats: Vec<f32>,
+    /// The family an adaptation-threshold beat draws from.
+    #[serde(default)]
+    pub adaptation_beat_family: String,
 }
 
 /// One step of the first-voyage checklist. The `id` binds it to a completion
@@ -716,21 +725,31 @@ mod tests {
                 "campaign_skeleton pool family '{fam}' has no events"
             );
         }
-        // Content-depth drift beats: the family they draw from must have events,
-        // and thresholds must be ascending in (0, 1] so each fires once in order.
-        if !sk.drift_beats.is_empty() {
+        // Content-depth threshold beats: each family they draw from must have
+        // events, and thresholds must be ascending in (0, 1] so each fires once
+        // in order. Same rules for drift (round 2) and adaptation (round 3).
+        for (beats, family, label) in [
+            (&sk.drift_beats, &sk.drift_beat_family, "drift"),
+            (
+                &sk.adaptation_beats,
+                &sk.adaptation_beat_family,
+                "adaptation",
+            ),
+        ] {
+            if beats.is_empty() {
+                continue;
+            }
             assert!(
-                families.contains(&sk.drift_beat_family),
-                "campaign_skeleton drift_beat_family '{}' has no events",
-                sk.drift_beat_family
+                families.contains(family),
+                "campaign_skeleton {label}_beat_family '{family}' has no events"
             );
             assert!(
-                sk.drift_beats.windows(2).all(|w| w[0] < w[1]),
-                "campaign_skeleton drift_beats must be strictly ascending"
+                beats.windows(2).all(|w| w[0] < w[1]),
+                "campaign_skeleton {label}_beats must be strictly ascending"
             );
             assert!(
-                sk.drift_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
-                "campaign_skeleton drift_beats must be within (0, 1]"
+                beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton {label}_beats must be within (0, 1]"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

@@ -5015,5 +5015,135 @@
     "log": "The machinists made do with hand-tools and stubbornness, and the ship kept flying on improvised fixes that mostly held. The bay decayed a little further; the crew got very, very good at making do."
    }
   ]
+ },
+ {
+  "id": "the_shipborn_body",
+  "category": "generational_challenge",
+  "title": "The Shipborn Body",
+  "description": "The physicians confirm what the tailors already knew: the generations born aboard are subtly, measurably different — longer-limbed in the low-spin decks, sharper-eyed in the dim, their bodies quietly reshaping to a world of metal and recycled air. The founders would not entirely recognize their descendants.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "embrace_the_change",
+    "label": "Design the ship for who they are becoming",
+    "description": "Rebuild the decks around the shipborn body, not the founders'.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "adaptation": 0.06,
+     "morale": 0.05,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship remade its handrails and doorways and gravity for the people it actually carried. The descendants moved through it like water; the old founder-proportions became a museum curiosity."
+   },
+   {
+    "id": "hold_the_old_form",
+    "label": "Hold the founders' standard",
+    "description": "Keep the medical baselines the founders set. Resist the drift of the flesh.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "adaptation": -0.03,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The medics fought the drift of the flesh with exercise regimes and gravity therapy, holding the descendants to the founders' shape at real cost. The old form endured, a little, by force of will."
+   }
+  ]
+ },
+ {
+  "id": "the_recycled_palate",
+  "category": "legacy_moment",
+  "title": "The Recycled Palate",
+  "description": "A generation has grown up whose bodies thrive on the ship's closed-loop diet in ways the founders' never could — and who find the 'real food' preserved in the founders' recipes faintly nauseating. The ancestral cuisine is becoming, to them, inedible history.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "let_the_menu_evolve",
+    "label": "Let the menu evolve",
+    "description": "Retire the founders' recipes. Feed the palate the ship actually has.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.05,
+     "morale": 0.03
+    },
+    "log": "The galleys retired the ancestral cookbook and cooked for the tongues aboard. The descendants ate happily; a few elders mourned flavors their grandchildren would never want."
+   },
+   {
+    "id": "preserve_the_cuisine",
+    "label": "Preserve the ancestral cuisine",
+    "description": "Keep cooking the founders' food as heritage, whether they like it or not.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "morale": -0.02
+    },
+    "log": "The ship kept the founders' feasts on the calendar like sacraments, and the descendants dutifully choked down heritage once a year. The recipes survived; the appetite for them did not."
+   }
+  ]
+ },
+ {
+  "id": "the_quiet_lungs",
+  "category": "immediate_crisis",
+  "title": "The Quiet Lungs",
+  "description": "Deep adaptation has a hidden cost: the shipborn have grown so suited to the thin, still, perfectly regulated air that a sudden system fault leaves them gasping where the founders would merely have coughed. The very fitness for the ship has made the people fragile to its failures.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "toughen_them",
+    "label": "Reintroduce hard conditions",
+    "description": "Deliberately vary the air and gravity to keep the people resilient.",
+    "population_delta": {
+     "count": -20,
+     "adaptation": -0.04,
+     "stability": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship began deliberately roughening its own perfect air, training resilience back into a people who had lost it to comfort. A few could not take the harder conditions; the rest grew hardy again."
+   },
+   {
+    "id": "perfect_the_systems",
+    "label": "Make the systems failsafe instead",
+    "description": "Accept the fragility; engineer the ship to never, ever falter.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -150
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "adaptation": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.1
+     }
+    ],
+    "log": "Rather than toughen the people, the ship perfected the machines that kept them soft, layering failsafe on failsafe. The lungs stayed quiet and the whole survival of the line came to rest on the air plant never, ever stopping."
+   }
+  ]
  }
 ]
