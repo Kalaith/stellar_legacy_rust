@@ -247,6 +247,55 @@ impl SimState {
         }
     }
 
+    /// Merge a *named* faction into the largest other aboard (content-depth
+    /// round 5: event-driven assimilation, the union counterpart to
+    /// `apply_faction_loss_by_id`). Unlike a schism, the people stay — the head
+    /// count is untouched, only the separate identity dissolves as its members
+    /// fold into the host. No-op if the named faction is not aboard, or is the
+    /// ship's last aboard people (nothing to fold it into).
+    pub fn apply_faction_merge(&mut self, data: &GameData, id: &str) {
+        if self.aboard_faction_count() <= 1 {
+            self.push_log(
+                "There was talk of two peoples becoming one, but only one still keeps its name \
+                 aboard.",
+            );
+            return;
+        }
+        let Some(idx) = self
+            .factions
+            .iter()
+            .position(|f| f.faction_id == id && f.is_aboard())
+        else {
+            self.push_log("The talk of union came to nothing — that people had already gone.");
+            return;
+        };
+        let host = self
+            .aboard_indices()
+            .into_iter()
+            .filter(|&i| i != idx)
+            .max_by(|&a, &b| {
+                self.factions[a]
+                    .members
+                    .cmp(&self.factions[b].members)
+                    .then_with(|| {
+                        self.factions[b]
+                            .faction_id
+                            .cmp(&self.factions[a].faction_id)
+                    })
+            });
+        let Some(host) = host else { return };
+        let moved = self.factions[idx].members;
+        self.factions[host].members += moved;
+        self.factions[idx].members = 0;
+        self.factions[idx].status = FactionStatus::Assimilated;
+        let merged = log_name(&data.factions, &self.factions[idx].faction_id);
+        let into = log_name(&data.factions, &self.factions[host].faction_id);
+        self.push_log(format!(
+            "{merged} and {into} became one people; the children of {merged} keep the shared \
+             name now."
+        ));
+    }
+
     /// Shared removal: mark the faction lost, drop its members from the head
     /// count, and log the parting in the flavor of `kind`.
     fn remove_faction(&mut self, idx: usize, kind: FactionLossKind, data: &GameData) {

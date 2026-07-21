@@ -608,6 +608,11 @@ mod tests {
                 .filter(|f| !f.is_empty())
                 .chain(e.requires_factions_aboard.iter())
                 .chain(e.outcomes.iter().filter_map(|o| o.faction_loss_id.as_ref()))
+                .chain(
+                    e.outcomes
+                        .iter()
+                        .filter_map(|o| o.faction_merge_id.as_ref()),
+                )
             {
                 assert!(
                     data.factions.get(fid).is_some(),

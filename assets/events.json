@@ -6594,5 +6594,89 @@
     "log": "The council chose to hoard its reserves and let the ship wear where it could stand to — darkened workshops, a hollowed watch, systems left to fail one by one across the long burn. The stores stayed full and the ship arrived threadbare, aged and thin, having spent its own condition to keep its margins."
    }
   ]
+ },
+ {
+  "id": "the_green_hearth",
+  "category": "legacy_moment",
+  "title": "The Green Hearth",
+  "description": "Generations of shared work have blurred the old line between the Hearth Union and the Verdant Kin — the ones who keep the table and the ones who keep the garden. Their children intermarry, their festivals have merged, their councils sit together more often than apart. Now the two peoples ask the ship to recognize what has already happened: they wish to become one.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "hearth_union",
+   "verdant_kin"
+  ],
+  "min_cultural_drift": 0.4,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "bless_the_union",
+    "label": "Bless the union",
+    "description": "Let the table and the garden become one people. Two founding names become one living tradition.",
+    "population_delta": {
+     "unity": 0.06,
+     "morale": 0.03,
+     "cultural_drift": 0.05
+    },
+    "faction_merge_id": "verdant_kin",
+    "log": "The Hearth and the Kin were joined by the ship's blessing, and where two peoples had kept the ship's warmth and the ship's green between them, now one people kept both. The founders' careful roster is one name shorter, and the ship is a warmer, less varied place for it."
+   },
+   {
+    "id": "keep_them_distinct",
+    "label": "Keep the two names",
+    "description": "The founders set these peoples apart for a reason. Honor the old distinction, whatever the young are doing.",
+    "population_delta": {
+     "stability": 0.04,
+     "legacy_loyalty": 0.03,
+     "unity": -0.02
+    },
+    "log": "The council held the two names apart as the founders drew them, and the Hearth and the Kin stayed, on the roster at least, two peoples. Their children went on marrying across the line and keeping one another's festivals, and calling the council's distinction a thing for the council."
+   }
+  ]
+ },
+ {
+  "id": "the_technocrats_compact",
+  "category": "legacy_moment",
+  "title": "The Technocrats' Compact",
+  "description": "The Meridian Accord runs the ship's courts and the Steel Covenant runs its workshops, and after enough generations of running the ship's institutions shoulder to shoulder, the two have proposed something the founders never drew: a single administration, courts and forges under one hand, the argument and the labor finally in the same room.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "meridian_accord",
+   "steel_covenant"
+  ],
+  "min_cultural_drift": 0.4,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "form_the_compact",
+    "label": "Form the compact",
+    "description": "One administration, courts and forges together. Efficient, unified, and a concentration of power the founders spread on purpose.",
+    "population_delta": {
+     "stability": 0.05,
+     "cultural_drift": 0.04,
+     "unity": -0.02
+    },
+    "faction_merge_id": "steel_covenant",
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.06
+     }
+    ],
+    "log": "The Accord and the Covenant folded into a single administration, and the ship ran, for a while, with a smoothness it had not known — the courts and the workshops speaking at last with one voice. The founders had kept those voices separate on purpose, and no one now aboard remembered quite why."
+   },
+   {
+    "id": "keep_the_powers_split",
+    "label": "Keep the powers apart",
+    "description": "Courts that judge the makers and makers who build for the courts — the founders split these on purpose. Refuse the merger.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.03,
+     "stability": -0.02
+    },
+    "log": "The council refused the compact and kept the courts and the forges as separate powers, each a check on the other, the way the founding charter drew them. It was less efficient and more free, and the two institutions went on eyeing each other across a line the founders had meant them to keep."
+   }
+  ]
  }
 ]

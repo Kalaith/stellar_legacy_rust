@@ -298,6 +298,11 @@ pub fn apply_outcome(
             None => sim.apply_faction_loss(data, kind),
         }
     }
+    // …or fold two peoples into one (content-depth round 5: assimilation beats).
+    // Unlike a schism, the head count is kept — only the name dissolves.
+    if let Some(id) = &outcome.faction_merge_id {
+        sim.apply_faction_merge(data, id);
+    }
     // …or wound / mend / re-teach a subsystem (content-depth coupling): an
     // engineering crisis damages the engineering bay, a teaching succession
     // restores its lost know-how. Unknown ids are ignored.
@@ -504,6 +509,54 @@ mod tests {
             trusting.subsystems["engineering_bay"].knowledge
                 < rebuilding.subsystems["engineering_bay"].knowledge,
             "obeying the old mind should cost understanding that rebuilding restores"
+        );
+    }
+
+    #[test]
+    fn an_assimilation_beat_folds_a_people_in_without_losing_them() {
+        // Content-depth factions round 5: the union counterpart to a schism. The
+        // merger dissolves the named faction's separate identity but keeps its
+        // people aboard — head count untouched, its members folded into the host
+        // — where a fracture would have dropped them off the ship entirely.
+        let data = GameData::load().unwrap();
+        let picks = vec![
+            "hearth_union".to_string(),
+            "verdant_kin".to_string(),
+            "meridian_accord".to_string(),
+        ];
+        let mut sim = SimState::new_campaign(&data, "preservers", 55, &picks);
+        sim.dynasty.generation = 6;
+        sim.population.cultural_drift = 0.5;
+
+        let event = data.events.get("the_green_hearth").unwrap();
+        assert!(passes_gate(&sim, event), "the union fires with both aboard");
+        let bless = event
+            .outcomes
+            .iter()
+            .position(|o| o.faction_merge_id.as_deref() == Some("verdant_kin"))
+            .expect("the green hearth can bless the union");
+
+        let heads_before = sim.population.count;
+        let kin_members = sim
+            .factions
+            .iter()
+            .find(|f| f.faction_id == "verdant_kin")
+            .map(|f| f.members)
+            .unwrap();
+        assert!(kin_members > 0);
+        apply_outcome(&mut sim, &data, event, bless);
+
+        assert!(
+            !sim.is_faction_aboard("verdant_kin"),
+            "the merged people lose their separate name"
+        );
+        assert!(
+            sim.is_faction_aboard("hearth_union"),
+            "the host people remain"
+        );
+        assert_eq!(
+            sim.population.count, heads_before,
+            "a union keeps every soul aboard — unlike a schism, which sheds them"
         );
     }
 

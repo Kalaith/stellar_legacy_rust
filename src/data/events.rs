@@ -87,6 +87,13 @@ pub struct EventOutcome {
     /// when `faction_loss` is `None`; a no-op if that faction is already gone.
     #[serde(default)]
     pub faction_loss_id: Option<String>,
+    /// Merge this named faction into the largest other aboard (content-depth
+    /// round 5: event-driven assimilation beats — the *union* counterpart to
+    /// `faction_loss_id`'s schism). Its people stay aboard and keep the head
+    /// count; only the separate identity dissolves. No-op if it is not aboard or
+    /// is the ship's last people. Independent of `faction_loss`.
+    #[serde(default)]
+    pub faction_merge_id: Option<String>,
     /// Signed changes to named subsystems (content-depth iteration): condition
     /// and/or knowledge, clamped to [0, 1]. This is the coupling that lets an
     /// engineering crisis actually damage the engineering bay, or a teaching
