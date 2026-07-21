@@ -284,6 +284,31 @@ mod tests {
         );
     }
 
+    /// Soak the double-hop charter topology (content-depth round 3): the
+    /// 440-year Twin Survey has two Operation legs split by a second Travel
+    /// segment. The objective must accrue across both on-station stretches and
+    /// the run resolve legally, exercising a phase sequence no other charter uses.
+    #[test]
+    fn the_twin_survey_resolves_across_two_operation_legs() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "adaptors",
+            88,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+
+        let outcome = play_mission(&mut sim, &data, "twin_survey", 520);
+
+        assert!(
+            outcome.completed || outcome.extinct,
+            "the twin survey should resolve, not run out the clock (year {}, completed {}, extinct {})",
+            outcome.final_year,
+            outcome.completed,
+            outcome.extinct
+        );
+    }
+
     /// The 600-year Long Dark is allowed to end either way: completion or the
     /// total loss of the line. This test only pins the invariants (asserted in
     /// `play_mission`) and that the run terminates in one of the two legal

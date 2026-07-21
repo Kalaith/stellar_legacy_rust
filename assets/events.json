@@ -4639,5 +4639,92 @@
     "log": "The council declared the bake-off a perfect tie, and both galley decks united in shared disappointment at the cowardice of it. Peace, of a grumbling sort, was kept."
    }
   ]
+ },
+ {
+  "id": "the_second_departure",
+  "category": "generational_challenge",
+  "title": "The Second Departure",
+  "description": "The first anomaly is surveyed and logged, and now the ship must do the hardest thing on a double charter — turn away from the direction of home and burn deeper out, toward a second objective a generation of the crew will not live to see completed.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "double_hop"
+  ],
+  "outcomes": [
+   {
+    "id": "hold_the_charter",
+    "label": "Hold to the full charter",
+    "description": "Both deeps, as contracted. Burn on toward the second.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "morale": -0.05,
+     "unity": 0.03
+    },
+    "log": "The ship turned its back on the direction of home and burned deeper out, honoring the whole charter. A generation swallowed its longing and flew on toward a horizon it would bequeath to its children."
+   },
+   {
+    "id": "cut_it_short",
+    "label": "Skip the second deep, turn home",
+    "description": "One survey banked is enough. Take the partial pay and go.",
+    "population_delta": {
+     "morale": 0.06,
+     "legacy_loyalty": -0.05
+    },
+    "force_return": true,
+    "log": "The council banked the first survey and turned for home rather than ask another lifetime of the crew. The pay would be partial; the relief in the corridors was total."
+   }
+  ]
+ },
+ {
+  "id": "the_far_deep",
+  "category": "mission_milestone",
+  "title": "The Far Deep",
+  "description": "The second anomaly is stranger than the first — and stranger than the charter promised. The survey teams argue whether what they are reading is a natural wonder or something that was made.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "double_hop"
+  ],
+  "outcomes": [
+   {
+    "id": "deep_survey",
+    "label": "Survey it to the bottom",
+    "description": "Spend the crew and the time to read the far deep entire.",
+    "resource_delta": {
+     "influence": 70,
+     "energy": 200
+    },
+    "population_delta": {
+     "count": -12,
+     "cultural_drift": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.07
+     }
+    ],
+    "log": "The teams read the far deep down to its strange foundations and lost a few of their number to its stranger depths. What they brought back would occupy the archives for centuries."
+   },
+   {
+    "id": "log_and_bank",
+    "label": "Log the essentials and bank it",
+    "description": "Take the contracted readings and no more risk.",
+    "resource_delta": {
+     "influence": 30
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The survey took its contracted readings of the far deep and asked no further questions of it. The charter was satisfied; the mystery was left, mostly, alone."
+   }
+  ]
  }
 ]

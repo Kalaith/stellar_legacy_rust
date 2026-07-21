@@ -1107,5 +1107,112 @@
    "inhabited",
    "long_station"
   ]
+ },
+ {
+  "id": "twin_survey",
+  "name": "Double Survey: The Paired Deeps",
+  "objective": "exploration",
+  "description": "A single voyage to two uncharted anomalies on the same long arc — survey the first, then burn on to the second before turning for home. Two destinations, one crew, and a return that waits behind both.",
+  "target_duration_years": 440,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 100
+   },
+   {
+    "kind": "operation",
+    "years": 90
+   },
+   {
+    "kind": "travel",
+    "years": 60
+   },
+   {
+    "kind": "operation",
+    "years": 90
+   },
+   {
+    "kind": "return",
+    "years": 100
+   }
+  ],
+  "objective_target": 2000,
+  "objective_unit": "survey readings",
+  "milestones": [
+   {
+    "id": "first_site",
+    "name": "First deep reached",
+    "progress_threshold": 0.24
+   },
+   {
+    "id": "first_survey",
+    "name": "First anomaly surveyed",
+    "progress_threshold": 0.43,
+    "reward": {
+     "influence": 40
+    }
+   },
+   {
+    "id": "second_site",
+    "name": "Second deep reached",
+    "progress_threshold": 0.58
+   },
+   {
+    "id": "second_survey",
+    "name": "Second anomaly surveyed",
+    "progress_threshold": 0.77
+   },
+   {
+    "id": "both_logged",
+    "name": "Both deeps logged, course for home",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.35,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.2,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "morale_collapse",
+   "succession_crisis"
+  ],
+  "reward": {
+   "credits": 9500,
+   "influence": 140
+  },
+  "min_renown": 100,
+  "tags": [
+   "survey",
+   "uncharted",
+   "deep_space",
+   "double_hop"
+  ]
  }
 ]
