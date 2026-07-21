@@ -560,6 +560,15 @@ mod tests {
                 "faction '{id}' ideology out of range: {}",
                 faction.ideology
             );
+            // Content-depth faction coverage: every faction has at least one
+            // signature event that fires while it runs the ship, so no group is
+            // mechanically silent when dominant.
+            assert!(
+                data.events
+                    .iter()
+                    .any(|(_, e)| e.requires_dominant_faction == *id),
+                "faction '{id}' has no signature (requires_dominant_faction) event"
+            );
         }
 
         // W5: six subsystems load; each non-empty buffered family is one of the

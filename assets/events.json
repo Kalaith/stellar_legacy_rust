@@ -3657,5 +3657,215 @@
     "log": "The camp shut down every system it wasn't using, and the sleeping parts of the ship set and seized in the cold. Waking them later would be its own long ordeal."
    }
   ]
+ },
+ {
+  "id": "the_covenant_workshops",
+  "category": "generational_challenge",
+  "title": "The Covenant's Workshops",
+  "description": "With the Steel Covenant ascendant, the machinists want half the education decks turned over to workshops — more apprentices at the bench, fewer at the books. Build now, they say; philosophize later.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_dominant_faction": "steel_covenant",
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "give_them_the_decks",
+    "label": "Give them the decks",
+    "description": "Workshops over classrooms. Let the ship become a forge.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "cultural_drift": 0.04,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.15,
+      "condition": 0.06
+     },
+     {
+      "id": "education_culture",
+      "condition": -0.1
+     }
+    ],
+    "log": "The Covenant took the education decks and rang them with hammers. The engineering bays had never run better; the archives and the classrooms gathered a generation's dust."
+   },
+   {
+    "id": "keep_the_classrooms",
+    "label": "Keep the classrooms",
+    "description": "A ship is more than its machine shops. Hold the balance.",
+    "population_delta": {
+     "stability": 0.04,
+     "legacy_loyalty": 0.04,
+     "morale": -0.03
+    },
+    "log": "The council kept the classrooms open over the Covenant's grumbling. The apprentices split their days between bench and book, and nothing was built quite as fast."
+   }
+  ]
+ },
+ {
+  "id": "the_middle_way",
+  "category": "generational_challenge",
+  "title": "The Middle Way",
+  "description": "A quarrel between decks is curdling toward something worse, and the Meridian Accord — administrators to the marrow — propose a slow, unglamorous arbitration that will satisfy no one entirely and everyone a little.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_dominant_faction": "meridian_accord",
+  "outcomes": [
+   {
+    "id": "let_them_arbitrate",
+    "label": "Let the Accord arbitrate",
+    "description": "Weeks of hearings, a compromise no one loves, peace that holds.",
+    "resource_delta": {
+     "credits": -200,
+     "influence": 30
+    },
+    "population_delta": {
+     "stability": 0.07,
+     "unity": 0.05,
+     "morale": -0.02
+    },
+    "log": "The Accord convened its hearings and ground the quarrel down to a compromise as grey as it was durable. No one cheered; no one bled; the ship went on."
+   },
+   {
+    "id": "rule_from_the_chair",
+    "label": "Just rule from the chair",
+    "description": "Skip the process. Decide and move on.",
+    "population_delta": {
+     "stability": -0.04,
+     "morale": 0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The captain cut through the Accord's process with a single ruling. It was faster and cleaner and it left a residue of resentment the administrators had meant to dissolve."
+   }
+  ]
+ },
+ {
+  "id": "the_long_table",
+  "category": "legacy_moment",
+  "title": "The Long Table",
+  "description": "The Hearth Union petitions to make the shared evening meal sacrosanct — every soul at the long table, every night, no shift or duty excepted. Community over output, the remembered name over the quota.",
+  "requires_decision": true,
+  "family": "comedy",
+  "requires_dominant_faction": "hearth_union",
+  "outcomes": [
+   {
+    "id": "set_the_table",
+    "label": "Set the long table",
+    "description": "Down tools each evening. The ship eats as one.",
+    "resource_delta": {
+     "food": -300,
+     "credits": -200
+    },
+    "population_delta": {
+     "morale": 0.08,
+     "unity": 0.06,
+     "legacy_loyalty": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.06
+     }
+    ],
+    "log": "The long table was set every night, and duty bent around supper. The ship lost some hours of labor and gained a century of belonging; the names were remembered at the table."
+   },
+   {
+    "id": "keep_the_shifts",
+    "label": "Keep the shifts running",
+    "description": "The work does not stop for supper. Eat in rotation.",
+    "population_delta": {
+     "morale": -0.05,
+     "unity": -0.03,
+     "stability": 0.03
+    },
+    "log": "The council kept the shifts turning through the dinner hour. The quotas held and the Hearth Union set a smaller table, and set it a little colder."
+   }
+  ]
+ },
+ {
+  "id": "the_forge_and_the_hearth",
+  "category": "generational_challenge",
+  "title": "The Forge and the Hearth",
+  "description": "The Steel Covenant wants to strip the old founders' commons — a beloved, inefficient garden-lounge — and replace it with a fabrication bay. The Hearth Union would sooner give up a lung.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "steel_covenant",
+   "hearth_union"
+  ],
+  "outcomes": [
+   {
+    "id": "raise_the_bay",
+    "label": "Raise the fabrication bay",
+    "description": "Function wins. The commons becomes a workshop.",
+    "population_delta": {
+     "morale": -0.06,
+     "adaptation": 0.05,
+     "legacy_loyalty": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.08
+     }
+    ],
+    "log": "The founders' commons came down and a fabrication bay rose in its place. The ship made more and remembered less, and the Hearth Union mourned a garden as if it were a person."
+   },
+   {
+    "id": "keep_the_commons",
+    "label": "Keep the commons",
+    "description": "Some inefficiencies are load-bearing. The garden stays.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The council spared the founders' commons, and the Covenant built its bay in a cramped hold instead. The garden kept growing, useless and green and beloved."
+   }
+  ]
+ },
+ {
+  "id": "the_measured_ascent",
+  "category": "generational_challenge",
+  "title": "The Measured Ascent",
+  "description": "The Ascension Circle pushes a sweeping new augmentation program; the Meridian Accord, wary of anything sweeping, demands it be throttled to a cautious trickle. Both factions look to the council to hold the pace.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_factions_aboard": [
+   "ascension_circle",
+   "meridian_accord"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "throttle_it",
+    "label": "Throttle it to a trickle",
+    "description": "The Accord's caution wins; augment slowly, review often.",
+    "population_delta": {
+     "stability": 0.05,
+     "adaptation": 0.03,
+     "cultural_drift": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The council throttled the augmentation program to the Accord's cautious pace. The Circle chafed; the physicians, given time, actually understood what they were doing."
+   },
+   {
+    "id": "let_it_run",
+    "label": "Let the program run",
+    "description": "The Circle's ambition wins; augment broadly and fast.",
+    "population_delta": {
+     "adaptation": 0.09,
+     "cultural_drift": 0.07,
+     "unity": -0.05
+    },
+    "log": "The council let the Ascension Circle run its program at full tilt. A generation changed fast and unevenly, and the Accord filed its objections in triplicate, unread."
+   }
+  ]
  }
 ]
