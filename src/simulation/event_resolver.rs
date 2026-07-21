@@ -104,6 +104,13 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     }) {
         return false;
     }
+    if !template.condition_below.iter().all(|gate| {
+        sim.subsystems
+            .get(&gate.id)
+            .is_some_and(|s| s.condition <= gate.below)
+    }) {
+        return false;
+    }
     if template.food_below.is_some_and(|t| sim.resources.food > t)
         || template.fuel_below.is_some_and(|t| sim.ship.fuel > t)
         || template
@@ -481,6 +488,30 @@ mod tests {
         );
         sim.ship.fuel = 0.1;
         assert!(passes_gate(&sim, event), "a near-dry tank surfaces it");
+    }
+
+    #[test]
+    fn a_condition_gate_waits_for_a_module_to_break_down() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 23, &picks);
+        // `the_failing_air` only fires as the habitat plant physically fails.
+        let event = data.events.get("the_failing_air").unwrap();
+        assert_eq!(event.condition_below[0].id, "life_support_habitat");
+
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 0.9;
+        assert!(
+            !passes_gate(&sim, event),
+            "a sound plant keeps the crisis away"
+        );
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 0.2;
+        assert!(passes_gate(&sim, event), "a failing plant surfaces it");
     }
 
     #[test]

@@ -542,11 +542,17 @@ mod tests {
             }
             // Content-depth subsystem↔event coupling: knowledge gates and
             // outcome subsystem deltas must name real subsystems.
-            for sid in e.knowledge_below.iter().map(|g| &g.id).chain(
-                e.outcomes
-                    .iter()
-                    .flat_map(|o| o.subsystem_deltas.iter().map(|d| &d.id)),
-            ) {
+            for sid in e
+                .knowledge_below
+                .iter()
+                .map(|g| &g.id)
+                .chain(e.condition_below.iter().map(|g| &g.id))
+                .chain(
+                    e.outcomes
+                        .iter()
+                        .flat_map(|o| o.subsystem_deltas.iter().map(|d| &d.id)),
+                )
+            {
                 assert!(
                     data.subsystems.get(sid).is_some(),
                     "event '{id}' references unknown subsystem '{sid}'"

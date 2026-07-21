@@ -4857,5 +4857,163 @@
     "log": "The council forbade the Kin their world, and they stayed — hands on the grow-decks, hearts on a planet dwindling astern. For a generation they tended the gardens like exiles."
    }
   ]
+ },
+ {
+  "id": "the_failing_air",
+  "category": "immediate_crisis",
+  "title": "The Failing Air",
+  "description": "The habitat plant has been let go too long and now it is failing in earnest — scrubbers clogging, seals weeping, the air itself thinning deck by deck. This is the kind of neglect that empties a ship.",
+  "requires_decision": true,
+  "family": "engineering",
+  "condition_below": [
+   {
+    "id": "life_support_habitat",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "all_hands_on_the_plant",
+    "label": "All hands to the plant",
+    "description": "Stop everything. Throw the whole ship at the repair.",
+    "resource_delta": {
+     "credits": -600,
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -12,
+     "life_support": 0.08
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "unity": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.3
+     }
+    ],
+    "log": "Every hand that could hold a wrench turned to the failing plant, and the work went on around the clock until the air came back. The ship stopped breathing shallow and remembered how close it had come."
+   },
+   {
+    "id": "seal_the_worst_decks",
+    "label": "Seal off the worst decks",
+    "description": "Abandon the failing sections; concentrate the good air.",
+    "population_delta": {
+     "count": -60,
+     "morale": -0.08,
+     "stability": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.12
+     }
+    ],
+    "log": "The council sealed the worst-hit decks and pulled everyone into the sound sections, tighter and grimmer than before. The air held for those who made the cut; the sealed corridors kept their silence."
+   }
+  ]
+ },
+ {
+  "id": "the_open_locks",
+  "category": "immediate_crisis",
+  "title": "The Open Locks",
+  "description": "The security systems have decayed to the point of uselessness — locks that won't hold, sensors gone blind, blast doors frozen open. The ship is one bad actor away from a disaster it can no longer contain.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "condition_below": [
+   {
+    "id": "security",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "refit_the_systems",
+    "label": "Refit the security systems",
+    "description": "Spend the parts to make the doors and locks trustworthy again.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "stability": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "condition": 0.28
+     }
+    ],
+    "log": "The engineers rebuilt the locks and cleared the frozen doors until the ship could hold itself shut again. It felt, for the first time in a generation, genuinely secure."
+   },
+   {
+    "id": "post_human_watches",
+    "label": "Post human watches instead",
+    "description": "No parts to spare — stand guards where the machines failed.",
+    "population_delta": {
+     "unity": -0.03,
+     "morale": -0.04,
+     "stability": 0.03
+    },
+    "log": "With no parts to spare, the ship posted living watches at every failed door. The corridors were held by tired eyes and goodwill, and everyone understood it could not last."
+   }
+  ]
+ },
+ {
+  "id": "the_seized_works",
+  "category": "generational_challenge",
+  "title": "The Seized Works",
+  "description": "The engineering bay has worn down to the point where half its tooling is seized or broken, and the ship's whole capacity to make and mend is choking. Repairs elsewhere are backing up behind a workshop that can barely fix itself.",
+  "requires_decision": true,
+  "family": "engineering",
+  "condition_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_shop",
+    "label": "Rebuild the workshop first",
+    "description": "Fix the thing that fixes everything, whatever it costs.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -250
+    },
+    "ship_delta": {
+     "spare_parts": -10
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.3
+     }
+    ],
+    "log": "The crew rebuilt the workshop before anything else, on the old principle that you mend the tools before the work. The backlog eased as the bay came back to life, and the ship could make things again."
+   },
+   {
+    "id": "improvise_repairs",
+    "label": "Improvise around it",
+    "description": "Limp on with hand-tools and ingenuity; save the resources.",
+    "ship_delta": {
+     "hull_integrity": -0.05
+    },
+    "population_delta": {
+     "adaptation": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The machinists made do with hand-tools and stubbornness, and the ship kept flying on improvised fixes that mostly held. The bay decayed a little further; the crew got very, very good at making do."
+   }
+  ]
  }
 ]

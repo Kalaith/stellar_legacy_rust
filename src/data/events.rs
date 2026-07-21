@@ -44,12 +44,12 @@ pub struct SubsystemDelta {
     pub knowledge: f32,
 }
 
-/// A crisis gate keyed to how much a subsystem's know-how has decayed
-/// (content-depth iteration): the event only fires while that subsystem's
-/// institutional knowledge has fallen to or below `below` — "the last person
-/// who understood the reactor is dying" beats.
+/// A crisis gate keyed to a subsystem stat falling to or below `below`
+/// (content-depth): used for knowledge decay ("the last person who understood
+/// the reactor is dying") and, since round 3, physical condition failure ("the
+/// module is falling apart").
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct KnowledgeGate {
+pub struct SubsystemGate {
     pub id: String,
     pub below: f32,
 }
@@ -148,7 +148,13 @@ pub struct EventTemplate {
     /// while every listed subsystem's knowledge has decayed to or below its
     /// threshold. Empty = ungated.
     #[serde(default)]
-    pub knowledge_below: Vec<KnowledgeGate>,
+    pub knowledge_below: Vec<SubsystemGate>,
+    /// Condition-breakdown gates (content-depth round 3): the event only fires
+    /// while every listed subsystem's physical condition has fallen to or below
+    /// its threshold — the module is breaking down, not just forgotten. Empty =
+    /// ungated.
+    #[serde(default)]
+    pub condition_below: Vec<SubsystemGate>,
     /// Provisioning-shortage gates (content-depth iteration): the event only
     /// enters the pool while the ship is actually short — food store at or below
     /// `food_below`, fuel fraction at or below `fuel_below`, spare parts at or
