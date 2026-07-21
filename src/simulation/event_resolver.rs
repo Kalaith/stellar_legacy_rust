@@ -44,7 +44,7 @@ pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory,
         None => 0.05,
     };
 
-    let legacy = (0.1 + (sim.year / 25) as f32 * 0.05).min(0.3);
+    let legacy = (0.1 + (sim.year() / 25) as f32 * 0.05).min(0.3);
 
     [
         (EventCategory::ImmediateCrisis, crisis),
@@ -58,9 +58,12 @@ pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory,
 /// the caller decides whether it blocks or auto-resolves.
 pub fn roll_event(sim: &mut SimState, data: &GameData) -> Option<PendingEvent> {
     let progress = sim.contract.as_ref().map_or(0.0, |c| c.progress());
-    let years_since = sim.year.saturating_sub(sim.last_event_year);
-    let chance = event_chance(&data.config, years_since, progress);
-    if !sim.rng.chance(chance) {
+    // The ramp is still a per-year model; convert its whole-year gap and the
+    // resulting yearly chance to a per-month roll so expected events per year
+    // is preserved while events can now fire (and be dated) any month (W3).
+    let years_since = sim.month_clock.saturating_sub(sim.last_event_month_clock) / 12;
+    let monthly_chance = event_chance(&data.config, years_since, progress) / 12.0;
+    if !sim.rng.chance(monthly_chance) {
         return None;
     }
 
@@ -105,10 +108,10 @@ pub fn roll_event(sim: &mut SimState, data: &GameData) -> Option<PendingEvent> {
         roll -= weight;
     }
 
-    sim.last_event_year = sim.year;
+    sim.last_event_month_clock = sim.month_clock;
     Some(PendingEvent {
         template_id: chosen.id.clone(),
-        rolled_year: sim.year,
+        rolled_month_clock: sim.month_clock,
     })
 }
 
@@ -222,7 +225,7 @@ mod tests {
         let template = data.events.get("system_failure").unwrap().clone();
         sim.pending_event = Some(crate::state::sim::PendingEvent {
             template_id: template.id.clone(),
-            rolled_year: sim.year,
+            rolled_month_clock: sim.month_clock,
         });
 
         apply_outcome(&mut sim, &template, 1); // reroute_power

@@ -24,7 +24,7 @@ pub fn roll_dilemma(sim: &mut SimState, data: &GameData) -> Option<PendingDilemm
     let dilemma = &legacy.dilemmas[sim.rng.below(legacy.dilemmas.len())];
     Some(PendingDilemma {
         dilemma_id: dilemma.id.clone(),
-        rolled_year: sim.year,
+        rolled_month_clock: sim.month_clock,
     })
 }
 
@@ -205,7 +205,7 @@ mod tests {
         let mut sim = SimState::new_campaign(&data, "preservers", 3);
         sim.pending_dilemma = Some(PendingDilemma {
             dilemma_id: "archive_purge".to_owned(),
-            rolled_year: sim.year,
+            rolled_month_clock: sim.month_clock,
         });
 
         let tradition_before = sim.legacy.tradition_points;
@@ -230,7 +230,7 @@ mod tests {
             let mut sim = SimState::new_campaign(&data, "adaptors", 99);
             sim.pending_dilemma = Some(PendingDilemma {
                 dilemma_id: "gene_clinic".to_owned(),
-                rolled_year: 0,
+                rolled_month_clock: 0,
             });
             resolve_dilemma(&mut sim, &data, 0);
             runs.push((

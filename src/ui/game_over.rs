@@ -53,7 +53,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         .unwrap_or_else(|| "an empty chair".to_owned());
 
     let rows: [(&str, String); 6] = [
-        ("YEARS ELAPSED", sim.year.to_string()),
+        ("YEARS ELAPSED", sim.year().to_string()),
         ("GENERATIONS", sim.dynasty.generation.to_string()),
         ("FINAL POPULATION", sim.population.count.to_string()),
         ("TRADITION EARNED", sim.legacy.tradition_points.to_string()),

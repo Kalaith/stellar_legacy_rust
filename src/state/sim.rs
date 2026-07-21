@@ -276,7 +276,8 @@ impl DelegationSettings {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PendingEvent {
     pub template_id: String,
-    pub rolled_year: u32,
+    /// Months-since-founding when the event fired (W3 month clock).
+    pub rolled_month_clock: u32,
 }
 
 /// A legacy dilemma waiting for a council decision (GDD §5.5). Stores the
@@ -284,23 +285,74 @@ pub struct PendingEvent {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PendingDilemma {
     pub dilemma_id: String,
-    pub rolled_year: u32,
+    /// Months-since-founding when the dilemma fired (W3 month clock).
+    pub rolled_month_clock: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LogEntry {
     pub year: u32,
+    /// Calendar month 1-12 the line was stamped in (W3 month clock).
+    pub month: u32,
     pub text: String,
+}
+
+/// How far one Advance press fast-forwards (W3). The advance loop always steps
+/// month by month; this only caps how many months a single press covers before
+/// it hard-stops on the next decision.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum SpeedStep {
+    OneMonth,
+    #[default]
+    OneYear,
+    FiveYears,
+    TenYears,
+}
+
+impl SpeedStep {
+    pub const ALL: [SpeedStep; 4] = [
+        SpeedStep::OneMonth,
+        SpeedStep::OneYear,
+        SpeedStep::FiveYears,
+        SpeedStep::TenYears,
+    ];
+
+    /// Months a single Advance at this step covers (before any decision stop).
+    pub fn months(self) -> u32 {
+        match self {
+            SpeedStep::OneMonth => 1,
+            SpeedStep::OneYear => 12,
+            SpeedStep::FiveYears => 60,
+            SpeedStep::TenYears => 120,
+        }
+    }
+
+    /// Short label for the speed-selector row.
+    pub fn label(self) -> &'static str {
+        match self {
+            SpeedStep::OneMonth => "1mo",
+            SpeedStep::OneYear => "1yr",
+            SpeedStep::FiveYears => "5yr",
+            SpeedStep::TenYears => "10yr",
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SimState {
     pub seed: u64,
     pub rng: SeededRng,
-    /// Campaign year, starting at 0 on founding.
-    pub year: u32,
-    /// Year the last event fired, for the event-chance ramp (GDD §5.4).
-    pub last_event_year: u32,
+    /// Months since founding, starting at 0 (W3). Display year/month derive
+    /// from it via `year()` / `month()`; the economic tick still applies on
+    /// year boundaries.
+    pub month_clock: u32,
+    /// Month-clock reading when the last event fired, for the event-chance
+    /// ramp (GDD §5.4, now month-resolution).
+    pub last_event_month_clock: u32,
+    /// How far one Advance press fast-forwards (W3 speed selector).
+    #[serde(default)]
+    pub speed: SpeedStep,
     pub resources: ResourcePool,
     pub production: ProductionRates,
     pub ship: ShipState,
@@ -346,8 +398,9 @@ impl SimState {
         let mut sim = Self {
             seed,
             rng,
-            year: 0,
-            last_event_year: 0,
+            month_clock: 0,
+            last_event_month_clock: 0,
+            speed: SpeedStep::default(),
             resources: ResourcePool::from_delta(config.starting_resources),
             production: config.base_production,
             ship: ShipState {
@@ -406,6 +459,17 @@ impl SimState {
         sim
     }
 
+    /// Whole years since founding (W3). Time is stored in months; this is the
+    /// display/arithmetic year the rest of the game reasons about.
+    pub fn year(&self) -> u32 {
+        self.month_clock / 12
+    }
+
+    /// Calendar month 1-12 for display (W3).
+    pub fn month(&self) -> u32 {
+        self.month_clock % 12 + 1
+    }
+
     /// True while any council decision (event or dilemma) blocks the tick.
     pub fn has_pending_decision(&self) -> bool {
         self.pending_event.is_some() || self.pending_dilemma.is_some()
@@ -413,7 +477,8 @@ impl SimState {
 
     pub fn push_log(&mut self, text: impl Into<String>) {
         self.log.push(LogEntry {
-            year: self.year,
+            year: self.year(),
+            month: self.month(),
             text: text.into(),
         });
     }

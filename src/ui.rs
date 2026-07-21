@@ -19,7 +19,7 @@ use crate::chronicle::ChronicleStore;
 use crate::data::events::EventCategory;
 use crate::data::ship_components::ComponentKind;
 use crate::data::GameData;
-use crate::state::sim::{SimState, TradeResource};
+use crate::state::sim::{SimState, SpeedStep, TradeResource};
 use crate::state::{MenuState, Screen};
 use macroquad::prelude::*;
 use macroquad_toolkit::achievements::Achievements;
@@ -158,7 +158,8 @@ pub enum UiAction {
     RetireVoyage,
     SelectScreen(Screen),
     // Gameplay verbs (GDD §4)
-    AdvanceYear,
+    Advance,
+    SetSpeed(SpeedStep),
     ResolveEvent(usize),
     ResolveDilemma(usize),
     RecruitCrew(String),
@@ -508,8 +509,13 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
     };
     draw_ui_text_ex(
         &format!(
-            "YEAR {}  |  GEN {}  |  {}  |  {}{}",
-            sim.year, sim.dynasty.generation, legacy, leader, run_seg
+            "Y{:03} · M{:02}  |  GEN {}  |  {}  |  {}{}",
+            sim.year(),
+            sim.month(),
+            sim.dynasty.generation,
+            legacy,
+            leader,
+            run_seg
         ),
         rect.x + 330.0,
         rect.y + 36.0,

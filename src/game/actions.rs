@@ -87,9 +87,15 @@ impl Game {
             }
 
             // ---- Gameplay ----
-            UiAction::AdvanceYear => {
-                self.advance_year();
+            UiAction::Advance => {
+                self.advance();
                 self.check_achievements();
+                None
+            }
+            UiAction::SetSpeed(step) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    gameplay.sim.speed = step;
+                }
                 None
             }
             UiAction::ResolveEvent(index) => {
@@ -257,7 +263,7 @@ impl Game {
         }
     }
 
-    fn advance_year(&mut self) {
+    fn advance(&mut self) {
         let GameState::Gameplay(gameplay) = &mut self.state else {
             return;
         };
@@ -266,7 +272,7 @@ impl Game {
             return;
         }
 
-        let report = tick::advance_year(sim, &self.data);
+        let report = tick::advance(sim, &self.data);
 
         if report.decision_required {
             self.notifications.warning("The council must decide.");
@@ -276,7 +282,7 @@ impl Game {
         }
         if let Some((score, level)) = report.contract_completed {
             let entry = ChronicleEntry {
-                completed_year: sim.year,
+                completed_year: sim.year(),
                 contract_name: sim
                     .contract
                     .as_ref()

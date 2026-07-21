@@ -267,7 +267,7 @@ impl Game {
             }
         }
         if is_key_pressed(KeyCode::Space) || is_key_pressed(KeyCode::Enter) {
-            actions.push(UiAction::AdvanceYear);
+            actions.push(UiAction::Advance);
         }
     }
 

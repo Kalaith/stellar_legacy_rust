@@ -78,7 +78,7 @@ pub fn evaluate(sim: &SimState, chronicle: &ChronicleStore) -> Vec<&'static str>
     if sim.dynasty.generation >= 5 {
         ids.push("long_line");
     }
-    if sim.year >= 100 {
+    if sim.year() >= 100 {
         ids.push("against_the_void");
     }
     if crate::heritage::renown(chronicle) >= 250 {
@@ -125,7 +125,7 @@ mod tests {
         let data = crate::data::GameData::load().unwrap();
         let mut sim = SimState::new_campaign(&data, "preservers", 1);
         sim.dynasty.generation = 5;
-        sim.year = 100;
+        sim.month_clock = 100 * 12;
         let chronicle = ChronicleStore {
             entries: vec![entry("Complete"), entry("Partial"), entry("Complete")],
         };

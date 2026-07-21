@@ -13,9 +13,9 @@
 
 use crate::data::GameData;
 use crate::simulation::contract::start_contract;
-use crate::simulation::tick::advance_year;
+use crate::simulation::tick::advance;
 use crate::simulation::{event_resolver, legacy, market, ship};
-use crate::state::sim::{SimState, TradeResource};
+use crate::state::sim::{SimState, SpeedStep, TradeResource};
 
 /// How a played-out mission ended.
 #[derive(Debug, Clone, Copy)]
@@ -50,15 +50,19 @@ pub fn play_mission(
         .expect("autoplay contract id must resolve to a charter")
         .clone();
     sim.contract = Some(start_contract(&template, sim));
+    // Fly at full speed: each Advance covers up to a decade but hard-stops on
+    // the next decision, so the policy still resolves everything in order (W3).
+    sim.speed = SpeedStep::TenYears;
 
     let mut outcome = MissionOutcome {
         completed: false,
         extinct: false,
-        final_year: sim.year,
+        final_year: sim.year(),
         final_score: 0.0,
     };
 
-    for _ in 0..max_years {
+    let max_months = max_years * 12;
+    while sim.month_clock < max_months {
         // Clear any blocking council decision by taking the first choice — the
         // same dumb policy the game's own soak has always used.
         if sim.pending_dilemma.is_some() {
@@ -84,8 +88,8 @@ pub fn play_mission(
             let _ = market::buy(sim, TradeResource::Food, 1000);
         }
 
-        let report = advance_year(sim, data);
-        outcome.final_year = sim.year;
+        let report = advance(sim, data);
+        outcome.final_year = sim.year();
         assert_year_invariants(sim);
 
         if let Some((score, _)) = report.contract_completed {
@@ -121,7 +125,7 @@ fn assert_year_invariants(sim: &SimState) {
         assert!(
             (0.0..=1.0).contains(&fraction),
             "0-1 sim fraction escaped its range: {fraction} at year {}",
-            sim.year
+            sim.year()
         );
     }
     assert!(sim.resources.food >= 0 && sim.resources.credits >= 0);
@@ -129,7 +133,7 @@ fn assert_year_invariants(sim: &SimState) {
         assert!(
             sim.dynasty.leader().is_some(),
             "a living dynasty must always have a leader (year {})",
-            sim.year
+            sim.year()
         );
     }
 }

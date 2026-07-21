@@ -77,7 +77,7 @@ impl Game {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.pending_event = Some(crate::state::sim::PendingEvent {
                     template_id: "cultural_schism".to_owned(),
-                    rolled_year: 0,
+                    rolled_month_clock: 0,
                 });
                 self.state = crate::state::GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
@@ -154,7 +154,7 @@ impl Game {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {
                     dilemma_id: "archive_purge".to_owned(),
-                    rolled_year: 0,
+                    rolled_month_clock: 0,
                 });
                 self.state = crate::state::GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
@@ -165,7 +165,7 @@ impl Game {
                 sim.ship.weapon = Some("mass_driver".to_owned());
                 sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {
                     dilemma_id: "convoy_raid".to_owned(),
-                    rolled_year: 0,
+                    rolled_month_clock: 0,
                 });
                 self.state = crate::state::GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
@@ -175,7 +175,7 @@ impl Game {
                     Achievements::from_definitions(crate::achievements::definitions());
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
                 sim.dynasty.generation = 5;
-                sim.year = 120;
+                sim.month_clock = 120 * 12;
                 for i in 0..5 {
                     self.chronicle.record(crate::chronicle::ChronicleEntry {
                         completed_year: 40 + i * 20,
@@ -198,7 +198,7 @@ impl Game {
             }
             "gameover" => {
                 let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
-                sim.year = 148;
+                sim.month_clock = 148 * 12;
                 sim.dynasty.generation = 6;
                 sim.legacy.tradition_points = 210;
                 sim.dynasty.extinct = true;

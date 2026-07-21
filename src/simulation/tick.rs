@@ -1,13 +1,15 @@
-//! The yearly simulation tick (GDD §3 step 3, §5.1).
+//! The simulation tick (GDD §3 step 3, §5.1).
 //!
-//! Time advances only on explicit player action (Pillar 4). One call =
-//! one in-game year: production, upkeep, wear, aging, contract progress,
-//! market drift, then an event roll.
+//! Time advances only on explicit player action (Pillar 4). `advance` steps the
+//! month clock forward by the current speed step, applying the W1-tuned economic
+//! year on each year boundary (production, upkeep, wear, aging, contract
+//! progress, market) and rolling for a dated event every month — hard-stopping
+//! the instant a decision, completion, or extinction lands (W3).
 
 use crate::data::{GameConfig, GameData, PopulationDelta, ResourceDelta};
 use crate::simulation::contract::{score_success, SuccessLevel};
 use crate::simulation::{contract, crew, event_resolver, legacy, market, ship, succession};
-use crate::state::sim::SimState;
+use crate::state::sim::{SimState, SpeedStep};
 
 /// Everything a single year produced that the caller (game.rs) must react
 /// to: log lines are already recorded on the sim; a completed contract and a
@@ -19,17 +21,68 @@ pub struct TickReport {
     /// Set when an event fired that needs a council decision (not delegated).
     pub decision_required: bool,
     pub dynasty_extinct: bool,
+    /// Months actually advanced by this call before it stopped (W3). Less than
+    /// the speed step's span whenever a decision hard-stops the advance early.
+    pub months_advanced: u32,
 }
 
-pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
+/// Advance time by the current speed step (W3). Steps month by month, applying
+/// the W1-tuned economic year on each year boundary and rolling for events every
+/// month, and hard-stops the instant a council decision, contract completion, or
+/// extinction lands — so a single Advance press never skips past a moment that
+/// needs the player (Pillar 4).
+pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
     debug_assert!(
         !sim.has_pending_decision(),
         "caller must resolve the pending event/dilemma before advancing time"
     );
-    let config = &data.config;
     let mut report = TickReport::default();
 
-    sim.year += 1;
+    for _ in 0..sim.speed.months() {
+        sim.month_clock += 1;
+        report.months_advanced += 1;
+
+        // The economic tick applies whole, on the year boundary — the W1 math
+        // is untouched; only its cadence is now driven by the month clock.
+        if sim.month_clock.is_multiple_of(12) {
+            year_boundary_tick(sim, data, &mut report);
+        }
+
+        // Monthly event roll (GDD §5.4), dated to this exact month. Skipped on a
+        // month that already produced a blocking dilemma, a completion, or an
+        // extinction — one decision at a time, never piled onto a finished year.
+        if sim.pending_dilemma.is_none()
+            && report.contract_completed.is_none()
+            && !report.dynasty_extinct
+        {
+            roll_monthly_event(sim, data, &mut report);
+        }
+
+        // Hard-stop the fast-forward the instant something needs attention.
+        if report.decision_required || report.contract_completed.is_some() || report.dynasty_extinct
+        {
+            break;
+        }
+    }
+
+    sim.trim_log(data.config.log_limit);
+    report
+}
+
+/// Test/tooling helper: advance one year's worth of the loop at `OneYear` speed.
+/// Still hard-stops early on a decision, exactly like a player pressing Advance
+/// at 1-yr speed.
+pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
+    sim.speed = SpeedStep::OneYear;
+    advance(sim, data)
+}
+
+/// One full economic year (GDD §5.1), applied on a year boundary: production,
+/// food upkeep, wear, drift, generation/succession, contract progress, market.
+/// Exactly the W1-tuned yearly math — only the clock advance and the (now
+/// monthly) event roll live outside it (W3).
+fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
+    let config = &data.config;
 
     // Production (GDD §5.1: floor(rate * years), one year per tick),
     // multiplied by the serving crew's skills (PLAN item 2).
@@ -149,21 +202,12 @@ pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
         }
     }
 
-    // Market drift.
+    // Market drift closes the economic year. The event roll is monthly now and
+    // lives in `advance`; log trimming happens once there too (W3).
     market::drift_prices(sim);
-
-    // Event roll (GDD §5.4). Delegated or no-decision events resolve
-    // immediately but still log their outcome (GDD §3 step 4). A dilemma
-    // rolled this year already blocks the council — one decision per year.
-    if sim.pending_dilemma.is_none() {
-        roll_yearly_event(sim, data, &mut report);
-    }
-
-    sim.trim_log(config.log_limit);
-    report
 }
 
-fn roll_yearly_event(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
+fn roll_monthly_event(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
     if let Some(pending) = event_resolver::roll_event(sim, data) {
         if let Some(template) = data.events.get(&pending.template_id).cloned() {
             let delegated = sim.delegation.is_delegated(template.category);
@@ -295,15 +339,19 @@ mod tests {
 
     #[test]
     fn a_year_produces_resources_and_consumes_food() {
-        let (data, mut sim) = fresh(21);
+        // Events off so the year runs to its boundary without a decision stop.
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        let mut sim = SimState::new_campaign(&data, "preservers", 21);
         let food_before = sim.resources.food;
         let credits_before = sim.resources.credits;
-        sim.pending_event = None;
 
         let crew_mult = crate::simulation::crew::production_multipliers(&sim, &data);
         advance_year(&mut sim, &data);
 
-        assert_eq!(sim.year, 1);
+        assert_eq!(sim.year(), 1);
         let upkeep =
             (sim.population.count as f32 * data.config.food_per_person_per_year).ceil() as i64;
         assert_eq!(
@@ -339,7 +387,13 @@ mod tests {
 
     #[test]
     fn contract_completes_at_target_duration() {
-        let (data, mut sim) = fresh(5);
+        // Events off so every advance_year completes a full year — the loop
+        // then crosses exactly target_duration_years boundaries (W3).
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        let mut sim = SimState::new_campaign(&data, "preservers", 5);
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
         // Plenty of food so the population survives the run deterministically.
@@ -347,8 +401,6 @@ mod tests {
 
         let mut completed = None;
         for _ in 0..template.target_duration_years {
-            sim.pending_event = None;
-            sim.pending_dilemma = None;
             let report = advance_year(&mut sim, &data);
             if report.contract_completed.is_some() {
                 completed = report.contract_completed;
@@ -363,12 +415,15 @@ mod tests {
 
     #[test]
     fn ship_speed_adds_bonus_contract_progress() {
-        let (data, mut sim) = fresh(9);
+        // Events off so the year boundary (and its contract advance) runs whole.
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        let mut sim = SimState::new_campaign(&data, "preservers", 9);
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
         sim.resources.food = 1_000_000;
-        sim.pending_event = None;
-        sim.pending_dilemma = None;
 
         advance_year(&mut sim, &data);
 
@@ -384,22 +439,116 @@ mod tests {
 
     #[test]
     fn a_certain_dilemma_fires_on_the_generation_boundary() {
+        // Events off isolates the generation dilemma as the only decision.
         let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 1.0;
         let mut sim = SimState::new_campaign(&data, "preservers", 11);
         sim.resources.food = 1_000_000;
 
         for _ in 0..data.config.generation_interval_years {
-            sim.pending_event = None;
-            sim.pending_dilemma = None;
             advance_year(&mut sim, &data);
         }
         let pending = sim
             .pending_dilemma
             .as_ref()
             .expect("a dilemma must confront the new generation at 100% chance");
-        assert_eq!(pending.rolled_year, sim.year);
-        // The dilemma blocks the year's event roll — one decision at a time.
+        assert_eq!(pending.rolled_month_clock, sim.month_clock);
+        // The dilemma blocks the month's event roll — one decision at a time.
         assert!(sim.pending_event.is_none());
+    }
+
+    #[test]
+    fn a_ten_year_advance_matches_ten_one_year_advances() {
+        // Events off isolates the deterministic economic path so the two
+        // cadences must land byte-for-byte on the same state.
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+
+        let mut fast = SimState::new_campaign(&data, "preservers", 123);
+        let mut slow = SimState::new_campaign(&data, "preservers", 123);
+        fast.resources.food = 1_000_000;
+        slow.resources.food = 1_000_000;
+
+        fast.speed = SpeedStep::TenYears;
+        let report = advance(&mut fast, &data);
+        assert_eq!(
+            report.months_advanced, 120,
+            "a clear 10-yr advance crosses exactly 120 months"
+        );
+        assert_eq!(fast.month_clock, 120);
+        assert_eq!(fast.year(), 10);
+
+        for _ in 0..10 {
+            advance_year(&mut slow, &data);
+        }
+        assert_eq!(fast.month_clock, slow.month_clock);
+        assert_eq!(fast.resources.credits, slow.resources.credits);
+        assert_eq!(fast.population.count, slow.population.count);
+        assert_eq!(
+            fast.ship.hull_integrity.to_bits(),
+            slow.ship.hull_integrity.to_bits(),
+            "10 boundary ticks either way leave identical hull wear"
+        );
+    }
+
+    #[test]
+    fn a_fast_advance_stops_at_the_generation_dilemma() {
+        // Short generations + a certain dilemma + events off: a 10-yr press must
+        // stop dead on the first generation boundary, not run the full 120.
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 1.0;
+        data.config.generation_interval_years = 5;
+
+        let mut sim = SimState::new_campaign(&data, "preservers", 11);
+        sim.resources.food = 1_000_000;
+        sim.speed = SpeedStep::TenYears;
+
+        let report = advance(&mut sim, &data);
+        assert!(
+            sim.pending_dilemma.is_some(),
+            "the generation dilemma must block the fast-forward"
+        );
+        assert_eq!(
+            report.months_advanced, 60,
+            "stopped on the year-5 boundary, not the full 120 months"
+        );
+        assert!(report.months_advanced < 120);
+        assert_eq!(sim.year(), 5);
+    }
+
+    #[test]
+    fn a_fired_event_is_dated_in_the_log() {
+        // Force an event every month (no dilemmas) so a blocking one lands fast;
+        // its pending date must match a stamped log line (W3).
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 1.0;
+        data.config.event_chance_cap = 1.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        let mut sim = SimState::new_campaign(&data, "preservers", 3);
+        sim.resources.food = 1_000_000;
+
+        // Advance until a council-blocking event is pending.
+        for _ in 0..40 {
+            if sim.pending_event.is_some() {
+                break;
+            }
+            advance_year(&mut sim, &data);
+        }
+        let pending = sim
+            .pending_event
+            .clone()
+            .expect("a blocking event should fire under a certain event chance");
+        let year = pending.rolled_month_clock / 12;
+        let month = pending.rolled_month_clock % 12 + 1;
+        assert!(
+            sim.log.iter().any(|e| e.year == year && e.month == month),
+            "the fired event must leave a log line dated Y{year}·M{month:02}"
+        );
     }
 }
