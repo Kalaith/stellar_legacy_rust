@@ -104,6 +104,14 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     }) {
         return false;
     }
+    if template.food_below.is_some_and(|t| sim.resources.food > t)
+        || template.fuel_below.is_some_and(|t| sim.ship.fuel > t)
+        || template
+            .spare_parts_below
+            .is_some_and(|t| sim.ship.spare_parts > t)
+    {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -443,6 +451,29 @@ mod tests {
             after > before,
             "the teaching succession restores lost know-how ({before} -> {after})"
         );
+    }
+
+    #[test]
+    fn a_shortage_gate_holds_an_opportunity_until_the_ship_runs_low() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 13, &picks);
+        // `the_dry_tank` only calls when the fuel fraction is at or below 0.2.
+        let event = data.events.get("the_dry_tank").unwrap();
+        assert_eq!(event.fuel_below, Some(0.2));
+        // Put it in a phase it accepts.
+        let template = data.contracts.get("deep_vein_survey").unwrap();
+        let mut active = crate::simulation::contract::start_contract(template, &sim);
+        active.phase = crate::data::contracts::ContractPhase::Travel;
+        sim.contract = Some(active);
+
+        sim.ship.fuel = 0.8;
+        assert!(
+            !passes_gate(&sim, event),
+            "a full tank keeps the crisis away"
+        );
+        sim.ship.fuel = 0.1;
+        assert!(passes_gate(&sim, event), "a near-dry tank surfaces it");
     }
 
     #[test]

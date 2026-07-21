@@ -968,7 +968,8 @@
     "log": "The cache was no mere resupply but a mother lode — metals and salvage worth more than the whole charter. The council turns the ship for home, holds heavy with fortune."
    }
   ],
-  "family": "survival"
+  "family": "survival",
+  "food_below": 5000
  },
  {
   "id": "native_leader",
@@ -2024,7 +2025,8 @@
     "faction_loss": "settled",
     "log": "A whole people chose the garden world over the dark. The ship sailed lighter, and grieved the leaving even as it filled its holds."
    }
-  ]
+  ],
+  "food_below": 4000
  },
  {
   "id": "fuel_skim",
@@ -2056,7 +2058,8 @@
     },
     "log": "A gentle skim gave the tanks a modest gift and the hull no new scars."
    }
-  ]
+  ],
+  "fuel_below": 0.45
  },
  {
   "id": "crop_blight",
@@ -3181,6 +3184,139 @@
      }
     ],
     "log": "The auto-clinics dosed by rote through the fever season and buried those they guessed wrong on. The understanding slipped a notch further out of living memory."
+   }
+  ]
+ },
+ {
+  "id": "the_dry_tank",
+  "category": "immediate_crisis",
+  "title": "The Dry Tank",
+  "description": "The reaction-mass gauges read near-empty with the destination star still a lifetime ahead. Something has to give, or the ship coasts dark.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "fuel_below": 0.2,
+  "outcomes": [
+   {
+    "id": "cold_coast",
+    "label": "Cut the drives and coast",
+    "description": "Shut down all but life support and fall toward home on momentum alone.",
+    "population_delta": {
+     "morale": -0.07,
+     "unity": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.05
+     }
+    ],
+    "log": "The drives went cold and the ship coasted through the dark on nothing but momentum and nerve. It cost years and it cost comfort, but it kept flying."
+   },
+   {
+    "id": "strip_for_mass",
+    "label": "Feed the reactor the ship itself",
+    "description": "Break down non-essential structure for reaction mass.",
+    "ship_delta": {
+     "fuel": 0.3,
+     "hull_integrity": -0.1,
+     "spare_parts": -10
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The engineers fed whole bulkheads into the reactor. The tank climbed off empty and the ship came home lighter, barer, and scarred by its own hunger."
+   }
+  ]
+ },
+ {
+  "id": "the_empty_lockers",
+  "category": "generational_challenge",
+  "title": "The Empty Lockers",
+  "description": "The spare-parts lockers are bare and the ship still has centuries to run. The machinists want to set up a foundry to make their own — at a cost in metal and hands.",
+  "requires_decision": true,
+  "family": "engineering",
+  "spare_parts_below": 20,
+  "outcomes": [
+   {
+    "id": "build_the_foundry",
+    "label": "Build the foundry",
+    "description": "Turn a hold into a machine shop and mine the cargo for feedstock.",
+    "resource_delta": {
+     "minerals": -300,
+     "credits": -400
+    },
+    "ship_delta": {
+     "spare_parts": 40
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.08
+     }
+    ],
+    "log": "A cargo hold became a foundry, and the ship learned to feed its own repairs. The lockers filled again with parts stamped in the machinists' own dies."
+   },
+   {
+    "id": "ration_the_parts",
+    "label": "Ration what's left",
+    "description": "Hoard the last parts for true emergencies and let the rest wear.",
+    "ship_delta": {
+     "hull_integrity": -0.06
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.08
+     }
+    ],
+    "log": "The last parts went under lock and key. Small faults went unfixed and compounded, and the ship carried a growing debt of deferred repair."
+   }
+  ]
+ },
+ {
+  "id": "the_laden_return",
+  "category": "mission_milestone",
+  "title": "The Laden Return",
+  "description": "The holds are heavy with everything the charter was worth, and a heavy ship is a slow, tempting one. Word of the cargo travels ahead on the homeward lane.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "run_dark",
+    "label": "Run dark and quiet",
+    "description": "Kill the beacons, burn fuel to stay ahead of trouble.",
+    "ship_delta": {
+     "fuel": -0.15
+    },
+    "population_delta": {
+     "stability": 0.04,
+     "morale": -0.02
+    },
+    "log": "The ship went dark and ran the homeward lane like a smuggler, holds full and running lamps cold. Nothing caught it, and no one slept easy."
+   },
+   {
+    "id": "buy_escort",
+    "label": "Hire an escort",
+    "description": "Spend part of the prize to guard the rest.",
+    "resource_delta": {
+     "credits": -1200,
+     "influence": 30
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "A hired escort shadowed the ship home for a cut of the cargo. The prize came in smaller and whole, which the council judged a fair trade."
    }
   ]
  }

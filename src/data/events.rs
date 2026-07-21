@@ -144,6 +144,18 @@ pub struct EventTemplate {
     /// threshold. Empty = ungated.
     #[serde(default)]
     pub knowledge_below: Vec<KnowledgeGate>,
+    /// Provisioning-shortage gates (content-depth iteration): the event only
+    /// enters the pool while the ship is actually short — food store at or below
+    /// `food_below`, fuel fraction at or below `fuel_below`, spare parts at or
+    /// below `spare_parts_below`. `None` = that resource ungated. This is what
+    /// makes a garden-world stop or a fuel-skim read as a *consequence* of
+    /// running low rather than a random roll.
+    #[serde(default)]
+    pub food_below: Option<i64>,
+    #[serde(default)]
+    pub fuel_below: Option<f32>,
+    #[serde(default)]
+    pub spare_parts_below: Option<i64>,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,
