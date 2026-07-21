@@ -468,6 +468,38 @@ mod tests {
     }
 
     #[test]
+    fn the_wandering_mind_gates_on_lost_know_how_and_its_choices_diverge() {
+        // Content-depth event-families round 4: a mystery gated on the same
+        // engineering knowledge decay, whose two outcomes push that knowledge in
+        // opposite directions — trusting the old system erodes understanding,
+        // rebuilding it by hand restores it. The choice must genuinely matter.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 3, &picks);
+        let event = data.events.get("the_wandering_mind").unwrap();
+        assert_eq!(event.knowledge_below[0].id, "engineering_bay");
+        sim.dynasty.generation = 3; // clear its min_generation gate
+
+        // Healthy know-how: the mystery stays out of the pool.
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.8;
+        assert!(!passes_gate(&sim, event));
+        // Decayed: it can fire.
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.2;
+        assert!(passes_gate(&sim, event));
+
+        // Outcome 0 (trust it) erodes knowledge; outcome 1 (rebuild) restores it.
+        let mut trusting = sim.clone();
+        apply_outcome(&mut trusting, &data, event, 0);
+        let mut rebuilding = sim.clone();
+        apply_outcome(&mut rebuilding, &data, event, 1);
+        assert!(
+            trusting.subsystems["engineering_bay"].knowledge
+                < rebuilding.subsystems["engineering_bay"].knowledge,
+            "obeying the old mind should cost understanding that rebuilding restores"
+        );
+    }
+
+    #[test]
     fn a_shortage_gate_holds_an_opportunity_until_the_ship_runs_low() {
         let data = GameData::load().unwrap();
         let picks = crate::state::sim::founding_faction_ids(&data);

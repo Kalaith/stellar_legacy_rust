@@ -5339,5 +5339,252 @@
     "log": "The navigators logged the drifting tanker and its too-convenient bounty and steered well clear. The old hands nodded; a full derelict is a story that rarely ends well."
    }
   ]
+ },
+ {
+  "id": "the_sealed_deck",
+  "category": "mission_milestone",
+  "title": "The Sealed Deck",
+  "description": "A bulkhead on a lower deck was welded shut before anyone now living was born. The founding log gives no reason. A maintenance sweep wants the space back; the elders want it left as it is.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "breach_the_seal",
+    "label": "Cut it open",
+    "description": "Reclaim the volume and whatever the founders walled away with it.",
+    "ship_delta": {
+     "life_support": -0.03,
+     "spare_parts": 60
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.04
+     }
+    ],
+    "log": "The seal came away in a gust of decade-stale air. Behind it: a mothballed workshop, a founder's tools laid out as if for a shift that never started. The deck breathes with the ship again, and the shops are the richer for the salvage."
+   },
+   {
+    "id": "honor_the_seal",
+    "label": "Leave it shut",
+    "description": "Some doors the founders closed on purpose. Keep it a closed door.",
+    "population_delta": {
+     "unity": 0.05,
+     "cultural_drift": 0.03
+    },
+    "log": "The sweep was waved off. The sealed deck stays sealed, and the not-knowing becomes its own small faith — a thing the whole ship agrees not to touch, and is quietly closer for agreeing."
+   }
+  ]
+ },
+ {
+  "id": "the_second_log",
+  "category": "legacy_moment",
+  "title": "The Second Log",
+  "description": "An archivist turns up a second ship's log, kept in parallel and never filed. Its account of the founding years diverges hard from the one the schools teach — messier, less proud, harder to love.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_cultural_drift": 0.35,
+  "outcomes": [
+   {
+    "id": "publish_the_second_log",
+    "label": "Publish it",
+    "description": "Let the ship meet its truer, uglier history.",
+    "population_delta": {
+     "unity": -0.04,
+     "cultural_drift": 0.05,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.1
+     }
+    ],
+    "log": "The second log went into the archive beside the first, contradictions and all. The founders came down off their plinth a little; the record, for the first time in generations, is honest enough to be trusted."
+   },
+   {
+    "id": "seal_the_second_log",
+    "label": "Bury it",
+    "description": "The clean story holds the ship together. Keep it clean.",
+    "population_delta": {
+     "stability": 0.04,
+     "unity": 0.02
+    },
+    "long_term_consequences": [
+     "buried_second_log"
+    ],
+    "log": "The second log went into a locked file, and the archivist was thanked for their discretion. The founding stays a story fit to raise children on — and somewhere a truer one waits, filed under nothing."
+   }
+  ]
+ },
+ {
+  "id": "the_wandering_mind",
+  "category": "immediate_crisis",
+  "title": "The Wandering Mind",
+  "description": "The oldest system aboard — the founders' navigation archive — begins issuing course notes no one asked for. With the last engineers who understood it long dead, no one can say whether it is failing or thinking.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_generation": 3,
+  "knowledge_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "trust_the_mind",
+    "label": "Follow its course",
+    "description": "It has never steered you wrong. Let it steer.",
+    "ship_delta": {
+     "fuel": 0.06,
+     "hull_integrity": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": -0.05
+     }
+    ],
+    "log": "The correction shaved a decade's drift off the course and cost less mass than the navigators would have. It was right. No one can say how, and fewer each year even ask — the mind is trusted now the way weather is trusted."
+   },
+   {
+    "id": "purge_and_rebuild",
+    "label": "Wipe it, re-derive by hand",
+    "description": "Better a course you understand than one you obey.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "ship_delta": {
+     "hull_integrity": -0.03
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.15
+     }
+    ],
+    "log": "They purged the archive and re-derived the ship's course by hand from the founding tables — a year of drudgery and one bad wobble before the numbers came right. The crew understands its own heading again, and paid in sweat to."
+   }
+  ]
+ },
+ {
+  "id": "the_festival_war",
+  "category": "legacy_moment",
+  "title": "The Festival War",
+  "description": "Two decks' harvest festivals, drifted apart over generations, have landed in the same week, and each insists the other moved. The galley cannot cater both, and neither will yield the date.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "let_them_compete",
+    "label": "Let them compete",
+    "description": "Rival festivals, one week, may the best deck win.",
+    "resource_delta": {
+     "food": -120
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "unity": -0.03
+    },
+    "log": "Both festivals ran, louder than ever out of pure spite, and the whole ship ate twice. Morale soared; the decks are not speaking, but they are not speaking very cheerfully."
+   },
+   {
+    "id": "merge_the_festivals",
+    "label": "Fuse them into one",
+    "description": "One holiday, ship-wide, that nobody's grandparents ever kept.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.02,
+     "cultural_drift": 0.04
+    },
+    "log": "The council fused the two festivals into a single ship-wide holiday with a new name and older-sounding songs written last month. Within a generation no one will remember it was ever two — which is how all traditions start."
+   }
+  ]
+ },
+ {
+  "id": "the_reconstructed_feast",
+  "category": "generational_challenge",
+  "title": "The Reconstructed Feast",
+  "description": "The key spice for the founders' feast-day dish ran out lifetimes ago. A cook unveils a faithful reconstruction from ship stores. It tastes nothing like the archived recipe, and the mess deck has never been happier.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 6,
+  "outcomes": [
+   {
+    "id": "canonize_the_new_dish",
+    "label": "Call it the real thing",
+    "description": "It is delicious. Let it be the feast.",
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.03
+    },
+    "log": "The reconstruction was declared the true feast-day dish by acclamation, the archive quietly overruled by the nose. The founders would not recognize a bite of it, and would, after one bite, forgive the ship entirely."
+   },
+   {
+    "id": "restore_the_authentic_recipe",
+    "label": "Honor the archive",
+    "description": "Ration a substitute closer to what the founders ate.",
+    "population_delta": {
+     "unity": 0.03,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The archivists were consulted, the nearest substitute rationed out, and the feast served as the founders meant it — drier, greyer, correct. The old families were satisfied. Everyone else ate quietly and remembered last year's."
+   }
+  ]
+ },
+ {
+  "id": "the_office_of_lost_things",
+  "category": "generational_challenge",
+  "title": "The Office of Lost Things",
+  "description": "Without anyone ordering it, a generation has grown an elaborate bureau for cataloguing and returning lost tools and socks. It has forms now, a filing berth, and a proud staff of eleven.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "fund_the_bureau",
+    "label": "Make it real infrastructure",
+    "description": "Give the Office a budget and a mandate. Tools that stop vanishing are tools that stop being remade.",
+    "ship_delta": {
+     "spare_parts": 40
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.03
+     }
+    ],
+    "log": "The Office of Lost Things got a berth, a seal, and a line in the manifest. To general surprise it works — the shops stop bleeding tools, the fabricators run a shift lighter, and eleven people who were doing this anyway now do it on the record."
+   },
+   {
+    "id": "disband_the_bureau",
+    "label": "Reassign the eleven",
+    "description": "Send the staff to real posts. The ship can find its own socks.",
+    "population_delta": {
+     "unity": 0.02,
+     "stability": 0.02,
+     "morale": -0.03
+    },
+    "log": "The Office was thanked and disbanded, its eleven reassigned to posts that were genuinely short-handed. The filing berth is a store room again. People still turn up at the old hatch with lost spanners, and stand a moment, and go."
+   }
+  ]
  }
 ]
