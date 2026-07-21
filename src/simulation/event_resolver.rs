@@ -75,6 +75,16 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    if !template.requires_charter_tag.is_empty() {
+        match sim.contract.as_ref() {
+            Some(contract)
+                if template
+                    .requires_charter_tag
+                    .iter()
+                    .all(|tag| contract.tags.contains(tag)) => {}
+            _ => return false,
+        }
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -311,6 +321,41 @@ mod tests {
             passes_gate(&sim, payoff),
             "sealing the ward unlocks the reopening decades later"
         );
+    }
+
+    #[test]
+    fn a_charter_tag_gate_keys_an_event_to_its_destination() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 7, &picks);
+        // `boarding_alarm` is keyed to hostile-space charters.
+        let event = data.events.get("boarding_alarm").unwrap();
+        assert_eq!(
+            event.requires_charter_tag,
+            vec!["hostile_space".to_string()]
+        );
+
+        // No contract: a charter-tagged event cannot fire.
+        assert!(!passes_gate(&sim, event));
+
+        // A hostile-space charter carries the tag onto the active contract.
+        let template = data.contracts.get("warden_patrol").unwrap();
+        assert!(template.tags.contains(&"hostile_space".to_string()));
+        let mut active = crate::simulation::contract::start_contract(template, &sim);
+        active.phase = crate::data::contracts::ContractPhase::Travel;
+        sim.contract = Some(active);
+        assert!(
+            passes_gate(&sim, event),
+            "a hostile-space charter unlocks the boarding scare"
+        );
+
+        // A colony charter without the tag does not.
+        let peaceful = data.contracts.get("seedfall").unwrap();
+        assert!(!peaceful.tags.contains(&"hostile_space".to_string()));
+        let mut active = crate::simulation::contract::start_contract(peaceful, &sim);
+        active.phase = crate::data::contracts::ContractPhase::Travel;
+        sim.contract = Some(active);
+        assert!(!passes_gate(&sim, event));
     }
 
     #[test]

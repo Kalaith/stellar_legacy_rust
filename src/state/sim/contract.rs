@@ -76,6 +76,11 @@ pub struct ActiveContract {
     /// other half of the ResourceEfficiency metric.
     #[serde(default)]
     pub healthy_energy_months: u32,
+    /// Destination/mission tags copied from the charter at launch
+    /// (content-depth iteration). Events gate on these via
+    /// `EventTemplate::requires_charter_tag`.
+    #[serde(default)]
+    pub tags: Vec<String>,
 }
 
 impl ActiveContract {

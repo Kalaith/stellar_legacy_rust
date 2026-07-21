@@ -1,790 +1,925 @@
 [
-  {
-    "id": "founding_colony",
-    "name": "Founding Charter: Meridian Reach",
-    "objective": "colonization",
-    "description": "Carry ten thousand embryos, a seed vault, and a legal charter four and a half centuries to Meridian Reach, and leave a living settlement behind.",
-    "target_duration_years": 450,
-    "phases": [
-      { "kind": "travel", "years": 150 },
-      { "kind": "operation", "years": 150 },
-      { "kind": "return", "years": 150 }
-    ],
-    "objective_target": 10000,
-    "objective_unit": "settlers landed",
-    "milestones": [
-      {
-        "id": "departure",
-        "name": "Departure burn complete",
-        "progress_threshold": 0.05
-      },
-      {
-        "id": "halfway",
-        "name": "Halfway beacon passed",
-        "progress_threshold": 0.5,
-        "reward": {
-          "influence": 40
-        }
-      },
-      {
-        "id": "site_survey",
-        "name": "Settlement site surveyed",
-        "progress_threshold": 0.85
-      },
-      {
-        "id": "charter_signed",
-        "name": "Colony charter signed",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.3,
-        "target": 0.9
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.35,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.15,
-        "target": 0.7
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.2,
-        "target": 0.6
-      }
-    ],
-    "failure_risks": [
-      "hull_breach",
-      "famine",
-      "succession_crisis"
-    ],
+ {
+  "id": "founding_colony",
+  "name": "Founding Charter: Meridian Reach",
+  "objective": "colonization",
+  "description": "Carry ten thousand embryos, a seed vault, and a legal charter four and a half centuries to Meridian Reach, and leave a living settlement behind.",
+  "target_duration_years": 450,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 150
+   },
+   {
+    "kind": "operation",
+    "years": 150
+   },
+   {
+    "kind": "return",
+    "years": 150
+   }
+  ],
+  "objective_target": 10000,
+  "objective_unit": "settlers landed",
+  "milestones": [
+   {
+    "id": "departure",
+    "name": "Departure burn complete",
+    "progress_threshold": 0.05
+   },
+   {
+    "id": "halfway",
+    "name": "Halfway beacon passed",
+    "progress_threshold": 0.5,
     "reward": {
-      "credits": 8000,
-      "influence": 120
-    },
-    "min_renown": 250
-  },
-  {
-    "id": "deep_vein_survey",
-    "name": "Deep Vein Survey: Karst Belt",
-    "objective": "mining",
-    "description": "Three and a half centuries threading the Karst Belt, charting extractable veins and shipping proof-of-yield cores back by relay.",
-    "target_duration_years": 340,
-    "phases": [
-      { "kind": "travel", "years": 110 },
-      { "kind": "operation", "years": 120 },
-      { "kind": "return", "years": 110 }
-    ],
-    "objective_target": 1200,
-    "objective_unit": "proof-of-yield cores",
-    "milestones": [
-      {
-        "id": "belt_entry",
-        "name": "Belt insertion achieved",
-        "progress_threshold": 0.1
-      },
-      {
-        "id": "first_core",
-        "name": "First core shipped",
-        "progress_threshold": 0.4,
-        "reward": {
-          "minerals": 300
-        }
-      },
-      {
-        "id": "full_chart",
-        "name": "Vein chart completed",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.25,
-        "target": 0.85
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.4,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.2,
-        "target": 0.75
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.15,
-        "target": 0.5
-      }
-    ],
-    "failure_risks": [
-      "hull_breach",
-      "equipment_failure"
-    ],
-    "reward": {
-      "credits": 6000,
-      "minerals": 1500
-    },
-    "min_renown": 0
-  },
-  {
-    "id": "veiled_expanse_survey",
-    "name": "Charter of Discovery: The Veiled Expanse",
-    "objective": "exploration",
-    "description": "Nearly four centuries into the unmapped dark past the last relay, charting a lightless expanse the founders only ever named. Bring back the map, and the naming rights.",
-    "target_duration_years": 360,
-    "phases": [
-      { "kind": "travel", "years": 130 },
-      { "kind": "operation", "years": 100 },
-      { "kind": "return", "years": 130 }
-    ],
-    "objective_target": 40,
-    "objective_unit": "systems charted",
-    "milestones": [
-      {
-        "id": "last_relay",
-        "name": "Last relay beacon cleared",
-        "progress_threshold": 0.1
-      },
-      {
-        "id": "first_charting",
-        "name": "First uncharted system logged",
-        "progress_threshold": 0.45
-      },
-      {
-        "id": "deep_anomaly",
-        "name": "Deep anomaly catalogued",
-        "progress_threshold": 0.75,
-        "reward": {
-          "influence": 70
-        }
-      },
-      {
-        "id": "atlas_sealed",
-        "name": "Expanse atlas sealed",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.2,
-        "target": 0.8
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.45,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.15,
-        "target": 0.7
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.2,
-        "target": 0.55
-      }
-    ],
-    "failure_risks": [
-      "hull_breach",
-      "navigation_error",
-      "morale_collapse"
-    ],
-    "reward": {
-      "credits": 5000,
-      "influence": 260
-    },
-    "min_renown": 100
-  },
-  {
-    "id": "tarssen_relief",
-    "name": "Relief Mandate: The Tarssen Drift",
-    "objective": "rescue",
-    "description": "A generation ship went silent in the Tarssen Drift, three centuries down the dark. Someone may still be breathing when you reach them. Take aboard who remains, and answer for every berth you cannot fill.",
-    "target_duration_years": 300,
-    "phases": [
-      { "kind": "travel", "years": 120 },
-      { "kind": "operation", "years": 60 },
-      { "kind": "return", "years": 120 }
-    ],
-    "objective_target": 800,
-    "objective_unit": "souls recovered",
-    "milestones": [
-      {
-        "id": "distress_fix",
-        "name": "Distress bearing fixed",
-        "progress_threshold": 0.15
-      },
-      {
-        "id": "hull_contact",
-        "name": "Silent hull boarded",
-        "progress_threshold": 0.55
-      },
-      {
-        "id": "survivors_aboard",
-        "name": "Survivors brought aboard",
-        "progress_threshold": 0.85,
-        "reward": {
-          "influence": 90,
-          "credits": 500
-        }
-      },
-      {
-        "id": "safe_harbor",
-        "name": "Refugees delivered to safe harbor",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.4,
-        "target": 0.9
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.3,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.1,
-        "target": 0.6
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.2,
-        "target": 0.6
-      }
-    ],
-    "failure_risks": [
-      "life_support_failure",
-      "overcrowding",
-      "moral_injury"
-    ],
-    "reward": {
-      "credits": 4000,
-      "influence": 340
-    },
-    "min_renown": 0
-  },
-  {
-    "id": "coronal_tap",
-    "name": "Coronal Tap: The Ember Star",
-    "objective": "mining",
-    "description": "Three centuries skimming a red dwarf's corona for raw energy, feeding a collector array the size of a city block.",
-    "target_duration_years": 320,
-    "phases": [
-      { "kind": "travel", "years": 110 },
-      { "kind": "operation", "years": 100 },
-      { "kind": "return", "years": 110 }
-    ],
-    "objective_target": 2000,
-    "objective_unit": "terajoules tapped",
-    "milestones": [
-      {
-        "id": "array_deployed",
-        "name": "Collector array deployed",
-        "progress_threshold": 0.15
-      },
-      {
-        "id": "first_yield",
-        "name": "First energy yield banked",
-        "progress_threshold": 0.5,
-        "reward": {
-          "energy": 600
-        }
-      },
-      {
-        "id": "tap_sealed",
-        "name": "Tap capped and logged",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.25,
-        "target": 0.85
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.4,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.2,
-        "target": 0.75
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.15,
-        "target": 0.5
-      }
-    ],
-    "failure_risks": [
-      "hull_breach",
-      "radiation_creep"
-    ],
-    "reward": {
-      "credits": 5500,
-      "energy": 2000
-    },
-    "min_renown": 0
-  },
-  {
-    "id": "seedfall",
-    "name": "Seedfall Mandate: Ashgrove",
-    "objective": "colonization",
-    "description": "A four-century drop of a second settlement — a hedge against the first. Half the charter, twice the doubt.",
-    "target_duration_years": 420,
-    "phases": [
-      { "kind": "travel", "years": 150 },
-      { "kind": "operation", "years": 120 },
-      { "kind": "return", "years": 150 }
-    ],
-    "objective_target": 6000,
-    "objective_unit": "settlers landed",
-    "milestones": [
-      {
-        "id": "course_locked",
-        "name": "Drop course locked",
-        "progress_threshold": 0.1
-      },
-      {
-        "id": "beacon_lit",
-        "name": "Ashgrove beacon lit",
-        "progress_threshold": 0.6,
-        "reward": {
-          "influence": 50
-        }
-      },
-      {
-        "id": "roots_taken",
-        "name": "First harvest on the ground",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.35,
-        "target": 0.9
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.3,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.15,
-        "target": 0.7
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.2,
-        "target": 0.6
-      }
-    ],
-    "failure_risks": [
-      "famine",
-      "succession_crisis",
-      "hull_breach"
-    ],
-    "reward": {
-      "credits": 7000,
-      "influence": 150
-    },
-    "min_renown": 100
-  },
-  {
-    "id": "starfall_beacon",
-    "name": "Beacon Line: The Starfall Verge",
-    "objective": "exploration",
-    "description": "Four centuries laying a chain of relay beacons out to the Starfall Verge, so the ships that come after need not cross the dark blind.",
-    "target_duration_years": 400,
-    "phases": [
-      { "kind": "travel", "years": 130 },
-      { "kind": "operation", "years": 140 },
-      { "kind": "return", "years": 130 }
-    ],
-    "objective_target": 24,
-    "objective_unit": "beacons seated",
-    "milestones": [
-      {
-        "id": "first_beacon",
-        "name": "First beacon seated",
-        "progress_threshold": 0.2
-      },
-      {
-        "id": "midline",
-        "name": "Midline relay online",
-        "progress_threshold": 0.55,
-        "reward": {
-          "influence": 55
-        }
-      },
-      {
-        "id": "verge_reached",
-        "name": "Verge beacon lit",
-        "progress_threshold": 0.8,
-        "reward": {
-          "credits": 400
-        }
-      },
-      {
-        "id": "line_closed",
-        "name": "Beacon line closed and keyed",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.2,
-        "target": 0.8
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.45,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.2,
-        "target": 0.7
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.15,
-        "target": 0.55
-      }
-    ],
-    "failure_risks": [
-      "navigation_error",
-      "hull_breach",
-      "supply_shortfall"
-    ],
-    "reward": {
-      "credits": 5200,
-      "influence": 210
-    },
-    "min_renown": 250
-  },
-  {
-    "id": "hollow_fleet",
-    "name": "Recovery Writ: The Hollow Fleet",
-    "objective": "rescue",
-    "description": "A refugee convoy broke apart in transit generations ago, its lifeboats still drifting on dead reckoning three centuries down the dark. Find what holds air, and choose which to reach first.",
-    "target_duration_years": 310,
-    "phases": [
-      { "kind": "travel", "years": 120 },
-      { "kind": "operation", "years": 70 },
-      { "kind": "return", "years": 120 }
-    ],
-    "objective_target": 600,
-    "objective_unit": "survivors recovered",
-    "milestones": [
-      {
-        "id": "wreck_line",
-        "name": "Convoy wreck-line plotted",
-        "progress_threshold": 0.15
-      },
-      {
-        "id": "first_boat",
-        "name": "First lifeboat matched and boarded",
-        "progress_threshold": 0.5,
-        "reward": {
-          "influence": 60
-        }
-      },
-      {
-        "id": "last_holdout",
-        "name": "Last holdout recovered",
-        "progress_threshold": 0.85,
-        "reward": {
-          "credits": 450
-        }
-      },
-      {
-        "id": "manifest_closed",
-        "name": "Recovery manifest closed",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.4,
-        "target": 0.9
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.3,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.1,
-        "target": 0.6
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.2,
-        "target": 0.6
-      }
-    ],
-    "failure_risks": [
-      "life_support_failure",
-      "overcrowding",
-      "moral_injury"
-    ],
-    "reward": {
-      "credits": 3800,
-      "influence": 320
-    },
-    "min_renown": 0
-  },
-  {
-    "id": "warden_patrol",
-    "name": "Warden Mandate: The Cinder Lane",
-    "objective": "rescue",
-    "description": "Near four centuries standing guard over a lawless shipping lane — escorting convoys, answering distress calls, and pulling the wrecked from the dark before the scavengers do.",
-    "target_duration_years": 380,
-    "phases": [
-      { "kind": "travel", "years": 120 },
-      { "kind": "operation", "years": 140 },
-      { "kind": "return", "years": 120 }
-    ],
-    "objective_target": 50,
-    "objective_unit": "convoys escorted",
-    "min_renown": 100,
-    "milestones": [
-      {
-        "id": "lane_reached",
-        "name": "On station at the Cinder Lane",
-        "progress_threshold": 0.15
-      },
-      {
-        "id": "first_rescue",
-        "name": "First convoy escorted home",
-        "progress_threshold": 0.5,
-        "reward": {
-          "influence": 60
-        }
-      },
-      {
-        "id": "lane_pacified",
-        "name": "The lane runs quiet",
-        "progress_threshold": 0.85,
-        "reward": {
-          "credits": 600
-        }
-      },
-      {
-        "id": "mandate_closed",
-        "name": "Warden mandate discharged",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.3,
-        "target": 0.85
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.35,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.15,
-        "target": 0.65
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.2,
-        "target": 0.6
-      }
-    ],
-    "failure_risks": [
-      "morale_collapse",
-      "overcrowding",
-      "navigation_error"
-    ],
-    "reward": {
-      "credits": 6000,
-      "influence": 300
+     "influence": 40
     }
+   },
+   {
+    "id": "site_survey",
+    "name": "Settlement site surveyed",
+    "progress_threshold": 0.85
+   },
+   {
+    "id": "charter_signed",
+    "name": "Colony charter signed",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.3,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.35,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "famine",
+   "succession_crisis"
+  ],
+  "reward": {
+   "credits": 8000,
+   "influence": 120
   },
-  {
-    "id": "the_long_dark",
-    "name": "The Long Dark: Charter to the Rim",
-    "objective": "exploration",
-    "description": "Six centuries to the galaxy's ragged edge and back, charting the black between the last stars. The founders dreamed of this run and never dared it. Only a storied ship should.",
-    "target_duration_years": 600,
-    "phases": [
-      { "kind": "travel", "years": 250 },
-      { "kind": "operation", "years": 100 },
-      { "kind": "return", "years": 250 }
-    ],
-    "objective_target": 30,
-    "objective_unit": "systems charted",
-    "min_renown": 400,
-    "milestones": [
-      {
-        "id": "last_star",
-        "name": "Last charted star behind us",
-        "progress_threshold": 0.15
-      },
-      {
-        "id": "the_deep",
-        "name": "Into the true dark",
-        "progress_threshold": 0.45,
-        "reward": {
-          "influence": 100
-        }
-      },
-      {
-        "id": "the_rim",
-        "name": "The rim reached and read",
-        "progress_threshold": 0.75,
-        "reward": {
-          "credits": 800,
-          "influence": 100
-        }
-      },
-      {
-        "id": "return_home",
-        "name": "The long way home, charted",
-        "progress_threshold": 1.0
-      }
-    ],
-    "success_metrics": [
-      {
-        "id": "population_survival",
-        "kind": "population_survival",
-        "name": "Population survival",
-        "weight": 0.25,
-        "target": 0.8
-      },
-      {
-        "id": "mission_completion",
-        "kind": "mission_completion",
-        "name": "Mission completion",
-        "weight": 0.45,
-        "target": 1.0
-      },
-      {
-        "id": "resource_efficiency",
-        "kind": "resource_efficiency",
-        "name": "Resource efficiency",
-        "weight": 0.1,
-        "target": 0.65
-      },
-      {
-        "id": "social_cohesion",
-        "kind": "social_cohesion",
-        "name": "Social cohesion",
-        "weight": 0.2,
-        "target": 0.55
-      }
-    ],
-    "failure_risks": [
-      "navigation_error",
-      "morale_collapse",
-      "hull_breach",
-      "supply_shortfall"
-    ],
+  "min_renown": 250,
+  "tags": [
+   "colony",
+   "long_haul"
+  ]
+ },
+ {
+  "id": "deep_vein_survey",
+  "name": "Deep Vein Survey: Karst Belt",
+  "objective": "mining",
+  "description": "Three and a half centuries threading the Karst Belt, charting extractable veins and shipping proof-of-yield cores back by relay.",
+  "target_duration_years": 340,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 110
+   },
+   {
+    "kind": "operation",
+    "years": 120
+   },
+   {
+    "kind": "return",
+    "years": 110
+   }
+  ],
+  "objective_target": 1200,
+  "objective_unit": "proof-of-yield cores",
+  "milestones": [
+   {
+    "id": "belt_entry",
+    "name": "Belt insertion achieved",
+    "progress_threshold": 0.1
+   },
+   {
+    "id": "first_core",
+    "name": "First core shipped",
+    "progress_threshold": 0.4,
     "reward": {
-      "credits": 9000,
-      "influence": 500
+     "minerals": 300
     }
-  }
+   },
+   {
+    "id": "full_chart",
+    "name": "Vein chart completed",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.85
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.4,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.2,
+    "target": 0.75
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.15,
+    "target": 0.5
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "equipment_failure"
+  ],
+  "reward": {
+   "credits": 6000,
+   "minerals": 1500
+  },
+  "min_renown": 0,
+  "tags": [
+   "mining",
+   "deep_space"
+  ]
+ },
+ {
+  "id": "veiled_expanse_survey",
+  "name": "Charter of Discovery: The Veiled Expanse",
+  "objective": "exploration",
+  "description": "Nearly four centuries into the unmapped dark past the last relay, charting a lightless expanse the founders only ever named. Bring back the map, and the naming rights.",
+  "target_duration_years": 360,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 130
+   },
+   {
+    "kind": "operation",
+    "years": 100
+   },
+   {
+    "kind": "return",
+    "years": 130
+   }
+  ],
+  "objective_target": 40,
+  "objective_unit": "systems charted",
+  "milestones": [
+   {
+    "id": "last_relay",
+    "name": "Last relay beacon cleared",
+    "progress_threshold": 0.1
+   },
+   {
+    "id": "first_charting",
+    "name": "First uncharted system logged",
+    "progress_threshold": 0.45
+   },
+   {
+    "id": "deep_anomaly",
+    "name": "Deep anomaly catalogued",
+    "progress_threshold": 0.75,
+    "reward": {
+     "influence": 70
+    }
+   },
+   {
+    "id": "atlas_sealed",
+    "name": "Expanse atlas sealed",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.2,
+    "target": 0.8
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.45,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.55
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "navigation_error",
+   "morale_collapse"
+  ],
+  "reward": {
+   "credits": 5000,
+   "influence": 260
+  },
+  "min_renown": 100,
+  "tags": [
+   "survey",
+   "deep_space",
+   "uncharted"
+  ]
+ },
+ {
+  "id": "tarssen_relief",
+  "name": "Relief Mandate: The Tarssen Drift",
+  "objective": "rescue",
+  "description": "A generation ship went silent in the Tarssen Drift, three centuries down the dark. Someone may still be breathing when you reach them. Take aboard who remains, and answer for every berth you cannot fill.",
+  "target_duration_years": 300,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 120
+   },
+   {
+    "kind": "operation",
+    "years": 60
+   },
+   {
+    "kind": "return",
+    "years": 120
+   }
+  ],
+  "objective_target": 800,
+  "objective_unit": "souls recovered",
+  "milestones": [
+   {
+    "id": "distress_fix",
+    "name": "Distress bearing fixed",
+    "progress_threshold": 0.15
+   },
+   {
+    "id": "hull_contact",
+    "name": "Silent hull boarded",
+    "progress_threshold": 0.55
+   },
+   {
+    "id": "survivors_aboard",
+    "name": "Survivors brought aboard",
+    "progress_threshold": 0.85,
+    "reward": {
+     "influence": 90,
+     "credits": 500
+    }
+   },
+   {
+    "id": "safe_harbor",
+    "name": "Refugees delivered to safe harbor",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.4,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.3,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.1,
+    "target": 0.6
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "life_support_failure",
+   "overcrowding",
+   "moral_injury"
+  ],
+  "reward": {
+   "credits": 4000,
+   "influence": 340
+  },
+  "min_renown": 0,
+  "tags": [
+   "relief",
+   "inhabited"
+  ]
+ },
+ {
+  "id": "coronal_tap",
+  "name": "Coronal Tap: The Ember Star",
+  "objective": "mining",
+  "description": "Three centuries skimming a red dwarf's corona for raw energy, feeding a collector array the size of a city block.",
+  "target_duration_years": 320,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 110
+   },
+   {
+    "kind": "operation",
+    "years": 100
+   },
+   {
+    "kind": "return",
+    "years": 110
+   }
+  ],
+  "objective_target": 2000,
+  "objective_unit": "terajoules tapped",
+  "milestones": [
+   {
+    "id": "array_deployed",
+    "name": "Collector array deployed",
+    "progress_threshold": 0.15
+   },
+   {
+    "id": "first_yield",
+    "name": "First energy yield banked",
+    "progress_threshold": 0.5,
+    "reward": {
+     "energy": 600
+    }
+   },
+   {
+    "id": "tap_sealed",
+    "name": "Tap capped and logged",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.85
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.4,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.2,
+    "target": 0.75
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.15,
+    "target": 0.5
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "radiation_creep"
+  ],
+  "reward": {
+   "credits": 5500,
+   "energy": 2000
+  },
+  "min_renown": 0,
+  "tags": [
+   "mining",
+   "stellar_hazard"
+  ]
+ },
+ {
+  "id": "seedfall",
+  "name": "Seedfall Mandate: Ashgrove",
+  "objective": "colonization",
+  "description": "A four-century drop of a second settlement — a hedge against the first. Half the charter, twice the doubt.",
+  "target_duration_years": 420,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 150
+   },
+   {
+    "kind": "operation",
+    "years": 120
+   },
+   {
+    "kind": "return",
+    "years": 150
+   }
+  ],
+  "objective_target": 6000,
+  "objective_unit": "settlers landed",
+  "milestones": [
+   {
+    "id": "course_locked",
+    "name": "Drop course locked",
+    "progress_threshold": 0.1
+   },
+   {
+    "id": "beacon_lit",
+    "name": "Ashgrove beacon lit",
+    "progress_threshold": 0.6,
+    "reward": {
+     "influence": 50
+    }
+   },
+   {
+    "id": "roots_taken",
+    "name": "First harvest on the ground",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.35,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.3,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "famine",
+   "succession_crisis",
+   "hull_breach"
+  ],
+  "reward": {
+   "credits": 7000,
+   "influence": 150
+  },
+  "min_renown": 100,
+  "tags": [
+   "colony",
+   "garden"
+  ]
+ },
+ {
+  "id": "starfall_beacon",
+  "name": "Beacon Line: The Starfall Verge",
+  "objective": "exploration",
+  "description": "Four centuries laying a chain of relay beacons out to the Starfall Verge, so the ships that come after need not cross the dark blind.",
+  "target_duration_years": 400,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 130
+   },
+   {
+    "kind": "operation",
+    "years": 140
+   },
+   {
+    "kind": "return",
+    "years": 130
+   }
+  ],
+  "objective_target": 24,
+  "objective_unit": "beacons seated",
+  "milestones": [
+   {
+    "id": "first_beacon",
+    "name": "First beacon seated",
+    "progress_threshold": 0.2
+   },
+   {
+    "id": "midline",
+    "name": "Midline relay online",
+    "progress_threshold": 0.55,
+    "reward": {
+     "influence": 55
+    }
+   },
+   {
+    "id": "verge_reached",
+    "name": "Verge beacon lit",
+    "progress_threshold": 0.8,
+    "reward": {
+     "credits": 400
+    }
+   },
+   {
+    "id": "line_closed",
+    "name": "Beacon line closed and keyed",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.2,
+    "target": 0.8
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.45,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.2,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.15,
+    "target": 0.55
+   }
+  ],
+  "failure_risks": [
+   "navigation_error",
+   "hull_breach",
+   "supply_shortfall"
+  ],
+  "reward": {
+   "credits": 5200,
+   "influence": 210
+  },
+  "min_renown": 250,
+  "tags": [
+   "survey",
+   "uncharted",
+   "anomaly"
+  ]
+ },
+ {
+  "id": "hollow_fleet",
+  "name": "Recovery Writ: The Hollow Fleet",
+  "objective": "rescue",
+  "description": "A refugee convoy broke apart in transit generations ago, its lifeboats still drifting on dead reckoning three centuries down the dark. Find what holds air, and choose which to reach first.",
+  "target_duration_years": 310,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 120
+   },
+   {
+    "kind": "operation",
+    "years": 70
+   },
+   {
+    "kind": "return",
+    "years": 120
+   }
+  ],
+  "objective_target": 600,
+  "objective_unit": "survivors recovered",
+  "milestones": [
+   {
+    "id": "wreck_line",
+    "name": "Convoy wreck-line plotted",
+    "progress_threshold": 0.15
+   },
+   {
+    "id": "first_boat",
+    "name": "First lifeboat matched and boarded",
+    "progress_threshold": 0.5,
+    "reward": {
+     "influence": 60
+    }
+   },
+   {
+    "id": "last_holdout",
+    "name": "Last holdout recovered",
+    "progress_threshold": 0.85,
+    "reward": {
+     "credits": 450
+    }
+   },
+   {
+    "id": "manifest_closed",
+    "name": "Recovery manifest closed",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.4,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.3,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.1,
+    "target": 0.6
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "life_support_failure",
+   "overcrowding",
+   "moral_injury"
+  ],
+  "reward": {
+   "credits": 3800,
+   "influence": 320
+  },
+  "min_renown": 0,
+  "tags": [
+   "relief",
+   "derelict",
+   "hostile_space"
+  ]
+ },
+ {
+  "id": "warden_patrol",
+  "name": "Warden Mandate: The Cinder Lane",
+  "objective": "rescue",
+  "description": "Near four centuries standing guard over a lawless shipping lane — escorting convoys, answering distress calls, and pulling the wrecked from the dark before the scavengers do.",
+  "target_duration_years": 380,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 120
+   },
+   {
+    "kind": "operation",
+    "years": 140
+   },
+   {
+    "kind": "return",
+    "years": 120
+   }
+  ],
+  "objective_target": 50,
+  "objective_unit": "convoys escorted",
+  "min_renown": 100,
+  "milestones": [
+   {
+    "id": "lane_reached",
+    "name": "On station at the Cinder Lane",
+    "progress_threshold": 0.15
+   },
+   {
+    "id": "first_rescue",
+    "name": "First convoy escorted home",
+    "progress_threshold": 0.5,
+    "reward": {
+     "influence": 60
+    }
+   },
+   {
+    "id": "lane_pacified",
+    "name": "The lane runs quiet",
+    "progress_threshold": 0.85,
+    "reward": {
+     "credits": 600
+    }
+   },
+   {
+    "id": "mandate_closed",
+    "name": "Warden mandate discharged",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.3,
+    "target": 0.85
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.35,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.65
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "morale_collapse",
+   "overcrowding",
+   "navigation_error"
+  ],
+  "reward": {
+   "credits": 6000,
+   "influence": 300
+  },
+  "tags": [
+   "patrol",
+   "hostile_space"
+  ]
+ },
+ {
+  "id": "the_long_dark",
+  "name": "The Long Dark: Charter to the Rim",
+  "objective": "exploration",
+  "description": "Six centuries to the galaxy's ragged edge and back, charting the black between the last stars. The founders dreamed of this run and never dared it. Only a storied ship should.",
+  "target_duration_years": 600,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 250
+   },
+   {
+    "kind": "operation",
+    "years": 100
+   },
+   {
+    "kind": "return",
+    "years": 250
+   }
+  ],
+  "objective_target": 30,
+  "objective_unit": "systems charted",
+  "min_renown": 400,
+  "milestones": [
+   {
+    "id": "last_star",
+    "name": "Last charted star behind us",
+    "progress_threshold": 0.15
+   },
+   {
+    "id": "the_deep",
+    "name": "Into the true dark",
+    "progress_threshold": 0.45,
+    "reward": {
+     "influence": 100
+    }
+   },
+   {
+    "id": "the_rim",
+    "name": "The rim reached and read",
+    "progress_threshold": 0.75,
+    "reward": {
+     "credits": 800,
+     "influence": 100
+    }
+   },
+   {
+    "id": "return_home",
+    "name": "The long way home, charted",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.8
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.45,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.1,
+    "target": 0.65
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.55
+   }
+  ],
+  "failure_risks": [
+   "navigation_error",
+   "morale_collapse",
+   "hull_breach",
+   "supply_shortfall"
+  ],
+  "reward": {
+   "credits": 9000,
+   "influence": 500
+  },
+  "tags": [
+   "survey",
+   "deep_space",
+   "long_haul",
+   "uncharted"
+  ]
+ }
 ]

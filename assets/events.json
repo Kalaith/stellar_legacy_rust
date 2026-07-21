@@ -2665,5 +2665,172 @@
     "log": "The council re-welded the cold berth and struck it from the tour. The ship agreed, a little too quickly, never to speak of it."
    }
   ]
+ },
+ {
+  "id": "boarding_alarm",
+  "category": "immediate_crisis",
+  "title": "Boarders on the Hull",
+  "description": "Grapples ring against the outer plating in the dark between stars. Someone is trying to come aboard uninvited.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "hostile_space"
+  ],
+  "outcomes": [
+   {
+    "id": "repel_them",
+    "label": "Repel the boarders",
+    "description": "Meet them at the locks. Hold the ship.",
+    "ship_delta": {
+     "hull_integrity": -0.06,
+     "spare_parts": -4
+    },
+    "population_delta": {
+     "count": -20,
+     "unity": 0.07,
+     "morale": 0.03
+    },
+    "log": "The security decks met the boarders at the airlocks and threw them back into the dark. The ship held, and remembered who held it."
+   },
+   {
+    "id": "parley",
+    "label": "Open a channel",
+    "description": "Buy passage with cargo instead of blood.",
+    "resource_delta": {
+     "minerals": -250,
+     "credits": -300,
+     "influence": 30
+    },
+    "population_delta": {
+     "morale": -0.04,
+     "stability": 0.03
+    },
+    "log": "A price was named and paid through the locks. No one died, and no one felt safe again on that stretch."
+   }
+  ]
+ },
+ {
+  "id": "green_temptation",
+  "category": "generational_challenge",
+  "title": "The Green Temptation",
+  "description": "The charter's route skims a living world, warm and unclaimed. A faction petitions to be let off here rather than sail on.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "garden"
+  ],
+  "outcomes": [
+   {
+    "id": "let_them_settle",
+    "label": "Let them settle",
+    "description": "Fewer mouths, fewer hands, a colony you did not plan.",
+    "resource_delta": {
+     "food": 500
+    },
+    "faction_loss": "settled",
+    "log": "A whole faction went down to the green world with seed and tools, and the ship sailed on lighter, quieter, and short a people."
+   },
+   {
+    "id": "hold_the_course",
+    "label": "Hold the course",
+    "description": "The charter comes first. Sail past the temptation.",
+    "population_delta": {
+     "morale": -0.06,
+     "unity": -0.04,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The council refused the green world. The charter held, and for a generation people spoke of the paradise they were not allowed to keep."
+   }
+  ]
+ },
+ {
+  "id": "starless_reach",
+  "category": "legacy_moment",
+  "title": "The Starless Reach",
+  "description": "For a long stretch the charts show nothing at all — no star near enough to name, no world to steer by. A generation is born and dies seeing only the ship.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "travel"
+  ],
+  "requires_charter_tag": [
+   "deep_space"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "turn_inward",
+    "label": "Turn the ship inward",
+    "description": "Make the voyage itself the world. Festivals, archives, invented seasons.",
+    "population_delta": {
+     "unity": 0.06,
+     "cultural_drift": 0.08,
+     "morale": 0.04
+    },
+    "log": "With no star to steer by, the ship became its own country — new holidays, new songs, a people who called the void home."
+   },
+   {
+    "id": "hold_the_mission",
+    "label": "Hold to the mission",
+    "description": "Drill the charter into them. The destination is the meaning.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "stability": 0.04,
+     "morale": -0.03
+    },
+    "log": "The elders held the charter up like a lantern through the starless reach. The people kept faith, and kept their eyes forward, and grew a little grim."
+   }
+  ]
+ },
+ {
+  "id": "the_richer_find",
+  "category": "mission_milestone",
+  "title": "The Richer Find",
+  "description": "The survey turns up something the charter never listed — a vein, a cache, a claim worth more than the whole contract. Log it and press on, or take it and turn for home.",
+  "requires_decision": true,
+  "family": "mystery",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "uncharted"
+  ],
+  "outcomes": [
+   {
+    "id": "take_it_home",
+    "label": "Take it and turn for home",
+    "description": "Cut the charter short. Sail back on the strength of the find.",
+    "resource_delta": {
+     "credits": 3000,
+     "minerals": 400
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "force_return": true,
+    "log": "The find was worth more than the whole charter. The ship logged the site, filled its holds, and turned early for home, richer than the contract ever promised."
+   },
+   {
+    "id": "finish_the_charter",
+    "label": "Finish the charter first",
+    "description": "Honor the contract; the find will keep.",
+    "resource_delta": {
+     "influence": 50
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.03
+    },
+    "log": "The council marked the find and held to the charter. Debts are debts; the richer prize would wait for whoever came after."
+   }
+  ]
  }
 ]

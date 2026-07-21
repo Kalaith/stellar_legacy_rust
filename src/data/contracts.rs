@@ -115,4 +115,10 @@ pub struct ContractTemplate {
     /// (PLAN M4.8). 0 = available from the founding; richer charters gate higher.
     #[serde(default)]
     pub min_renown: i64,
+    /// Free-form destination/mission tags (content-depth iteration) copied onto
+    /// the active contract at launch. Events may gate on them via
+    /// `EventTemplate::requires_charter_tag`, so a charter colors which events
+    /// its voyage can surface (e.g. `hostile_space`, `garden`, `long_haul`).
+    #[serde(default)]
+    pub tags: Vec<String>,
 }

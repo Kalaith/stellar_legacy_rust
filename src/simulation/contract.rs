@@ -102,6 +102,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         beats: Vec::new(),
         healthy_food_months: 0,
         healthy_energy_months: 0,
+        tags: template.tags.clone(),
     }
 }
 

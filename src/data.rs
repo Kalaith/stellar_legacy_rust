@@ -424,6 +424,21 @@ mod tests {
                 "event grant_component '{id}' must be a real ship component"
             );
         }
+        // Content-depth charter↔event coupling: every charter-tag an event gates
+        // on must exist on at least one charter, or the event can never fire.
+        let charter_tags: std::collections::HashSet<&String> = data
+            .contracts
+            .iter()
+            .flat_map(|(_, c)| c.tags.iter())
+            .collect();
+        for (id, e) in data.events.iter() {
+            for tag in &e.requires_charter_tag {
+                assert!(
+                    charter_tags.contains(tag),
+                    "event '{id}' requires charter tag '{tag}' no charter carries"
+                );
+            }
+        }
         // W7: six authored founding factions, ideology within [-1, 1]. The
         // registry keys on id, so a count of six also proves the ids are unique.
         assert_eq!(data.factions.len(), 6, "six founding factions");

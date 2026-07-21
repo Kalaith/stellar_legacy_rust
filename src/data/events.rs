@@ -94,6 +94,13 @@ pub struct EventTemplate {
     /// Empty = ungated.
     #[serde(default)]
     pub requires_consequence: Vec<String>,
+    /// Charter-tag gate (content-depth iteration): the event only enters the
+    /// pool while an active contract carries every tag listed here (see
+    /// `ContractTemplate::tags`). This lets a destination color its own event
+    /// pool — hostile space breeds boarding scares, garden runs breed settlers.
+    /// Empty = any charter (or none).
+    #[serde(default)]
+    pub requires_charter_tag: Vec<String>,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,
