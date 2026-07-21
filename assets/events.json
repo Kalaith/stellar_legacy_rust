@@ -6456,5 +6456,143 @@
     "log": "The medics threw the list away and saved whoever their hands reached first, and the ship broke its own oldest law in the smoke and did not regret it. It lost some it could not afford to lose and strained the wards to breaking, and learned that a rule written to be obeyed once can, once, be refused."
    }
   ]
+ },
+ {
+  "id": "the_far_horizon",
+  "category": "legacy_moment",
+  "title": "The Far Horizon",
+  "description": "A generation has done the arithmetic that the charter tried to keep gentle: the ship is still outbound, still burning toward a target none of them will ever see resolve, and the survey their grandparents promised belongs to grandchildren not yet born. They are the crossing generation — all cost, no arrival. They want to know what they are for.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_charter_tag": [
+   "outbound_push"
+  ],
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "keep_the_heading",
+    "label": "Hold the heading, honor the crossing",
+    "description": "Teach the crossing itself as the work — that carrying the ship one more generation toward the horizon is a life's worth of purpose, arrival or no.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.04,
+     "morale": -0.02
+    },
+    "log": "The ship taught its crossing generation to take pride in the burn itself — in being the hands that carried her another lifetime toward a horizon they would never reach. It held them to the heading, and it asked of them a patience that is close kin to faith."
+   },
+   {
+    "id": "let_the_crossing_be_home",
+    "label": "Let the crossing become the point",
+    "description": "Stop pretending the destination is theirs. Let this generation build a life for its own sake in the long burn, target or no target.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.03,
+     "cultural_drift": 0.05
+    },
+    "log": "The council stopped asking the crossing generation to live for a horizon and let them live for the ship they were on. They grew content and a little untethered from the writ, and the far target became a thing the ship was pointed at rather than a thing anyone still ached to reach."
+   }
+  ]
+ },
+ {
+  "id": "the_turnback_petition",
+  "category": "immediate_crisis",
+  "title": "The Turnback Petition",
+  "description": "Deep in the outbound push, with the target still a century off, a movement has gathered signatures the council cannot ignore: turn the ship around now, they say, and go home with nothing rather than spend three more generations reaching a structure that may be dust by the time anyone arrives. The charter, or the descendants. Choose.",
+  "requires_decision": true,
+  "family": "ethics",
+  "requires_charter_tag": [
+   "outbound_push"
+  ],
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "press_on",
+    "label": "Press on — the charter stands",
+    "description": "The ship was cast off to reach the far target and it will reach it. Deny the petition and hold the burn.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "morale": -0.05,
+     "unity": -0.04,
+     "stability": 0.03
+    },
+    "log": "The council denied the petition and held the outbound burn, and the ship pressed on toward a horizon a hundred years off over the quiet fury of the ones who wanted to go home. The charter stood. So did the grudge, banked for the generations still owed to the crossing."
+   },
+   {
+    "id": "turn_back_now",
+    "label": "Turn back now, with nothing",
+    "description": "Spare the descendants the rest of the crossing. Abandon the far target, lay in a course for home, and carry back only the ship and the people.",
+    "force_return": true,
+    "population_delta": {
+     "morale": 0.06,
+     "unity": 0.05,
+     "legacy_loyalty": -0.06
+    },
+    "log": "The ship came about in the deep dark, a hundred years short of a target no living eye had ever seen, and laid in the long course for home with empty holds and lighter hearts. The charter was forfeit and the writ would pay nothing, and for the first time in three generations the crew was sailing toward a place someone aboard might actually live to reach."
+   }
+  ]
+ },
+ {
+  "id": "the_aging_outbound",
+  "category": "generational_challenge",
+  "title": "The Aging Out",
+  "description": "Three centuries into a one-way burn, the ship is doing something no ordinary voyage asks of it: growing old with nowhere to refit. A normal charter renews its worn systems at the destination; this one must nurse every module the whole way there, on nothing but what it carried and what it can strip from itself.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_charter_tag": [
+   "outbound_push"
+  ],
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "cannibalize_redundancy",
+    "label": "Strip redundancy to keep the core fresh",
+    "description": "Feed the ship's spare systems to its essential ones. Arrive with no margin, but arrive with the vitals sound.",
+    "ship_delta": {
+     "spare_parts": -40
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.05
+     },
+     {
+      "id": "life_support_habitat",
+      "condition": 0.04
+     }
+    ],
+    "log": "The crews stripped the ship's every redundancy to keep the engineering bay and the habitat plant sound — arriving, eventually, with the vitals strong and nothing whatsoever held back against the next failure. It was the right call for a ship that could not refit, and it left her with no second chances in the hold."
+   },
+   {
+    "id": "let_the_margins_fail",
+    "label": "Let the margins fail, arrive threadbare",
+    "description": "Keep the reserves; let the non-essential systems wear out and go dark. The ship will reach the target worn thin but with its stores intact.",
+    "ship_delta": {
+     "spare_parts": 10
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.05
+     },
+     {
+      "id": "security",
+      "condition": -0.04
+     }
+    ],
+    "log": "The council chose to hoard its reserves and let the ship wear where it could stand to — darkened workshops, a hollowed watch, systems left to fail one by one across the long burn. The stores stayed full and the ship arrived threadbare, aged and thin, having spent its own condition to keep its margins."
+   }
+  ]
  }
 ]

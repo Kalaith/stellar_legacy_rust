@@ -1312,5 +1312,102 @@
    "deep_space",
    "long_return"
   ]
+ },
+ {
+  "id": "the_far_crossing",
+  "name": "Survey Writ: The Far Crossing",
+  "objective": "exploration",
+  "description": "The target is a structure at the very edge of the reachable dark — so far that the crossing to it is the whole of the trial. Three centuries of one-way burn into unmapped space, with no port, no relief, and no turning aside; a brief survey when the ship finally arrives; and then home along a course that, for the first time, is charted. The hard part is getting there, and no one who casts off will live to see it done.",
+  "target_duration_years": 480,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 300
+   },
+   {
+    "kind": "operation",
+    "years": 70
+   },
+   {
+    "kind": "return",
+    "years": 110
+   }
+  ],
+  "objective_target": 40,
+  "objective_unit": "deep-survey returns",
+  "milestones": [
+   {
+    "id": "past_the_charts",
+    "name": "Beyond the last charted star",
+    "progress_threshold": 0.15
+   },
+   {
+    "id": "halfway_out",
+    "name": "Midpoint of the outbound crossing",
+    "progress_threshold": 0.35,
+    "reward": {
+     "influence": 80
+    }
+   },
+   {
+    "id": "arrival",
+    "name": "The structure resolves — arrival at last",
+    "progress_threshold": 0.75,
+    "reward": {
+     "credits": 500
+    }
+   },
+   {
+    "id": "survey_closed",
+    "name": "Survey complete, course home laid in",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.4,
+    "target": 0.8
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.25,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.6
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "the_long_doubt",
+   "systems_aged_out",
+   "the_turnback"
+  ],
+  "reward": {
+   "credits": 9000,
+   "influence": 420
+  },
+  "min_renown": 400,
+  "tags": [
+   "survey",
+   "uncharted",
+   "deep_space",
+   "outbound_push"
+  ]
  }
 ]

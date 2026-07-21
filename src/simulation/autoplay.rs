@@ -348,6 +348,45 @@ mod tests {
         );
     }
 
+    /// Soak the outbound-dominant charter shape (content-depth charters round 5):
+    /// the 480-year Far Crossing spends 300 years on the outbound burn before a
+    /// 70-year survey and a 110-year charted return — the mirror of the Long
+    /// Tow, where the *getting there* is the trial. Assert the topology is
+    /// genuinely travel-dominant, then fly it end to end for a legal resolution.
+    #[test]
+    fn the_far_crossing_resolves_over_an_outbound_dominant_voyage() {
+        use crate::data::contracts::ContractPhase;
+
+        let data = GameData::load().unwrap();
+        let template = data.contracts.get("the_far_crossing").unwrap();
+        let travel_years: u32 = template
+            .phases
+            .iter()
+            .filter(|p| p.kind == ContractPhase::Travel)
+            .map(|p| p.years)
+            .sum();
+        assert!(
+            travel_years * 2 > template.target_duration_years,
+            "the far crossing's outbound burn must dominate the voyage: {travel_years} of {} years",
+            template.target_duration_years
+        );
+
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            77,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let outcome = play_mission(&mut sim, &data, "the_far_crossing", 560);
+        assert!(
+            outcome.completed || outcome.extinct,
+            "the far crossing should resolve, not run out the clock (year {}, completed {}, extinct {})",
+            outcome.final_year,
+            outcome.completed,
+            outcome.extinct
+        );
+    }
+
     /// The 600-year Long Dark is allowed to end either way: completion or the
     /// total loss of the line. This test only pins the invariants (asserted in
     /// `play_mission`) and that the run terminates in one of the two legal
