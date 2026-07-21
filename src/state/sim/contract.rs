@@ -68,6 +68,14 @@ pub struct ActiveContract {
     /// each when its month arrives.
     #[serde(default)]
     pub beats: Vec<CampaignBeat>,
+    /// Months in which the food store sat above its crisis threshold — one half
+    /// of the ResourceEfficiency metric, accrued over the whole voyage.
+    #[serde(default)]
+    pub healthy_food_months: u32,
+    /// Months in which the energy store sat above its crisis threshold — the
+    /// other half of the ResourceEfficiency metric.
+    #[serde(default)]
+    pub healthy_energy_months: u32,
 }
 
 impl ActiveContract {
@@ -83,6 +91,18 @@ impl ActiveContract {
             1.0
         } else {
             (self.months_elapsed as f32 / total as f32).min(1.0)
+        }
+    }
+
+    /// Fraction of voyage months the upkeep stores (food, energy) spent above
+    /// their crisis thresholds — provisioning discipline measured across the
+    /// whole contract, not an instant snapshot. 1.0 before any month elapses.
+    pub fn upkeep_health(&self) -> f32 {
+        if self.months_elapsed == 0 {
+            1.0
+        } else {
+            (self.healthy_food_months + self.healthy_energy_months) as f32
+                / (2 * self.months_elapsed) as f32
         }
     }
 

@@ -100,6 +100,8 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         // Beats are laid out at LAUNCH by the caller (W6); a bare contract has
         // none until then.
         beats: Vec::new(),
+        healthy_food_months: 0,
+        healthy_energy_months: 0,
     }
 }
 
@@ -129,6 +131,10 @@ pub fn advance_contract(
 
         let prev_phase = contract.phase;
         contract.months_elapsed += 1;
+        // Provisioning discipline accrues month by month: each upkeep store
+        // above its crisis threshold banks credit toward ResourceEfficiency.
+        contract.healthy_food_months += food_ok as u32;
+        contract.healthy_energy_months += energy_ok as u32;
         let (index, phase) = contract.phase_at(contract.months_elapsed);
         contract.phase_index = index;
         contract.phase = phase;
@@ -156,6 +162,7 @@ pub fn advance_contract(
         }
 
         let objective_fraction = contract.objective_fraction();
+        let upkeep_health = contract.upkeep_health();
         for metric in &mut contract.metrics {
             metric.current = match metric.kind {
                 MetricKind::PopulationSurvival => {
@@ -167,12 +174,11 @@ pub fn advance_contract(
                 }
                 // Mission completion now reads the quantified objective (W2).
                 MetricKind::MissionCompletion => objective_fraction,
-                // Skeleton reading: fraction of the two upkeep resources above
-                // their crisis thresholds. TODO(next agent): replace with a real
-                // spent-vs-produced efficiency ratio tracked across the contract.
-                MetricKind::ResourceEfficiency => {
-                    (food_ok as u32 as f32 + energy_ok as u32 as f32) / 2.0
-                }
+                // Provisioning discipline across the whole voyage: the fraction
+                // of elapsed months each upkeep store held above its crisis
+                // threshold. A ship that never ran low scores 1.0; every lean
+                // month drags the score down for the rest of the contract.
+                MetricKind::ResourceEfficiency => upkeep_health,
                 MetricKind::SocialCohesion => unity,
             };
         }
@@ -428,6 +434,53 @@ mod tests {
         assert!(
             pay.credits > 0 && pay.credits < template.reward.credits,
             "prorated pay is neither full nor zero"
+        );
+    }
+
+    #[test]
+    fn resource_efficiency_tracks_lean_months_across_the_voyage() {
+        let (data, mut sim) = armed(6, "deep_vein_survey");
+        let efficiency = |sim: &crate::state::sim::SimState| {
+            sim.contract
+                .as_ref()
+                .unwrap()
+                .metrics
+                .iter()
+                .find(|m| m.kind == MetricKind::ResourceEfficiency)
+                .unwrap()
+                .current
+        };
+
+        // Ten well-provisioned months: full marks.
+        sim.resources.food = data.config.low_food_threshold + 1_000;
+        sim.resources.energy = data.config.low_energy_threshold + 1_000;
+        for _ in 0..10 {
+            advance_contract(&mut sim, &data.config, 0);
+        }
+        assert_eq!(
+            efficiency(&sim),
+            1.0,
+            "a voyage that never runs low scores full efficiency"
+        );
+
+        // Ten months with the larder empty: only the energy half banks credit,
+        // so the running fraction settles at (10*2 + 10*1) / (20*2) = 0.75.
+        sim.resources.food = 0;
+        for _ in 0..10 {
+            advance_contract(&mut sim, &data.config, 0);
+        }
+        assert!(
+            (efficiency(&sim) - 0.75).abs() < 1e-6,
+            "lean months drag the voyage-long score: {}",
+            efficiency(&sim)
+        );
+
+        // The lean stretch stays on the record after stores recover.
+        sim.resources.food = data.config.low_food_threshold + 1_000;
+        advance_contract(&mut sim, &data.config, 0);
+        assert!(
+            efficiency(&sim) < 1.0,
+            "a famine is not forgotten once the stores refill"
         );
     }
 
