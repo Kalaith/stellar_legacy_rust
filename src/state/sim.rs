@@ -333,6 +333,10 @@ pub struct SimState {
     /// at the year boundary to double that year's systems decay (W4).
     #[serde(default)]
     pub fuel_stalled_this_year: bool,
+    /// Set when the player dismisses the first-voyage checklist; it also stops
+    /// showing once the Chronicle records a completed mission.
+    #[serde(default)]
+    pub tutorial_dismissed: bool,
     pub market: MarketState,
     pub delegation: DelegationSettings,
     pub pending_event: Option<PendingEvent>,
@@ -419,6 +423,7 @@ impl SimState {
             selected_charter: None,
             stalled_months: 0,
             fuel_stalled_this_year: false,
+            tutorial_dismissed: false,
             market,
             delegation: DelegationSettings::default(),
             pending_event: None,

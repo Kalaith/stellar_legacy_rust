@@ -8,7 +8,7 @@
     "credits": 10000,
     "energy": 5000,
     "minerals": 2000,
-    "food": 3000,
+    "food": 12000,
     "influence": 100
   },
   "base_production": {
@@ -26,7 +26,7 @@
   "life_support_warning_threshold": 0.8,
   "hull_decay_per_year": 0.0035,
   "life_support_decay_per_year": 0.0025,
-  "starting_spare_parts": 60,
+  "starting_spare_parts": 300,
   "parts_upkeep_per_year": 1,
   "maintenance_decay_relief": 0.4,
   "generation_interval_years": 25,
@@ -49,6 +49,36 @@
     "fuel_cost_credits_per_point": 30,
     "no_fuel_decay_multiplier": 2.0,
     "part_cost_credits": 12
+  },
+  "tutorial": {
+    "drydock_hint": "FIRST VOYAGE - Select a charter below to open the PREP screen and ready the ship.",
+    "steps": [
+      {
+        "id": "choose_charter",
+        "label": "Choose a charter",
+        "tip": "Compare length and reward, then SELECT a charter to consider it. Nothing is committed until you press LAUNCH."
+      },
+      {
+        "id": "stock_food",
+        "label": "Stock food for the voyage",
+        "tip": "The larder must cover centuries: need = crew x rations x years. The farms offset some of it every year, but a shortfall means starvation in deep space. Use the stock-up button here, or trade on the MARKET screen."
+      },
+      {
+        "id": "stock_parts",
+        "label": "Rack spare parts",
+        "tip": "Upkeep consumes parts every year, and without them the hull wears at full rate. Stock the shortfall before departure - the black sells nothing."
+      },
+      {
+        "id": "fuel_tanks",
+        "label": "Top off the fuel tanks",
+        "tip": "Fuel burns in transit. A dry tank stalls the voyage and strains every system aboard."
+      },
+      {
+        "id": "launch",
+        "label": "Press [ LAUNCH ]",
+        "tip": "Departure locks the loadout. From here, generations will live and die before the ship sees home again."
+      }
+    ]
   },
   "subsystems": {
     "knowledge_start": 0.7,

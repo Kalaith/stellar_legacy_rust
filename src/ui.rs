@@ -180,6 +180,8 @@ pub enum UiAction {
     Refuel,
     /// Stock spare parts in drydock (W4 provisioning, PREP screen).
     BuyParts(i64),
+    /// Hide the first-voyage checklist for the rest of the campaign.
+    DismissTutorial,
     PurchaseComponent(ComponentKind, String),
     FieldRepair(crate::simulation::ship::RepairKind),
     FullRepair,

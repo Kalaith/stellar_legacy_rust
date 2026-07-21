@@ -289,6 +289,12 @@ impl Game {
                 }
                 None
             }
+            UiAction::DismissTutorial => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    gameplay.sim.tutorial_dismissed = true;
+                }
+                None
+            }
             UiAction::BuyParts(amount) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     match crate::simulation::ship::buy_parts(

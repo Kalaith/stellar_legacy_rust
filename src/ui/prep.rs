@@ -216,7 +216,77 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<U
     );
     y += 8.0;
 
-    let _ = y;
+    // --- First-voyage checklist (tutorial) ---
+    // Shown until the Chronicle records a mission or the player dismisses it;
+    // every label and tip is authored in game_config, per the data rule.
+    if !sim.tutorial_dismissed && ctx.chronicle.entries.is_empty() {
+        let step_done = |id: &str| match id {
+            "choose_charter" => true, // being on PREP means one is selected
+            "stock_food" => food_short == 0,
+            "stock_parts" => parts_short == 0,
+            "fuel_tanks" => sim.ship.fuel >= 0.999,
+            // "launch" (and anything unknown) completes only by doing it.
+            _ => false,
+        };
+        let steps = &ctx.data.config.tutorial.steps;
+        let boxed = Rect::new(
+            content.x,
+            y + 20.0,
+            content.w,
+            92.0 + steps.len() as f32 * 22.0,
+        );
+        draw_surface(
+            boxed,
+            &SurfaceStyle::new(term::surface_inset()).with_border(1.0, term::faint()),
+        );
+        draw_ui_text_ex(
+            "FIRST VOYAGE // PRE-LAUNCH CHECKLIST",
+            boxed.x + 12.0,
+            boxed.y + 22.0,
+            TextStyle::new(14.0, term::primary()).params(),
+        );
+        if term_button(
+            Rect::new(boxed.right() - 92.0, boxed.y + 8.0, 84.0, 22.0),
+            "DISMISS",
+            true,
+            mouse,
+        ) {
+            actions.push(UiAction::DismissTutorial);
+        }
+
+        let active = steps.iter().position(|s| !step_done(&s.id));
+        let mut sy = boxed.y + 46.0;
+        for (i, step) in steps.iter().enumerate() {
+            let done = step_done(&step.id);
+            let (mark, color) = if done {
+                ("[x]", term::accent())
+            } else if active == Some(i) {
+                ("[>]", term::primary())
+            } else {
+                ("[ ]", term::dim())
+            };
+            draw_ui_text_ex(
+                &format!("{mark} {}", step.label),
+                boxed.x + 12.0,
+                sy,
+                TextStyle::new(13.0, color).params(),
+            );
+            sy += 22.0;
+        }
+        // The tip for whatever the voyage needs next.
+        if let Some(step) = active.and_then(|i| steps.get(i)) {
+            draw_text_block(
+                &step.tip,
+                boxed.x + 12.0,
+                sy + 4.0,
+                boxed.w - 24.0,
+                40.0,
+                12.0,
+                3.0,
+                term::dim(),
+            );
+        }
+    }
 
     // --- Commit / refuel ---
     let refuel_missing = 1.0 - sim.ship.fuel;

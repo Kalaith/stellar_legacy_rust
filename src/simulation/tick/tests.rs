@@ -68,9 +68,11 @@ fn a_neglected_generational_voyage_wears_the_ship_to_the_edge() {
         &crate::state::sim::founding_faction_ids(&data),
     );
     sim.resources.food = 1_000_000;
+    // Pin the stores to a 60-part baseline (the founding stock is far larger
+    // now) so the test keeps measuring the unmaintained wear curve: ~60
+    // maintained years, then the ship wears at full rate.
+    sim.ship.spare_parts = 60;
 
-    // Starting parts cover ~60 maintained years; after that the ship wears
-    // at full rate. Over 300 years with no repair it comes home a wreck.
     for _ in 0..300 {
         advance_year(&mut sim, &data);
     }

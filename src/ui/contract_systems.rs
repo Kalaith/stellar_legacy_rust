@@ -267,11 +267,25 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
         TextStyle::new(13.0, term::dim()).params(),
     );
     y += 20.0;
+    // On a brand-new campaign the line becomes the tutorial's pointer toward
+    // the PREP screen (authored in game_config).
+    let tutorial_active = !sim.tutorial_dismissed && ctx.chronicle.entries.is_empty();
+    let (hint, hint_color) = if tutorial_active {
+        (
+            ctx.data.config.tutorial.drydock_hint.as_str(),
+            term::accent(),
+        )
+    } else {
+        (
+            "Repair or refit on the SHIP screen, then choose the next charter:",
+            term::faint(),
+        )
+    };
     draw_ui_text_ex(
-        "Repair or refit on the SHIP screen, then choose the next charter:",
+        hint,
         content.x,
         y,
-        TextStyle::new(12.0, term::faint()).params(),
+        TextStyle::new(12.0, hint_color).params(),
     );
     let cards = Rect::new(
         content.x,

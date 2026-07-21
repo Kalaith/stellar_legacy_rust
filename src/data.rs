@@ -123,6 +123,8 @@ pub struct GameConfig {
     pub factions: FactionConfig,
     /// Pre-launch provisioning + fuel-as-consumable tunables (W4).
     pub provisioning: ProvisioningConfig,
+    /// First-voyage tutorial content: the drydock hint and PREP checklist.
+    pub tutorial: TutorialConfig,
     /// Ship-subsystem knowledge/training tunables (W5).
     pub subsystems: SubsystemsConfig,
     pub crew: CrewConfig,
@@ -245,6 +247,25 @@ pub struct ProvisioningConfig {
     pub no_fuel_decay_multiplier: f32,
     /// Credits per spare part when stocking up in drydock (PREP screen).
     pub part_cost_credits: i64,
+}
+
+/// One step of the first-voyage checklist. The `id` binds it to a completion
+/// check in the PREP screen; label and tip are authored content.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TutorialStep {
+    pub id: String,
+    pub label: String,
+    pub tip: String,
+}
+
+/// First-voyage tutorial content. Shown only until the Chronicle records a
+/// mission (or the player dismisses it); all text is data, per the hard rule.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TutorialConfig {
+    /// One-line hint over the drydock charter list before any charter is chosen.
+    pub drydock_hint: String,
+    /// Ordered pre-launch checklist steps for the PREP screen.
+    pub steps: Vec<TutorialStep>,
 }
 
 /// archetype; recruiting fills a vacancy, training raises the holder's
@@ -558,5 +579,59 @@ mod tests {
                 "family '{family}' has only {n} templates (W6 wants >= 6)"
             );
         }
+    }
+
+    #[test]
+    fn tutorial_steps_cover_the_launch_flow() {
+        let data = GameData::load().unwrap();
+        let tutorial = &data.config.tutorial;
+        assert!(!tutorial.drydock_hint.trim().is_empty());
+        // The PREP checklist binds these ids to completion checks — the
+        // authored steps must match them exactly, in launch order.
+        let ids: Vec<&str> = tutorial.steps.iter().map(|s| s.id.as_str()).collect();
+        assert_eq!(
+            ids,
+            [
+                "choose_charter",
+                "stock_food",
+                "stock_parts",
+                "fuel_tanks",
+                "launch"
+            ],
+            "tutorial steps must match the PREP checklist's known ids"
+        );
+        for step in &tutorial.steps {
+            assert!(!step.label.trim().is_empty(), "step '{}' label", step.id);
+            assert!(!step.tip.trim().is_empty(), "step '{}' tip", step.id);
+        }
+    }
+
+    #[test]
+    fn a_new_ship_sails_provisioned_for_a_starter_charter() {
+        // A new player should be able to fly a renown-0 charter without
+        // shopping first: the founding stores cover the shortest one whole.
+        let data = GameData::load().unwrap();
+        let config = &data.config;
+        let starter_years = data
+            .contracts
+            .iter()
+            .filter(|(_, c)| c.min_renown == 0)
+            .map(|(_, c)| c.target_duration_years)
+            .min()
+            .expect("at least one renown-0 charter");
+        let food_need = (config.starting_population as f32
+            * config.food_per_person_per_year
+            * starter_years as f32)
+            .ceil() as i64;
+        assert!(
+            config.starting_resources.food >= food_need,
+            "founding food {} must cover a {starter_years}-yr starter charter ({food_need})",
+            config.starting_resources.food
+        );
+        assert!(
+            config.starting_spare_parts >= config.parts_upkeep_per_year * starter_years as i64,
+            "founding parts {} must cover {starter_years} years of upkeep",
+            config.starting_spare_parts
+        );
     }
 }
