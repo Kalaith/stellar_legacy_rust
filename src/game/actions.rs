@@ -24,21 +24,49 @@ impl Game {
                 }
                 None
             }
+            UiAction::ToggleFaction(id) => {
+                let starting = self.data.config.factions.starting_count as usize;
+                if let GameState::Menu(menu) = &mut self.state {
+                    // Toggling off is always allowed; toggling on is capped at
+                    // the founding count (W7).
+                    let already = menu.selected_factions.iter().any(|f| f == &id);
+                    if already || menu.selected_factions.len() < starting {
+                        menu.toggle_faction(&id);
+                    }
+                }
+                None
+            }
             UiAction::StartNewGame => {
-                let legacy_id = match &self.state {
-                    GameState::Menu(menu) => self
-                        .legacy_ids
-                        .get(menu.selected_legacy)
-                        .cloned()
-                        .unwrap_or_else(|| "preservers".to_owned()),
-                    _ => "preservers".to_owned(),
+                let starting = self.data.config.factions.starting_count as usize;
+                let selection = match &self.state {
+                    GameState::Menu(menu) => {
+                        let legacy = self
+                            .legacy_ids
+                            .get(menu.selected_legacy)
+                            .cloned()
+                            .unwrap_or_else(|| "preservers".to_owned());
+                        Some((legacy, menu.selected_factions.clone()))
+                    }
+                    _ => None,
                 };
                 // Seed is random per campaign; determinism holds *within* a
                 // campaign because the seed is stored in the save (GDD §5.6).
-                Some(StateTransition::NewCampaign {
-                    legacy_id,
-                    seed: rng::random_u64(),
-                })
+                match selection {
+                    Some((legacy_id, faction_ids)) if faction_ids.len() == starting => {
+                        Some(StateTransition::NewCampaign {
+                            legacy_id,
+                            seed: rng::random_u64(),
+                            faction_ids,
+                        })
+                    }
+                    Some(_) => {
+                        self.notifications.warning(format!(
+                            "Choose exactly {starting} founding factions to begin."
+                        ));
+                        None
+                    }
+                    None => None,
+                }
             }
             UiAction::ContinueGame => Some(StateTransition::LoadCampaign),
             UiAction::DeleteSave => {
@@ -111,6 +139,15 @@ impl Game {
                 }
                 None
             }
+            UiAction::RecruitFactionGroup(id) => {
+                if let GameState::Gameplay(gameplay) = &mut self.state {
+                    match gameplay.sim.recruit_faction_group(&self.data, &id) {
+                        Ok(()) => self.notifications.success("A new people has come aboard."),
+                        Err(err) => self.notifications.warning(err),
+                    }
+                }
+                None
+            }
             UiAction::ResolveEvent(index) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     let sim = &mut gameplay.sim;
@@ -120,7 +157,7 @@ impl Game {
                         .and_then(|p| self.data.events.get(&p.template_id))
                         .cloned();
                     if let Some(template) = template {
-                        event_resolver::apply_outcome(sim, &template, index);
+                        event_resolver::apply_outcome(sim, &self.data, &template, index);
                     } else {
                         sim.pending_event = None;
                     }

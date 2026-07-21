@@ -62,6 +62,8 @@ pub fn play_mission(
     };
 
     let max_months = max_years * 12;
+    // Once a faction has left the ship it must never reappear as Aboard (W7).
+    let mut ever_lost: std::collections::HashSet<String> = std::collections::HashSet::new();
     while sim.month_clock < max_months {
         // Clear any blocking council decision by taking the first choice — the
         // same dumb policy the game's own soak has always used.
@@ -70,7 +72,7 @@ pub fn play_mission(
         }
         if let Some(pending) = sim.pending_event.clone() {
             match data.events.get(&pending.template_id).cloned() {
-                Some(t) => event_resolver::apply_outcome(sim, &t, 0),
+                Some(t) => event_resolver::apply_outcome(sim, data, &t, 0),
                 None => sim.pending_event = None,
             }
         }
@@ -91,6 +93,17 @@ pub fn play_mission(
         let report = advance(sim, data);
         outcome.final_year = sim.year();
         assert_year_invariants(sim);
+        for faction in &sim.factions {
+            if faction.is_aboard() {
+                assert!(
+                    !ever_lost.contains(&faction.faction_id),
+                    "a lost faction returned to Aboard: {}",
+                    faction.faction_id
+                );
+            } else {
+                ever_lost.insert(faction.faction_id.clone());
+            }
+        }
 
         if let Some((score, _)) = report.contract_completed {
             outcome.completed = true;
@@ -136,6 +149,29 @@ fn assert_year_invariants(sim: &SimState) {
             sim.year()
         );
     }
+    // W7: Aboard members always sum to the head count, and a faction that has
+    // left the ship carries no members.
+    let aboard_sum: u32 = sim
+        .factions
+        .iter()
+        .filter(|f| f.is_aboard())
+        .map(|f| f.members)
+        .sum();
+    assert_eq!(
+        aboard_sum,
+        sim.population.count,
+        "faction members must sum to population.count (year {})",
+        sim.year()
+    );
+    for faction in &sim.factions {
+        if !faction.is_aboard() {
+            assert_eq!(
+                faction.members, 0,
+                "a departed faction carries no members ({})",
+                faction.faction_id
+            );
+        }
+    }
 }
 
 #[cfg(test)]
@@ -149,7 +185,12 @@ mod tests {
     #[test]
     fn deep_vein_survey_completes_with_a_living_dynasty() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 2024);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            2024,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
 
         let outcome = play_mission(&mut sim, &data, "deep_vein_survey", 420);
 
@@ -176,7 +217,12 @@ mod tests {
     #[test]
     fn the_long_dark_ends_in_completion_or_extinction() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "wanderers", 7);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            7,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
 
         let outcome = play_mission(&mut sim, &data, "the_long_dark", 700);
 
@@ -202,7 +248,12 @@ mod tests {
         // Fly the contract clock straight through — no economy needed to measure
         // the objective the timeline banks.
         let full_fraction = {
-            let mut sim = SimState::new_campaign(&data, "preservers", 2024);
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                2024,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
             sim.contract = Some(start_contract(&template, &sim));
             let total = sim.contract.as_ref().unwrap().total_months();
             while sim.contract.as_ref().unwrap().months_elapsed < total {
@@ -213,7 +264,12 @@ mod tests {
         assert!(full_fraction >= 0.99, "a full term meets the objective");
 
         let abort_fraction = {
-            let mut sim = SimState::new_campaign(&data, "preservers", 2024);
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                2024,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
             sim.contract = Some(start_contract(&template, &sim));
             while sim.contract.as_ref().unwrap().months_elapsed < 150 * 12 {
                 advance_contract(&mut sim, &data.config, 0);

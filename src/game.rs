@@ -445,8 +445,12 @@ impl Game {
         self.mission_started = None;
         self.last_mission_real_secs = None;
         match transition {
-            StateTransition::NewCampaign { legacy_id, seed } => {
-                let mut sim = SimState::new_campaign(&self.data, &legacy_id, seed);
+            StateTransition::NewCampaign {
+                legacy_id,
+                seed,
+                faction_ids,
+            } => {
+                let mut sim = SimState::new_campaign(&self.data, &legacy_id, seed, &faction_ids);
                 // A new dynasty inherits a head start from the Chronicle (§7)
                 // and the player's default council delegation (§5.4).
                 sim.delegation = self.delegation_defaults;

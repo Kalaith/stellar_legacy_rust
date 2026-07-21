@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ascension_circle",
+    "name": "The Ascension Circle",
+    "ideology": 0.9,
+    "description": "Transhumanist zealots who read the voyage as a chrysalis — flesh is a first draft, to be rewritten in transit. They welcome every augmentation the ship can bear.",
+    "log_name": "the Ascension Circle"
+  },
+  {
+    "id": "steel_covenant",
+    "name": "The Steel Covenant",
+    "ideology": 0.5,
+    "description": "Machinists and engineers who trust tools over doctrine. If a thing can be built, maintained, and improved, the Covenant will build it — and argue the theology later.",
+    "log_name": "the Steel Covenant"
+  },
+  {
+    "id": "meridian_accord",
+    "name": "The Meridian Accord",
+    "ideology": 0.0,
+    "description": "Pragmatic administrators who hold the middle line, weighing each innovation against each tradition and committing wholly to neither.",
+    "log_name": "the Meridian Accord"
+  },
+  {
+    "id": "hearth_union",
+    "name": "The Hearth Union",
+    "ideology": -0.3,
+    "description": "Keepers of home and hearth who prize continuity — the shared meal, the remembered name — over the cold promise of the new.",
+    "log_name": "the Hearth Union"
+  },
+  {
+    "id": "verdant_kin",
+    "name": "The Verdant Kin",
+    "ideology": -0.6,
+    "description": "Soil-tenders who measure worth in living things. They distrust the sealed machine and keep the ship's green heart beating against the dark.",
+    "log_name": "the Verdant Kin"
+  },
+  {
+    "id": "first_flame",
+    "name": "Keepers of the First Flame",
+    "ideology": -0.9,
+    "description": "Austere traditionalists who guard the founders' first covenant against every revision. To the Keepers, change is only a slower kind of forgetting.",
+    "log_name": "the Keepers of the First Flame"
+  }
+]

@@ -3,6 +3,7 @@
 pub mod contracts;
 pub mod crew;
 pub mod events;
+pub mod factions;
 pub mod legacies;
 pub mod ship_components;
 
@@ -17,6 +18,7 @@ use serde::{Deserialize, Serialize};
 use contracts::ContractTemplate;
 use crew::{CrewArchetype, DynastyNamePools};
 use events::EventTemplate;
+use factions::{FactionConfig, FactionDef};
 use legacies::LegacyDef;
 use ship_components::ShipComponentCatalog;
 
@@ -26,6 +28,7 @@ const SHIP_COMPONENTS_JSON: &str = include_str!("../assets/ship_components.json"
 const EVENTS_JSON: &str = include_str!("../assets/events.json");
 const LEGACIES_JSON: &str = include_str!("../assets/legacies.json");
 const CONTRACTS_JSON: &str = include_str!("../assets/contracts.json");
+const FACTIONS_JSON: &str = include_str!("../assets/factions.json");
 const DYNASTY_NAMES_JSON: &str = include_str!("../assets/dynasty_names.json");
 const CREW_ARCHETYPES_JSON: &str = include_str!("../assets/crew_archetypes.json");
 
@@ -113,6 +116,8 @@ pub struct GameConfig {
     pub event_chance_cap: f32,
     /// Chance a legacy dilemma confronts each new generation (GDD §5.5).
     pub dilemma_chance_per_generation: f32,
+    /// Founding-faction tunables (W7).
+    pub factions: FactionConfig,
     pub crew: CrewConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
@@ -263,6 +268,7 @@ pub struct GameData {
     pub events: DataRegistry<EventTemplate>,
     pub legacies: DataRegistry<LegacyDef>,
     pub contracts: DataRegistry<ContractTemplate>,
+    pub factions: DataRegistry<FactionDef>,
     pub dynasty_names: DynastyNamePools,
     pub crew_archetypes: Vec<CrewArchetype>,
     pub texture_manifest: Vec<TextureConfig>,
@@ -276,6 +282,7 @@ impl GameData {
             events: DataRegistry::from_embedded_json(EVENTS_JSON, "id")?,
             legacies: DataRegistry::from_embedded_json(LEGACIES_JSON, "id")?,
             contracts: DataRegistry::from_embedded_json(CONTRACTS_JSON, "id")?,
+            factions: DataRegistry::from_embedded_json(FACTIONS_JSON, "id")?,
             dynasty_names: load_embedded_json_labeled("dynasty_names", DYNASTY_NAMES_JSON)?,
             crew_archetypes: load_embedded_json_labeled("crew_archetypes", CREW_ARCHETYPES_JSON)?,
             texture_manifest: load_embedded_json(TEXTURE_MANIFEST_JSON)?,
@@ -371,6 +378,17 @@ mod tests {
                 "event grant_component '{id}' must be a real ship component"
             );
         }
+        // W7: six authored founding factions, ideology within [-1, 1]. The
+        // registry keys on id, so a count of six also proves the ids are unique.
+        assert_eq!(data.factions.len(), 6, "six founding factions");
+        for (id, faction) in data.factions.iter() {
+            assert!(
+                (-1.0..=1.0).contains(&faction.ideology),
+                "faction '{id}' ideology out of range: {}",
+                faction.ideology
+            );
+        }
+
         assert_eq!(data.ship_components.hulls.len(), 5);
         assert_eq!(data.ship_components.engines.len(), 5);
         assert_eq!(data.ship_components.weapons.len(), 5);

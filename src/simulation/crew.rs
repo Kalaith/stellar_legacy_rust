@@ -170,7 +170,12 @@ mod tests {
 
     fn fresh(seed: u64) -> (GameData, SimState) {
         let data = GameData::load().unwrap();
-        let sim = SimState::new_campaign(&data, "preservers", seed);
+        let sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            seed,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         (data, sim)
     }
 

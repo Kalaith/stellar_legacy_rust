@@ -154,7 +154,12 @@ mod tests {
     #[test]
     fn failure_risk_matches_gdd_formula() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
 
         let calm = failure_risk(&sim, &data.config);
         assert_eq!(calm.total, 0);
@@ -172,7 +177,12 @@ mod tests {
     #[test]
     fn legacy_specific_counters_only_threaten_their_own_legacy() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "wanderers", 2);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            2,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         // Adaptors' counters must not add risk to a Wanderer campaign.
         sim.legacy.body_horror_events = 10;
         sim.legacy.existential_dread = 1.0;
@@ -187,14 +197,24 @@ mod tests {
     fn combat_lifts_wanderer_dilemma_odds_only() {
         let data = GameData::load().unwrap();
         // A Wanderer ship with a weapon installed beats its base odds.
-        let mut wanderer = SimState::new_campaign(&data, "wanderers", 4);
+        let mut wanderer = SimState::new_campaign(
+            &data,
+            "wanderers",
+            4,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         wanderer.ship.weapon = Some("mass_driver".to_owned()); // combat 5
         let lifted = dilemma_odds(&wanderer, &data, 0.65);
         assert!(lifted > 0.65, "combat should raise Wanderer odds: {lifted}");
         assert!(lifted <= data.config.ship.dilemma_odds_cap);
 
         // The same weapon does nothing for another legacy's dilemmas.
-        let mut preserver = SimState::new_campaign(&data, "preservers", 4);
+        let mut preserver = SimState::new_campaign(
+            &data,
+            "preservers",
+            4,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         preserver.ship.weapon = Some("mass_driver".to_owned());
         assert_eq!(dilemma_odds(&preserver, &data, 0.65), 0.65);
     }
@@ -202,7 +222,12 @@ mod tests {
     #[test]
     fn resolve_dilemma_applies_a_branch_and_updates_counters() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 3);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.pending_dilemma = Some(PendingDilemma {
             dilemma_id: "archive_purge".to_owned(),
             rolled_month_clock: sim.month_clock,
@@ -227,7 +252,12 @@ mod tests {
         let data = GameData::load().unwrap();
         let mut runs = Vec::new();
         for _ in 0..2 {
-            let mut sim = SimState::new_campaign(&data, "adaptors", 99);
+            let mut sim = SimState::new_campaign(
+                &data,
+                "adaptors",
+                99,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
             sim.pending_dilemma = Some(PendingDilemma {
                 dilemma_id: "gene_clinic".to_owned(),
                 rolled_month_clock: 0,

@@ -18,8 +18,13 @@ pub enum GameState {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum StateTransition {
-    /// Start a fresh campaign with the chosen legacy and RNG seed.
-    NewCampaign { legacy_id: String, seed: u64 },
+    /// Start a fresh campaign with the chosen legacy, RNG seed, and the three
+    /// founding factions the picker selected (W7).
+    NewCampaign {
+        legacy_id: String,
+        seed: u64,
+        faction_ids: Vec<String>,
+    },
     /// Load the autosave slot and enter gameplay.
     LoadCampaign,
     /// Autosave (if in gameplay) and return to the main menu.

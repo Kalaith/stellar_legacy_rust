@@ -77,6 +77,13 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
         }
     }
 
+    // Keep faction shares matched to the (possibly changed) head count (W7);
+    // a faction rescaled to nothing is gone for good.
+    for id in sim.rebalance_factions() {
+        let name = crate::state::sim::factions::log_name(&data.factions, &id);
+        sim.push_log(format!("The last of {name} is gone."));
+    }
+
     sim.trim_log(data.config.log_limit);
     report
 }
@@ -182,6 +189,12 @@ fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickRepo
             report.dynasty_extinct = true;
         }
 
+        // A generation of drift can quietly fold a dwindling faction into a
+        // larger one (W7 soft assimilation).
+        if !generation.extinct {
+            sim.assimilate_drifted_factions(data);
+        }
+
         // Each new generation may confront its legacy's defining dilemma
         // (GDD §5.5). Dilemmas always block — they are never delegated.
         if !generation.extinct {
@@ -279,14 +292,24 @@ mod tests {
 
     fn fresh(seed: u64) -> (GameData, SimState) {
         let data = GameData::load().unwrap();
-        let sim = SimState::new_campaign(&data, "preservers", seed);
+        let sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            seed,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         (data, sim)
     }
 
     #[test]
     fn voyage_drift_changes_the_people_and_stays_bounded() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "wanderers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let (a0, d0, l0) = (
             sim.population.adaptation,
             sim.population.cultural_drift,
@@ -322,7 +345,12 @@ mod tests {
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 0.0;
-        let mut sim = SimState::new_campaign(&data, "preservers", 5);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.resources.food = 1_000_000;
 
         // Starting parts cover ~60 maintained years; after that the ship wears
@@ -348,8 +376,18 @@ mod tests {
     #[test]
     fn voyage_drift_scales_by_legacy() {
         let data = GameData::load().unwrap();
-        let mut adaptors = SimState::new_campaign(&data, "adaptors", 1);
-        let mut preservers = SimState::new_campaign(&data, "preservers", 1);
+        let mut adaptors = SimState::new_campaign(
+            &data,
+            "adaptors",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let mut preservers = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         for _ in 0..30 {
             apply_voyage_drift(&mut adaptors, &data.config);
             apply_voyage_drift(&mut preservers, &data.config);
@@ -367,7 +405,12 @@ mod tests {
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 0.0;
-        let mut sim = SimState::new_campaign(&data, "preservers", 21);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            21,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let food_before = sim.resources.food;
         let credits_before = sim.resources.credits;
 
@@ -416,7 +459,12 @@ mod tests {
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 0.0;
-        let mut sim = SimState::new_campaign(&data, "preservers", 5);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
         // Plenty of food so the population survives the run deterministically.
@@ -451,7 +499,12 @@ mod tests {
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 0.0;
-        let mut sim = SimState::new_campaign(&data, "preservers", 9);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            9,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
         sim.resources.food = 1_000_000;
@@ -473,7 +526,12 @@ mod tests {
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 1.0;
-        let mut sim = SimState::new_campaign(&data, "preservers", 11);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            11,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.resources.food = 1_000_000;
 
         for _ in 0..data.config.generation_interval_years {
@@ -497,8 +555,18 @@ mod tests {
         data.config.event_chance_cap = 0.0;
         data.config.dilemma_chance_per_generation = 0.0;
 
-        let mut fast = SimState::new_campaign(&data, "preservers", 123);
-        let mut slow = SimState::new_campaign(&data, "preservers", 123);
+        let mut fast = SimState::new_campaign(
+            &data,
+            "preservers",
+            123,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let mut slow = SimState::new_campaign(
+            &data,
+            "preservers",
+            123,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         fast.resources.food = 1_000_000;
         slow.resources.food = 1_000_000;
 
@@ -534,7 +602,12 @@ mod tests {
         data.config.dilemma_chance_per_generation = 1.0;
         data.config.generation_interval_years = 5;
 
-        let mut sim = SimState::new_campaign(&data, "preservers", 11);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            11,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.resources.food = 1_000_000;
         sim.speed = SpeedStep::TenYears;
 
@@ -559,7 +632,12 @@ mod tests {
         data.config.event_chance_base = 1.0;
         data.config.event_chance_cap = 1.0;
         data.config.dilemma_chance_per_generation = 0.0;
-        let mut sim = SimState::new_campaign(&data, "preservers", 3);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.resources.food = 1_000_000;
 
         // Advance until a council-blocking event is pending.

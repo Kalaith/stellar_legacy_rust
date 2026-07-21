@@ -67,7 +67,12 @@ mod tests {
     #[test]
     fn buy_and_sell_move_credits_and_goods() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "wanderers", 11);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            11,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let credits_before = sim.resources.credits;
         let food_before = sim.resources.food;
 
@@ -82,7 +87,12 @@ mod tests {
     #[test]
     fn cannot_sell_more_than_held() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "wanderers", 11);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            11,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.resources.influence = 5;
         assert!(sell(&mut sim, TradeResource::Influence, 50).is_err());
     }
@@ -90,7 +100,12 @@ mod tests {
     #[test]
     fn prices_stay_within_bounds() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 2);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            2,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         for _ in 0..200 {
             drift_prices(&mut sim);
         }

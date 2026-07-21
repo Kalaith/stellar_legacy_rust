@@ -270,7 +270,12 @@ mod tests {
         use crate::state::sim::SimState;
 
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 31);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            31,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let mut contract = start_contract(data.contracts.get("deep_vein_survey").unwrap(), &sim);
         // Force the first milestone to fire immediately with a known reward.
         contract.milestones[0].progress_threshold = 0.0;
@@ -306,7 +311,12 @@ mod tests {
 
     fn armed(seed: u64, contract_id: &str) -> (crate::data::GameData, crate::state::sim::SimState) {
         let data = crate::data::GameData::load().unwrap();
-        let mut sim = crate::state::sim::SimState::new_campaign(&data, "preservers", seed);
+        let mut sim = crate::state::sim::SimState::new_campaign(
+            &data,
+            "preservers",
+            seed,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let template = data.contracts.get(contract_id).unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
         (data, sim)

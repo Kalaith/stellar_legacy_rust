@@ -37,6 +37,13 @@
   "event_chance_base": 0.3,
   "event_chance_cap": 0.8,
   "dilemma_chance_per_generation": 0.65,
+  "factions": {
+    "starting_count": 3,
+    "assimilation_share_threshold": 0.05,
+    "assimilation_drift_threshold": 0.7,
+    "recruit_group_cost_credits": 2500,
+    "recruit_group_size": 300
+  },
   "crew": {
     "starting_posts": ["commander", "engineer", "agronomist"],
     "recruit_cost_credits": 800,

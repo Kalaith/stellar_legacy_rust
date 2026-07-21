@@ -8,6 +8,8 @@ use crate::data::{GameData, PopulationDelta, ProductionRates, ResourceDelta, Shi
 use macroquad_toolkit::rng::SeededRng;
 use serde::{Deserialize, Serialize};
 
+pub mod factions;
+
 #[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
 pub struct ResourcePool {
     pub credits: i64,
@@ -441,14 +443,25 @@ pub struct SimState {
     /// Accumulated named consequences from past outcomes (Pillar 2). Read by
     /// future event weighting; append-only from outcome application.
     pub consequences: Vec<String>,
+    /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
+    /// population.count` after every `rebalance_factions`.
+    #[serde(default)]
+    pub factions: Vec<factions::FactionState>,
     pub log: Vec<LogEntry>,
 }
 
 impl SimState {
-    /// Build a fresh campaign for the chosen legacy. Deterministic for a
-    /// given (data, legacy, seed) triple — all randomness flows through the
-    /// stored seeded RNG (GDD §5.6).
-    pub fn new_campaign(data: &GameData, legacy_id: &str, seed: u64) -> Self {
+    /// Build a fresh campaign for the chosen legacy and founding factions.
+    /// Deterministic for a given (data, legacy, seed, faction set) — all
+    /// randomness flows through the stored seeded RNG (GDD §5.6). The caller
+    /// guarantees `faction_ids` holds exactly `config.factions.starting_count`
+    /// entries (the picker / `founding_faction_ids` enforce it).
+    pub fn new_campaign(
+        data: &GameData,
+        legacy_id: &str,
+        seed: u64,
+        faction_ids: &[String],
+    ) -> Self {
         let config = &data.config;
         let mut rng = SeededRng::new(seed);
         let dynasty = founding_dynasty(data, legacy_id, &mut rng);
@@ -507,6 +520,7 @@ impl SimState {
             pending_event: None,
             pending_dilemma: None,
             consequences: Vec::new(),
+            factions: factions::build_founding_factions(faction_ids, config.starting_population),
             log: Vec::new(),
         };
         // Founding senior staff fill the configured starting posts.
@@ -523,6 +537,17 @@ impl SimState {
             ) {
                 sim.crew.push(member);
             }
+        }
+        // Name the peoples who board together (W7).
+        let names: Vec<String> = faction_ids
+            .iter()
+            .map(|id| factions::log_name(&data.factions, id))
+            .collect();
+        if !names.is_empty() {
+            sim.push_log(format!(
+                "{} board together for the voyage.",
+                join_names(&names)
+            ));
         }
         sim.push_log("The founding council convenes. The voyage begins with a choice of contract.");
         sim
@@ -566,6 +591,25 @@ pub fn base_price(resource: TradeResource) -> f32 {
         TradeResource::Minerals => 5.0,
         TradeResource::Food => 3.0,
         TradeResource::Influence => 20.0,
+    }
+}
+
+/// The default founding faction set (W7): the first `starting_count` faction
+/// ids in sorted order. Used by the game's real entry point and by tests that
+/// don't drive the picker. Reads only from data — no faction names in Rust.
+pub fn founding_faction_ids(data: &GameData) -> Vec<String> {
+    let mut ids = GameData::sorted_ids(&data.factions);
+    ids.truncate(data.config.factions.starting_count as usize);
+    ids
+}
+
+/// Comma-join names with a trailing "and" for the founding log line (W7).
+fn join_names(names: &[String]) -> String {
+    match names {
+        [] => String::new(),
+        [one] => one.clone(),
+        [a, b] => format!("{a} and {b}"),
+        [rest @ .., last] => format!("{}, and {last}", rest.join(", ")),
     }
 }
 
@@ -669,8 +713,18 @@ mod tests {
     #[test]
     fn new_campaign_is_deterministic_for_same_seed() {
         let data = GameData::load().unwrap();
-        let a = SimState::new_campaign(&data, "preservers", 42);
-        let b = SimState::new_campaign(&data, "preservers", 42);
+        let a = SimState::new_campaign(
+            &data,
+            "preservers",
+            42,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let b = SimState::new_campaign(
+            &data,
+            "preservers",
+            42,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let names_a: Vec<_> = a.dynasty.members.iter().map(|m| m.name.clone()).collect();
         let names_b: Vec<_> = b.dynasty.members.iter().map(|m| m.name.clone()).collect();
         assert_eq!(names_a, names_b);
@@ -695,7 +749,12 @@ mod tests {
     #[test]
     fn sim_state_round_trips_through_serde() {
         let data = GameData::load().unwrap();
-        let sim = SimState::new_campaign(&data, "wanderers", 7);
+        let sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            7,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let json = serde_json::to_string(&sim).unwrap();
         let back: SimState = serde_json::from_str(&json).unwrap();
         assert_eq!(back.dynasty.members.len(), sim.dynasty.members.len());

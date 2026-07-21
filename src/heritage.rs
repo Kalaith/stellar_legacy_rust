@@ -147,7 +147,12 @@ mod tests {
     #[test]
     fn apply_grants_the_bonus() {
         let data = crate::data::GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 7);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            7,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let credits = sim.resources.credits;
         let tradition = sim.legacy.tradition_points;
         let h = Heritage {

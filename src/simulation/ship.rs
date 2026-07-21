@@ -288,7 +288,12 @@ mod tests {
     #[test]
     fn loadout_sums_installed_component_stats() {
         let data = GameData::load().unwrap();
-        let sim = SimState::new_campaign(&data, "preservers", 3);
+        let sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         // Founding loadout: colony_barge hull + ion_drive engine, no weapon.
         let stats = loadout_stats(&sim, &data);
         assert_eq!(stats.cargo, 200); // colony_barge
@@ -299,7 +304,12 @@ mod tests {
     #[test]
     fn field_repair_patches_but_never_reaches_pristine() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.ship.hull_integrity = 0.3;
         sim.ship.spare_parts = 100;
         sim.resources.minerals = 100_000;
@@ -320,7 +330,12 @@ mod tests {
     #[test]
     fn field_repair_refused_without_parts() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.ship.hull_integrity = 0.3;
         sim.ship.spare_parts = 0;
         sim.resources.minerals = 100_000;
@@ -331,7 +346,12 @@ mod tests {
     fn full_repair_is_port_only_and_restores_everything() {
         use crate::simulation::contract::start_contract;
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.ship.hull_integrity = 0.3;
         sim.ship.life_support = 0.4;
         sim.ship.fuel = 0.2;
@@ -360,7 +380,12 @@ mod tests {
     fn salvage_field_install_is_gated_by_crew_and_part() {
         use crate::simulation::contract::start_contract;
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.ship.spare_parts = 100;
         sim.resources.minerals = 100_000;
         // Underway.
@@ -404,7 +429,12 @@ mod tests {
     #[test]
     fn salvage_installs_freely_in_port() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.contract = None; // in port
         sim.ship.spare_parts = 0;
         sim.resources.minerals = 0;
@@ -424,14 +454,19 @@ mod tests {
     fn granted_component_lands_in_the_salvage_hold() {
         use crate::simulation::event_resolver::apply_outcome;
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "wanderers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let template = data.events.get("derelict_encounter").unwrap().clone();
         let idx = template
             .outcomes
             .iter()
             .position(|o| o.grant_component.is_some())
             .expect("derelict_encounter grants a salvage part");
-        apply_outcome(&mut sim, &template, idx);
+        apply_outcome(&mut sim, &data, &template, idx);
         assert!(
             !sim.ship.salvage.is_empty(),
             "boarding a derelict fills the salvage hold"
@@ -442,7 +477,12 @@ mod tests {
     fn commission_refits_and_lifts_hope_but_keeps_the_people() {
         use crate::simulation::contract::start_contract;
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.resources.credits = 100_000;
         sim.resources.minerals = 100_000;
         sim.ship.hull_integrity = 0.3;
@@ -473,7 +513,12 @@ mod tests {
     #[test]
     fn commission_needs_the_full_price() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.contract = None;
         sim.resources.credits = 0;
         sim.resources.minerals = 0;
@@ -483,7 +528,12 @@ mod tests {
     #[test]
     fn loadout_effects_add_production_bonus() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 3);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let credits = sim.resources.credits;
         let minerals = sim.resources.minerals;
 

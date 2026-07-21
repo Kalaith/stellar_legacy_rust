@@ -149,6 +149,8 @@ pub mod term {
 pub enum UiAction {
     // Menu
     SelectLegacy(usize),
+    /// Toggle a founding faction in the new-game picker (W7).
+    ToggleFaction(String),
     StartNewGame,
     ContinueGame,
     DeleteSave,
@@ -173,6 +175,8 @@ pub enum UiAction {
     FullRepair,
     InstallSalvage(String),
     CommissionShip(String),
+    /// Recruit a fresh people in drydock when short of the founding count (W7).
+    RecruitFactionGroup(String),
     Buy(TradeResource, i64),
     Sell(TradeResource, i64),
     ToggleDelegation(EventCategory),
@@ -320,24 +324,29 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         );
     }
 
-    let panel = Rect::new(LOGICAL_WIDTH / 2.0 - 320.0, 210.0, 640.0, 420.0);
+    let starting = ctx.data.config.factions.starting_count as usize;
+    let panel = Rect::new(LOGICAL_WIDTH / 2.0 - 430.0, 205.0, 860.0, 440.0);
     term_panel(panel, Some("FOUNDING CHARTER"));
     let content = panel.inset(24.0);
-    let mut y = content.y + 40.0;
+    let col_gap = 24.0;
+    let col_w = (content.w - col_gap) / 2.0;
+    let left_x = content.x;
+    let right_x = content.x + col_w + col_gap;
 
+    // --- Left column: the legacy that steers the bloodline ---
+    let mut y = content.y + 34.0;
     draw_ui_text_ex(
-        "Choose the legacy that will steer your bloodline:",
-        content.x,
+        "Choose the legacy that steers your bloodline:",
+        left_x,
         y,
-        TextStyle::new(16.0, term::dim()).params(),
+        TextStyle::new(15.0, term::dim()).params(),
     );
-    y += 18.0;
-
+    y += 16.0;
     for (i, legacy_id) in ctx.legacy_ids.iter().enumerate() {
         let Some(legacy) = ctx.data.legacies.get(legacy_id) else {
             continue;
         };
-        let rect = Rect::new(content.x, y + 8.0, content.w, 62.0);
+        let rect = Rect::new(left_x, y + 8.0, col_w, 62.0);
         let selected = i == ctx.menu.selected_legacy;
         let fill = if selected {
             term::surface_active()
@@ -385,18 +394,85 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         y += 70.0;
     }
 
-    y += 20.0;
+    // --- Right column: the founding peoples (W7) — pick exactly `starting` ---
+    let chosen = ctx.menu.selected_factions.len();
+    let mut fy = content.y + 34.0;
+    draw_ui_text_ex(
+        &format!("Choose {starting} founding peoples  ({chosen}/{starting}):"),
+        right_x,
+        fy,
+        TextStyle::new(
+            15.0,
+            if chosen == starting {
+                term::accent()
+            } else {
+                term::dim()
+            },
+        )
+        .params(),
+    );
+    fy += 16.0;
+    for id in GameData::sorted_ids(&ctx.data.factions) {
+        let Some(faction) = ctx.data.factions.get(&id) else {
+            continue;
+        };
+        let selected = ctx.menu.selected_factions.iter().any(|f| f == &id);
+        let rect = Rect::new(right_x, fy + 4.0, col_w, 44.0);
+        let fill = if selected {
+            term::surface_active()
+        } else {
+            term::surface_inset()
+        };
+        draw_surface(
+            rect,
+            &SurfaceStyle::new(fill).with_border(
+                1.0,
+                if selected {
+                    term::primary()
+                } else {
+                    term::faint()
+                },
+            ),
+        );
+        draw_ui_text_ex(
+            &format!("{} {}", if selected { "[x]" } else { "[ ]" }, faction.name),
+            rect.x + 10.0,
+            rect.y + 18.0,
+            TextStyle::new(
+                14.0,
+                if selected {
+                    term::accent()
+                } else {
+                    term::primary()
+                },
+            )
+            .params(),
+        );
+        draw_ui_text_ex(
+            faction_ideology_label(faction.ideology),
+            rect.x + 10.0,
+            rect.y + 36.0,
+            TextStyle::new(11.0, term::dim()).params(),
+        );
+        if rect.contains_point(mouse) && is_mouse_button_released(MouseButton::Left) {
+            actions.push(UiAction::ToggleFaction(id.clone()));
+        }
+        fy += 50.0;
+    }
+
+    // --- Bottom button row (spans both columns) ---
+    let by = content.bottom() - 44.0;
     let btn_w = (content.w - 20.0) / 3.0;
     if term_button(
-        Rect::new(content.x, y, btn_w, 44.0),
+        Rect::new(content.x, by, btn_w, 44.0),
         "BEGIN VOYAGE [ENTER]",
-        true,
+        chosen == starting,
         mouse,
     ) {
         actions.push(UiAction::StartNewGame);
     }
     if term_button(
-        Rect::new(content.x + btn_w + 10.0, y, btn_w, 44.0),
+        Rect::new(content.x + btn_w + 10.0, by, btn_w, 44.0),
         "CONTINUE",
         ctx.menu.save_exists,
         mouse,
@@ -404,7 +480,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
         actions.push(UiAction::ContinueGame);
     }
     if term_button(
-        Rect::new(content.x + (btn_w + 10.0) * 2.0, y, btn_w, 44.0),
+        Rect::new(content.x + (btn_w + 10.0) * 2.0, by, btn_w, 44.0),
         "DELETE SAVE",
         ctx.menu.save_exists,
         mouse,
@@ -413,6 +489,21 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
     }
 
     actions
+}
+
+/// A short tech-spectrum tag for a faction's ideology (W7 picker flavor).
+fn faction_ideology_label(ideology: f32) -> &'static str {
+    if ideology > 0.66 {
+        "tech-embracing · radical"
+    } else if ideology > 0.2 {
+        "tech-embracing"
+    } else if ideology >= -0.2 {
+        "pragmatic middle"
+    } else if ideology >= -0.66 {
+        "tech-averse"
+    } else {
+        "tech-averse · traditional"
+    }
 }
 
 // ---------------------------------------------------------------------------

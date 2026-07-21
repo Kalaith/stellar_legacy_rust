@@ -1,5 +1,6 @@
 //! Event template definitions (GDD §5.4, §6).
 
+use crate::data::factions::FactionLossKind;
 use crate::data::{PopulationDelta, ResourceDelta, ShipDelta};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -55,6 +56,10 @@ pub struct EventOutcome {
     /// forcing withdrawal) and fortune (a find rich enough to sail back on).
     #[serde(default)]
     pub force_return: bool,
+    /// When set, an applied outcome loses the ship's smallest faction this way
+    /// (W7) — they settled off-ship or departed. Skipped if only one remains.
+    #[serde(default)]
+    pub faction_loss: Option<FactionLossKind>,
     #[serde(default)]
     pub log: String,
 }

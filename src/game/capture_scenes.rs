@@ -67,14 +67,24 @@ impl Game {
                 // Dashboard with the newest log line frozen mid-stream
                 // (cursor-visible phase).
                 self.capture_log_reveal = Some(0.5);
-                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 if let Some(template) = self.data.contracts.get("founding_colony") {
                     sim.contract = Some(contract::start_contract(template, &sim));
                 }
                 self.state = crate::state::GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
             "event" => {
-                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 sim.pending_event = Some(crate::state::sim::PendingEvent {
                     template_id: "cultural_schism".to_owned(),
                     rolled_month_clock: 0,
@@ -82,13 +92,23 @@ impl Game {
                 self.state = crate::state::GameState::Gameplay(Box::new(GameplayState::new(sim)));
             }
             "crew" => {
-                let sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = Screen::CrewDynasty;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "ship" => {
-                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 // Seed a salvage hold so the SALVAGE HOLD strip shows (M4.4).
                 sim.ship.salvage = vec!["mass_driver".to_owned(), "solar_sail".to_owned()];
                 let mut gameplay = GameplayState::new(sim);
@@ -96,14 +116,24 @@ impl Game {
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "market" => {
-                let sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                let sim = SimState::new_campaign(
+                    &self.data,
+                    "wanderers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = Screen::Market;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "contracts" => {
                 // No active contract, so the available-charters list is shown.
-                let sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                let sim = SimState::new_campaign(
+                    &self.data,
+                    "wanderers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = Screen::Contract;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
@@ -111,7 +141,12 @@ impl Game {
             "drydock" => {
                 // Home from a mission (M4.6): no active contract, a worn ship,
                 // and a concluded charter in the Chronicle → the Homecoming banner.
-                let mut sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "wanderers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 sim.ship.hull_integrity = 0.46;
                 sim.ship.life_support = 0.58;
                 sim.ship.spare_parts = 3;
@@ -133,7 +168,12 @@ impl Game {
             }
             "contract_active" => {
                 // A charter a dozen years in, to show progress + drive assist.
-                let mut sim = SimState::new_campaign(&self.data, "adaptors", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "adaptors",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 if let Some(template) = self.data.contracts.get("deep_vein_survey") {
                     sim.contract = Some(contract::start_contract(template, &sim));
                 }
@@ -151,7 +191,12 @@ impl Game {
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "dilemma" => {
-                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {
                     dilemma_id: "archive_purge".to_owned(),
                     rolled_month_clock: 0,
@@ -161,7 +206,12 @@ impl Game {
             "dilemma_combat" => {
                 // Wanderer convoy raid with a weapon installed — combat lifts
                 // the shown odds.
-                let mut sim = SimState::new_campaign(&self.data, "wanderers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "wanderers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 sim.ship.weapon = Some("mass_driver".to_owned());
                 sim.pending_dilemma = Some(crate::state::sim::PendingDilemma {
                     dilemma_id: "convoy_raid".to_owned(),
@@ -173,7 +223,12 @@ impl Game {
                 // Seed a storied Chronicle and unlock the matching milestones.
                 self.achievements =
                     Achievements::from_definitions(crate::achievements::definitions());
-                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 sim.dynasty.generation = 5;
                 sim.month_clock = 120 * 12;
                 for i in 0..5 {
@@ -197,7 +252,12 @@ impl Game {
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "gameover" => {
-                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 sim.month_clock = 148 * 12;
                 sim.dynasty.generation = 6;
                 sim.legacy.tradition_points = 210;
@@ -206,7 +266,12 @@ impl Game {
             }
             // "gameplay" and anything else: a fresh campaign on the dashboard.
             _ => {
-                let mut sim = SimState::new_campaign(&self.data, "preservers", 0xC0FFEE);
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
                 if let Some(template) = self.data.contracts.get("founding_colony") {
                     sim.contract = Some(contract::start_contract(template, &sim));
                 }

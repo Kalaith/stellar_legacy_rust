@@ -128,7 +128,8 @@
         "long_term_consequences": [
           "deck_rivalry"
         ],
-        "log": "The schism was left to run its course. The ship is quieter, and colder."
+        "faction_loss": "departed",
+        "log": "The schism was left to run its course. One faction would not be reconciled; they took a decommissioned shuttle and their grievances, and departed on their own course."
       }
     ]
   },
@@ -1387,6 +1388,17 @@
           "stability": 0.03
         },
         "log": "Private berths were assigned by lottery. The ship called it fair, and the losers of the draw learned to sleep in the light."
+      },
+      {
+        "id": "accept_the_offer",
+        "label": "Let a people take the settlement offer",
+        "description": "A passing survey world will take a whole faction. Crowding eases; the ship is smaller for it.",
+        "population_delta": {
+          "morale": 0.03,
+          "stability": 0.04
+        },
+        "faction_loss": "settled",
+        "log": "One people accepted a standing offer to make planetfall on a surveyed world. The berths are roomier now, and a light aboard has gone out for good."
       }
     ]
   },

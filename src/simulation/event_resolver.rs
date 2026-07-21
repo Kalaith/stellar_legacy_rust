@@ -139,7 +139,12 @@ pub fn score_outcome(outcome: &EventOutcome, sim: &SimState, config: &GameConfig
 }
 
 /// Apply one outcome of a pending event to the sim and log it.
-pub fn apply_outcome(sim: &mut SimState, template: &EventTemplate, outcome_index: usize) {
+pub fn apply_outcome(
+    sim: &mut SimState,
+    data: &GameData,
+    template: &EventTemplate,
+    outcome_index: usize,
+) {
     let Some(outcome) = template.outcomes.get(outcome_index) else {
         return;
     };
@@ -165,6 +170,10 @@ pub fn apply_outcome(sim: &mut SimState, template: &EventTemplate, outcome_index
     if outcome.force_return {
         crate::simulation::contract::jump_to_return(sim);
     }
+    // …or drive a whole people off the ship (W7).
+    if let Some(kind) = outcome.faction_loss {
+        sim.apply_faction_loss(data, kind);
+    }
     sim.pending_event = None;
 }
 
@@ -185,7 +194,7 @@ pub fn auto_resolve(sim: &mut SimState, data: &GameData, template: &EventTemplat
         .get(best)
         .map(|o| o.label.clone())
         .unwrap_or_default();
-    apply_outcome(sim, template, best);
+    apply_outcome(sim, data, template, best);
     label
 }
 
@@ -205,7 +214,12 @@ mod tests {
     #[test]
     fn starving_ship_doubles_food_weight_in_scoring() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 3);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let template = data.events.get("population_growth").unwrap();
         let feed = &template.outcomes[0]; // food -300
         let hold = &template.outcomes[1]; // no food cost
@@ -226,14 +240,19 @@ mod tests {
     #[test]
     fn apply_outcome_clears_pending_and_records_consequences() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "adaptors", 5);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "adaptors",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let template = data.events.get("system_failure").unwrap().clone();
         sim.pending_event = Some(crate::state::sim::PendingEvent {
             template_id: template.id.clone(),
             rolled_month_clock: sim.month_clock,
         });
 
-        apply_outcome(&mut sim, &template, 1); // reroute_power
+        apply_outcome(&mut sim, &data, &template, 1); // reroute_power
         assert!(sim.pending_event.is_none());
         assert!(sim
             .consequences
@@ -247,7 +266,12 @@ mod tests {
         use crate::simulation::contract::{advance_contract, start_contract};
 
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 5);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();
         sim.contract = Some(start_contract(&template, &sim));
 
@@ -266,7 +290,7 @@ mod tests {
             .iter()
             .position(|o| o.force_return)
             .expect("reactor_scram carries a force_return outcome");
-        apply_outcome(&mut sim, &scram, idx);
+        apply_outcome(&mut sim, &data, &scram, idx);
 
         assert_eq!(
             sim.contract.as_ref().unwrap().phase,

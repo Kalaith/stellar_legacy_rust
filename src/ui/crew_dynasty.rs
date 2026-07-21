@@ -12,17 +12,90 @@ use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.55, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
-    let roster = Rect::new(left.x, left.y, left.w, left.h * 0.52);
-    let posts = Rect::new(
+    let roster = Rect::new(left.x, left.y, left.w, left.h * 0.40);
+    let posts = Rect::new(left.x, roster.bottom() + 8.0, left.w, left.h * 0.30);
+    let factions = Rect::new(
         left.x,
-        roster.bottom() + 10.0,
+        posts.bottom() + 8.0,
         left.w,
-        left.h - roster.h - 10.0,
+        left.h - roster.h - posts.h - 16.0,
     );
 
     draw_roster(ctx, roster, mouse, actions);
     draw_posts(ctx, posts, mouse, actions);
+    draw_factions(ctx, factions, mouse, actions);
     draw_council(ctx, right, mouse, actions);
+}
+
+/// Factions aboard (W7): name, members, share, status. Lost factions dim out.
+/// In drydock, when short of the founding count, offers to recruit a new people.
+fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    term_panel(rect, Some("PEOPLES ABOARD"));
+    let content = rect.inset(16.0);
+    let mut y = content.y + 34.0;
+    let sim = ctx.sim;
+
+    let total_aboard: u32 = sim
+        .factions
+        .iter()
+        .filter(|f| f.is_aboard())
+        .map(|f| f.members)
+        .sum();
+
+    for fs in &sim.factions {
+        let name = ctx
+            .data
+            .factions
+            .get(&fs.faction_id)
+            .map(|d| d.name.clone())
+            .unwrap_or_else(|| fs.faction_id.clone());
+        if fs.is_aboard() {
+            let share = if total_aboard > 0 {
+                fs.members as f32 / total_aboard as f32 * 100.0
+            } else {
+                0.0
+            };
+            draw_ui_text_ex(
+                &format!("{name} — {} ({share:.0}%)", fs.members),
+                content.x,
+                y,
+                TextStyle::new(13.0, term::primary()).params(),
+            );
+        } else {
+            draw_ui_text_ex(
+                &format!("{name} — {}", fs.status.label()),
+                content.x,
+                y,
+                TextStyle::new(12.0, term::faint()).params(),
+            );
+        }
+        y += 22.0;
+    }
+
+    // Recruit a fresh people in drydock when the ship is short (W7).
+    let cfg = &ctx.data.config.factions;
+    if sim.contract.is_none() && sim.aboard_faction_count() < cfg.starting_count {
+        for id in sim.recruitable_faction_ids(ctx.data) {
+            if y > content.bottom() - 26.0 {
+                break;
+            }
+            let name = ctx
+                .data
+                .factions
+                .get(&id)
+                .map(|d| d.name.clone())
+                .unwrap_or_else(|| id.clone());
+            if term_button(
+                Rect::new(content.x, y + 2.0, content.w, 24.0),
+                &format!("RECRUIT {name} ({} CR)", cfg.recruit_group_cost_credits),
+                sim.resources.credits >= cfg.recruit_group_cost_credits,
+                mouse,
+            ) {
+                actions.push(UiAction::RecruitFactionGroup(id.clone()));
+            }
+            y += 28.0;
+        }
+    }
 }
 
 fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {

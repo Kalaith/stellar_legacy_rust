@@ -116,14 +116,24 @@ mod tests {
     #[test]
     fn fresh_campaign_unlocks_nothing() {
         let data = crate::data::GameData::load().unwrap();
-        let sim = SimState::new_campaign(&data, "preservers", 1);
+        let sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         assert!(evaluate(&sim, &ChronicleStore::default()).is_empty());
     }
 
     #[test]
     fn milestones_unlock_from_state_and_chronicle() {
         let data = crate::data::GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         sim.dynasty.generation = 5;
         sim.month_clock = 100 * 12;
         let chronicle = ChronicleStore {

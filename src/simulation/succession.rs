@@ -120,7 +120,12 @@ mod tests {
     #[test]
     fn leader_past_retirement_hands_off_to_best_eligible_heir() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 1);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            1,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
 
         // Founding leader is 45; after one generation tick they are 70 (not
         // yet past retirement), after two they are 95 and long gone.
@@ -141,7 +146,12 @@ mod tests {
     #[test]
     fn designated_heir_takes_precedence_over_best_leadership() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "preservers", 12);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            12,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
 
         // Force a succession: leader far past retirement, and designate the
         // weakest eligible member instead of the strongest.
@@ -177,7 +187,12 @@ mod tests {
     #[test]
     fn generation_tick_adds_one_to_three_members_and_ages_everyone() {
         let data = GameData::load().unwrap();
-        let mut sim = SimState::new_campaign(&data, "adaptors", 9);
+        let mut sim = SimState::new_campaign(
+            &data,
+            "adaptors",
+            9,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
         let before = sim.dynasty.members.len();
         let ages_before: Vec<u32> = sim.dynasty.members.iter().map(|m| m.age).collect();
 
