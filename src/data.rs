@@ -94,6 +94,9 @@ pub struct GameConfig {
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,
     pub life_support_decay_per_year: f32,
+    /// Spare parts the ship launches with (W1-rescale). A generational voyage
+    /// carries a deeper store than the old ~55-yr charters needed.
+    pub starting_spare_parts: i64,
     /// Spare parts spent per year keeping the ship maintained (PLAN M4.2).
     /// While parts remain to cover it, yearly wear is eased by
     /// `maintenance_decay_relief`; once the stores run dry, wear is full rate.
@@ -314,6 +317,14 @@ mod tests {
             data.contracts.iter().any(|(_, c)| c.min_renown == 0),
             "some charters should be available from the founding"
         );
+        // W1-rescale: every charter is now a generational voyage (>= 300 yr).
+        for (id, c) in data.contracts.iter() {
+            assert!(
+                c.target_duration_years >= 300,
+                "charter '{id}' must be a generational voyage (>= 300 yr), is {}",
+                c.target_duration_years
+            );
+        }
         // Salvage pool (PLAN M4.4): several event outcomes drop a found part,
         // and every granted id must resolve to a real component.
         let salvage_grants: Vec<&String> = data

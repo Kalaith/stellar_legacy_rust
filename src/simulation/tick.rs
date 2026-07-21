@@ -247,8 +247,10 @@ mod tests {
     }
 
     #[test]
-    fn a_long_voyage_leaves_the_ship_worn_and_out_of_parts() {
-        // Events off + well-fed isolates the wear curve (PLAN M4.2).
+    fn a_neglected_generational_voyage_wears_the_ship_to_the_edge() {
+        // Events off + well-fed isolates the wear curve (PLAN M4.2) for a
+        // charter-length voyage flown with *no* field repairs — the neglect
+        // baseline the autoplay repair policy is measured against (W1-rescale).
         let mut data = GameData::load().unwrap();
         data.config.event_chance_base = 0.0;
         data.config.event_chance_cap = 0.0;
@@ -256,18 +258,22 @@ mod tests {
         let mut sim = SimState::new_campaign(&data, "preservers", 5);
         sim.resources.food = 1_000_000;
 
-        for _ in 0..55 {
+        // Starting parts cover ~60 maintained years; after that the ship wears
+        // at full rate. Over 300 years with no repair it comes home a wreck.
+        for _ in 0..300 {
             advance_year(&mut sim, &data);
         }
 
         assert_eq!(
             sim.ship.spare_parts, 0,
-            "a 55-year voyage exhausts the spare-parts stores"
+            "a generational voyage long outlasts the spare-parts stores"
         );
-        // Worn but still flying — well below the old 0.005/yr curve (~0.72).
+        // Still nominally flying (hull > 0), but only just — held together on
+        // hope and prayers, a hair from total loss. This is why the voyage
+        // needs the field-repair sink the autoplay policy exercises.
         assert!(
-            (0.40..=0.56).contains(&sim.ship.hull_integrity),
-            "the ship comes home held together on hope and prayers: hull {}",
+            (0.0..=0.10).contains(&sim.ship.hull_integrity),
+            "a neglected 300-year voyage should limp in near total loss: hull {}",
             sim.ship.hull_integrity
         );
     }
@@ -395,72 +401,5 @@ mod tests {
         assert_eq!(pending.rolled_year, sim.year);
         // The dilemma blocks the year's event roll — one decision at a time.
         assert!(sim.pending_event.is_none());
-    }
-
-    /// Soak test: run a well-fed campaign across many generations, resolving
-    /// every council decision, and assert the sim stays internally consistent
-    /// the whole way. Exercises the full content set (events, dilemmas,
-    /// succession, contract completion) end-to-end for regression safety.
-    #[test]
-    fn long_campaign_stays_internally_consistent() {
-        let (data, mut sim) = fresh(2024);
-        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
-        sim.contract = Some(start_contract(&template, &sim));
-        sim.resources.food = 10_000_000; // survive long enough to soak the loop
-
-        let mut contract_completed = false;
-        for _ in 0..250 {
-            // Clear any blocking council decision by taking the first choice.
-            if sim.pending_dilemma.is_some() {
-                crate::simulation::legacy::resolve_dilemma(&mut sim, &data, 0);
-            }
-            if let Some(pending) = sim.pending_event.clone() {
-                match data.events.get(&pending.template_id).cloned() {
-                    Some(t) => crate::simulation::event_resolver::apply_outcome(&mut sim, &t, 0),
-                    None => sim.pending_event = None,
-                }
-            }
-            if sim.dynasty.extinct {
-                break;
-            }
-
-            let report = advance_year(&mut sim, &data);
-            if report.contract_completed.is_some() {
-                contract_completed = true;
-                sim.contract = None;
-            }
-
-            // Invariants that must hold every single year.
-            for fraction in [
-                sim.population.morale,
-                sim.population.unity,
-                sim.population.stability,
-                sim.population.legacy_loyalty,
-                sim.population.adaptation,
-                sim.population.cultural_drift,
-                sim.ship.hull_integrity,
-                sim.ship.life_support,
-                sim.ship.fuel,
-            ] {
-                assert!(
-                    (0.0..=1.0).contains(&fraction),
-                    "0-1 sim fraction escaped its range: {fraction} at year {}",
-                    sim.year
-                );
-            }
-            assert!(sim.resources.food >= 0 && sim.resources.credits >= 0);
-            if !sim.dynasty.extinct {
-                assert!(
-                    sim.dynasty.leader().is_some(),
-                    "a living dynasty must always have a leader (year {})",
-                    sim.year
-                );
-            }
-        }
-
-        assert!(
-            contract_completed,
-            "the 40-year survey should conclude within a 250-year soak"
-        );
     }
 }

@@ -3,8 +3,8 @@
     "id": "founding_colony",
     "name": "Founding Charter: Meridian Reach",
     "objective": "colonization",
-    "description": "Carry ten thousand embryos, a seed vault, and a legal charter sixty years to Meridian Reach, and leave a living settlement behind.",
-    "target_duration_years": 60,
+    "description": "Carry ten thousand embryos, a seed vault, and a legal charter four and a half centuries to Meridian Reach, and leave a living settlement behind.",
+    "target_duration_years": 450,
     "milestones": [
       {
         "id": "departure",
@@ -75,8 +75,8 @@
     "id": "deep_vein_survey",
     "name": "Deep Vein Survey: Karst Belt",
     "objective": "mining",
-    "description": "Forty years threading the Karst Belt, charting extractable veins and shipping proof-of-yield cores back by relay.",
-    "target_duration_years": 40,
+    "description": "Three and a half centuries threading the Karst Belt, charting extractable veins and shipping proof-of-yield cores back by relay.",
+    "target_duration_years": 340,
     "milestones": [
       {
         "id": "belt_entry",
@@ -141,8 +141,8 @@
     "id": "veiled_expanse_survey",
     "name": "Charter of Discovery: The Veiled Expanse",
     "objective": "exploration",
-    "description": "Thirty-five years into the unmapped dark past the last relay, charting a lightless expanse the founders only ever named. Bring back the map, and the naming rights.",
-    "target_duration_years": 35,
+    "description": "Nearly four centuries into the unmapped dark past the last relay, charting a lightless expanse the founders only ever named. Bring back the map, and the naming rights.",
+    "target_duration_years": 360,
     "milestones": [
       {
         "id": "last_relay",
@@ -213,8 +213,8 @@
     "id": "tarssen_relief",
     "name": "Relief Mandate: The Tarssen Drift",
     "objective": "rescue",
-    "description": "A generation ship went silent in the Tarssen Drift twenty-two years ago. Someone may still be breathing. Reach them, take aboard who remains, and answer for every berth you cannot fill.",
-    "target_duration_years": 22,
+    "description": "A generation ship went silent in the Tarssen Drift, three centuries down the dark. Someone may still be breathing when you reach them. Take aboard who remains, and answer for every berth you cannot fill.",
+    "target_duration_years": 300,
     "milestones": [
       {
         "id": "distress_fix",
@@ -286,8 +286,8 @@
     "id": "coronal_tap",
     "name": "Coronal Tap: The Ember Star",
     "objective": "mining",
-    "description": "Thirty years skimming a red dwarf's corona for raw energy, feeding a collector array the size of a city block.",
-    "target_duration_years": 30,
+    "description": "Three centuries skimming a red dwarf's corona for raw energy, feeding a collector array the size of a city block.",
+    "target_duration_years": 320,
     "milestones": [
       {
         "id": "array_deployed",
@@ -352,8 +352,8 @@
     "id": "seedfall",
     "name": "Seedfall Mandate: Ashgrove",
     "objective": "colonization",
-    "description": "A fast forty-five-year drop of a second settlement — a hedge against the first. Half the charter, twice the doubt.",
-    "target_duration_years": 45,
+    "description": "A four-century drop of a second settlement — a hedge against the first. Half the charter, twice the doubt.",
+    "target_duration_years": 420,
     "milestones": [
       {
         "id": "course_locked",
@@ -419,8 +419,8 @@
     "id": "starfall_beacon",
     "name": "Beacon Line: The Starfall Verge",
     "objective": "exploration",
-    "description": "Fifty years laying a chain of relay beacons out to the Starfall Verge, so the ships that come after need not cross the dark blind.",
-    "target_duration_years": 50,
+    "description": "Four centuries laying a chain of relay beacons out to the Starfall Verge, so the ships that come after need not cross the dark blind.",
+    "target_duration_years": 400,
     "milestones": [
       {
         "id": "first_beacon",
@@ -494,8 +494,8 @@
     "id": "hollow_fleet",
     "name": "Recovery Writ: The Hollow Fleet",
     "objective": "rescue",
-    "description": "A refugee convoy broke apart in transit a generation ago, its lifeboats still drifting on dead reckoning. Find what holds air, and choose which to reach first.",
-    "target_duration_years": 28,
+    "description": "A refugee convoy broke apart in transit generations ago, its lifeboats still drifting on dead reckoning three centuries down the dark. Find what holds air, and choose which to reach first.",
+    "target_duration_years": 310,
     "milestones": [
       {
         "id": "wreck_line",
@@ -569,8 +569,8 @@
     "id": "warden_patrol",
     "name": "Warden Mandate: The Cinder Lane",
     "objective": "rescue",
-    "description": "Forty years standing guard over a lawless shipping lane — escorting convoys, answering distress calls, and pulling the wrecked from the dark before the scavengers do.",
-    "target_duration_years": 42,
+    "description": "Near four centuries standing guard over a lawless shipping lane — escorting convoys, answering distress calls, and pulling the wrecked from the dark before the scavengers do.",
+    "target_duration_years": 380,
     "min_renown": 100,
     "milestones": [
       {
@@ -644,8 +644,8 @@
     "id": "the_long_dark",
     "name": "The Long Dark: Charter to the Rim",
     "objective": "exploration",
-    "description": "Eighty years to the galaxy's ragged edge and back, charting the black between the last stars. The founders dreamed of this run and never dared it. Only a storied ship should.",
-    "target_duration_years": 80,
+    "description": "Six centuries to the galaxy's ragged edge and back, charting the black between the last stars. The founders dreamed of this run and never dared it. Only a storied ship should.",
+    "target_duration_years": 600,
     "min_renown": 400,
     "milestones": [
       {

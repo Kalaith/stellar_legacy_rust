@@ -24,8 +24,9 @@
   "low_energy_threshold": 1000,
   "hull_warning_threshold": 0.7,
   "life_support_warning_threshold": 0.8,
-  "hull_decay_per_year": 0.011,
-  "life_support_decay_per_year": 0.008,
+  "hull_decay_per_year": 0.0035,
+  "life_support_decay_per_year": 0.0025,
+  "starting_spare_parts": 60,
   "parts_upkeep_per_year": 1,
   "maintenance_decay_relief": 0.4,
   "generation_interval_years": 25,
@@ -70,9 +71,9 @@
     "dilemma_odds_cap": 0.95
   },
   "voyage_drift": {
-    "adaptation_per_year": 0.004,
-    "cultural_drift_per_year": 0.004,
-    "legacy_loyalty_per_year": -0.003,
+    "adaptation_per_year": 0.0018,
+    "cultural_drift_per_year": 0.0018,
+    "legacy_loyalty_per_year": -0.0014,
     "morale_strain_per_year": -0.0012,
     "unity_strain_per_year": -0.0012,
     "legacy_multipliers": {
@@ -88,7 +89,7 @@
     "field_minerals_cost": 150,
     "full_credits_cost": 1500,
     "full_minerals_cost": 500,
-    "full_parts_restock": 20
+    "full_parts_restock": 60
   },
   "field_install": {
     "skill_required": 40,

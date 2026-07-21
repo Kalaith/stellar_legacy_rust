@@ -354,7 +354,7 @@ impl SimState {
                 hull_integrity: 1.0,
                 life_support: 1.0,
                 fuel: 1.0,
-                spare_parts: 20,
+                spare_parts: config.starting_spare_parts,
                 hull: "colony_barge".to_owned(),
                 engine: "ion_drive".to_owned(),
                 weapon: None,
