@@ -55,6 +55,10 @@ pub fn generate_beats(
             .collect();
         if month < early_cutoff {
             draw.extend(cfg.early_pool.iter().map(String::as_str));
+        } else if month < late_cutoff {
+            // The deep middle: neither founding nor homecoming, tinted by the
+            // era no one aboard remembers beginning (content-depth round 4).
+            draw.extend(cfg.mid_pool.iter().map(String::as_str));
         }
         if month >= late_cutoff {
             draw.extend(cfg.late_pool.iter().map(String::as_str));
@@ -113,6 +117,7 @@ mod tests {
             .chain(&cfg.return_pool)
             .chain(&cfg.any_pool)
             .chain(&cfg.early_pool)
+            .chain(&cfg.mid_pool)
             .chain(&cfg.late_pool)
             .map(String::as_str)
             .collect();
@@ -129,10 +134,19 @@ mod tests {
     fn era_layering_tints_the_ends_of_a_voyage() {
         let data = GameData::load().unwrap();
         let cfg = &data.config.campaign_skeleton;
-        // Founding-era and homecoming-era pools must be authored for the layering
-        // to mean anything, and must be real event families.
+        // Founding-, mid-, and homecoming-era pools must be authored for the
+        // layering to mean anything, and must be real event families.
         assert!(!cfg.early_pool.is_empty() && !cfg.late_pool.is_empty());
-        for fam in cfg.early_pool.iter().chain(&cfg.late_pool) {
+        assert!(
+            !cfg.mid_pool.is_empty(),
+            "the deep middle needs its own tint"
+        );
+        for fam in cfg
+            .early_pool
+            .iter()
+            .chain(&cfg.mid_pool)
+            .chain(&cfg.late_pool)
+        {
             assert!(
                 data.events.iter().any(|(_, e)| &e.family == fam),
                 "era family '{fam}' has no events"

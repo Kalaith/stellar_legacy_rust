@@ -122,6 +122,14 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Era ceilings (content-depth round 4): 0 = ungated, else the event has
+    // passed out of its era once the voyage is beyond the cap.
+    if template.max_year != 0 && sim.year() > template.max_year {
+        return false;
+    }
+    if template.max_generation != 0 && sim.dynasty.generation > template.max_generation {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -630,6 +638,35 @@ mod tests {
             .unwrap()
             .condition = 0.2;
         assert!(passes_gate(&sim, event), "a failing plant surfaces it");
+    }
+
+    #[test]
+    fn an_era_ceiling_retires_deep_middle_content_before_homecoming() {
+        // Content-depth campaign-skeleton round 4: the max_generation ceiling is
+        // the mirror of min_generation — a deep-middle beat unlocks after the
+        // founding generations and retires before the homecoming ones, so "the
+        // ship is the only world" cannot fire once the ship is nearly home.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 61, &picks);
+        let event = data.events.get("the_only_world").unwrap();
+        assert!(event.min_generation > 0 && event.max_generation >= event.min_generation);
+
+        // Before its era: still gated out by min_generation.
+        sim.dynasty.generation = event.min_generation - 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "too early: the founders still live"
+        );
+        // Inside its era: it fires.
+        sim.dynasty.generation = event.min_generation;
+        assert!(passes_gate(&sim, event), "the deep middle surfaces it");
+        // Past its era: the ceiling retires it.
+        sim.dynasty.generation = event.max_generation + 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "too late: near home it is no longer the only world"
+        );
     }
 
     #[test]

@@ -120,6 +120,15 @@ pub struct EventTemplate {
     pub min_generation: u32,
     #[serde(default)]
     pub min_cultural_drift: f32,
+    /// Era ceilings (content-depth campaign-skeleton round 4): the mirror of the
+    /// `min_*` gates — the event leaves the pool once the voyage passes these, so
+    /// content that belongs to a voyage era (e.g. the deep-middle "the ship is
+    /// the only world" beats) can bow out before homecoming rather than leaking
+    /// into it. 0 = no ceiling.
+    #[serde(default)]
+    pub max_year: u32,
+    #[serde(default)]
+    pub max_generation: u32,
     /// Consequence chain gate (content-depth iteration): the event stays out of
     /// the pool until a prior outcome has recorded every tag listed here in
     /// `sim.consequences`. This is how an early choice re-fires a consequence

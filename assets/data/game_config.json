@@ -119,6 +119,11 @@
       "science_anomaly",
       "comedy"
     ],
+    "mid_pool": [
+      "legacy_drift",
+      "mystery",
+      "comedy"
+    ],
     "late_pool": [
       "legacy_drift",
       "ethics"

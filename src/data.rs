@@ -315,6 +315,13 @@ pub struct CampaignSkeletonConfig {
     pub late_pool: Vec<String>,
     pub early_fraction: f32,
     pub late_fraction: f32,
+    /// Extra families layered into beats in the deep middle of the voyage
+    /// (between `early_fraction` and `late_fraction`) — the era no living soul
+    /// remembers launching into and none expects to see the end of, when the
+    /// ship is the only world anyone has known (content-depth round 4). Empty =
+    /// no mid-era tint.
+    #[serde(default)]
+    pub mid_pool: Vec<String>,
     /// Cultural-drift thresholds (ascending) that each fire one beat the first
     /// time the voyage crosses them (content-depth round 2). This is how the
     /// signature Long-Term Expedition beats read as *consequences of the long

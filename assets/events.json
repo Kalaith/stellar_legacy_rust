@@ -6082,5 +6082,111 @@
     "log": "The council saved the working records and let the deep archive go — the founding debates, the old star-charts, the names of worlds no one was steering for anymore. The ship reads lighter now, and remembers less of why it ever left."
    }
   ]
+ },
+ {
+  "id": "the_only_world",
+  "category": "legacy_moment",
+  "title": "The Only World",
+  "description": "A census officer brings the council a quiet finding: not one soul now aboard was alive at launch, and by the arithmetic of the voyage, not one now living expects to see the end. For everyone who breathes, the ship is not the way to the world. The ship is the world.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 6,
+  "max_generation": 13,
+  "outcomes": [
+   {
+    "id": "teach_the_passage",
+    "label": "Teach the voyage as a passage",
+    "description": "Hold the founding and the far harbor alive in every school. The ship is a corridor between two worlds, and these are the people of the crossing.",
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.03,
+     "morale": -0.02
+    },
+    "log": "The schools kept teaching the ship as a passage — a bridge thrown between a world left and a world promised, and every child a walker on it. It gave the voyage a spine and a sadness both: a people forever between, at home in neither dark they came from nor light they steer for."
+   },
+   {
+    "id": "teach_the_ship_as_home",
+    "label": "Teach the ship as home",
+    "description": "Let them have the ship as the whole and only world it has become for them. The mission can be an inheritance without being a homesickness.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "cultural_drift": 0.06
+    },
+    "log": "The council let the schools teach the ship as the world entire — not a corridor but a country, with its own weather of light-cycles and its own horizon of bulkheads. The people grew happy in it and strange to their charter, the far harbor fading into a story told at festivals, meaning less each time."
+   }
+  ]
+ },
+ {
+  "id": "the_equidistant_dark",
+  "category": "mission_milestone",
+  "title": "The Equidistant Dark",
+  "description": "Deep in the middle of the crossing, no star near enough to grow or shrink, the long-range array shows a sky that does not change from watch to watch. A young officer reports, unsettled, that by every instrument the stars have stopped moving. They have not. It only looks that way from the exact middle of nowhere.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_generation": 6,
+  "max_generation": 13,
+  "outcomes": [
+   {
+    "id": "keep_the_beacons_lit",
+    "label": "Burn the beacons into the dark",
+    "description": "Run every running light and hail-beacon at full — a statement, to no one, that the ship is here and moving.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "log": "The ship lit itself up against the unmoving dark and threw hails into a silence that would not answer for a thousand years. Nothing heard them. But the crew slept easier for a while, knowing their ship insisted, to the whole indifferent middle of nowhere, that it was here."
+   },
+   {
+    "id": "run_dark_and_silent",
+    "label": "Run dark and silent",
+    "description": "Douse the lights, save the power, and let the ship drift the deep middle unseen even by itself.",
+    "resource_delta": {
+     "energy": 150
+    },
+    "population_delta": {
+     "unity": 0.03,
+     "morale": -0.03
+    },
+    "log": "The ship went dark to save its reactor for the far side, and the crew stood their watches by instrument alone through a sky that never moved. It was a grim, close time, and the ship came out of it thriftier and quieter and somehow more one thing than it went in."
+   }
+  ]
+ },
+ {
+  "id": "the_false_noon",
+  "category": "legacy_moment",
+  "title": "The False Noon",
+  "description": "The navigators announce the ship has passed the exact mathematical midpoint of the crossing — a moment that changes nothing, that no one can see, in a voyage with no days. A committee of the bored has proposed making a holiday of it. The council must rule on the calendar.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 6,
+  "max_generation": 13,
+  "outcomes": [
+   {
+    "id": "throw_the_great_midpoint",
+    "label": "Declare the Great Midpoint",
+    "description": "A blowout for the halfway mark — the biggest feast the ship has thrown since launch nobody remembers.",
+    "resource_delta": {
+     "food": -250
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "cultural_drift": 0.03
+    },
+    "log": "The Great Midpoint was declared, and the ship threw itself a party for arriving at a mathematical point in the void that looked exactly like every other point. It was glorious. Within two generations children will believe it was always a holiday, which is the truest kind of tradition."
+   },
+   {
+    "id": "a_working_toast",
+    "label": "A working toast and back to shift",
+    "description": "Mark it in the log, raise one cup on the mess deck, and keep the watch. Halfway is halfway.",
+    "population_delta": {
+     "morale": 0.02,
+     "stability": 0.03
+    },
+    "log": "The midpoint got a line in the log and a single raised cup on each mess deck, and then the watch went back on. It was the sort of restraint the founders would have approved of, and the sort the party faction has not entirely forgiven."
+   }
+  ]
  }
 ]
