@@ -82,6 +82,11 @@ pub struct EventOutcome {
     /// (W7) — they settled off-ship or departed. Skipped if only one remains.
     #[serde(default)]
     pub faction_loss: Option<FactionLossKind>,
+    /// With `faction_loss` set, loses this *specific* faction instead of the
+    /// smallest (content-depth round 3: faction-specific schism beats). Ignored
+    /// when `faction_loss` is `None`; a no-op if that faction is already gone.
+    #[serde(default)]
+    pub faction_loss_id: Option<String>,
     /// Signed changes to named subsystems (content-depth iteration): condition
     /// and/or knowledge, clamped to [0, 1]. This is the coupling that lets an
     /// engineering crisis actually damage the engineering bay, or a teaching

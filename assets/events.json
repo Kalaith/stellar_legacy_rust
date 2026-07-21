@@ -4726,5 +4726,136 @@
     "log": "The survey took its contracted readings of the far deep and asked no further questions of it. The charter was satisfied; the mystery was left, mostly, alone."
    }
   ]
+ },
+ {
+  "id": "the_ascension_exodus",
+  "category": "legacy_moment",
+  "title": "The Ascension Exodus",
+  "description": "Centuries of augmentation have carried the Ascension Circle somewhere the rest of the ship cannot follow. They no longer eat at the common tables, no longer speak the common tongue without effort. Now they ask, gently, to be given a hull of their own and let go.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "ascension_circle"
+  ],
+  "min_cultural_drift": 0.6,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "let_them_ascend",
+    "label": "Give them a lifeboat and let them go",
+    "description": "Part on good terms. They were always going to leave the human behind.",
+    "resource_delta": {
+     "minerals": -200
+    },
+    "population_delta": {
+     "cultural_drift": -0.05,
+     "unity": 0.05,
+     "morale": -0.03
+    },
+    "faction_loss": "departed",
+    "faction_loss_id": "ascension_circle",
+    "log": "The Ascension Circle took a lifeboat and their strange bright future and slipped away into the dark to become whatever they were becoming. The ship felt smaller, and a little more human, for their going."
+   },
+   {
+    "id": "hold_them_aboard",
+    "label": "Refuse — one ship, one people",
+    "description": "Insist the augmented remain part of the whole, however strained.",
+    "population_delta": {
+     "unity": -0.06,
+     "stability": 0.04,
+     "cultural_drift": 0.04
+    },
+    "log": "The council refused to let the Circle break away, and the augmented stayed — present, apart, and quietly counting the years until the question was asked again."
+   }
+  ]
+ },
+ {
+  "id": "the_flame_orthodoxy",
+  "category": "generational_challenge",
+  "title": "The Hardened Flame",
+  "description": "The Keepers of the First Flame have spent generations turning the mission into scripture, and now their faith has teeth — they demand the whole ship keep their rites, or they will keep them alone, apart, behind a sealed bulkhead.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "first_flame"
+  ],
+  "min_cultural_drift": 0.55,
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "accommodate_the_faith",
+    "label": "Bend the ship to their rites",
+    "description": "Adopt the Keepers' observances shipwide to keep them in the fold.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "cultural_drift": 0.05,
+     "adaptation": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship took up the First Flame's rites to keep the peace, and the mission became, by degrees, a religion the whole crew practiced whether they believed it or not."
+   },
+   {
+    "id": "let_the_flame_secede",
+    "label": "Let them keep to themselves",
+    "description": "Give the orthodox their sealed quarter and let the schism harden.",
+    "population_delta": {
+     "unity": -0.04,
+     "stability": 0.05,
+     "morale": -0.03
+    },
+    "faction_loss": "departed",
+    "faction_loss_id": "first_flame",
+    "log": "The Keepers sealed themselves behind their bulkhead and, over a generation, became a ship-within-the-ship that finally cut its own way loose. The First Flame took its scripture and its silence and left."
+   }
+  ]
+ },
+ {
+  "id": "the_verdant_secession",
+  "category": "legacy_moment",
+  "title": "The Verdant Secession",
+  "description": "The Verdant Kin have never loved the metal sky, and drift has only deepened their longing for real soil. When the route passes a habitable world, they ask — no, they announce — that they mean to go down and stay, and make a garden of it.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "verdant_kin"
+  ],
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "min_cultural_drift": 0.5,
+  "outcomes": [
+   {
+    "id": "bless_the_planting",
+    "label": "Bless the planting and let them stay",
+    "description": "Send them down with seed and tools and a benediction.",
+    "resource_delta": {
+     "food": 300
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "faction_loss": "settled",
+    "faction_loss_id": "verdant_kin",
+    "log": "The Verdant Kin went down to the green world with seed and song, and the ship sailed on lighter and quieter, having planted a garden it would never see grow."
+   },
+   {
+    "id": "deny_the_planting",
+    "label": "Deny them — the mission needs their hands",
+    "description": "The ship cannot spare a whole people. Order them to stay.",
+    "population_delta": {
+     "morale": -0.06,
+     "unity": -0.04,
+     "cultural_drift": 0.05
+    },
+    "log": "The council forbade the Kin their world, and they stayed — hands on the grow-decks, hearts on a planet dwindling astern. For a generation they tended the gardens like exiles."
+   }
+  ]
  }
 ]

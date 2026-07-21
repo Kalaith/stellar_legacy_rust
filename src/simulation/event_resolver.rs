@@ -275,9 +275,13 @@ pub fn apply_outcome(
     if outcome.force_return {
         crate::simulation::contract::jump_to_return(sim);
     }
-    // …or drive a whole people off the ship (W7).
+    // …or drive a whole people off the ship (W7) — a named faction for a
+    // schism beat (content-depth round 3), else whoever is smallest.
     if let Some(kind) = outcome.faction_loss {
-        sim.apply_faction_loss(data, kind);
+        match &outcome.faction_loss_id {
+            Some(id) => sim.apply_faction_loss_by_id(data, kind, id),
+            None => sim.apply_faction_loss(data, kind),
+        }
     }
     // …or wound / mend / re-teach a subsystem (content-depth coupling): an
     // engineering crisis damages the engineering bay, a teaching succession

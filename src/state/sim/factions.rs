@@ -218,6 +218,38 @@ impl SimState {
             })
             .expect("aboard is non-empty");
 
+        self.remove_faction(idx, kind, data);
+    }
+
+    /// Remove a *named* faction from the ship (content-depth round 3: faction-
+    /// specific schism beats). Unlike `apply_faction_loss`, which sheds whoever
+    /// is smallest, this loses the faction the event is actually about — but
+    /// still never the ship's last aboard people, and never a no-op silent when
+    /// the named faction has already gone.
+    pub fn apply_faction_loss_by_id(&mut self, data: &GameData, kind: FactionLossKind, id: &str) {
+        if self.aboard_faction_count() <= 1 {
+            self.push_log(
+                "A faction talked of breaking away, but with the ship's last people aboard, \
+                 they stayed.",
+            );
+            return;
+        }
+        match self
+            .factions
+            .iter()
+            .position(|f| f.faction_id == id && f.is_aboard())
+        {
+            Some(idx) => self.remove_faction(idx, kind, data),
+            None => self.push_log(
+                "The talk of a schism came to nothing — those who might have led it were \
+                 already gone.",
+            ),
+        }
+    }
+
+    /// Shared removal: mark the faction lost, drop its members from the head
+    /// count, and log the parting in the flavor of `kind`.
+    fn remove_faction(&mut self, idx: usize, kind: FactionLossKind, data: &GameData) {
         let members = self.factions[idx].members;
         self.factions[idx].members = 0;
         self.factions[idx].status = match kind {
@@ -480,6 +512,34 @@ mod tests {
             "the last people are never lost"
         );
         assert_eq!(solo.population.count, 1000);
+    }
+
+    #[test]
+    fn targeted_faction_loss_sheds_the_named_group_not_the_smallest() {
+        let (data, mut sim, picks) = armed(1);
+        // Named faction (picks[1]) is the LARGEST, so a smallest-loss would spare
+        // it — targeting must remove it anyway (content-depth round 3 schism).
+        sim.factions = vec![fs(&picks[0], 100), fs(&picks[1], 500), fs(&picks[2], 400)];
+        sim.population.count = 1000;
+
+        sim.apply_faction_loss_by_id(&data, FactionLossKind::Departed, &picks[1]);
+        assert_eq!(sim.factions[1].status, FactionStatus::Departed);
+        assert_eq!(sim.factions[1].members, 0);
+        assert_eq!(
+            sim.population.count, 500,
+            "the departed faction leaves the head count"
+        );
+        assert!(sim.factions[0].is_aboard() && sim.factions[2].is_aboard());
+
+        // Never the last aboard people, even when named.
+        let mut solo = SimState::new_campaign(&data, "preservers", 2, &picks);
+        solo.factions = vec![fs(&picks[0], 1000)];
+        solo.population.count = 1000;
+        solo.apply_faction_loss_by_id(&data, FactionLossKind::Departed, &picks[0]);
+        assert!(
+            solo.factions[0].is_aboard(),
+            "the last people are never lost"
+        );
     }
 
     #[test]

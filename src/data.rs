@@ -533,10 +533,11 @@ mod tests {
             for fid in std::iter::once(&e.requires_dominant_faction)
                 .filter(|f| !f.is_empty())
                 .chain(e.requires_factions_aboard.iter())
+                .chain(e.outcomes.iter().filter_map(|o| o.faction_loss_id.as_ref()))
             {
                 assert!(
                     data.factions.get(fid).is_some(),
-                    "event '{id}' gates on unknown faction '{fid}'"
+                    "event '{id}' references unknown faction '{fid}'"
                 );
             }
             // Content-depth subsystem↔event coupling: knowledge gates and
