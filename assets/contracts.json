@@ -1214,5 +1214,103 @@
    "deep_space",
    "double_hop"
   ]
+ },
+ {
+  "id": "the_long_tow",
+  "name": "Salvage Writ: The Long Tow",
+  "objective": "mining",
+  "description": "A titan-hulled colony ship died on its outbound burn three centuries ago, its reactors cold, its holds and archives intact. The reach out is short; the writ is to grapple the derelict and drag it home. The tow is the voyage — a quarter-millennium hauling a dead ship heavier than your own across the deep dark, its mass on your line the whole way.",
+  "target_duration_years": 450,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 70
+   },
+   {
+    "kind": "operation",
+    "years": 60
+   },
+   {
+    "kind": "return",
+    "years": 320
+   }
+  ],
+  "objective_target": 900,
+  "objective_unit": "kilotonnes secured under tow",
+  "milestones": [
+   {
+    "id": "grapple_made",
+    "name": "Grapple made, tow-line under tension",
+    "progress_threshold": 0.2
+   },
+   {
+    "id": "holds_stripped",
+    "name": "Derelict holds surveyed and secured",
+    "progress_threshold": 0.6,
+    "reward": {
+     "minerals": 500
+    }
+   },
+   {
+    "id": "archives_lifted",
+    "name": "Founder archives lifted from the dead ship",
+    "progress_threshold": 0.9,
+    "reward": {
+     "influence": 120
+    }
+   },
+   {
+    "id": "tow_secured",
+    "name": "Tow rig certified for the long haul",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.35,
+    "target": 0.85
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.2,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.3,
+    "target": 0.6
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.15,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "tow_line_failure",
+   "overloaded_life_support",
+   "the_endless_haul"
+  ],
+  "reward": {
+   "credits": 8200,
+   "minerals": 2400,
+   "influence": 260
+  },
+  "min_renown": 100,
+  "tags": [
+   "salvage",
+   "derelict",
+   "deep_space",
+   "long_return"
+  ]
  }
 ]

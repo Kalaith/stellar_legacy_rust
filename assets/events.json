@@ -5586,5 +5586,144 @@
     "log": "The Office was thanked and disbanded, its eleven reassigned to posts that were genuinely short-handed. The filing berth is a store room again. People still turn up at the old hatch with lost spanners, and stand a moment, and go."
    }
   ]
+ },
+ {
+  "id": "the_towline",
+  "category": "immediate_crisis",
+  "title": "The Tow-Line",
+  "description": "Decades into the haul, the main grapple anchor is fatiguing where the dead ship's mass drags hardest. The rig will not last the return as it is. Re-anchor it, or shed some of the prize to save the line.",
+  "requires_decision": true,
+  "family": "engineering",
+  "phases": [
+   "return"
+  ],
+  "requires_charter_tag": [
+   "long_return"
+  ],
+  "outcomes": [
+   {
+    "id": "reanchor_the_tow",
+    "label": "Re-rig the anchor",
+    "description": "Spend the parts and the shift-hours. Keep every tonne on the line.",
+    "resource_delta": {
+     "energy": -250
+    },
+    "ship_delta": {
+     "spare_parts": -50
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.03
+     }
+    ],
+    "log": "The riggers cut a new anchor bed into the spine and walked the tow-line across under load — a month of work no one wants to describe twice. The dead ship rides steady again, and the whole prize is still on the line."
+   },
+   {
+    "id": "cut_partial_tow",
+    "label": "Shed part of the tow",
+    "description": "Cast off the outer holds. A lighter tow is a tow that gets home.",
+    "resource_delta": {
+     "minerals": -600
+    },
+    "ship_delta": {
+     "fuel": 0.05,
+     "hull_integrity": 0.03
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "They cut the derelict's outer holds loose and watched a fortune tumble away into the dark. The line runs easy now and the ship rides light — but the manifest they carry home is the poorer for it, and everyone did the arithmetic."
+   }
+  ]
+ },
+ {
+  "id": "the_overloaded_decks",
+  "category": "generational_challenge",
+  "title": "The Overloaded Decks",
+  "description": "The tow draws parasitically on the ship — its cold holds kept barely warm, its archives kept dry, all off your grid and your air. The strain is telling on life support. Bear the load, or let the dead ship go cold.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "return"
+  ],
+  "requires_charter_tag": [
+   "long_return"
+  ],
+  "outcomes": [
+   {
+    "id": "bear_the_load",
+    "label": "Bear the load",
+    "description": "Keep the prize whole. Carry its weight on your own systems.",
+    "resource_delta": {
+     "energy": -400
+    },
+    "ship_delta": {
+     "life_support": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.03
+     }
+    ],
+    "log": "The council chose to carry the tow warm and whole, and the habitat plant ran a little harder for it every year of the haul. The archives will reach home readable. The scrubbers will need answering for."
+   },
+   {
+    "id": "power_down_the_tow",
+    "label": "Let it go cold",
+    "description": "Cut the derelict off your grid. Save the ship; lose what freezes.",
+    "resource_delta": {
+     "energy": 200,
+     "minerals": -400
+    },
+    "ship_delta": {
+     "life_support": 0.02
+    },
+    "log": "They pulled the tow off the grid and let it freeze. The ship's air came easier at once — and somewhere in the dead ship's dark holds, seed-stock and film and things that do not survive the cold quietly stopped being cargo."
+   }
+  ]
+ },
+ {
+  "id": "the_endless_haul",
+  "category": "legacy_moment",
+  "title": "The Endless Haul",
+  "description": "A generation has been born, come of age, and taken the line who have known nothing but the tow — the dead ship always behind, home always a century ahead. They ask the elders what the haul is for. The answer will shape who they become.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "return"
+  ],
+  "requires_charter_tag": [
+   "long_return"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "honor_the_labor",
+    "label": "Make the haul sacred",
+    "description": "The tow is the ship's great work. Let hauling it be who they are.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.02,
+     "cultural_drift": 0.05
+    },
+    "log": "The haul became the ship's religion — the tow-line watch its priesthood, the dead ship behind them a relic they were chosen to bear home. They are one people now, bound to a labor their grandparents took up. What they will do when the haul finally ends, no one has thought to ask."
+   },
+   {
+    "id": "promise_them_home",
+    "label": "Point them at home",
+    "description": "Keep them dreaming of the planetfall none of them will live to see.",
+    "population_delta": {
+     "morale": 0.03,
+     "stability": 0.03,
+     "unity": -0.02
+    },
+    "log": "The elders taught the new watch to work for the harbor at the end — a green world in the archives none of them would reach. It kept them steady and it kept them restless, a generation always half-turned toward a home that stayed a century off."
+   }
+  ]
  }
 ]

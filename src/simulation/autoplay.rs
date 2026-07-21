@@ -309,6 +309,45 @@ mod tests {
         );
     }
 
+    /// Soak the return-dominant charter shape (content-depth charters round 4):
+    /// the 450-year Long Tow spends only 60 years on-station and 320 hauling the
+    /// prize home, so the hard stretch is the return, not the outbound or the
+    /// operation — a shape no other charter has. Assert the topology is genuinely
+    /// return-dominant, then fly it end to end and require a legal resolution.
+    #[test]
+    fn the_long_tow_resolves_over_a_return_dominant_voyage() {
+        use crate::data::contracts::ContractPhase;
+
+        let data = GameData::load().unwrap();
+        let template = data.contracts.get("the_long_tow").unwrap();
+        let return_years: u32 = template
+            .phases
+            .iter()
+            .filter(|p| p.kind == ContractPhase::Return)
+            .map(|p| p.years)
+            .sum();
+        assert!(
+            return_years * 2 > template.target_duration_years,
+            "the long tow's haul home must dominate the voyage: {return_years} of {} years",
+            template.target_duration_years
+        );
+
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            94,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let outcome = play_mission(&mut sim, &data, "the_long_tow", 520);
+        assert!(
+            outcome.completed || outcome.extinct,
+            "the long tow should resolve, not run out the clock (year {}, completed {}, extinct {})",
+            outcome.final_year,
+            outcome.completed,
+            outcome.extinct
+        );
+    }
+
     /// The 600-year Long Dark is allowed to end either way: completion or the
     /// total loss of the line. This test only pins the invariants (asserted in
     /// `play_mission`) and that the run terminates in one of the two legal
