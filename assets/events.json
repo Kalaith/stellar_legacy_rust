@@ -2981,5 +2981,207 @@
     "log": "The council refused the partition and mixed the berth rolls on purpose. The friction stayed, and so, stubbornly, did the sense of one crew."
    }
   ]
+ },
+ {
+  "id": "the_last_engineer",
+  "category": "immediate_crisis",
+  "title": "The Last Engineer",
+  "description": "The one aging specialist who truly understands the reactor is failing, and no one has been trained to take her place. What she knows will die with her unless the ship acts now.",
+  "requires_decision": true,
+  "family": "engineering",
+  "knowledge_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "apprentice_now",
+    "label": "Pull apprentices to her side",
+    "description": "Take hands off other work and sit them at her bench while there is time.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.35
+     }
+    ],
+    "log": "For her last months the old engineer taught without rest, and three apprentices carried her diagrams like scripture. The knowledge survived the funeral."
+   },
+   {
+    "id": "let_it_lapse",
+    "label": "Let the work go on without her",
+    "description": "There is no one to spare. Hope the machines hold and the manuals suffice.",
+    "population_delta": {
+     "morale": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": -0.15,
+      "condition": -0.05
+     }
+    ],
+    "log": "The last engineer died with her understanding intact and untransferred. The reactor still ran — for now — tended by people who no longer knew quite why it worked."
+   }
+  ]
+ },
+ {
+  "id": "coolant_loop_rupture",
+  "category": "immediate_crisis",
+  "title": "Coolant Loop Rupture",
+  "description": "A primary coolant loop lets go in the engineering bay, scalding two decks and warping the module's frame. It can be patched fast and dirty, or slow and right.",
+  "requires_decision": true,
+  "family": "engineering",
+  "phases": [
+   "travel",
+   "operation",
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "fast_patch",
+    "label": "Patch it fast",
+    "description": "Seal it and move on. The bay will carry the scar.",
+    "ship_delta": {
+     "spare_parts": -3
+    },
+    "population_delta": {
+     "count": -8
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.12
+     }
+    ],
+    "log": "The rupture was sealed within the hour and the bay never quite ran true again, its frame subtly bent, its tolerances forever a little off."
+   },
+   {
+    "id": "proper_rebuild",
+    "label": "Rebuild it properly",
+    "description": "Strip the loop and do it right, at real cost.",
+    "resource_delta": {
+     "minerals": -200,
+     "credits": -400
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "count": -8,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.02
+     }
+    ],
+    "log": "The crew tore the coolant loop down to the frame and rebuilt it clean. It cost a fortune in parts and the bay came back nearly whole."
+   }
+  ]
+ },
+ {
+  "id": "the_blight_returns",
+  "category": "generational_challenge",
+  "title": "Rot in the Grow-Decks",
+  "description": "A rot spreads through the hydroponic beds faster than the gardeners can cut it back. Burn the infected racks to save the rest, or nurse them and risk the whole harvest.",
+  "requires_decision": true,
+  "family": "survival",
+  "outcomes": [
+   {
+    "id": "burn_the_racks",
+    "label": "Burn the infected racks",
+    "description": "Cut losses. Sacrifice a quarter to save three.",
+    "resource_delta": {
+     "food": -300
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.06
+     }
+    ],
+    "log": "The gardeners torched a quarter of the grow-decks and stopped the rot at the firebreak. The galley tightened its belt and the beds slowly greened again."
+   },
+   {
+    "id": "nurse_them",
+    "label": "Nurse the beds",
+    "description": "Try to save every rack. Gamble the harvest.",
+    "resource_delta": {
+     "food": -700
+    },
+    "population_delta": {
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.14
+     }
+    ],
+    "log": "The gardeners fought for every rack and lost most of them anyway. The rot burned through the decks and the ship went hungry into the next season."
+   }
+  ]
+ },
+ {
+  "id": "the_forgotten_medicine",
+  "category": "generational_challenge",
+  "title": "The Forgotten Medicine",
+  "description": "A physician opens the old pharmacopoeia and finds she can no longer read half of it — the training that made sense of it lapsed generations back. A fever season is coming.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "knowledge_below": [
+   {
+    "id": "medical_bay",
+    "below": 0.35
+   }
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "relearn_from_the_texts",
+    "label": "Rebuild the training",
+    "description": "Convene the physicians and relearn the lost art from first principles.",
+    "resource_delta": {
+     "credits": -350,
+     "influence": 20
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "knowledge": 0.3
+     }
+    ],
+    "population_delta": {
+     "stability": 0.04
+    },
+    "log": "The physicians spent a year relearning what their grandparents knew by heart. The pharmacopoeia opened again, and the fever season, when it came, was survivable."
+   },
+   {
+    "id": "trust_the_machines",
+    "label": "Trust the auto-clinics",
+    "description": "Let the automated systems prescribe blind. No one need understand why.",
+    "population_delta": {
+     "count": -30,
+     "adaptation": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "knowledge": -0.1
+     }
+    ],
+    "log": "The auto-clinics dosed by rote through the fever season and buried those they guessed wrong on. The understanding slipped a notch further out of living memory."
+   }
+  ]
  }
 ]

@@ -449,6 +449,18 @@ mod tests {
                     "event '{id}' gates on unknown faction '{fid}'"
                 );
             }
+            // Content-depth subsystem↔event coupling: knowledge gates and
+            // outcome subsystem deltas must name real subsystems.
+            for sid in e.knowledge_below.iter().map(|g| &g.id).chain(
+                e.outcomes
+                    .iter()
+                    .flat_map(|o| o.subsystem_deltas.iter().map(|d| &d.id)),
+            ) {
+                assert!(
+                    data.subsystems.get(sid).is_some(),
+                    "event '{id}' references unknown subsystem '{sid}'"
+                );
+            }
         }
         // W7: six authored founding factions, ideology within [-1, 1]. The
         // registry keys on id, so a count of six also proves the ids are unique.

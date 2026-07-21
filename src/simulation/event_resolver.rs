@@ -97,6 +97,13 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    if !template.knowledge_below.iter().all(|gate| {
+        sim.subsystems
+            .get(&gate.id)
+            .is_some_and(|s| s.knowledge <= gate.below)
+    }) {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -261,6 +268,15 @@ pub fn apply_outcome(
     if let Some(kind) = outcome.faction_loss {
         sim.apply_faction_loss(data, kind);
     }
+    // …or wound / mend / re-teach a subsystem (content-depth coupling): an
+    // engineering crisis damages the engineering bay, a teaching succession
+    // restores its lost know-how. Unknown ids are ignored.
+    for delta in &outcome.subsystem_deltas {
+        if let Some(state) = sim.subsystems.get_mut(&delta.id) {
+            state.condition = (state.condition + delta.condition).clamp(0.0, 1.0);
+            state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
+        }
+    }
     sim.pending_event = None;
 }
 
@@ -401,6 +417,32 @@ mod tests {
         }
         assert_ne!(sim.dominant_faction_id(), Some("ascension_circle"));
         assert!(!passes_gate(&sim, event));
+    }
+
+    #[test]
+    fn a_knowledge_crisis_gates_on_low_know_how_and_its_outcome_reteaches_it() {
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 11, &picks);
+        let event = data.events.get("the_last_engineer").unwrap();
+        assert_eq!(event.knowledge_below[0].id, "engineering_bay");
+
+        // Healthy know-how: the crisis stays out of the pool.
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.8;
+        assert!(!passes_gate(&sim, event));
+
+        // Once knowledge has decayed under the threshold, it can fire.
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.2;
+        assert!(passes_gate(&sim, event));
+
+        // Applying the apprentice outcome re-teaches the bay (knowledge +0.35).
+        let before = sim.subsystems["engineering_bay"].knowledge;
+        apply_outcome(&mut sim, &data, event, 0);
+        let after = sim.subsystems["engineering_bay"].knowledge;
+        assert!(
+            after > before,
+            "the teaching succession restores lost know-how ({before} -> {after})"
+        );
     }
 
     #[test]

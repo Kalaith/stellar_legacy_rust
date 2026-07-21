@@ -28,14 +28,17 @@ than last iteration, still coherent."
 4. Repo constraints hold: 800-line file limit, no `mod.rs`, UI stays a pure view layer
    pushing `UiAction`, clippy `-D warnings` clean, soak/playthrough tests green.
 
-## Baseline (as of 2026-07-21)
+## Baseline
 
-| Axis | Current |
+*Origin baseline 2026-07-21: 72 events, 10 charters, 6 factions, 6 subsystems, no event gates beyond phase/year/generation/drift.*
+
+| Axis | Current (updated 2026-07-21, after iteration 4) |
 | --- | --- |
-| Events | **72** total — legacy_drift 14, engineering 9, exploration_first_contact 7, survival/ethics/mystery/biology_medical/diplomacy/comedy/science_anomaly 6 each |
-| Charters | **10** in `assets/contracts.json` |
+| Events | **91** total — legacy_drift 16, engineering 12, survival 10, biology_medical 10, mystery 8, diplomacy 8, exploration_first_contact 7, comedy 7, science_anomaly 7, ethics 6 |
+| Event gates | phase, min_year/gen/drift, **consequence chains**, **charter tags**, **dominant faction**, **factions aboard**, **knowledge-below crisis** |
+| Charters | **10** in `assets/contracts.json`, all destination-`tags`-annotated |
 | Factions | **6** authored (pick 3), structure-first v1 (no approval meters yet) |
-| Subsystems | **6** (medical, life-support, agriculture, security, education, engineering) with decay + knowledge-gated repair |
+| Subsystems | **6** (medical, life-support, agriculture, security, education, engineering) with decay + knowledge-gated repair; events can now `subsystem_deltas` condition/knowledge |
 | Campaign | Seeded skeleton beats + reactive fills; phase-gated event weighting |
 
 Update this table occasionally (not every iteration) so drift from baseline stays visible.
@@ -140,3 +143,4 @@ adds depth. One deliberate coupling per iteration is a good bar.
 - 2026-07-21 · event families + coupling · added `requires_consequence` gate (schema + `passes_gate` wiring) so an early choice can unlock a later event; authored the `sealed_ward → the_ward_reopens` chain plus 5 parity events (biology_medical 6→8, survival/mystery/diplomacy/comedy/science_anomaly 6→7). Events 72→79. Couplings used: consequence chain, `faction_loss` on harsh rationing, fuel/drift trade, gated salvage grant. +1 test (92 total).
 - 2026-07-21 · charters + coupling · new charter↔event coupling: added `tags` to charters (all 10 tagged) copied onto the active contract, and a `requires_charter_tag` event gate so a destination colors its own event pool. Authored 4 tag-keyed events (boarding scare on `hostile_space`, settler-drain on `garden`, starless-reach drift on `deep_space`, richer-find early return on `uncharted`). Events 79→83. Data-load check rejects tags no charter carries. +1 test (93 total).
 - 2026-07-21 · factions + coupling · faction↔event coupling: `dominant_faction_id`/`is_faction_aboard` helpers + two event gates — `requires_dominant_faction` (signature events when a faction runs the ship) and `requires_factions_aboard` (inter-faction friction). Authored 4 faction-colored events (Ascension cradle-augmentation, First Flame reactor-rite, Verdant Kin garden-vs-salvage, Flame×Ascension partition). Events 83→87. Data-load check rejects unknown faction ids. +1 test (94 total).
+- 2026-07-21 · subsystems + coupling · subsystem↔event coupling: outcome `subsystem_deltas` (signed condition/knowledge changes, clamped) wired into `apply_outcome`, and a `knowledge_below` crisis gate so events fire as a module's know-how decays. Authored 4 events (the-last-engineer teaching succession, coolant-loop rupture damaging the eng bay, grow-deck blight denting agriculture + food, forgotten-medicine crisis). Events 87→91. Data-load check rejects unknown subsystem ids. +1 test (95 total). Event gates now: consequence, charter-tag, dominant-faction, faction-aboard, knowledge-below.

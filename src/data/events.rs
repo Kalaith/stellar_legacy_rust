@@ -32,6 +32,28 @@ impl EventCategory {
     }
 }
 
+/// A signed change to one named subsystem's condition and/or institutional
+/// knowledge (content-depth iteration). Lets an event outcome wound a module,
+/// patch it, teach a skill forward, or bury it with the experts who die.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubsystemDelta {
+    pub id: String,
+    #[serde(default)]
+    pub condition: f32,
+    #[serde(default)]
+    pub knowledge: f32,
+}
+
+/// A crisis gate keyed to how much a subsystem's know-how has decayed
+/// (content-depth iteration): the event only fires while that subsystem's
+/// institutional knowledge has fallen to or below `below` — "the last person
+/// who understood the reactor is dying" beats.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KnowledgeGate {
+    pub id: String,
+    pub below: f32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventOutcome {
     pub id: String,
@@ -60,6 +82,12 @@ pub struct EventOutcome {
     /// (W7) — they settled off-ship or departed. Skipped if only one remains.
     #[serde(default)]
     pub faction_loss: Option<FactionLossKind>,
+    /// Signed changes to named subsystems (content-depth iteration): condition
+    /// and/or knowledge, clamped to [0, 1]. This is the coupling that lets an
+    /// engineering crisis actually damage the engineering bay, or a teaching
+    /// succession restore its lost know-how.
+    #[serde(default)]
+    pub subsystem_deltas: Vec<SubsystemDelta>,
     #[serde(default)]
     pub log: String,
 }
@@ -111,6 +139,11 @@ pub struct EventTemplate {
     /// Empty = no faction-presence requirement.
     #[serde(default)]
     pub requires_factions_aboard: Vec<String>,
+    /// Knowledge-crisis gates (content-depth iteration): the event only fires
+    /// while every listed subsystem's knowledge has decayed to or below its
+    /// threshold. Empty = ungated.
+    #[serde(default)]
+    pub knowledge_below: Vec<KnowledgeGate>,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,
