@@ -409,6 +409,15 @@ pub struct CampaignSkeletonConfig {
     /// The family a cohesion-collapse crisis beat draws from.
     #[serde(default)]
     pub crisis_beat_family: String,
+    /// Anniversary cadence (content-depth round 7): every this-many years of the
+    /// voyage, a beat is forced from `anniversary_beat_family` — a periodic
+    /// archetype (vs the threshold beats), giving the voyage a commemorative
+    /// heartbeat as the founding recedes into ritual over the centuries. 0 = off.
+    #[serde(default)]
+    pub anniversary_years: u32,
+    /// The family an anniversary beat draws from.
+    #[serde(default)]
+    pub anniversary_beat_family: String,
 }
 
 /// One step of the first-voyage checklist. The `id` binds it to a completion
@@ -985,6 +994,15 @@ mod tests {
             assert!(
                 sk.crisis_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton crisis_beats must be within (0, 1]"
+            );
+        }
+        // Content-depth round 7: the periodic anniversary beat needs a family
+        // with events when it is switched on.
+        if sk.anniversary_years > 0 {
+            assert!(
+                families.contains(&sk.anniversary_beat_family),
+                "campaign_skeleton anniversary_beat_family '{}' has no events",
+                sk.anniversary_beat_family
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

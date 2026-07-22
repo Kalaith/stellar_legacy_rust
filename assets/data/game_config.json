@@ -155,7 +155,9 @@
       0.35,
       0.2
     ],
-    "crisis_beat_family": "legacy_drift"
+    "crisis_beat_family": "legacy_drift",
+    "anniversary_years": 100,
+    "anniversary_beat_family": "legacy_drift"
   },
   "flavor": {
     "obituary": [

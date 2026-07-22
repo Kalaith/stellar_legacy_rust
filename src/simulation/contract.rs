@@ -107,6 +107,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         drift_beats_fired: 0,
         adaptation_beats_fired: 0,
         crisis_beats_fired: 0,
+        anniversaries_fired: 0,
     }
 }
 

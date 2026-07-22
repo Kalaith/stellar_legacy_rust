@@ -7410,5 +7410,80 @@
     "log": "The ship held its water ration rather than lose the plant for a month, nursing the fouled reclaimers along and burying the handful the thin, hard water took — the old, the young, the already-ailing. The loop kept running. The founders' promise did not, quite, and everyone drank knowing it."
    }
   ]
+ },
+ {
+  "id": "the_founders_day",
+  "category": "legacy_moment",
+  "title": "Founders' Day",
+  "description": "The anniversary of Launch comes round again, and the ship must decide, one more time, how to keep it. To the elders it is the most solemn day of the year — the day the whole enterprise began. To the young it is a day off from the rota with speeches attached.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_generation": 8,
+  "outcomes": [
+   {
+    "id": "keep_the_solemn_rite",
+    "label": "Keep the solemn rite",
+    "description": "The full observance — the founding log read aloud, the names of the first crew spoken, the charter renewed. A day to remember why.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.04,
+     "cultural_drift": -0.02
+    },
+    "log": "Founders' Day was kept in full — the log read out end to end, the first names spoken into the recyclers' hum, the charter renewed by a show of hands. The ship remembered, for one day, exactly what it was and why, and stood a little straighter for it into the year."
+   },
+   {
+    "id": "let_it_lighten",
+    "label": "Let it lighten",
+    "description": "The young want a festival, not a funeral for people they never met. Let Founders' Day become a celebration on its own terms.",
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "Founders' Day loosened into a proper festival — music the founders never heard, games they never played, and only a short reading no one much attended. The ship enjoyed itself thoroughly and remembered the founders the way one remembers a distant, well-meaning ancestor: fondly, and not in much detail."
+   }
+  ]
+ },
+ {
+  "id": "the_half_remembered_founding",
+  "category": "legacy_moment",
+  "title": "The Half-Remembered Founding",
+  "description": "The holiday is still kept — the ship has always kept it — but no one alive can quite say what it is for. The founding log is a thing the schools reference and no one reads; the first names on the roll are syllables in a song. It is a good festival. It has simply come loose from its reason.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 9,
+  "outcomes": [
+   {
+    "id": "restore_the_meaning",
+    "label": "Teach the founding again",
+    "description": "Mount an effort to reconnect the festival to its history — the log taught, the names learned, the reason spoken. Row against the drift of centuries.",
+    "resource_delta": {
+     "influence": -25
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.04,
+     "cultural_drift": -0.04,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The council spent its authority teaching the ship its own festival again — the log, the names, the reason — and for a while the holiday meant something once more, though the young kept the old songs mostly for the tunes. You can teach a people their history. You cannot make them ache for it."
+   },
+   {
+    "id": "let_the_holiday_be_its_own",
+    "label": "Let the holiday stand on its own",
+    "description": "It is a good festival and the ship loves it. Let it be what it has become — a thing the ship does because the ship has always done it, meaning whatever the living decide it means.",
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.03,
+     "cultural_drift": 0.04
+    },
+    "log": "The council let the holiday be what it had become — untethered from its founding, kept for its own warm sake, a tradition whose only remaining reason was that the ship had always kept it. Which is, in the end, the reason for most traditions, and the founders, whatever they were, had wanted the ship to go on."
+   }
+  ]
  }
 ]

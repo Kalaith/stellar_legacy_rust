@@ -103,6 +103,11 @@ pub struct ActiveContract {
     /// each crisis beat fires once as the ship comes apart.
     #[serde(default)]
     pub crisis_beats_fired: u32,
+    /// How many anniversary beats have fired (content-depth round 7): the
+    /// periodic commemoration cadence. Doubles as the count of anniversaries
+    /// observed, so the next fires when the voyage passes the following multiple.
+    #[serde(default)]
+    pub anniversaries_fired: u32,
 }
 
 impl ActiveContract {

@@ -73,6 +73,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
             && !fire_crisis_beat(sim, data, &mut report)
+            && !fire_anniversary_beat(sim, data, &mut report)
             && !fire_dead_air_beat(sim, data, &mut report)
         {
             roll_monthly_event(sim, data, &mut report);
@@ -253,6 +254,30 @@ fn fire_crisis_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport
         contract.crisis_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.crisis_beat_family, report);
+    true
+}
+
+/// Fire an anniversary beat (content-depth round 7): a *periodic* archetype, not
+/// a threshold one — every `anniversary_years` of the voyage a beat is forced
+/// from the anniversary family, giving the crossing a commemorative heartbeat as
+/// the founding recedes into ritual. Fires at most one anniversary per month;
+/// returns whether it replaced the reactive roll.
+fn fire_anniversary_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.anniversary_years == 0 {
+        return false;
+    }
+    let due = sim.contract.as_ref().is_some_and(|c| {
+        let next_month = (c.anniversaries_fired + 1) * cfg.anniversary_years * 12;
+        sim.month_clock >= next_month
+    });
+    if !due {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.anniversaries_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.anniversary_beat_family, report);
     true
 }
 

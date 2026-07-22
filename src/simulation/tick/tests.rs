@@ -183,6 +183,7 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
+    data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
         &data,
         "preservers",
@@ -511,6 +512,56 @@ fn a_multi_year_famine_reads_with_variety() {
         seen.len() >= 2,
         "a multi-year famine should surface more than one distinct line (saw {})",
         seen.len()
+    );
+}
+
+#[test]
+fn an_anniversary_beat_fires_on_its_periodic_cadence() {
+    // Content-depth campaign-skeleton round 7: the periodic archetype. With every
+    // other event source off and a short anniversary cadence, the voyage must
+    // observe its anniversary once the clock passes the interval.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    // A short cadence so the test does not fly a full century.
+    data.config.campaign_skeleton.anniversary_years = 5;
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        4,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Before the first interval: no anniversary yet.
+    for _ in 0..4 {
+        advance_year(&mut sim, &data);
+    }
+    assert_eq!(
+        sim.contract.as_ref().unwrap().anniversaries_fired,
+        0,
+        "no anniversary before the first interval elapses"
+    );
+
+    // Cross the interval, resolving the forced beat so the loop can proceed.
+    for _ in 0..3 {
+        if let Some(pending) = sim.pending_event.clone() {
+            let t = data.events.get(&pending.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+        }
+        advance_year(&mut sim, &data);
+    }
+    assert!(
+        sim.contract.as_ref().unwrap().anniversaries_fired >= 1,
+        "the voyage observes its anniversary once the cadence elapses"
     );
 }
 
