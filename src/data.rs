@@ -395,6 +395,18 @@ pub struct FlavorConfig {
     /// `ambient_drifted`. 0 with a non-empty drifted pool means always drifted.
     #[serde(default)]
     pub ambient_drift_threshold: f32,
+    /// Ambient lines for a *hollowed-out* ship (content-depth voice round 12): once
+    /// the crew has thinned to `ambient_population_threshold` or fewer, the quiet
+    /// stretches draw from this pool — the same lived-in texture gone sparse and
+    /// echoing, corridors built for thousands walked by hundreds, so the log
+    /// reflects how empty the ship has become. Takes precedence over `ambient_drifted`
+    /// (emptiness is the louder note in a silence). Empty = always use the others.
+    #[serde(default)]
+    pub ambient_hollow: Vec<String>,
+    /// Crew headcount at or below which quiet stretches read from `ambient_hollow`
+    /// (content-depth voice round 12). An absolute count (founding is ~1000).
+    #[serde(default)]
+    pub ambient_population_threshold: u32,
     /// Years of event-less quiet between ambient lines (0 = ambient off).
     #[serde(default)]
     pub ambient_gap_years: u32,

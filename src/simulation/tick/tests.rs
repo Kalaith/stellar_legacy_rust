@@ -239,6 +239,74 @@ fn a_far_drifted_ships_quiet_reads_alien() {
 }
 
 #[test]
+fn a_hollowed_out_ships_quiet_reads_empty() {
+    // Content-depth voice round 12: the ambient dead-air lines reflect the ship's
+    // headcount. Once the crew has thinned past the threshold, a quiet stretch
+    // draws from the hollow pool — the same lived-in texture gone sparse and
+    // echoing — and it takes precedence over the drifted pool, since emptiness is
+    // the louder note in a silence.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.depopulation_beats.clear();
+    let gap = data.config.flavor.ambient_gap_years;
+    let ceiling = data.config.flavor.ambient_population_threshold;
+    assert!(
+        gap > 0 && ceiling > 0 && data.config.flavor.ambient_hollow.len() >= 4,
+        "this test needs the population-aware ambient pool enabled"
+    );
+
+    let run = |count: u32, drift: f32| -> Vec<String> {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            6,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.population.count = count;
+        sim.population.cultural_drift = drift;
+        for _ in 0..gap {
+            advance_year(&mut sim, &data);
+        }
+        sim.log.iter().map(|l| l.text.clone()).collect()
+    };
+    let hollow = &data.config.flavor.ambient_hollow;
+    let ambient = &data.config.flavor.ambient;
+    let drifted = &data.config.flavor.ambient_drifted;
+
+    // A thinned crew reads hollow…
+    let thinned = run(ceiling - 1, 0.0);
+    assert!(
+        thinned.iter().any(|t| hollow.contains(t)),
+        "a hollowed-out ship's quiet reads empty"
+    );
+    // …a full crew reads its ordinary quiet…
+    let full = run(ceiling + 400, 0.0);
+    assert!(
+        full.iter().any(|t| ambient.contains(t)),
+        "a full ship's quiet reads ordinary"
+    );
+    assert!(
+        !full.iter().any(|t| hollow.contains(t)),
+        "a full ship's quiet is not yet hollow"
+    );
+    // …and on a ship both thinned *and* far-drifted, emptiness wins.
+    let thinned_and_drifted = run(
+        ceiling - 1,
+        data.config.flavor.ambient_drift_threshold + 0.1,
+    );
+    assert!(
+        thinned_and_drifted.iter().any(|t| hollow.contains(t))
+            && !thinned_and_drifted.iter().any(|t| drifted.contains(t)),
+        "emptiness is the louder note: hollow precedes drifted"
+    );
+}
+
+#[test]
 fn voyage_drift_scales_by_legacy() {
     let data = GameData::load().unwrap();
     let mut adaptors = SimState::new_campaign(

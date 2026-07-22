@@ -312,6 +312,16 @@
       "A hand three generations dead left instructions the ship still follows, for reasons the ship no longer remembers and has stopped needing to."
     ],
     "ambient_drift_threshold": 0.5,
+    "ambient_hollow": [
+      "The corridor lights come up deck by deck as someone walks through, and go dark again behind them. There is no one else to keep them lit for.",
+      "A mess hall built to seat six hundred serves its forty in one warm corner, the rest of the tables stacked and sheeted like furniture in a closed house.",
+      "Footsteps carry a long way now. The ship has learned to sound half-empty, because it is, and the crew has stopped noticing the echo.",
+      "A whole residential ring stands sealed and cold, its hatches labelled with the names of families no longer numerous enough to fill it.",
+      "The muster is read in full in under a minute. It used to take the better part of an hour, and the older hands still pause where the long-gone names would have fallen.",
+      "Children play in corridors meant for crowds, their games grown large to fill the space, echoing where a thousand once made ordinary noise.",
+      "Someone counts the lit windows along the spine on a slow watch and stops counting, because the dark ones outnumber them now and there is no comfort in the tally."
+    ],
+    "ambient_population_threshold": 500,
     "phase_lines": {
       "travel": [
         "Departure burn complete — the ship is underway.",

@@ -237,11 +237,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     if fl.ambient_gap_years > 0 {
         let years_since = sim.month_clock.saturating_sub(sim.last_event_month_clock) / 12;
         if years_since > 0 && years_since.is_multiple_of(fl.ambient_gap_years) {
-            // A far-drifted ship's quiet reads alien (content-depth voice round 10):
-            // once cultural drift has crossed the threshold, the same lived-in
-            // texture is drawn from the drifted pool — the log reflecting how far
-            // the people have come from the founders.
-            let pool = if !fl.ambient_drifted.is_empty()
+            // The quiet reads differently as the ship changes. A hollowed-out crew
+            // (content-depth voice round 12) draws from the sparse, echoing pool —
+            // emptiness the louder note in a silence, so it precedes a far-drifted
+            // ship's alien quiet (round 10); failing both, the ordinary ambient.
+            let pool = if !fl.ambient_hollow.is_empty()
+                && sim.population.count <= fl.ambient_population_threshold
+            {
+                &fl.ambient_hollow
+            } else if !fl.ambient_drifted.is_empty()
                 && sim.population.cultural_drift >= fl.ambient_drift_threshold
             {
                 &fl.ambient_drifted
