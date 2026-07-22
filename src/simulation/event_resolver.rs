@@ -662,6 +662,59 @@ mod tests {
     }
 
     #[test]
+    fn the_deep_stores_reward_foresight_only_when_a_famine_comes() {
+        // Content-depth provisioning round 5: the insurance chain, the positive
+        // mirror of the shortcut chains. The payoff (the_vaults_answer) needs
+        // BOTH the early investment on record AND a famine now — foresight that
+        // sits idle until the year it is everything.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 63, &picks);
+        let payoff = data.events.get("the_vaults_answer").unwrap();
+        assert_eq!(
+            payoff.requires_consequence,
+            vec!["deep_stores_built".to_string()]
+        );
+        assert!(payoff.food_below.is_some());
+        let famine = payoff.food_below.unwrap();
+        sim.dynasty.generation = 5; // clear min_generation
+
+        // Vaults built but larder full → the payoff waits (insurance unspent).
+        sim.consequences.push("deep_stores_built".to_string());
+        sim.resources.food = famine + 5000;
+        assert!(
+            !passes_gate(&sim, payoff),
+            "a stocked ship does not open its emergency vaults"
+        );
+        // Famine but no vaults ever built → nothing to open.
+        let mut no_vaults = SimState::new_campaign(&data, "adaptors", 63, &picks);
+        no_vaults.dynasty.generation = 5;
+        no_vaults.resources.food = famine - 1;
+        assert!(
+            !passes_gate(&no_vaults, payoff),
+            "with no vaults built, the foresight payoff cannot fire"
+        );
+        // Both: the vaults answer the famine.
+        sim.resources.food = famine - 1;
+        assert!(
+            passes_gate(&sim, payoff),
+            "built stores + a famine finally open the vaults"
+        );
+        // …and opening them actually relieves the hunger.
+        let before = sim.resources.food;
+        let open = payoff
+            .outcomes
+            .iter()
+            .position(|o| o.id == "open_the_vaults")
+            .unwrap();
+        apply_outcome(&mut sim, &data, payoff, open);
+        assert!(
+            sim.resources.food > before,
+            "opening the deep vaults feeds the ship"
+        );
+    }
+
+    #[test]
     fn the_castaways_can_grow_the_ship_at_a_provisioning_cost() {
         // Content-depth provisioning round 4: the population-gain opportunity —
         // every prior provisioning beat shed people; this one can take them ON,

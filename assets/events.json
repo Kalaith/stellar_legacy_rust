@@ -6678,5 +6678,127 @@
     "log": "The council refused the compact and kept the courts and the forges as separate powers, each a check on the other, the way the founding charter drew them. It was less efficient and more free, and the two institutions went on eyeing each other across a line the founders had meant them to keep."
    }
   ]
+ },
+ {
+  "id": "the_deep_stores",
+  "category": "generational_challenge",
+  "title": "The Deep Stores",
+  "description": "The first decades are the ship's slack years — holds fuller than they will ever be again, hands to spare. A quartermaster proposes spending some of that slack now: sealed deep-vaults of preserved food against a famine no one alive has yet seen, but every long voyage eventually does. The founders would call it prudence. The hungry-for-growth call it hoarding.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel"
+  ],
+  "max_generation": 3,
+  "outcomes": [
+   {
+    "id": "build_the_deep_vaults",
+    "label": "Build the deep vaults",
+    "description": "Spend the early slack on sealed long-term stores. It is dead weight until the year it is everything.",
+    "resource_delta": {
+     "credits": -400,
+     "minerals": -300
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "long_term_consequences": [
+     "deep_stores_built"
+    ],
+    "log": "The ship gave its early abundance to the deep vaults — sealed holds of grain and dried protein tucked into the cold spine of the ship, meant to be forgotten until they were needed. It cost a fortune in slack the ship would rather have grown on, and it will be worth every gram the first time the gardens fail."
+   },
+   {
+    "id": "travel_light",
+    "label": "Travel light",
+    "description": "Keep the slack for growth and flexibility. A ship that hoards against every fear never gets anywhere.",
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "log": "The council kept the ship's early slack for living rather than storing, and the holds stayed lean and flexible and the decks a little more generous. It was the choice of a people who trusted the gardens, and the gardens had not yet given them reason not to."
+   }
+  ]
+ },
+ {
+  "id": "the_vaults_answer",
+  "category": "immediate_crisis",
+  "title": "The Vaults Answer",
+  "description": "The gardens have failed and the ship is hungry — but generations ago, in the slack years, someone had the foresight to build the deep vaults, and they have waited in the cold spine of the ship for exactly this. The seals can be broken. The question is only how fast.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_consequence": [
+   "deep_stores_built"
+  ],
+  "food_below": 2500,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "open_the_vaults",
+    "label": "Open the vaults",
+    "description": "This is the year they were built for. Break the seals and feed the ship.",
+    "resource_delta": {
+     "food": 2200
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.03
+    },
+    "log": "The deep vaults were opened, and grain the founders' founders had sealed away poured out onto the mess decks generations later, still good, still enough. The ship ate, and remembered a decision made by people none of them had known, and was grateful across the gap of years to hands long dead."
+   },
+   {
+    "id": "ration_the_reserve",
+    "label": "Ration the reserve",
+    "description": "One famine is rarely the last. Draw on the vaults, but sparingly, and keep some sealed for a worse year.",
+    "resource_delta": {
+     "food": 900
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.02
+    },
+    "log": "The council opened the vaults only a crack, drawing just enough to hold the ship through and sealing the rest back against a hunger yet to come. The decks grumbled at a thin ration atop a full larder, and the quartermasters slept better for a reserve kept whole."
+   }
+  ]
+ },
+ {
+  "id": "the_slingshot_gambit",
+  "category": "immediate_crisis",
+  "title": "The Slingshot Gambit",
+  "description": "The tank is nearly dry and a massive body lies across the course. The navigators lay out a gambit: an unpowered slingshot, threading the ship close through the gravity well to steal velocity for nothing — no fuel spent, if it goes right. If it goes wrong, close is very close.",
+  "requires_decision": true,
+  "family": "survival",
+  "fuel_below": 0.25,
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "slip_the_well",
+    "label": "Thread the well",
+    "description": "Take the free velocity and the risk that comes with it. Save the fuel for when there is no gravity to borrow.",
+    "ship_delta": {
+     "fuel": 0.15,
+     "hull_integrity": -0.05
+    },
+    "population_delta": {
+     "count": -12,
+     "morale": -0.02
+    },
+    "log": "The ship threaded the gravity well close enough to frighten the founders' ghosts, stole a decade of velocity for not a gram of fuel, and came out the far side scorched along one flank and short a dozen souls who had been on the wrong deck when the hull groaned. The tank was spared. The navigators did not do it twice."
+   },
+   {
+    "id": "burn_it_safe",
+    "label": "Burn it safe",
+    "description": "Spend what little fuel remains on a clean, controlled passage. Slower, poorer, and everyone lives.",
+    "ship_delta": {
+     "fuel": -0.05
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "morale": 0.02
+    },
+    "log": "The navigators refused the gambit and spent the last of the reserve on a wide, safe passage around the well — slower, and it left the tank nearly dry, but the hull came through whole and every soul aboard with it. There would be a reckoning with the fuel later. There was not one now."
+   }
+  ]
  }
 ]
