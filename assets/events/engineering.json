@@ -181,6 +181,33 @@
      "scarred_reactor"
     ],
     "log": "Engineers patched the breach by hand. The reactor runs, and runs hot."
+   },
+   {
+    "id": "master_controlled_cooldown",
+    "label": "Stage a controlled cooldown",
+    "description": "The bay's master engineers know this reactor the way a surgeon knows a heart. Let them run a controlled cooldown by hand — no venting, no crude patch, the breach closed clean by people who understood the machine before it broke.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "engineering_bay",
+       "at_least": 0.7
+      }
+     ]
+    },
+    "resource_delta": {
+     "minerals": -60
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.03
+     }
+    ],
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "log": "The master engineers took the breach in hand and talked the reactor down as if it were a frightened animal — a controlled cooldown, no annex vented, no one lost, the bay itself the better for having crew who still understood it. It was the kind of save only a ship that kept its experts sharp could have made, and everyone aboard knew it."
    }
   ],
   "family": "engineering",
@@ -251,6 +278,28 @@
      "hull_integrity": -0.02
     },
     "log": "The crack was catalogued and left to grow. It will keep its appointment."
+   },
+   {
+    "id": "draw_on_the_war_chest",
+    "label": "Commission a proper repair from the reserve",
+    "description": "This is exactly the year the war chest was banked against. Draw on the deep reserve, buy a full shipyard-grade frame replacement from a passing yard, and end the crack for good rather than merely bracing it — the prudent decades paying out in a hull made whole.",
+    "requires": {
+     "requires_consequence": [
+      "war_chest"
+     ]
+    },
+    "resource_delta": {
+     "credits": -4000,
+     "minerals": -100
+    },
+    "ship_delta": {
+     "hull_integrity": 0.12
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "unity": 0.02
+    },
+    "log": "The council drew on the war chest a wiser generation had banked and bought the crack out of existence — a full frame replacement, shipyard-grade, the spine made whole rather than braced and watched. The reserve came down hard, but this was the very thing it had been saved for, and the ship sailed on with one fewer sword over its head."
    }
   ],
   "family": "engineering"

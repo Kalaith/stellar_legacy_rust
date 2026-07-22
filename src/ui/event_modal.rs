@@ -22,7 +22,12 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         "COUNCIL DECISION — {}",
         template.category.label().to_uppercase()
     );
-    let content = modal_frame(&header, template.outcomes.len(), term::alert());
+    // Only the outcomes this ship has earned are offered (content-depth event
+    // families round 12): a gated outcome — a fix only a kept-expert crew can try,
+    // a path only a past choice unlocks — is hidden until its condition holds. The
+    // real outcome index is preserved for `ResolveEvent`.
+    let available = crate::simulation::event_resolver::available_outcome_indices(ctx.sim, template);
+    let content = modal_frame(&header, available.len(), term::alert());
     let mut y = content.y + 22.0;
     draw_ui_text_ex(
         &template.title,
@@ -37,7 +42,8 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
     draw_typed_block(&description, content.x, y, content.w, ctx.modal_reveal);
     y += 84.0;
 
-    for (i, outcome) in template.outcomes.iter().enumerate() {
+    for (shown, &i) in available.iter().enumerate() {
+        let outcome = &template.outcomes[i];
         let card = Rect::new(content.x, y, content.w, 84.0);
         draw_surface(
             card,
@@ -55,7 +61,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         );
         if term_button(
             Rect::new(card.right() - 178.0, card.y + 24.0, 164.0, 36.0),
-            &format!("[{}] {}", i + 1, outcome.label.to_uppercase()),
+            &format!("[{}] {}", shown + 1, outcome.label.to_uppercase()),
             true,
             mouse,
         ) {

@@ -999,6 +999,13 @@ mod tests {
                         .iter()
                         .flat_map(|o| o.subsystem_deltas.iter().map(|d| &d.id)),
                 )
+                // Content-depth round 12: outcome availability gates name
+                // subsystems in their knowledge floors.
+                .chain(
+                    e.outcomes
+                        .iter()
+                        .flat_map(|o| o.requires.min_knowledge.iter().map(|f| &f.id)),
+                )
                 // Content-depth round 6: complication gates and deltas name
                 // subsystems too.
                 .chain(e.complications.iter().flat_map(|c| {
@@ -1024,14 +1031,36 @@ mod tests {
             .flat_map(|o| o.long_term_consequences.iter())
             .collect();
         for (id, e) in data.events.iter() {
-            for tag in e.requires_consequence.iter().chain(
-                e.complications
-                    .iter()
-                    .flat_map(|c| c.requires_consequence.iter()),
-            ) {
+            for tag in e
+                .requires_consequence
+                .iter()
+                .chain(
+                    e.complications
+                        .iter()
+                        .flat_map(|c| c.requires_consequence.iter()),
+                )
+                // Content-depth round 12: outcome availability gates on a
+                // consequence too.
+                .chain(
+                    e.outcomes
+                        .iter()
+                        .flat_map(|o| o.requires.requires_consequence.iter()),
+                )
+            {
                 assert!(
                     produced.contains(tag),
                     "event '{id}' gates on consequence '{tag}' no outcome records"
+                );
+            }
+        }
+        // Content-depth round 12: the first outcome of every event must be
+        // unconditional, so a ship is never left with no legal choice and the
+        // auto-resolve/index-0 contract always lands on an available outcome.
+        for (id, e) in data.events.iter() {
+            if let Some(first) = e.outcomes.first() {
+                assert!(
+                    first.requires.is_unconditional(),
+                    "event '{id}' outcome 0 must be unconditional (gated outcomes come after)"
                 );
             }
         }

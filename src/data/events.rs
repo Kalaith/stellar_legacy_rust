@@ -54,6 +54,41 @@ pub struct SubsystemGate {
     pub below: f32,
 }
 
+/// A subsystem-knowledge *floor* (content-depth event families round 12): the
+/// mirror of a `SubsystemGate` — a threshold a module's living expertise must be
+/// at or above, used to unlock an outcome only a ship that kept its experts sharp
+/// can attempt.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct KnowledgeFloor {
+    pub id: String,
+    pub at_least: f32,
+}
+
+/// Availability gate on a single outcome (content-depth event families round 12):
+/// the outcome-level parallel to the whole-event gates. An outcome carrying one is
+/// offered only when the ship has *earned* it — a past choice on record, or a
+/// subsystem's expertise kept high enough — so a crisis can present a better exit
+/// to a prepared ship than to an unprepared one. Empty (the default) = always
+/// offered. Gated outcomes are authored *after* the unconditional ones, so the
+/// first outcome always shows and the auto-resolve/index contract is untouched.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct OutcomeRequirement {
+    /// Past choices that must be on record for this outcome to appear.
+    #[serde(default)]
+    pub requires_consequence: Vec<String>,
+    /// Subsystem-knowledge floors: the outcome appears only while each named
+    /// module's knowledge is at or above its threshold.
+    #[serde(default)]
+    pub min_knowledge: Vec<KnowledgeFloor>,
+}
+
+impl OutcomeRequirement {
+    /// True when this gate names no requirement (the outcome always shows).
+    pub fn is_unconditional(&self) -> bool {
+        self.requires_consequence.is_empty() && self.min_knowledge.is_empty()
+    }
+}
+
 /// A signed shift to a named faction's approval (content-depth factions round 8):
 /// the coupling that lets an event choice earn or spend a people's goodwill.
 /// Clamped to [0, 1] on apply; a no-op if that faction is not aboard.
@@ -89,6 +124,11 @@ pub struct EventOutcome {
     pub id: String,
     pub label: String,
     pub description: String,
+    /// Availability gate (content-depth event families round 12): when set, this
+    /// outcome is offered only to a ship that has earned it (a past consequence, a
+    /// subsystem kept expert). Empty = always offered. See `OutcomeRequirement`.
+    #[serde(default)]
+    pub requires: OutcomeRequirement,
     #[serde(default)]
     pub resource_delta: ResourceDelta,
     #[serde(default)]

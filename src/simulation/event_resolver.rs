@@ -42,6 +42,42 @@ pub fn active_complication<'a>(
     })
 }
 
+/// Whether an outcome should be offered to this ship right now (content-depth
+/// event families round 12): true unless its availability gate names a past
+/// consequence not on record or a subsystem whose knowledge is below the floor.
+/// The sim is paused while an event blocks, so this answers identically at
+/// present-time (the modal) and apply-time.
+pub fn outcome_available(sim: &SimState, outcome: &EventOutcome) -> bool {
+    if outcome.requires.is_unconditional() {
+        return true;
+    }
+    outcome
+        .requires
+        .requires_consequence
+        .iter()
+        .all(|tag| sim.consequences.contains(tag))
+        && outcome.requires.min_knowledge.iter().all(|floor| {
+            sim.subsystems
+                .get(&floor.id)
+                .is_some_and(|s| s.knowledge >= floor.at_least)
+        })
+}
+
+/// The real indices of the outcomes this ship may currently pick, in authored
+/// order (content-depth event families round 12): the modal renders only these,
+/// and their positions are the indices `apply_outcome`/`ResolveEvent` expect.
+/// Outcome 0 is unconditional by construction (enforced at data-load), so this is
+/// never empty.
+pub fn available_outcome_indices(sim: &SimState, template: &EventTemplate) -> Vec<usize> {
+    template
+        .outcomes
+        .iter()
+        .enumerate()
+        .filter(|(_, o)| outcome_available(sim, o))
+        .map(|(i, _)| i)
+        .collect()
+}
+
 /// An event's description as it should be shown: the template's, plus the riding
 /// complication's `description_add` when one is active. Used by the modal so the
 /// twist is visible before the player chooses.
@@ -1461,6 +1497,62 @@ mod tests {
             shown_description(&sim, contagion),
             contagion.description,
             "the escalation is visible before the choice"
+        );
+    }
+
+    #[test]
+    fn a_gated_outcome_is_offered_only_to_a_ship_that_earned_it() {
+        // Content-depth event families round 12: state-gated outcomes. A crisis
+        // offers a better exit only to a prepared ship — a fix a kept-expert bay
+        // can attempt, a repair a banked reserve can buy — while the base choices
+        // always show and the auto-resolve index-0 contract is untouched.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 43, &picks);
+
+        // A knowledge floor: the coolant breach's master cooldown appears only
+        // while the engineering bay's expertise is kept high.
+        let breach = data.events.get("coolant_breach").unwrap();
+        let master = breach
+            .outcomes
+            .iter()
+            .position(|o| o.id == "master_controlled_cooldown")
+            .unwrap();
+        assert!(
+            master > 0,
+            "the gated outcome is authored after the base ones"
+        );
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.4;
+        assert!(
+            !available_outcome_indices(&sim, breach).contains(&master),
+            "a bay that has lost its masters cannot offer the master fix"
+        );
+        // Base outcomes are always on the table.
+        assert!(available_outcome_indices(&sim, breach).contains(&0));
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.8;
+        assert!(
+            available_outcome_indices(&sim, breach).contains(&master),
+            "expertise kept sharp unlocks the clean fix"
+        );
+        // …and it resolves by its real index like any outcome.
+        apply_outcome(&mut sim, &data, breach, master);
+
+        // A consequence gate: the hull fracture's shipyard repair appears only for
+        // a ship that banked the war chest (ties back to the-full-coffers, it75).
+        let fracture = data.events.get("hull_fracture").unwrap();
+        let repair = fracture
+            .outcomes
+            .iter()
+            .position(|o| o.id == "draw_on_the_war_chest")
+            .unwrap();
+        assert!(
+            !available_outcome_indices(&sim, fracture).contains(&repair),
+            "a ship with no reserve cannot draw on one"
+        );
+        sim.consequences.push("war_chest".to_string());
+        assert!(
+            available_outcome_indices(&sim, fracture).contains(&repair),
+            "the banked reserve unlocks the proper repair years later"
         );
     }
 
