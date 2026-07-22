@@ -1435,6 +1435,14 @@ mod tests {
                 "charter '{id}' annual_toll drains {} crew/yr — too steep for a voyage",
                 c.annual_toll.population.count
             );
+            // Content-depth subsystems round 14: the module a mission leans on must
+            // be a real subsystem, or its condition could never scale the work.
+            assert!(
+                c.objective_subsystem.is_empty()
+                    || data.subsystems.get(&c.objective_subsystem).is_some(),
+                "charter '{id}' objective_subsystem names unknown module '{}'",
+                c.objective_subsystem
+            );
         }
         // Content-depth charters round 13: at least one charter should carry a
         // standing route toll, so the mechanic is exercised.

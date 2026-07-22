@@ -137,6 +137,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         hazard: template.hazard,
         scheduled_beats: template.scheduled_beats.clone(),
         scheduled_beats_fired: 0,
+        objective_subsystem: template.objective_subsystem.clone(),
     }
 }
 
@@ -154,6 +155,23 @@ pub fn advance_contract(
     let food_ok = sim.resources.food >= config.low_food_threshold;
     let energy_ok = sim.resources.energy >= config.low_energy_threshold;
     let progress_per_speed = config.ship.contract_progress_per_speed;
+
+    // The module this mission leans on scales how fast its work accrues (content-depth
+    // subsystems round 14): a pristine bay works at the base rate, a degraded one
+    // slower. Read before the mutable contract borrow. Penalty-below-full keeps the
+    // baseline, so a well-kept ship's objective is unchanged.
+    let objective_condition = sim
+        .contract
+        .as_ref()
+        .filter(|c| !c.objective_subsystem.is_empty())
+        .map(|c| {
+            let cond = sim
+                .subsystems
+                .get(&c.objective_subsystem)
+                .map_or(1.0, |s| s.condition);
+            (1.0 - config.subsystems.objective_condition_penalty * (1.0 - cond)).max(0.0)
+        })
+        .unwrap_or(1.0);
 
     let mut out = ContractProgress::default();
 
@@ -183,7 +201,7 @@ pub fn advance_contract(
             let operation_months = contract.operation_months().max(1);
             let base_rate = contract.objective_target / operation_months as f32;
             let speed_factor = 1.0 + speed.max(0) as f32 * progress_per_speed;
-            contract.objective_progress += base_rate * speed_factor;
+            contract.objective_progress += base_rate * speed_factor * objective_condition;
         }
 
         let progress = contract.progress();
@@ -304,6 +322,46 @@ mod tests {
     use super::*;
     use crate::data::contracts::MetricKind;
     use crate::data::GameData;
+
+    #[test]
+    fn a_degraded_key_module_works_the_mission_slower() {
+        // Content-depth subsystems round 14: the subsystem axis's first coupling to
+        // the mission. The deep vein survey's work leans on the engineering bay; a
+        // rotting bay mines slower than a pristine one, while a charter with no key
+        // module is indifferent to any module's state.
+        let data = GameData::load().unwrap();
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        assert_eq!(template.objective_subsystem, "engineering_bay");
+
+        // Objective banked over one operation year at a given bay condition.
+        let mined = |bay: f32| -> f32 {
+            let picks = crate::state::sim::founding_faction_ids(&data);
+            let mut sim = SimState::new_campaign(&data, "preservers", 73, &picks);
+            sim.contract = Some(start_contract(&template, &sim));
+            sim.subsystems.get_mut("engineering_bay").unwrap().condition = bay;
+            // Fast-forward the clock into the Operation window, then bank a year.
+            let ops_start = template
+                .phases
+                .iter()
+                .take_while(|p| p.kind != ContractPhase::Operation)
+                .map(|p| p.years * 12)
+                .sum::<u32>();
+            sim.contract.as_mut().unwrap().months_elapsed = ops_start;
+            let before = sim.contract.as_ref().unwrap().objective_progress;
+            for _ in 0..12 {
+                advance_contract(&mut sim, &data.config, 0);
+            }
+            sim.contract.as_ref().unwrap().objective_progress - before
+        };
+
+        let pristine = mined(1.0);
+        let rotting = mined(0.2);
+        assert!(pristine > 0.0, "a working bay banks the mission's work");
+        assert!(
+            rotting < pristine,
+            "a rotting bay mines slower than a pristine one ({rotting} vs {pristine})"
+        );
+    }
 
     #[test]
     fn a_route_toll_wears_the_ship_every_year_of_its_voyage() {

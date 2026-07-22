@@ -124,4 +124,13 @@ pub struct SubsystemsConfig {
     /// 0 = the archive's physical state does not touch what the next generation keeps.
     #[serde(default)]
     pub education_transmission_condition_penalty: f32,
+    /// How much a *degraded* mission-key subsystem slows the objective's accrual
+    /// (content-depth subsystems round 14): the subsystem axis's first coupling to
+    /// the mission itself. A charter names the module its work leans on, and the
+    /// on-station accrual is scaled by `1 - objective_condition_penalty·(1 - condition)`
+    /// — a pristine bay works at the base rate, a rotting one slower. Penalty-below-
+    /// full so a well-kept ship's objective is untouched. 0 = the module's state does
+    /// not touch the work.
+    #[serde(default)]
+    pub objective_condition_penalty: f32,
 }

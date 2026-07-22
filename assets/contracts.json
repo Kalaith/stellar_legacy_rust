@@ -89,7 +89,8 @@
   "tags": [
    "colony",
    "long_haul"
-  ]
+  ],
+  "objective_subsystem": "agriculture"
  },
  {
   "id": "deep_vein_survey",
@@ -176,7 +177,8 @@
    "mining",
    "deep_space"
   ],
-  "completion_consequence": "karst_veins_proven"
+  "completion_consequence": "karst_veins_proven",
+  "objective_subsystem": "engineering_bay"
  },
  {
   "id": "veiled_expanse_survey",
@@ -460,7 +462,8 @@
    "ship": {
     "hull_integrity": -0.002
    }
-  }
+  },
+  "objective_subsystem": "engineering_bay"
  },
  {
   "id": "seedfall",
@@ -750,7 +753,8 @@
     "morale": -0.005,
     "unity": -0.002
    }
-  }
+  },
+  "objective_subsystem": "engineering_bay"
  },
  {
   "id": "warden_patrol",
@@ -1338,7 +1342,8 @@
    "derelict",
    "deep_space",
    "long_return"
-  ]
+  ],
+  "objective_subsystem": "engineering_bay"
  },
  {
   "id": "the_far_crossing",
@@ -1540,7 +1545,8 @@
     "template_id": "the_stars_appointed_hour",
     "at_year": 180
    }
-  ]
+  ],
+  "objective_subsystem": "education_culture"
  },
  {
   "id": "the_sunset_relief",
@@ -1747,7 +1753,8 @@
   ],
   "requires_faction_aboard": [
    "verdant_kin"
-  ]
+  ],
+  "objective_subsystem": "agriculture"
  },
  {
   "id": "the_karst_works",
@@ -1847,6 +1854,7 @@
   ],
   "forbidden_consequence": [
    "broke_a_bargain"
-  ]
+  ],
+  "objective_subsystem": "engineering_bay"
  }
 ]

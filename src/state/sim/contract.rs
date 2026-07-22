@@ -136,6 +136,13 @@ pub struct ActiveContract {
     /// watch, so each fires exactly once as the voyage reaches its year.
     #[serde(default)]
     pub scheduled_beats_fired: u32,
+    /// The subsystem whose condition drives this mission's work (content-depth
+    /// subsystems round 14), copied at launch: the module a charter's objective
+    /// leans on — a mining survey's engineering bay, a greening's agriculture — so
+    /// its state of repair scales how fast the work accrues on-station. Empty = the
+    /// objective accrues at the base rate regardless of any module.
+    #[serde(default)]
+    pub objective_subsystem: String,
 }
 
 impl ActiveContract {

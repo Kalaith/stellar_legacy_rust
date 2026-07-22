@@ -99,7 +99,8 @@
     "habitat_morale_swing": 0.01,
     "tender_approval_decay_scale": 0.3,
     "agriculture_condition_food_penalty": 0.3,
-    "education_transmission_condition_penalty": 0.5
+    "education_transmission_condition_penalty": 0.5,
+    "objective_condition_penalty": 0.4
   },
   "campaign_skeleton": {
     "months_per_window": 240,

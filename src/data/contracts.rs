@@ -184,6 +184,14 @@ pub struct ContractTemplate {
     /// leaves no such mark.
     #[serde(default)]
     pub completion_consequence: String,
+    /// The subsystem this mission's work leans on (content-depth subsystems round
+    /// 14): the module whose condition scales how fast the objective accrues
+    /// on-station — a mining survey's engineering bay, a greening's agriculture, a
+    /// science dive's education archive. A well-kept module works the mission faster,
+    /// a rotting one slower, so the subsystem axis at last touches the objective the
+    /// voyage exists for. Empty = the objective is indifferent to any module's state.
+    #[serde(default)]
+    pub objective_subsystem: String,
 }
 
 /// A charter's standing per-year toll (content-depth charters round 13). Each delta
