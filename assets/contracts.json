@@ -450,7 +450,8 @@
   "tags": [
    "mining",
    "stellar_hazard"
-  ]
+  ],
+  "hazard": 0.2
  },
  {
   "id": "seedfall",
@@ -733,7 +734,8 @@
   "beat_families": [
    "mystery",
    "ethics"
-  ]
+  ],
+  "hazard": 0.28
  },
  {
   "id": "warden_patrol",

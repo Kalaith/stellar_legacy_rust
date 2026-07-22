@@ -111,6 +111,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         flourish_beats_fired: 0,
         objective_beats_fired: 0,
         homecoming_beat_fired: false,
+        hazard: template.hazard,
         scheduled_beats: template.scheduled_beats.clone(),
         scheduled_beats_fired: 0,
     }

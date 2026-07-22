@@ -1249,6 +1249,12 @@ mod tests {
                     .all(|w| w[0].at_year <= w[1].at_year),
                 "charter '{id}' scheduled_beats must ascend by at_year"
             );
+            // Content-depth charters round 11: route hazard is a sane weight bump.
+            assert!(
+                (0.0..=1.0).contains(&c.hazard),
+                "charter '{id}' hazard {} out of range [0, 1]",
+                c.hazard
+            );
         }
         // Content-depth round 5: the dead-air backstop needs a pool to draw from
         // when it is switched on, or a forced beat has nothing to force.

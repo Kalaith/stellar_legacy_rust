@@ -126,6 +126,10 @@ pub struct ActiveContract {
     /// This charter's scripted timed beats (content-depth charters round 9),
     /// copied from the template at launch; `at_year` is years since this voyage's
     /// launch. Ascending, fired in order.
+    /// This charter's route hazard (content-depth charters round 11), copied at
+    /// launch: raises the immediate-crisis weight for the voyage. 0 = ordinary.
+    #[serde(default)]
+    pub hazard: f32,
     #[serde(default)]
     pub scheduled_beats: Vec<crate::data::contracts::ScheduledBeat>,
     /// How many scripted timed beats have fired — the index of the next one to

@@ -143,6 +143,13 @@ pub struct ContractTemplate {
     /// launch and the list must ascend. Empty = no scripted beats.
     #[serde(default)]
     pub scheduled_beats: Vec<ScheduledBeat>,
+    /// Route hazard (content-depth charters round 11): the charter's *risk
+    /// profile*, added to the immediate-crisis category weight for the whole
+    /// voyage — a lawless derelict field or a star's reach breeds more crises than
+    /// a quiet survey, so a dangerous writ *feels* dangerous (and pays for it in
+    /// its reward). 0 = an ordinary route.
+    #[serde(default)]
+    pub hazard: f32,
 }
 
 /// One scripted, time-fixed beat of a charter (content-depth charters round 9):

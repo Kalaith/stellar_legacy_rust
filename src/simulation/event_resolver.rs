@@ -81,6 +81,12 @@ pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory,
     if sim.population.unity < 0.4 {
         crisis += 0.15;
     }
+    // Route hazard (content-depth charters round 11): a dangerous writ breeds more
+    // crises for its whole voyage — the charter's risk profile, not just the ship's
+    // present distress.
+    if let Some(contract) = &sim.contract {
+        crisis += contract.hazard;
+    }
 
     let milestone = match &sim.contract {
         Some(contract) => {
@@ -1363,6 +1369,46 @@ mod tests {
             active_complication(&failing, template).map(|c| c.id.as_str()),
             Some("bay_already_failing"),
             "the first matching complication takes precedence"
+        );
+    }
+
+    #[test]
+    fn a_hazardous_charter_breeds_more_crises_than_a_quiet_one() {
+        // Content-depth charters round 11: a charter's route hazard is its risk
+        // profile, added to the immediate-crisis category weight for the voyage —
+        // a lawless derelict field breeds more crises than a quiet survey, by
+        // exactly the charter's hazard.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 51, &picks);
+
+        let calm = data.contracts.get("deep_vein_survey").unwrap().clone();
+        let dangerous = data.contracts.get("hollow_fleet").unwrap().clone();
+        assert_eq!(calm.hazard, 0.0, "a survey is an ordinary route");
+        assert!(dangerous.hazard > 0.0, "a derelict field is a risk profile");
+
+        let crisis_weight = |sim: &SimState| {
+            category_weights(sim, &data.config)
+                .iter()
+                .find(|(c, _)| *c == EventCategory::ImmediateCrisis)
+                .unwrap()
+                .1
+        };
+
+        sim.contract = Some(crate::simulation::contract::start_contract(&calm, &sim));
+        let calm_w = crisis_weight(&sim);
+        sim.contract = Some(crate::simulation::contract::start_contract(
+            &dangerous, &sim,
+        ));
+        let dangerous_w = crisis_weight(&sim);
+
+        assert!(
+            dangerous_w > calm_w,
+            "a hazardous route breeds more crises: {dangerous_w} vs {calm_w}"
+        );
+        assert!(
+            (dangerous_w - calm_w - dangerous.hazard).abs() < 1e-5,
+            "the crisis bump is exactly the charter's hazard"
         );
     }
 
