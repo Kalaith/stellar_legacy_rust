@@ -184,6 +184,20 @@
     ],
     "faction_loss": "departed",
     "log": "The schism was left to run its course. One faction would not be reconciled; they took a decommissioned shuttle and their grievances, and departed on their own course."
+   },
+   {
+    "id": "federate_the_decks",
+    "label": "Recognize both calendars",
+    "description": "Neither force the decks back together nor let the quarrel fester. Write both calendars into the charter as equal — one hull, two peoples, formally. A pluralism the founders never planned, but a stable one.",
+    "population_delta": {
+     "stability": 0.06,
+     "cultural_drift": 0.04,
+     "unity": -0.02
+    },
+    "resource_delta": {
+     "influence": -15
+    },
+    "log": "The council did the thing the founders would have found unthinkable: it wrote the disagreement into law, recognizing both calendars, both decks, one charter over two peoples. Unity frayed a little at the seam that would now never fully close — but the ship stopped tearing at it, and a stranger, sturdier thing settled in its place."
    }
   ],
   "family": "legacy_drift",
@@ -235,6 +249,25 @@
      "hull_integrity": -0.01
     },
     "log": "A hard burn carried the ship clear of the debris front, at the cost of the fuel budget."
+   },
+   {
+    "id": "trust_the_deflectors",
+    "label": "Run the gauntlet at speed",
+    "description": "Neither brace nor go around. Hold course and speed and trust the engineering bay's deflectors to shrug the front aside — fast through it, betting the ship's own systems against the debris.",
+    "ship_delta": {
+     "hull_integrity": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.08
+     }
+    ],
+    "population_delta": {
+     "unity": 0.03,
+     "adaptation": 0.02
+    },
+    "log": "The ship held course and let the deflectors earn their keep, punching through the debris front at speed. The hull came through nearly clean — but the strain told on the engineering bay, its emitters scorched and pitted, a bill deferred to the next drydock. The crew, who had braced for worse, walked a little taller for a while."
    }
   ],
   "family": "engineering",
@@ -357,6 +390,21 @@
      "lost_craft"
     ],
     "log": "The crews leaned on the archives. Something in the doing, not the knowing, was lost."
+   },
+   {
+    "id": "recruit_outside_hands",
+    "label": "Bring in outside hands",
+    "description": "Neither grow the skills slowly nor freeze them in records — buy them. Take on trained specialists from a passing ship or a waystation: expertise aboard within the year, at the cost of a founding crew diluted by strangers.",
+    "resource_delta": {
+     "credits": -400,
+     "influence": -20
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": -0.06,
+     "cultural_drift": 0.05
+    },
+    "log": "The ship filled its thinning benches with hired expertise — pilots, medics, machinists who had learned their craft under other stars. The work went on without a gap. But the founding families watched bloodline crews take orders from newcomers, and something of the voyage's inheritance thinned even as its competence held."
    }
   ],
   "family": "legacy_drift",
@@ -2673,6 +2721,23 @@
      "legacy_loyalty": 0.03
     },
     "log": "The ship ran the gauntlet and wore the scars proudly. The tithe ships logged this hull as trouble."
+   },
+   {
+    "id": "offer_service",
+    "label": "Offer service, not tribute",
+    "description": "Pay in the one coin the ship mints for free — competence. Offer to survey their reach, mend what they cannot, chart their dark. Skill for passage, and no treasury the poorer for it.",
+    "resource_delta": {
+     "influence": 80
+    },
+    "ship_delta": {
+     "fuel": -0.05,
+     "spare_parts": -4
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.03
+    },
+    "log": "The voyage bought its passage with a season's work — a survey run, a failing relay rebuilt, a stretch of dark charted for people who could not spare the ships. The local power waved them through with something closer to respect than tolerance, and the crew learned that a ship good at what it does is never truly poor."
    }
   ]
  },
@@ -4582,6 +4647,19 @@
      "frontier_suspicion"
     ],
     "log": "The ship gave the frontier only what it had to and slipped through under a cloud of suspicion. The locals logged this hull as one that keeps secrets, and passed the word ahead."
+   },
+   {
+    "id": "detour_around",
+    "label": "Detour around their reach",
+    "description": "Answer nothing. A people burned before will not be reassured by words; give them the one thing they actually want, which is your absence. Burn wide around their claimed space and leave them their peace.",
+    "ship_delta": {
+     "fuel": -0.1
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.03
+    },
+    "log": "The voyage gave the wary frontier the only gift it trusted — distance. The ship burned wide around their reach, spending fuel it would rather have kept, and left no wake in their space and no story in their logs. Some aboard chafed at the caution; more slept easier knowing no gun had tracked them that night."
    }
   ]
  },

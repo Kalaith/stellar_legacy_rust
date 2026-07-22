@@ -424,6 +424,54 @@ mod tests {
     }
 
     #[test]
+    fn trilemma_events_offer_a_genuinely_distinct_third_path() {
+        // Content-depth event-families round 8: the set was overwhelmingly binary
+        // (175/189 events had exactly two outcomes). Five iconic dilemmas gained a
+        // real third path — each a different strategic axis, not a milquetoast
+        // middle. This locks that they resolve as three legal, distinct outcomes.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        for id in [
+            "tithe_demand",
+            "micrometeoroid_storm",
+            "cultural_schism",
+            "skills_drought",
+            "the_wary_frontier",
+        ] {
+            let event = data.events.get(id).unwrap();
+            assert_eq!(event.outcomes.len(), 3, "{id} should be a trilemma now");
+        }
+
+        // The tithe's third path (offer service) is materially distinct from the
+        // other two: unlike paying it spends no hard credits, unlike running it
+        // takes no hull damage, and it earns influence the ship would not get by
+        // either. Apply it from a clean state and check those effects land.
+        let event = data.events.get("tithe_demand").unwrap();
+        let idx = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "offer_service")
+            .unwrap();
+        let mut sim = SimState::new_campaign(&data, "preservers", 12, &picks);
+        let credits_before = sim.resources.credits;
+        let influence_before = sim.resources.influence;
+        let hull_before = sim.ship.hull_integrity;
+        apply_outcome(&mut sim, &data, event, idx);
+        assert_eq!(
+            sim.resources.credits, credits_before,
+            "offering service costs no treasury"
+        );
+        assert!(
+            sim.resources.influence > influence_before,
+            "competence-for-passage earns standing"
+        );
+        assert_eq!(
+            sim.ship.hull_integrity, hull_before,
+            "no shots fired, no hull lost"
+        );
+    }
+
+    #[test]
     fn a_consequence_gate_holds_the_payoff_until_the_setup_choice_fires() {
         let data = GameData::load().unwrap();
         let picks = crate::state::sim::founding_faction_ids(&data);
