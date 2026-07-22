@@ -69,6 +69,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
         if sim.pending_dilemma.is_none()
             && report.contract_completed.is_none()
             && !report.dynasty_extinct
+            && !fire_scheduled_beat(sim, data, &mut report)
             && !fire_due_beat(sim, data, &mut report)
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
@@ -337,6 +338,42 @@ fn force_family_beat(sim: &mut SimState, data: &GameData, family: &str, report: 
     if let Some(pending) = pending {
         apply_pending_event(sim, data, pending, report);
     }
+}
+
+/// Fire a scheduled follow-up (content-depth event families round 9): the timed,
+/// deterministic payoff of an outcome's `schedule_followup`. Once the voyage
+/// reaches the earliest due `fire_year`, that named event is forced by id — past
+/// its gates, since a scheduled-only payoff never rolls — so an authored arc lands
+/// on its promised clock. Fires at most one per month (earliest year first, ties
+/// broken by id for determinism); returns whether it replaced the reactive roll.
+fn fire_scheduled_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let year = sim.year();
+    let due = sim
+        .scheduled_events
+        .iter()
+        .enumerate()
+        .filter(|(_, s)| s.fire_year <= year)
+        .min_by(|(_, a), (_, b)| {
+            a.fire_year
+                .cmp(&b.fire_year)
+                .then_with(|| a.template_id.cmp(&b.template_id))
+        })
+        .map(|(i, _)| i);
+    let Some(idx) = due else {
+        return false;
+    };
+    let scheduled = sim.scheduled_events.remove(idx);
+    apply_pending_event(
+        sim,
+        data,
+        crate::state::sim::PendingEvent {
+            template_id: scheduled.template_id,
+            rolled_month_clock: sim.month_clock,
+        },
+        report,
+    );
+    sim.last_event_month_clock = sim.month_clock;
+    true
 }
 
 /// Surface a rolled event: block for a council decision, or auto-resolve it

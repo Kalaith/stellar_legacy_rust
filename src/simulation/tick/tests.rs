@@ -602,6 +602,88 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn a_scheduled_followup_fires_on_its_determined_year_not_before() {
+    // Content-depth event families round 9: the deterministic-timing chain. Sealing
+    // the capsule queues its payoff for a fixed year; the payoff fires then and not
+    // before, and — being scheduled_only — never rolls into the pool on its own.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+
+    let setup = data.events.get("the_sealed_capsule").unwrap();
+    let payoff = data.events.get("the_capsule_opens").unwrap();
+    assert!(
+        payoff.scheduled_only,
+        "the payoff must be scheduled-only so it never rolls on its own"
+    );
+    let delay = setup
+        .outcomes
+        .iter()
+        .find_map(|o| o.schedule_followup.as_ref())
+        .expect("sealing schedules a follow-up")
+        .delay_years;
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("the_long_dark").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Seal the capsule: a follow-up is queued for exactly `delay` years on.
+    let seal = setup
+        .outcomes
+        .iter()
+        .position(|o| o.id == "seal_the_capsule")
+        .unwrap();
+    let year0 = sim.year();
+    crate::simulation::event_resolver::apply_outcome(&mut sim, &data, setup, seal);
+    assert_eq!(
+        sim.scheduled_events.len(),
+        1,
+        "sealing queues one follow-up"
+    );
+    assert_eq!(sim.scheduled_events[0].fire_year, year0 + delay);
+
+    // Advance year by year, always resolving any block so time can keep moving.
+    // The capsule stays sealed every year before its due year.
+    let resolve_pending = |sim: &mut SimState, data: &GameData| {
+        if let Some(p) = sim.pending_event.clone() {
+            let t = data.events.get(&p.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(sim, data, &t, 0);
+        }
+    };
+    while sim.year() < year0 + delay {
+        assert_eq!(
+            sim.scheduled_events.len(),
+            1,
+            "the capsule has not opened before its year (year {})",
+            sim.year()
+        );
+        advance_year(&mut sim, &data);
+        resolve_pending(&mut sim, &data);
+    }
+
+    // On/after the due year the payoff has fired and the queue has emptied.
+    assert!(
+        sim.scheduled_events.is_empty(),
+        "the capsule opens on its determined year"
+    );
+    assert!(
+        sim.log.iter().any(|l| l.text.contains("capsule")),
+        "the opening is narrated"
+    );
+}
+
+#[test]
 fn a_flourish_beat_fires_as_the_ship_reaches_its_golden_age() {
     // Content-depth campaign-skeleton round 8: the ascending positive pole of the
     // crisis beat. With reactive rolls and the other threshold beats off, the only

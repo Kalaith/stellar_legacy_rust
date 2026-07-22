@@ -1514,5 +1514,76 @@
     "log": "The council did what pride had refused for generations: it went to the Keepers with a penance and a place at the table and the shrine's standing written above the ration board at last, and it paid for the reconciliation in power and standing both. The First Flame stayed, mollified and watchful, and the ship kept its founding fire — having learned, expensively, that goodwill spent is dearer to buy back than it ever was to keep."
    }
   ]
+ },
+ {
+  "id": "the_sealed_capsule",
+  "category": "generational_challenge",
+  "title": "The Sealed Capsule",
+  "description": "A founder proposes something the ship has time enough for and nothing else quite like: a sealed capsule — letters, warnings, hopes, the plain truth of who launched this ship and why — set to be opened by hands not yet born, at a fixed remove of fifty years. A message from the people who cast off to the people who will have forgotten them, timed to arrive when it will land as a stranger's voice.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_generation": 2,
+  "outcomes": [
+   {
+    "id": "seal_the_capsule",
+    "label": "Seal it, to open in fifty years",
+    "description": "Fill the capsule with the founding truth and lock it to a date two generations out. Trust the descendants to want it, and trust the present to have something worth saying to a future it will not see.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.03
+    },
+    "schedule_followup": {
+     "template_id": "the_capsule_opens",
+     "delay_years": 50
+    },
+    "log": "The founders filled a capsule with the truth of themselves — the fear and the hope and the names — and sealed it to a date fifty years on, a message fired forward through time to hands not yet born. Then they went back to the work, having spoken, once, plainly, to a future that would have to decide for itself what to make of them."
+   },
+   {
+    "id": "live_forward",
+    "label": "Let the future be its own",
+    "description": "A people should not be governed by voices in a box. Say what needs saying now, to the living, and let those who come after write their own founding without the founders leaning over their shoulder.",
+    "population_delta": {
+     "morale": 0.03,
+     "adaptation": 0.04,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The founders declined to bottle themselves for posterity, and said what they had to say to the living and let it go at that. The future would have to invent its own account of where it came from — which, some argued, is the only kind of founding a people ever really keeps."
+   }
+  ]
+ },
+ {
+  "id": "the_capsule_opens",
+  "category": "legacy_moment",
+  "title": "The Capsule Opens",
+  "description": "The date the founders set has come. A capsule none of the living sealed, addressed to none of the living by name, unlocks itself on schedule and offers up the voices of people fifty years dead — their fears for a ship that has since weathered worse and stranger, their hopes for descendants who have become someone the senders would not quite recognize. The founding, speaking across the gap it always knew would open.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "honor_the_message",
+    "label": "Take the founders at their word",
+    "description": "They saw this far and spoke to it; the least the ship can do is listen and be bound. Read the capsule into the record as instruction, and let the dead have their say in the living ship.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "unity": 0.05,
+     "cultural_drift": -0.04,
+     "morale": -0.02
+    },
+    "log": "The ship took its founders at their word across fifty years, read the capsule into the charter as instruction, and let the dead steer a little of the living ship. Something in the voyage straightened toward its origin, and something else — the right of the present to decide for itself — bent a degree to make room for the voices in the box."
+   },
+   {
+    "id": "read_and_decide",
+    "label": "Thank them, and decide for yourselves",
+    "description": "Hear the founders out with all the honour they are owed — and then remember that they are dead, and the ship is not, and the people who must live the next fifty years are the ones who should choose them. Keep the capsule as history, not as law.",
+    "population_delta": {
+     "morale": 0.05,
+     "adaptation": 0.05,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The ship heard its founders out across the gap of fifty years, thanked them with full honours, and then did what the living do: decided for itself. The capsule went into the archive as history rather than law, one more voice the ship could weigh and need not obey — which was, the record noted, most likely what the wiser founders had hoped a free people would do with them."
+   }
+  ]
  }
 ]

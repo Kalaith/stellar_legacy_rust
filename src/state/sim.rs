@@ -237,6 +237,17 @@ pub struct PendingEvent {
     pub rolled_month_clock: u32,
 }
 
+/// A follow-up event promised to fire at a determined voyage year (content-depth
+/// event families round 9): the deterministic-timing counterpart to the
+/// opportunistic `requires_consequence` chains. Queued by an outcome's
+/// `schedule_followup`, fired once the voyage reaches `fire_year`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScheduledEvent {
+    pub template_id: String,
+    /// Voyage year (years since founding) at or after which the follow-up fires.
+    pub fire_year: u32,
+}
+
 /// A legacy dilemma waiting for a council decision (GDD §5.5). Stores the
 /// dilemma id; the definition lives on the sim's legacy in `GameData`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -345,6 +356,12 @@ pub struct SimState {
     /// Accumulated named consequences from past outcomes (Pillar 2). Read by
     /// future event weighting; append-only from outcome application.
     pub consequences: Vec<String>,
+    /// Follow-ups promised to fire at a *determined* year (content-depth event
+    /// families round 9): an outcome can schedule a specific event to re-fire in
+    /// N years, so an authored arc pays off on a clock rather than waiting for the
+    /// RNG to surface it. Deterministic; fired and removed by `fire_scheduled_beat`.
+    #[serde(default)]
+    pub scheduled_events: Vec<ScheduledEvent>,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -429,6 +446,7 @@ impl SimState {
             pending_event: None,
             pending_dilemma: None,
             consequences: Vec::new(),
+            scheduled_events: Vec::new(),
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),
             log: Vec::new(),

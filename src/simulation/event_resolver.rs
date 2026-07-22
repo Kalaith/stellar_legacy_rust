@@ -101,6 +101,11 @@ pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory,
 /// and its current phase listed; year / generation / cultural-drift gates must
 /// all be met.
 fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
+    // Scheduled-only payoffs (content-depth round 9) never roll; they fire solely
+    // as the timed follow-up of a `schedule_followup`, forced by id past the gates.
+    if template.scheduled_only {
+        return false;
+    }
     if !template.phases.is_empty() {
         match sim.contract.as_ref() {
             Some(contract) if template.phases.contains(&contract.phase) => {}
@@ -326,6 +331,16 @@ pub fn apply_outcome(
     sim.population.apply(&population_delta);
     sim.consequences
         .extend(outcome.long_term_consequences.iter().cloned());
+    // …and a promised follow-up joins the clock (content-depth round 9): unlike a
+    // consequence tag, this re-fires the named event at a *determined* year, so an
+    // authored arc pays off when promised rather than when the RNG obliges.
+    if let Some(followup) = &outcome.schedule_followup {
+        sim.scheduled_events
+            .push(crate::state::sim::ScheduledEvent {
+                template_id: followup.template_id.clone(),
+                fire_year: sim.year() + followup.delay_years,
+            });
+    }
     // A salvaged component drops into the hold, to be installed later
     // (PLAN M4.4). The outcome's own log narrates the find.
     if let Some(component_id) = &outcome.grant_component {

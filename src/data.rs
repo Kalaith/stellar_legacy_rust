@@ -919,6 +919,28 @@ mod tests {
                 );
             }
         }
+        // Content-depth round 9: every scheduled follow-up must name a real event
+        // (typo guard), and that target should be `scheduled_only` so the timed
+        // payoff never also leaks into the reactive pool.
+        for (id, e) in data.events.iter() {
+            for followup in e
+                .outcomes
+                .iter()
+                .filter_map(|o| o.schedule_followup.as_ref())
+            {
+                let target = data.events.get(&followup.template_id);
+                assert!(
+                    target.is_some(),
+                    "event '{id}' schedules unknown follow-up '{}'",
+                    followup.template_id
+                );
+                assert!(
+                    target.unwrap().scheduled_only,
+                    "scheduled follow-up '{}' must be marked scheduled_only",
+                    followup.template_id
+                );
+            }
+        }
         // W7: six authored founding factions, ideology within [-1, 1]. The
         // registry keys on id, so a count of six also proves the ids are unique.
         assert_eq!(data.factions.len(), 6, "six founding factions");

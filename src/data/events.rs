@@ -73,6 +73,17 @@ pub struct FactionApprovalGate {
     pub below: f32,
 }
 
+/// A follow-up an outcome promises to fire at a determined future year
+/// (content-depth event families round 9): the deterministic-timing counterpart
+/// to the opportunistic `long_term_consequences`/`requires_consequence` chain.
+/// The named event is forced (bypassing its gates) once the voyage has advanced
+/// `delay_years` from the choice — a reckoning kept on a clock, not left to the RNG.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScheduledFollowup {
+    pub template_id: String,
+    pub delay_years: u32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventOutcome {
     pub id: String,
@@ -129,6 +140,10 @@ pub struct EventOutcome {
     /// 0.0 = no shift.
     #[serde(default)]
     pub faction_approval_smallest: f32,
+    /// A follow-up promised to fire at a determined future year (content-depth
+    /// event families round 9). `None` = no scheduled payoff.
+    #[serde(default)]
+    pub schedule_followup: Option<ScheduledFollowup>,
     #[serde(default)]
     pub log: String,
 }
@@ -210,6 +225,12 @@ pub struct EventTemplate {
     /// 0.0 = ungated.
     #[serde(default)]
     pub min_morale: f32,
+    /// Scheduled-only (content-depth event families round 9): the event never
+    /// enters a random or beat roll — it fires solely as the timed payoff of a
+    /// `schedule_followup`. Keeps a determined-clock reckoning out of the reactive
+    /// pool so it lands exactly when promised, and only then.
+    #[serde(default)]
+    pub scheduled_only: bool,
     /// Era ceilings (content-depth campaign-skeleton round 4): the mirror of the
     /// `min_*` gates — the event leaves the pool once the voyage passes these, so
     /// content that belongs to a voyage era (e.g. the deep-middle "the ship is
