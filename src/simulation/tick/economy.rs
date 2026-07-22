@@ -4,7 +4,7 @@
 //! out of `tick.rs` to keep the advance loop readable and the file under the
 //! size limit.
 
-use crate::data::{FlavorConfig, GameConfig, GameData, PopulationDelta, ResourceDelta};
+use crate::data::{FlavorConfig, GameData, PopulationDelta, ResourceDelta};
 use crate::simulation::{crew, legacy, market, ship, subsystems, succession};
 use crate::state::sim::SimState;
 
@@ -122,7 +122,7 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,
     // and the strain wears at morale and unity. Deterministic; the founders'
     // hopeful crew slowly becomes someone else the longer they fly.
-    apply_voyage_drift(sim, config);
+    apply_voyage_drift(sim, data);
 
     // Generational tick (GDD §5.3).
     sim.dynasty.years_since_generation += 1;
@@ -217,13 +217,23 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
 /// Apply one year of voyage drift to the population (PLAN M4.1). Identity terms
 /// scale by the legacy's multiplier (Adaptors fastest, Preservers slowest); the
 /// morale/unity strain is universal. Clamped to 0-1 by `PopulationState::apply`.
-pub(super) fn apply_voyage_drift(sim: &mut SimState, config: &GameConfig) {
-    let vd = &config.voyage_drift;
-    let mult = vd
+pub(super) fn apply_voyage_drift(sim: &mut SimState, data: &GameData) {
+    let vd = &data.config.voyage_drift;
+    let legacy_mult = vd
         .legacy_multipliers
         .get(&sim.legacy.legacy_id)
         .copied()
         .unwrap_or(1.0);
+    // Who runs the ship bends how fast the people drift from the founders
+    // (content-depth factions round 9): the dominant faction's ideology finally
+    // does something — a tech-embracing majority leans into becoming someone new,
+    // a tradition-bound one holds the founders' line. Read before the mutable
+    // apply; gentle enough that identity still moves the same way whoever leads.
+    let ideology = sim
+        .dominant_faction_id()
+        .and_then(|id| data.factions.get(id))
+        .map_or(0.0, |f| f.ideology);
+    let mult = legacy_mult * (1.0 + vd.dominant_ideology_scale * ideology).max(0.0);
     sim.population.apply(&PopulationDelta {
         adaptation: vd.adaptation_per_year * mult,
         cultural_drift: vd.cultural_drift_per_year * mult,

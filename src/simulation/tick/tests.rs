@@ -33,7 +33,7 @@ fn voyage_drift_changes_the_people_and_stays_bounded() {
     );
     // A long voyage with no events at all still reshapes the crew.
     for _ in 0..40 {
-        apply_voyage_drift(&mut sim, &data.config);
+        apply_voyage_drift(&mut sim, &data);
     }
     assert!(sim.population.adaptation > a0, "adaptation rises underway");
     assert!(sim.population.cultural_drift > d0, "cultural drift rises");
@@ -92,6 +92,52 @@ fn a_neglected_generational_voyage_wears_the_ship_to_the_edge() {
 }
 
 #[test]
+fn the_dominant_faction_ideology_bends_how_fast_the_people_drift() {
+    // Content-depth factions round 9: who runs the ship finally steers its
+    // identity. Two otherwise-identical ships (same legacy, same starting drift)
+    // led by opposite peoples — the change-embracing Ascension vs the
+    // tradition-bound Keepers — must drift apart, yet both still drift.
+    use crate::state::sim::factions::{FactionState, FactionStatus};
+    let data = GameData::load().unwrap();
+    let make = |dominant_id: &str| {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.factions = vec![FactionState {
+            faction_id: dominant_id.to_string(),
+            members: sim.population.count,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        }];
+        sim
+    };
+    let mut embracing = make("ascension_circle"); // ideology +0.9
+    let mut holding = make("first_flame"); // ideology -0.9
+    let d0 = embracing.population.cultural_drift;
+    assert_eq!(
+        d0, holding.population.cultural_drift,
+        "the two ships launch identical"
+    );
+
+    for _ in 0..40 {
+        apply_voyage_drift(&mut embracing, &data);
+        apply_voyage_drift(&mut holding, &data);
+    }
+    assert!(
+        embracing.population.cultural_drift > holding.population.cultural_drift,
+        "a change-embracing majority drifts the people from the founders faster"
+    );
+    assert!(
+        holding.population.cultural_drift > d0,
+        "even under the Keepers the people still change, only slower"
+    );
+}
+
+#[test]
 fn voyage_drift_scales_by_legacy() {
     let data = GameData::load().unwrap();
     let mut adaptors = SimState::new_campaign(
@@ -107,8 +153,8 @@ fn voyage_drift_scales_by_legacy() {
         &crate::state::sim::founding_faction_ids(&data),
     );
     for _ in 0..30 {
-        apply_voyage_drift(&mut adaptors, &data.config);
-        apply_voyage_drift(&mut preservers, &data.config);
+        apply_voyage_drift(&mut adaptors, &data);
+        apply_voyage_drift(&mut preservers, &data);
     }
     assert!(
         adaptors.population.cultural_drift > preservers.population.cultural_drift,

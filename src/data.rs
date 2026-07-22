@@ -229,6 +229,14 @@ pub struct VoyageDrift {
     pub unity_strain_per_year: f32,
     /// Legacy id → magnitude multiplier for the identity terms.
     pub legacy_multipliers: HashMap<String, f32>,
+    /// How much the *dominant* faction's ideology bends the identity drift
+    /// (content-depth factions round 9): the yearly identity terms scale by
+    /// `1 + dominant_ideology_scale * ideology`, so a tech-embracing majority
+    /// (ideology > 0) drifts the people from the founders faster, a
+    /// tradition-bound one (< 0) slower. 0 = who runs the ship has no effect.
+    /// Kept gentle so identity still moves in the same direction whoever leads.
+    #[serde(default)]
+    pub dominant_ideology_scale: f32,
 }
 
 /// Field-vs-port repair tunables (PLAN M4.3). Underway, `field_repair` patches

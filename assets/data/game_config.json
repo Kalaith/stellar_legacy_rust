@@ -345,7 +345,8 @@
       "preservers": 0.6,
       "adaptors": 1.5,
       "wanderers": 1.0
-    }
+    },
+    "dominant_ideology_scale": 0.35
   },
   "repair": {
     "field_ceiling": 0.75,
