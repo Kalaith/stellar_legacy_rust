@@ -377,6 +377,73 @@ fn a_long_hungry_ships_quiet_reads_lean() {
 }
 
 #[test]
+fn a_long_prosperous_ships_quiet_reads_fat() {
+    // Content-depth voice round 14: the first positive-condition ambient. Once the
+    // larder has stood full for years and no grimmer note holds, a quiet stretch
+    // reads fat and easy — but any grim condition (here, a hollowed crew) still
+    // takes precedence, since the good years only sound good on a ship not otherwise
+    // in decline.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
+    let gap = data.config.flavor.ambient_gap_years;
+    let fat_years = data.config.flavor.ambient_fat_years_threshold;
+    assert!(
+        gap > 0 && fat_years > 0 && data.config.flavor.ambient_fat.len() >= 4,
+        "this test needs the prosperity-aware ambient pool enabled"
+    );
+
+    let run = |fat: u32, count: u32| -> Vec<String> {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            6,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        // Hold the larder full so the tick keeps the injected plenty streak.
+        for _ in 0..gap {
+            sim.resources.food = 1_000_000;
+            sim.fat_food_years = fat;
+            sim.population.count = count;
+            advance_year(&mut sim, &data);
+        }
+        sim.log.iter().map(|l| l.text.clone()).collect()
+    };
+    let fat_pool = &data.config.flavor.ambient_fat;
+    let ambient = &data.config.flavor.ambient;
+    let hollow = &data.config.flavor.ambient_hollow;
+
+    // A long-prosperous ship reads fat…
+    let prosperous = run(fat_years, 1000);
+    assert!(
+        prosperous.iter().any(|t| fat_pool.contains(t)),
+        "a long-prosperous ship's quiet reads fat and easy"
+    );
+    // …a ship not notably flush reads its ordinary quiet…
+    let ordinary = run(0, 1000);
+    assert!(
+        ordinary.iter().any(|t| ambient.contains(t))
+            && !ordinary.iter().any(|t| fat_pool.contains(t)),
+        "a merely getting-by ship's quiet is not fat"
+    );
+    // …and a prosperous but hollowed ship reads hollow — a grim note wins.
+    let flush_but_empty = run(
+        fat_years,
+        data.config.flavor.ambient_population_threshold - 1,
+    );
+    assert!(
+        flush_but_empty.iter().any(|t| hollow.contains(t))
+            && !flush_but_empty.iter().any(|t| fat_pool.contains(t)),
+        "the good years only sound good on a ship not otherwise in decline"
+    );
+}
+
+#[test]
 fn voyage_drift_scales_by_legacy() {
     let data = GameData::load().unwrap();
     let mut adaptors = SimState::new_campaign(

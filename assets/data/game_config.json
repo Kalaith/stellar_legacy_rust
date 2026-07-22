@@ -345,6 +345,16 @@
       "No one is starving, quite. But the hunger has moved in — a low, constant tenant behind the day's work — and the ship has stopped expecting it to leave."
     ],
     "ambient_lean_years_threshold": 10,
+    "ambient_fat": [
+      "The mess line is a slow, easy thing these days — second helpings offered without a second thought, the good bread every day and not just on the feast, nobody watching the serving spoon.",
+      "The grow-decks run at a comfortable idle, half the beds fallow by choice, the gardeners with time to breed a sweeter fruit rather than merely a hardier one.",
+      "A festival comes and the feast is simply a feast — no rationing dressed as celebration, no ache under the plenty, just a ship that can afford to be generous with itself for an evening.",
+      "The children here are round-cheeked and loud and take the full larder as the plain shape of the world, which, for the whole of their lives, it has been.",
+      "The old hands who remember leaner decades keep a wary corner of the granary sealed against a rainy century, and let the rest of the ship enjoy not knowing it is there.",
+      "There is a particular ease to the corridors of a well-fed ship — quarrels that stay small, favors given freely, a hundred small kindnesses that hunger would have quietly priced out.",
+      "The ledgers are fat, the stores are fat, the year is fat, and for once the loudest thing on the ship is laughter and not the low arithmetic of getting by."
+    ],
+    "ambient_fat_years_threshold": 10,
     "phase_lines": {
       "travel": [
         "Departure burn complete — the ship is underway.",

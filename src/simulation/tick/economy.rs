@@ -274,9 +274,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
             // The quiet reads differently as the ship changes, in order of how
             // loudly each condition speaks in a silence: a long hunger (round 13)
             // above a hollowed-out crew (round 12) above a far-drifted people
-            // (round 10); failing all three, the ordinary ambient. A sustained
-            // hunger is the most immediate lived condition, an empty ship the next,
-            // and an alien culture the quietest of the three.
+            // (round 10) — the grim notes first, loudest to quietest. Failing all
+            // three, a *long-prosperous* ship's quiet reads fat and easy (round 14,
+            // the first positive-condition ambient); only a ship neither grim nor
+            // notably flush reads the plain ordinary.
             let pool = if !fl.ambient_lean.is_empty()
                 && sim.lean_food_years >= fl.ambient_lean_years_threshold
                 && fl.ambient_lean_years_threshold > 0
@@ -290,6 +291,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
                 && sim.population.cultural_drift >= fl.ambient_drift_threshold
             {
                 &fl.ambient_drifted
+            } else if !fl.ambient_fat.is_empty()
+                && fl.ambient_fat_years_threshold > 0
+                && sim.fat_food_years >= fl.ambient_fat_years_threshold
+            {
+                &fl.ambient_fat
             } else {
                 &fl.ambient
             };

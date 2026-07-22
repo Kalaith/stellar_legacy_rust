@@ -431,6 +431,19 @@ pub struct FlavorConfig {
     /// `ambient_lean` (content-depth voice round 13).
     #[serde(default)]
     pub ambient_lean_years_threshold: u32,
+    /// Ambient lines for a *long-prosperous* ship (content-depth voice round 14):
+    /// the first positive-condition ambient — the mirror of `ambient_lean`. Once the
+    /// larder has stood full for `ambient_fat_years_threshold` years
+    /// (`SimState.fat_food_years`) *and* no grimmer note holds, the quiet stretches
+    /// draw from this pool — the texture of ease and plenty, so a ship's good years
+    /// finally *sound* good instead of merely neutral. Lowest priority (a grim ship
+    /// reads grim first). Empty = a prosperous ship reads the ordinary ambient.
+    #[serde(default)]
+    pub ambient_fat: Vec<String>,
+    /// Consecutive fat years at or past which quiet stretches read from
+    /// `ambient_fat` (content-depth voice round 14).
+    #[serde(default)]
+    pub ambient_fat_years_threshold: u32,
     /// Years of event-less quiet between ambient lines (0 = ambient off).
     #[serde(default)]
     pub ambient_gap_years: u32,
