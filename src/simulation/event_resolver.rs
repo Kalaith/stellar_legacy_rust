@@ -406,6 +406,16 @@ pub fn apply_outcome(
     if outcome.faction_approval_smallest != 0.0 {
         sim.adjust_smallest_faction_approval(outcome.faction_approval_smallest);
     }
+    // …or trade the mission for survival, or the reverse (content-depth
+    // provisioning round 9): diverting the work crews in a famine slips the
+    // charter's tally. A fraction of the objective target, applied only with a
+    // contract under way; the objective can slip back but never below zero.
+    if outcome.objective_progress_delta != 0.0 {
+        if let Some(contract) = sim.contract.as_mut() {
+            let shift = outcome.objective_progress_delta * contract.objective_target;
+            contract.objective_progress = (contract.objective_progress + shift).max(0.0);
+        }
+    }
     // …and whichever outcome was taken, a riding complication (content-depth
     // round 6) lands its extra toll on top — the event was worse than usual
     // because of the state it arrived in.
@@ -542,6 +552,71 @@ mod tests {
         assert!(
             passes_gate(&sim, payoff),
             "sealing the ward unlocks the reopening decades later"
+        );
+    }
+
+    #[test]
+    fn a_famine_can_be_answered_by_slipping_the_mission_or_holding_to_it() {
+        // Content-depth provisioning round 9: the founders' mission and the
+        // living's survival compete. Diverting the work crews feeds the ship but
+        // slips the charter's objective; holding to the work keeps the tally whole
+        // and lets the shortage bite. The objective only moves with a contract.
+        use crate::data::contracts::ContractPhase;
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 29, &picks);
+        let event = data.events.get("the_fallow_season").unwrap();
+
+        // On-station, and genuinely short: the choice is forced.
+        let template = data.contracts.get("deep_vein_survey").unwrap();
+        let mut active = crate::simulation::contract::start_contract(template, &sim);
+        active.phase = ContractPhase::Operation;
+        active.objective_progress = active.objective_target * 0.5;
+        sim.contract = Some(active);
+        let famine = event.food_below.unwrap();
+        sim.resources.food = famine + 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "a stocked larder holds no dilemma"
+        );
+        sim.resources.food = famine - 1;
+        assert!(
+            passes_gate(&sim, event),
+            "a real shortfall on station forces it"
+        );
+
+        let obj_before = sim.contract.as_ref().unwrap().objective_progress;
+        let food_before = sim.resources.food;
+
+        // Diverting the crews feeds the ship and slips the tally.
+        let mut divert = sim.clone();
+        let d = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "divert_the_crews")
+            .unwrap();
+        apply_outcome(&mut divert, &data, event, d);
+        assert!(
+            divert.resources.food > food_before,
+            "diverting the crews feeds the ship"
+        );
+        assert!(
+            divert.contract.as_ref().unwrap().objective_progress < obj_before,
+            "the mission's tally slips when the crews leave the work"
+        );
+
+        // Holding to the work keeps the objective exactly where it was.
+        let mut hold = sim.clone();
+        let h = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "hold_to_the_work")
+            .unwrap();
+        apply_outcome(&mut hold, &data, event, h);
+        assert_eq!(
+            hold.contract.as_ref().unwrap().objective_progress,
+            obj_before,
+            "holding to the founders' work leaves the tally untouched"
         );
     }
 

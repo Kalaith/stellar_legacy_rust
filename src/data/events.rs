@@ -140,6 +140,13 @@ pub struct EventOutcome {
     /// 0.0 = no shift.
     #[serde(default)]
     pub faction_approval_smallest: f32,
+    /// Signed change to the active charter's objective progress, as a *fraction of
+    /// its target* (content-depth provisioning round 9): the coupling that lets
+    /// the founders' mission and the living's survival compete — diverting the
+    /// work crews to forage in a famine feeds the ship but slips the tally.
+    /// Applied (clamped ≥ 0) only while a contract is under way. 0.0 = no change.
+    #[serde(default)]
+    pub objective_progress_delta: f32,
     /// A follow-up promised to fire at a determined future year (content-depth
     /// event families round 9). `None` = no scheduled payoff.
     #[serde(default)]

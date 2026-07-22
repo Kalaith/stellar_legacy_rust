@@ -1332,5 +1332,45 @@
     "log": "The council spared the ship by cutting its smallest deck, and the essential work went on unbroken through the thin year while one people learned, precisely, where it stood on this ship's ledger when the food ran short. The ship stayed working. Whether it stayed whole was a question the smallest people would answer later, in their own time and their own way."
    }
   ]
+ },
+ {
+  "id": "the_fallow_season",
+  "category": "immediate_crisis",
+  "title": "The Fallow Season",
+  "description": "The larder is failing on-station, and the ship has exactly as many hands as it has work: every crew turned to the charter's labour is a crew not turned to keeping the ship fed. The founders sent this voyage three centuries to do a thing. This generation, hungry, must decide whether the thing or their own survival comes first this season.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "operation"
+  ],
+  "food_below": 3000,
+  "outcomes": [
+   {
+    "id": "divert_the_crews",
+    "label": "Turn the crews to survival",
+    "description": "Pull the hands off the charter's work and put them to foraging, patching the grow-decks, wringing food from the worksite by any means. The ship will eat. The tally the founders set will slip, and the mission will arrive a little less complete than it might have — but arrive with its people alive.",
+    "resource_delta": {
+     "food": 1600
+    },
+    "population_delta": {
+     "morale": 0.02,
+     "adaptation": 0.03
+    },
+    "objective_progress_delta": -0.06,
+    "log": "The council turned the work crews from the charter to the larder for a season, and the ship fed itself out of the worksite by improvisation and sweat. The founders' tally slipped — the mission would come home a shade less complete than the dead had dreamed — but it would come home crewed, which the living judged the older promise, and the truer one."
+   },
+   {
+    "id": "hold_to_the_work",
+    "label": "Hold to the founders' work",
+    "description": "The charter is the reason the ship exists, and a generation does not get to set down a three-century task because a season went lean. Keep the crews on the mission, ration hard, and let the shortage take what it takes — the work comes first, as the founders meant it to.",
+    "population_delta": {
+     "count": -70,
+     "morale": -0.04,
+     "legacy_loyalty": 0.05,
+     "stability": 0.03
+    },
+    "log": "The council held the crews to the charter through the lean season and let the shortage bite unanswered, and it bit: the memorial wall grew, and the mission did not slip a day. The founders' work came first, exactly as they had written it, paid for in a generation that starved a little rather than set the task down. Some called it discipline. The hungry, mostly, called it the founders' due, and meant it."
+   }
+  ]
  }
 ]
