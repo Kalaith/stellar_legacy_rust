@@ -1524,5 +1524,113 @@
     "at_year": 180
    }
   ]
+ },
+ {
+  "id": "the_sunset_relief",
+  "name": "Relief Writ: The Sunset Coast",
+  "objective": "rescue",
+  "description": "A colony under a sun the astronomers have already buried: its dimming is computed, its end dated, and the writ is not to save the world — no one can — but to sail four centuries to its failing coast, carry off what a single hull can carry, and stand with a people through the hours of their ending. A mission with its tragedy written into it before the ship was laid, and its hardest choices set on a clock the dead read from the stars.",
+  "target_duration_years": 400,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 130
+   },
+   {
+    "kind": "operation",
+    "years": 150
+   },
+   {
+    "kind": "return",
+    "years": 120
+   }
+  ],
+  "objective_target": 5000,
+  "objective_unit": "souls carried to safe harbour",
+  "milestones": [
+   {
+    "id": "first_lift",
+    "name": "First lift off the failing coast",
+    "progress_threshold": 0.2
+   },
+   {
+    "id": "steady_ferry",
+    "name": "The ferry running at capacity",
+    "progress_threshold": 0.55,
+    "reward": {
+     "influence": 110
+    }
+   },
+   {
+    "id": "the_last_shore",
+    "name": "The last shore cleared that could be",
+    "progress_threshold": 0.9,
+    "reward": {
+     "credits": 400
+    }
+   },
+   {
+    "id": "course_home",
+    "name": "Holds full, course set for home",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.3,
+    "target": 0.85
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Souls carried",
+    "weight": 0.35,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.1,
+    "target": 0.6
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.25,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "the_rising_tide",
+   "the_left_behind",
+   "the_last_window"
+  ],
+  "reward": {
+   "credits": 7200,
+   "influence": 520
+  },
+  "min_renown": 200,
+  "tags": [
+   "relief",
+   "sunset"
+  ],
+  "beat_families": [
+   "ethics"
+  ],
+  "scheduled_beats": [
+   {
+    "template_id": "the_rising_tide",
+    "at_year": 180
+   },
+   {
+    "template_id": "the_last_evacuation",
+    "at_year": 260
+   }
+  ]
  }
 ]

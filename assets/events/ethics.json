@@ -493,5 +493,84 @@
     "log": "The ship came about in the deep dark, a hundred years short of a target no living eye had ever seen, and laid in the long course for home with empty holds and lighter hearts. The charter was forfeit and the writ would pay nothing, and for the first time in three generations the crew was sailing toward a place someone aboard might actually live to reach."
    }
   ]
+ },
+ {
+  "id": "the_rising_tide",
+  "category": "generational_challenge",
+  "title": "The Rising Tide",
+  "description": "It begins on the schedule the models drew before the ship ever launched: the coast goes under, the light fails a shade faster than the year before, and the colony that was a distant relief writ becomes a shore full of people looking up at the one ship that came. The holds hold a fraction of them. The first triage cannot be deferred — the ship must decide, now and by what measure, whom its limited lift is for.",
+  "requires_decision": true,
+  "family": "ethics",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "save_the_many",
+    "label": "Lift the most bodies",
+    "description": "Count heads, not worth. Pack the holds by simple number and carry the greatest possible count to safe harbour — the old beside the young, the useless beside the vital, every soul equal in the arithmetic of a full hold.",
+    "resource_delta": {
+     "influence": 90
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.04,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The ship lifted by the number, packing its holds with whoever reached them, counting only heads — and carried the greatest weight of living souls it could off the drowning coast. It was the answer that let no one aboard weigh a stranger's life against another's, and the crews came away able to sleep, having refused to be the kind of people who decide who is worth saving."
+   },
+   {
+    "id": "save_the_vital",
+    "label": "Lift those who can rebuild a people",
+    "description": "A saved crowd that cannot make a future is a mercy that ends in one generation. Lift the young, the bearing, the ones who carry a craft or a memory — the seed of a people that can be planted again — and accept the colder arithmetic and the shore it leaves behind.",
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.04,
+     "morale": -0.05,
+     "cultural_drift": 0.02
+    },
+    "log": "The ship lifted the seed of a people rather than the greatest count of it — the young, the skilled, the keepers of the colony's memory — and left a shore of the old and the many looking up as it climbed away. The colony would live again somewhere, whole in the ways that let a people continue; the crews carried the faces of the ones that arithmetic left behind, and did not sleep as well, and judged that a fair price for a future."
+   }
+  ]
+ },
+ {
+  "id": "the_last_evacuation",
+  "category": "immediate_crisis",
+  "title": "The Last Evacuation",
+  "description": "The end the founders' astronomers computed has come to its final hours, and there are more people on the shore than the ship can lift before the window closes and the dying sun takes anything still in reach. The holds are filling. The clock the dead set is running out. Whatever the ship does in the next hours it will carry the rest of the way home.",
+  "requires_decision": true,
+  "family": "ethics",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "fill_and_go",
+    "label": "Fill the holds and burn clear",
+    "description": "Take everyone the ship can safely lift and go before the window shuts — save the certain, spend nothing on the impossible, and live with the sound of a shore the voyage could not go back for.",
+    "resource_delta": {
+     "influence": 70
+    },
+    "population_delta": {
+     "morale": -0.06,
+     "cultural_drift": 0.05,
+     "stability": 0.03
+    },
+    "log": "The ship filled its holds to the safe line and burned clear of the dying sun with the window still open behind it, carrying every soul it could carry and no more. It was the answer that brought the crew home alive, and it brought them home marked — a whole generation that had heard, over the drives, the sound of a shore it chose not to go back for, and would hear it, some nights, the rest of the way to homeport."
+   },
+   {
+    "id": "one_more_run",
+    "label": "Stay past the window for one more run",
+    "description": "Hold in the star's reach past the safe hour and make one more lift, and another, for as long as the hull will bear it — risk the ship and everyone already aboard to reach a few more on the shore, because a people that leaves the reachable behind is a people changed by it.",
+    "ship_delta": {
+     "hull_integrity": -0.12,
+     "fuel": -0.15
+    },
+    "population_delta": {
+     "count": -60,
+     "legacy_loyalty": 0.07,
+     "unity": 0.06,
+     "morale": 0.02
+    },
+    "log": "The ship held in the dying star's reach past every safe hour and made run after run off the shore until the hull could bear no more, and it cost — a scorched ship, a lighter tank, a memorial wall grown for the crews lost to the last lifts. But no one reachable was left on that shore, and the people who flew home flew home certain of a thing about themselves that a full hold and a clean escape would never have told them."
+   }
+  ]
  }
 ]

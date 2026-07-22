@@ -649,6 +649,78 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
+    // Content-depth charters round 10: the first scripted-narrative charter — a
+    // mission architected around a *sequence* of timed beats, an authored arc
+    // rather than an emergent one. The sunset relief fires its rising tide, then
+    // its last evacuation, in order, on their appointed years.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.dead_air_years = 0;
+    data.config.campaign_skeleton.anniversary_years = 0;
+
+    let charter = data.contracts.get("the_sunset_relief").unwrap().clone();
+    assert_eq!(charter.scheduled_beats.len(), 2, "a two-act scripted arc");
+    let acts: Vec<u32> = charter.scheduled_beats.iter().map(|b| b.at_year).collect();
+    assert!(acts[0] < acts[1], "the acts are ordered");
+    for b in &charter.scheduled_beats {
+        assert!(
+            data.events.get(&b.template_id).unwrap().scheduled_only,
+            "each act is a scheduled-only beat"
+        );
+    }
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    sim.contract = Some(start_contract(&charter, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    let resolve_pending = |sim: &mut SimState, data: &GameData| {
+        if let Some(p) = sim.pending_event.clone() {
+            let t = data.events.get(&p.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(sim, data, &t, 0);
+        }
+    };
+    // Fly past the second act's year; both beats must have fired, in order.
+    let mut fired_at: Vec<u32> = Vec::new();
+    let mut last = 0u32;
+    while sim
+        .contract
+        .as_ref()
+        .is_some_and(|c| (c.months_elapsed / 12) <= acts[1] + 2)
+    {
+        let before = sim.contract.as_ref().map_or(0, |c| c.scheduled_beats_fired);
+        advance_year(&mut sim, &data);
+        if let Some(c) = sim.contract.as_ref() {
+            if c.scheduled_beats_fired > before {
+                fired_at.push(c.months_elapsed / 12);
+                last = c.scheduled_beats_fired;
+            }
+        }
+        resolve_pending(&mut sim, &data);
+        if sim.contract.is_none() {
+            break;
+        }
+    }
+    assert_eq!(last, 2, "both acts of the scripted arc fired");
+    assert!(
+        fired_at.len() == 2 && fired_at[0] < fired_at[1],
+        "the tide rose before the last evacuation: {fired_at:?}"
+    );
+}
+
+#[test]
 fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     // Content-depth charters round 9: a mission built around a reckoning on a
     // known clock. The sunward dive schedules a stellar beat at a fixed voyage
