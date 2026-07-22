@@ -7213,5 +7213,140 @@
     "log": "The council let the center dissolve and gave the decks their own rule, and the ship became a loose confederation of corridors that shared a hull and a heading and less and less else. People were happier close to home and stranger to one another, and the common archive thinned as each deck kept only its own."
    }
   ]
+ },
+ {
+  "id": "the_tempting_world",
+  "category": "mission_milestone",
+  "title": "The Tempting World",
+  "description": "A world resolves below, lush past the survey's promise — forests to the poles, seas dense with protein, a growing season the hungry ship could gorge on. And that is exactly the danger: a living biosphere is a living biosphere, and nothing that has fed on it has ever come aboard a ship clean.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 4500,
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "land_and_harvest",
+    "label": "Land and harvest",
+    "description": "Fill the holds from a living world. Take the risk that something living comes up with the harvest.",
+    "resource_delta": {
+     "food": 3500
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.05
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The ship gorged on a green world and came away with its holds full and a stowaway in the harvest — a mold, a spore, a something that got into the grow-decks and the wards both before anyone named it. The larder was full for a decade. The ship spent that decade learning to live with what it had carried up the gravity well."
+   },
+   {
+    "id": "sterile_resupply",
+    "label": "Skim it sterile from orbit",
+    "description": "No landing. Scoop the upper seas and the pollen-thick air through the sterilizers, take the smaller haul, and keep the ship clean.",
+    "resource_delta": {
+     "food": 1500
+    },
+    "population_delta": {
+     "stability": 0.02
+    },
+    "log": "The ship kept its distance and skimmed what it could through the sterilizers — a thinner haul than a landing would have given, and every gram of it dead and safe. The crews watched the green world turn below and did not set foot on it, and the ship sailed on hungry and clean."
+   }
+  ]
+ },
+ {
+  "id": "the_provisioners_bargain",
+  "category": "mission_milestone",
+  "title": "The Provisioner's Bargain",
+  "description": "A station hails — an old automated depot, or something crewed and cagey, it is hard to say across the light-seconds — and it has fuel to sell a ship running on fumes. The price is negotiable. That is the problem: the ones who name a negotiable price for what you desperately need rarely mean coin.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "fuel_below": 0.3,
+  "outcomes": [
+   {
+    "id": "pay_in_credits",
+    "label": "Pay in hard credit",
+    "description": "Empty the treasury for the fuel and owe nothing after. Expensive, clean, done.",
+    "resource_delta": {
+     "credits": -650
+    },
+    "ship_delta": {
+     "fuel": 0.3
+    },
+    "log": "The ship paid the depot's steep price in hard credit and pumped its tanks full and owed the strangers nothing but a wary log entry. The treasury felt the bite for a generation. It was the cheapest thing the ship bought that decade, all told."
+   },
+   {
+    "id": "owe_them_a_favor",
+    "label": "Owe them a favor",
+    "description": "Take the fuel on credit — their kind of credit. Keep the treasury and carry the debt, and whatever carrying it will mean.",
+    "ship_delta": {
+     "fuel": 0.3
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "long_term_consequences": [
+     "owed_a_favor"
+    ],
+    "log": "The ship took the fuel on the strangers' terms and sailed away full-tanked and indebted to a name it had not been given, an obligation logged against a day and a price to be named later. The council told itself it had bought time. It had, and borrowed against something worse to do it."
+   }
+  ]
+ },
+ {
+  "id": "the_rationed_water",
+  "category": "generational_challenge",
+  "title": "The Rationed Water",
+  "description": "The water reclaimers are fouling faster than they can be scoured, and the ship has quietly moved to water rationing — a thing the founders swore would never happen on a closed-loop hull. It is not thirst yet. It is the arithmetic that leads to thirst, and the engineers want a decision before it stops being arithmetic.",
+  "requires_decision": true,
+  "family": "survival",
+  "condition_below": [
+   {
+    "id": "life_support_habitat",
+    "below": 0.5
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "deep_clean_the_reclaimers",
+    "label": "Strip and deep-clean the reclaimers",
+    "description": "Take the water plant apart to the membranes and scour it back to spec. Power, parts, and a thirsty month while it is offline.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "ship_delta": {
+     "spare_parts": -10
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.09
+     }
+    ],
+    "log": "The engineers stripped the water plant to its membranes and scoured it clean over a dry, irritable month, and the loop ran sweet again on the far side of it. The founders' promise held, barely, kept by a generation that had to be reminded it was a promise."
+   },
+   {
+    "id": "ration_the_water",
+    "label": "Hold the ration, nurse it along",
+    "description": "Don't take the plant offline. Keep the ration, run the fouled reclaimers gently, and lose the margin — and the few the thin water hits hardest.",
+    "population_delta": {
+     "count": -15,
+     "morale": -0.05,
+     "stability": 0.02
+    },
+    "log": "The ship held its water ration rather than lose the plant for a month, nursing the fouled reclaimers along and burying the handful the thin, hard water took — the old, the young, the already-ailing. The loop kept running. The founders' promise did not, quite, and everyone drank knowing it."
+   }
+  ]
  }
 ]

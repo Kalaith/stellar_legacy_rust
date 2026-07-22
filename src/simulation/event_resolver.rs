@@ -855,6 +855,51 @@ mod tests {
     }
 
     #[test]
+    fn the_tempting_world_trades_food_for_a_biocontamination_risk() {
+        // Content-depth provisioning round 6: a garden-stop archetype the set
+        // lacked — resupply from a living world, but the harvest can bring
+        // something aboard. Gated on a real food shortage; the "land" choice
+        // gains food yet dents BOTH agriculture and the medical bay (the
+        // contaminant), where the sterile skim is safe but leaner.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "wanderers", 45, &picks);
+        let event = data.events.get("the_tempting_world").unwrap();
+        let famine = event.food_below.unwrap();
+        // Put the ship on a phase it accepts, and hungry enough to be tempted.
+        let template = data.contracts.get("seedfall").unwrap();
+        let mut active = crate::simulation::contract::start_contract(template, &sim);
+        active.phase = crate::data::contracts::ContractPhase::Travel;
+        sim.contract = Some(active);
+
+        sim.resources.food = famine + 2000;
+        assert!(!passes_gate(&sim, event), "a full larder is not tempted");
+        sim.resources.food = famine - 1;
+        assert!(
+            passes_gate(&sim, event),
+            "a hungry ship meets the tempting world"
+        );
+
+        let land = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "land_and_harvest")
+            .unwrap();
+        let (food0, agri0, med0) = (
+            sim.resources.food,
+            sim.subsystems["agriculture"].condition,
+            sim.subsystems["medical_bay"].condition,
+        );
+        apply_outcome(&mut sim, &data, event, land);
+        assert!(sim.resources.food > food0, "the harvest fills the holds");
+        assert!(
+            sim.subsystems["agriculture"].condition < agri0
+                && sim.subsystems["medical_bay"].condition < med0,
+            "the contaminant rides up into both the grow-decks and the wards"
+        );
+    }
+
+    #[test]
     fn the_deep_stores_reward_foresight_only_when_a_famine_comes() {
         // Content-depth provisioning round 5: the insurance chain, the positive
         // mirror of the shortcut chains. The payoff (the_vaults_answer) needs
