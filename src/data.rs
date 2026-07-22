@@ -237,6 +237,14 @@ pub struct VoyageDrift {
     /// Kept gentle so identity still moves in the same direction whoever leads.
     #[serde(default)]
     pub dominant_ideology_scale: f32,
+    /// How much a well-kept culture archive resists the people forgetting the
+    /// founders (content-depth subsystems round 10): the *cultural* drift terms
+    /// (cultural_drift, legacy_loyalty fade) scale by
+    /// `1 - archive_drift_resistance * education_culture_knowledge`, so a ship
+    /// that keeps its founding memory vivid drifts culturally slower — but its
+    /// bodies still adapt to the ship regardless. 0 = the archive doesn't matter.
+    #[serde(default)]
+    pub archive_drift_resistance: f32,
 }
 
 /// Field-vs-port repair tunables (PLAN M4.3). Underway, `field_repair` patches

@@ -138,6 +138,55 @@ fn the_dominant_faction_ideology_bends_how_fast_the_people_drift() {
 }
 
 #[test]
+fn a_well_kept_culture_archive_slows_the_cultural_drift_but_not_adaptation() {
+    // Content-depth subsystems round 10: the education/culture archive is the
+    // ship's memory of the founders. A vivid archive (high knowledge) resists the
+    // cultural drift and the loyalty fade — but the bodies still adapt to the ship
+    // whether the archive holds or not.
+    let data = GameData::load().unwrap();
+    let make = |archive: f32| {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            2,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .knowledge = archive;
+        sim
+    };
+    let mut remembered = make(1.0); // the founding kept vivid
+    let mut forgotten = make(0.0); // the archive lost
+    let d0 = remembered.population.cultural_drift;
+    let a0 = remembered.population.adaptation;
+    assert_eq!(d0, forgotten.population.cultural_drift, "identical start");
+
+    for _ in 0..50 {
+        apply_voyage_drift(&mut remembered, &data);
+        apply_voyage_drift(&mut forgotten, &data);
+    }
+    assert!(
+        remembered.population.cultural_drift < forgotten.population.cultural_drift,
+        "a vivid archive drifts culturally slower than a lost one"
+    );
+    assert!(
+        remembered.population.cultural_drift > d0,
+        "even a kept archive only slows the drift, never stops it"
+    );
+    // Adaptation is physiological and untouched by the archive: both adapt alike.
+    assert!(
+        (remembered.population.adaptation - forgotten.population.adaptation).abs() < 1e-6,
+        "the archive does not slow the body's adaptation to the ship"
+    );
+    assert!(
+        remembered.population.adaptation > a0,
+        "adaptation still rises"
+    );
+}
+
+#[test]
 fn voyage_drift_scales_by_legacy() {
     let data = GameData::load().unwrap();
     let mut adaptors = SimState::new_campaign(

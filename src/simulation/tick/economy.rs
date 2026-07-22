@@ -241,11 +241,22 @@ pub(super) fn apply_voyage_drift(sim: &mut SimState, data: &GameData) {
         .dominant_faction_id()
         .and_then(|id| data.factions.get(id))
         .map_or(0.0, |f| f.ideology);
-    let mult = legacy_mult * (1.0 + vd.dominant_ideology_scale * ideology).max(0.0);
+    let identity_mult = legacy_mult * (1.0 + vd.dominant_ideology_scale * ideology).max(0.0);
+    // A well-kept culture archive resists the people forgetting the founders
+    // (content-depth subsystems round 10): the education/culture module's
+    // *knowledge* — how much of the founding is still remembered — slows the
+    // cultural drift and the loyalty fade, but not the body's physiological
+    // adaptation to the ship, which happens whether or not the archive holds.
+    let archive_knowledge = sim
+        .subsystems
+        .get("education_culture")
+        .map_or(0.0, |s| s.knowledge);
+    let culture_mult =
+        identity_mult * (1.0 - vd.archive_drift_resistance * archive_knowledge).max(0.0);
     sim.population.apply(&PopulationDelta {
-        adaptation: vd.adaptation_per_year * mult,
-        cultural_drift: vd.cultural_drift_per_year * mult,
-        legacy_loyalty: vd.legacy_loyalty_per_year * mult,
+        adaptation: vd.adaptation_per_year * identity_mult,
+        cultural_drift: vd.cultural_drift_per_year * culture_mult,
+        legacy_loyalty: vd.legacy_loyalty_per_year * culture_mult,
         morale: vd.morale_strain_per_year,
         unity: vd.unity_strain_per_year,
         ..Default::default()

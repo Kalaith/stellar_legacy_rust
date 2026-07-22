@@ -366,7 +366,8 @@
       "adaptors": 1.5,
       "wanderers": 1.0
     },
-    "dominant_ideology_scale": 0.35
+    "dominant_ideology_scale": 0.35,
+    "archive_drift_resistance": 0.3
   },
   "repair": {
     "field_ceiling": 0.75,
