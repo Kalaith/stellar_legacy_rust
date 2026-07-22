@@ -568,6 +568,17 @@ pub struct CampaignSkeletonConfig {
     /// The family a recovery/mending beat draws from.
     #[serde(default)]
     pub recovery_beat_family: String,
+    /// Loyalty-collapse thresholds (content-depth round 14): the last identity stat
+    /// without a beat. As the people's `legacy_loyalty` falls to or below each
+    /// threshold (authored high→low), a beat is forced — not the *cultural* drift the
+    /// drift beats mark (becoming someone new) but the *political* one: the founders'
+    /// covenant lapsing, a generation that no longer treats the founding charter as
+    /// binding. Empty = no loyalty beats.
+    #[serde(default)]
+    pub loyalty_beats: Vec<f32>,
+    /// The family a loyalty-collapse beat draws from.
+    #[serde(default)]
+    pub loyalty_beat_family: String,
     /// Flourishing thresholds (content-depth round 8): the *positive* pole of the
     /// crisis beat. As the people's `morale` climbs to or past each threshold
     /// (authored low→high) a beat is forced — a thriving ship generates its own
@@ -1555,6 +1566,23 @@ mod tests {
                 families.contains(&sk.recovery_beat_family),
                 "campaign_skeleton recovery_beat_family '{}' has no events",
                 sk.recovery_beat_family
+            );
+        }
+        // Content-depth round 14: loyalty-collapse beats are the DESCENDING mirror
+        // on legacy_loyalty — strictly descending, in range, family with events.
+        if !sk.loyalty_beats.is_empty() {
+            assert!(
+                families.contains(&sk.loyalty_beat_family),
+                "campaign_skeleton loyalty_beat_family '{}' has no events",
+                sk.loyalty_beat_family
+            );
+            assert!(
+                sk.loyalty_beats.windows(2).all(|w| w[0] > w[1]),
+                "campaign_skeleton loyalty_beats must be strictly descending"
+            );
+            assert!(
+                sk.loyalty_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton loyalty_beats must be within (0, 1]"
             );
         }
         // Content-depth round 8: flourish beats are the ASCENDING positive pole —

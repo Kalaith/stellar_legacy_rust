@@ -294,6 +294,13 @@ pub struct EventTemplate {
     /// whether forced by a recovery beat or rolled. 0.0 = ungated.
     #[serde(default)]
     pub min_unity: f32,
+    /// Founder-authority gate (content-depth campaign-skeleton round 14): the event
+    /// only enters the pool while the people's `legacy_loyalty` has fallen to or
+    /// below this — the honest gate for covenant-lapse content, so "the founders no
+    /// longer bind us" cannot surface on a still-devoted ship, whether forced by a
+    /// loyalty-collapse beat or rolled. 0.0 = ungated.
+    #[serde(default)]
+    pub max_legacy_loyalty: f32,
     /// Mission-progress gate (content-depth campaign-skeleton round 9): the event
     /// only enters the pool while an active charter's objective is at or past this
     /// fraction — the honest gate for milestone content, so "the work is half

@@ -1904,5 +1904,76 @@
     "log": "The council banked the forged unity as wisdom rather than spending it as daring — the ship keeping, as permanent ballast, the sober memory of how near it had come and what had saved it. It was the steadier choice and the less glorious one, a people that had been to the brink deciding that the chief use of the return was never to go there again."
    }
   ]
+ },
+ {
+  "id": "the_lapsed_covenant",
+  "category": "legacy_moment",
+  "title": "The Lapsed Covenant",
+  "description": "It is not that the ship has forgotten the founders — their names are still taught, their images still hang in the council hall. It is that a generation has quietly stopped obeying them. The founding charter, once read as law, is invoked now the way one invokes an old and respected relative's opinion: heard, weighed, and set aside when it does not suit. No one voted to unbind the covenant. It simply lapsed, the way authority does when enough people stop pretending to feel it, and now the council must decide whether to admit as much aloud.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_legacy_loyalty": 0.35,
+  "outcomes": [
+   {
+    "id": "formally_release_the_charter",
+    "label": "Say it plainly: the charter is ours to amend",
+    "description": "Stop pretending. Declare openly what has been true in practice for a generation — that the founding charter is a foundation and not a cage, that the living govern themselves and consult the founders rather than obey them. Better an honest self-rule than a reverence everyone privately ignores.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "stability": 0.05,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The council said aloud what the decks had long since decided in silence: that the founding charter was theirs to amend, a foundation and not a cage, and that the living would govern themselves and consult the dead rather than kneel to them. It was an honest end to a reverence already hollow, and it steadied the ship's governance even as it cut the last formal cord to the founders — a people finally ruling in its own name."
+   },
+   {
+    "id": "revive_the_founding_authority",
+    "label": "Renew the covenant before it dies",
+    "description": "A charter unbound is a ship unmoored. Before the founding authority lapses past recovery, renew it deliberately — re-swear the covenant, teach again why the founders bound their heirs as they did, and choose to be bound because the binding has kept the ship whole across the centuries the founders foresaw and the living forget.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "unity": 0.04,
+     "stability": 0.03,
+     "cultural_drift": -0.02
+    },
+    "log": "The council chose to renew the fading covenant rather than let it lapse — re-swearing the founders' charter deliberately, teaching a doubting generation why the dead had bound their heirs, and electing to be bound because the binding had carried the ship this far. It was a conservative's victory and a fragile one, authority propped up by will where it had once stood on its own, but the founders' hand was back on the tiller for another generation at least."
+   }
+  ]
+ },
+ {
+  "id": "the_advisory_founders",
+  "category": "legacy_moment",
+  "title": "The Advisory Founders",
+  "description": "A dispute reaches the council, and someone does the thing that would once have ended the argument: they read the relevant founding decree aloud. And the room simply... continues. The decree is noted, thanked, and worked around, because the generation deciding this has never once felt the founders as a living authority — only as history, wise perhaps, but no more binding than any old and clever text. The founders have become advisory, and the ship must decide how to feel about that.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_legacy_loyalty": 0.35,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "embrace_the_living_mandate",
+    "label": "Rule by the living's judgment",
+    "description": "The founders were brilliant and they are dead, and they did not know this world, this crew, this century — the living do. Let the founding decrees advise and let the present decide, trusting the generation that actually has to live with a choice over the one that only imagined it.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "morale": 0.03,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The council took up the mandate of the living, letting the founders advise and the present decide, on the plain conviction that the generation which must live with a choice knows more than the one that only foresaw it. It was a confident, forward-facing self-government, and it moved the ship another degree from the founders toward whoever it was now becoming, trusting its own judgment as the founders had trusted theirs."
+   },
+   {
+    "id": "fear_the_unmoored_ship",
+    "label": "Fear a ship that answers to no one",
+    "description": "A crew that heeds no authority above its own passing mood is one bad generation from disaster — the founders bound their heirs precisely because they knew a voyage this long would tempt every generation to remake the rules to suit itself. Restore the decrees' weight, not from reverence but from prudence: some hand must be on the tiller that the living cannot simply vote away.",
+    "population_delta": {
+     "stability": 0.06,
+     "legacy_loyalty": 0.05,
+     "unity": 0.02,
+     "morale": -0.02
+    },
+    "log": "The council restored the founding decrees' binding weight — not from reverence, which had long since thinned, but from a cold prudence: that a crew answering only to its own mood was a bad generation away from ruin, and that the founders had bound their heirs precisely because they foresaw the temptation the living felt. It was authority chosen as ballast rather than felt as faith, a hand kept on the tiller that no single generation could vote away."
+   }
+  ]
  }
 ]

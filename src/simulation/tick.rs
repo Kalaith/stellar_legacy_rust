@@ -75,6 +75,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
             && !fire_crisis_beat(sim, data, &mut report)
+            && !fire_loyalty_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
@@ -262,6 +263,27 @@ fn fire_crisis_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport
         contract.crisis_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.crisis_beat_family, report);
+    true
+}
+
+/// Fire a loyalty-collapse beat (content-depth round 14): the last identity stat
+/// to get a beat. As `legacy_loyalty` falls to or below each authored threshold
+/// (high→low), force a beat — not the cultural drift the drift beats mark but the
+/// political one, the founders' covenant lapsing. Fires at most one threshold per
+/// month; returns whether it replaced the reactive roll.
+fn fire_loyalty_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.loyalty_beats_fired as usize) < cfg.loyalty_beats.len()
+            && sim.population.legacy_loyalty <= cfg.loyalty_beats[c.loyalty_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.loyalty_beats_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.loyalty_beat_family, report);
     true
 }
 

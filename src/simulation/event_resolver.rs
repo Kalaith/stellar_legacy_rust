@@ -269,6 +269,13 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     if sim.lean_food_years < template.min_lean_food_years {
         return false;
     }
+    // Founder-authority gate (content-depth round 14): covenant-lapse content stays
+    // out of the pool while the ship still holds the founders' charter binding.
+    if template.max_legacy_loyalty > 0.0
+        && sim.population.legacy_loyalty > template.max_legacy_loyalty
+    {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -2111,6 +2118,30 @@ mod tests {
         assert!(
             passes_gate(&sim, event),
             "wealth it cannot eat and a larder run dry, at once"
+        );
+    }
+
+    #[test]
+    fn a_founder_authority_gate_waits_for_a_lapsed_covenant() {
+        // Content-depth campaign-skeleton round 14: the honest gate for covenant-lapse
+        // content. `the_lapsed_covenant` stays out of the pool on a still-devoted
+        // ship and surfaces only once loyalty to the founders has fallen far enough.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 60, &picks);
+        let event = data.events.get("the_lapsed_covenant").unwrap();
+        let ceiling = event.max_legacy_loyalty;
+        assert!(ceiling > 0.0, "the covenant lapse gates on fallen loyalty");
+
+        sim.population.legacy_loyalty = ceiling + 0.1;
+        assert!(
+            !passes_gate(&sim, event),
+            "a still-devoted ship holds the founders' charter binding"
+        );
+        sim.population.legacy_loyalty = ceiling;
+        assert!(
+            passes_gate(&sim, event),
+            "a lapsed covenant surfaces the reckoning"
         );
     }
 

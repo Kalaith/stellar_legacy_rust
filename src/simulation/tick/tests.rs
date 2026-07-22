@@ -467,6 +467,7 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
@@ -894,6 +895,51 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn a_loyalty_beat_fires_as_the_founders_covenant_lapses() {
+    // Content-depth campaign-skeleton round 14: the last identity stat to get a
+    // beat. With reactive rolls and the other threshold beats off, the only thing
+    // that can fire is the loyalty-collapse beat — and it must, once legacy_loyalty
+    // falls past the first threshold, while a still-devoted ship stays silent.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    let first = data.config.campaign_skeleton.loyalty_beats[0];
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Still devoted to the founders: no covenant to mark as lapsed.
+    sim.population.legacy_loyalty = first + 0.1;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().loyalty_beats_fired,
+        0,
+        "a devoted ship has no lapse to mark"
+    );
+
+    // Loyalty collapses past the first threshold: the beat fires.
+    sim.population.legacy_loyalty = first - 0.02;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().loyalty_beats_fired,
+        1,
+        "the founders' covenant lapsing past the threshold forces one beat"
+    );
+}
+
+#[test]
 fn a_recovery_beat_marks_a_ship_pulling_back_from_the_brink() {
     // Content-depth campaign-skeleton round 13: the crisis beat's hopeful mirror.
     // A ship that never fractured has nothing to recover; one that fell into a
@@ -979,6 +1025,7 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
@@ -1057,6 +1104,7 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
@@ -1465,6 +1513,7 @@ fn a_depopulation_beat_fires_as_the_crew_thins() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     let first = data.config.campaign_skeleton.depopulation_beats[0];
