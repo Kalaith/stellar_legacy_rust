@@ -317,6 +317,37 @@ impl SimState {
         ));
     }
 
+    /// Yearly (content-depth subsystems round 8): a people whose craft is bound
+    /// to a subsystem sours a little each year it is left below the neglect
+    /// threshold — the makers cannot abide a rotting engine bay, the gardeners a
+    /// dying farm, the Keepers a crumbling archive. Deterministic, no RNG. This
+    /// feeds the round-8 approval withdrawal, so neglecting a people's module is
+    /// one more way — the most self-inflicted — to lose them.
+    pub fn apply_subsystem_neglect_sentiment(&mut self, data: &GameData) {
+        let cfg = data.config.factions;
+        if cfg.neglect_approval_penalty <= 0.0 {
+            return;
+        }
+        for fstate in &mut self.factions {
+            if !fstate.is_aboard() {
+                continue;
+            }
+            let Some(def) = data.factions.get(&fstate.faction_id) else {
+                continue;
+            };
+            if def.tended_subsystem.is_empty() {
+                continue;
+            }
+            let neglected = self
+                .subsystems
+                .get(&def.tended_subsystem)
+                .is_some_and(|s| s.condition < cfg.neglect_condition_threshold);
+            if neglected {
+                fstate.adjust_approval(-cfg.neglect_approval_penalty);
+            }
+        }
+    }
+
     /// Shared removal: mark the faction lost, drop its members from the head
     /// count, and log the parting in the flavor of `kind`.
     fn remove_faction(&mut self, idx: usize, kind: FactionLossKind, data: &GameData) {
@@ -479,6 +510,69 @@ mod tests {
         let picks = founding_faction_ids(&data);
         let sim = SimState::new_campaign(&data, "preservers", seed, &picks);
         (data, sim, picks)
+    }
+
+    #[test]
+    fn a_neglected_module_sours_the_people_who_tend_it() {
+        // Content-depth subsystems round 8: the people whose craft is a subsystem
+        // lose approval each year it sits below the neglect threshold, while a
+        // sound module leaves them content — the coupling that lets subsystem
+        // neglect feed the round-8 faction withdrawal.
+        let (data, mut sim, _picks) = armed(11);
+        // The Steel Covenant tend the engineering bay; ensure they are aboard.
+        if sim
+            .factions
+            .iter()
+            .all(|f| f.faction_id != "steel_covenant")
+        {
+            sim.factions.push(fs("steel_covenant", 300));
+        }
+        let cov_approval = |sim: &SimState| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == "steel_covenant")
+                .unwrap()
+                .approval
+        };
+
+        // A sound engineering bay: the makers stay content year over year.
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.9;
+        let before = cov_approval(&sim);
+        sim.apply_subsystem_neglect_sentiment(&data);
+        assert_eq!(
+            cov_approval(&sim),
+            before,
+            "a well-kept module breeds no grievance"
+        );
+
+        // Let the bay rot below the threshold: their approval erodes each year,
+        // and only theirs — a faction whose module is fine is untouched.
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.2;
+        let gardener_before = sim
+            .factions
+            .iter()
+            .find(|f| f.faction_id == "verdant_kin")
+            .map(|f| f.approval);
+        sim.apply_subsystem_neglect_sentiment(&data);
+        assert!(
+            cov_approval(&sim) < before,
+            "the makers sour watching their bay rot"
+        );
+        if let Some(g0) = gardener_before {
+            let g1 = sim
+                .factions
+                .iter()
+                .find(|f| f.faction_id == "verdant_kin")
+                .unwrap()
+                .approval;
+            // The gardeners' farm was untouched, so their mood is (unless their
+            // own module also happens to be low) unchanged by the bay's rot.
+            if sim.subsystems["agriculture"].condition
+                >= data.config.factions.neglect_condition_threshold
+            {
+                assert_eq!(g1, g0, "a people whose module is sound is not soured");
+            }
+        }
     }
 
     #[test]

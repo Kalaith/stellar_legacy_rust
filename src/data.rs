@@ -906,6 +906,14 @@ mod tests {
                     delta.id
                 );
             }
+            // Content-depth subsystems round 8: the module a people answers for
+            // (its neglect erodes their approval) must be a real subsystem.
+            assert!(
+                faction.tended_subsystem.is_empty()
+                    || data.subsystems.get(&faction.tended_subsystem).is_some(),
+                "faction '{id}' tends unknown subsystem '{}'",
+                faction.tended_subsystem
+            );
         }
 
         // W5: six subsystems load; each non-empty buffered family is one of the

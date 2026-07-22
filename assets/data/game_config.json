@@ -42,7 +42,9 @@
     "assimilation_share_threshold": 0.05,
     "assimilation_drift_threshold": 0.7,
     "recruit_group_cost_credits": 2500,
-    "recruit_group_size": 300
+    "recruit_group_size": 300,
+    "neglect_condition_threshold": 0.4,
+    "neglect_approval_penalty": 0.02
   },
   "provisioning": {
     "fuel_burn_per_travel_month": 0.0035,

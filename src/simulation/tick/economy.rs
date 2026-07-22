@@ -108,6 +108,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // The rest of the ship's subsystems wear with the years too (W5).
     subsystems::decay_subsystems(sim, data, wear);
 
+    // …and the people whose craft is a module notice when it is left to rot
+    // (content-depth subsystems round 8): sustained neglect of a faction's
+    // tended subsystem erodes its approval, feeding the round-8 withdrawal.
+    sim.apply_subsystem_neglect_sentiment(data);
+
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,
     // and the strain wears at morale and unity. Deterministic; the founders'

@@ -36,6 +36,14 @@ pub struct FactionDef {
     /// The dowry this people brings when recruited (content-depth round 7).
     #[serde(default)]
     pub recruit_boon: RecruitBoon,
+    /// The subsystem this people's craft and identity are bound to (content-depth
+    /// subsystems round 8): the makers to the engineering bay, the gardeners to
+    /// agriculture, the Keepers to the culture archive. When their module is left
+    /// to rot, they take it personally — its condition erodes their approval
+    /// yearly (`SimState::apply_subsystem_neglect_sentiment`). Empty = no module
+    /// this people answers for.
+    #[serde(default)]
+    pub tended_subsystem: String,
 }
 
 /// How a faction left the ship when an event drives it off (W7). WipedOut and
@@ -59,4 +67,13 @@ pub struct FactionConfig {
     pub assimilation_drift_threshold: f32,
     pub recruit_group_cost_credits: i64,
     pub recruit_group_size: u32,
+    /// Below this condition, a people watching its tended subsystem rot loses
+    /// approval each year (content-depth subsystems round 8). 0 disables it.
+    #[serde(default)]
+    pub neglect_condition_threshold: f32,
+    /// Approval a tending people sheds per year while its module sits below the
+    /// neglect threshold. Gentle by design — sustained neglect, not one bad year,
+    /// is what drives a people toward the door.
+    #[serde(default)]
+    pub neglect_approval_penalty: f32,
 }
