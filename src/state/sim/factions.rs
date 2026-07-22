@@ -410,6 +410,26 @@ impl SimState {
         }
     }
 
+    /// The member-weighted mean approval of the aboard peoples (content-depth
+    /// factions round 15): the ship's overall political mood, so a large content
+    /// majority weighs more than a small soured minority. `0.5` (neutral) when no
+    /// people is aboard. Drives the faction→unity cohesion coupling.
+    pub fn aboard_approval_mean(&self) -> f32 {
+        let mut total_members = 0u64;
+        let mut weighted = 0.0f32;
+        for f in &self.factions {
+            if f.is_aboard() && f.members > 0 {
+                total_members += f.members as u64;
+                weighted += f.approval * f.members as f32;
+            }
+        }
+        if total_members == 0 {
+            0.5
+        } else {
+            weighted / total_members as f32
+        }
+    }
+
     /// The approval of the aboard people that tends `subsystem_id` (content-depth
     /// factions round 12), or `None` if no aboard faction tends it. The upkeep
     /// half of the tended-subsystem coupling: `apply_subsystem_neglect_sentiment`
@@ -747,6 +767,57 @@ mod tests {
             sim.dominant_faction_id(),
             Some("hearth_union"),
             "a fecund launch-minority has become the majority"
+        );
+    }
+
+    #[test]
+    fn a_content_polity_steadies_the_ship_and_a_resentful_one_frays_it() {
+        // Content-depth factions round 15: the faction system's first coupling to
+        // the ship's own cohesion. Two otherwise-identical ships, one carrying a
+        // content people and one a resentful one, diverge in unity over the years —
+        // a content polity holds the ship together where a resentful one wears at it.
+        use crate::simulation::tick::advance_year;
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        // Clear the threshold beats so a fraying ship doesn't trip one mid-test.
+        data.config.campaign_skeleton.crisis_beats.clear();
+        data.config.campaign_skeleton.loyalty_beats.clear();
+        data.config.campaign_skeleton.drift_beats.clear();
+        data.config.campaign_skeleton.adaptation_beats.clear();
+        assert!(
+            data.config.factions.approval_unity_coupling > 0.0,
+            "this test needs the faction-cohesion coupling enabled"
+        );
+
+        let unity_after = |approval: f32| -> f32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                79,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.resources.food = 1_000_000;
+            sim.factions = vec![FactionState {
+                faction_id: "steel_covenant".to_string(),
+                members: sim.population.count,
+                status: FactionStatus::Aboard,
+                approval,
+                mood_band: 0,
+            }];
+            sim.population.unity = 0.6;
+            for _ in 0..20 {
+                advance_year(&mut sim, &data);
+            }
+            sim.population.unity
+        };
+        let content = unity_after(0.95);
+        let resentful = unity_after(0.05);
+        assert!(
+            content > resentful,
+            "a content polity holds the ship together where a resentful one frays it \
+             (content {content} vs resentful {resentful})"
         );
     }
 

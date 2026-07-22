@@ -109,4 +109,11 @@ pub struct FactionConfig {
     /// everyone at once. 0 = rivalries do not spill over.
     #[serde(default)]
     pub rival_approval_spillover: f32,
+    /// How much the aboard peoples' mood moves the ship's `unity` each year
+    /// (content-depth factions round 15): the faction system's first coupling to the
+    /// ship's own cohesion. Unity drifts by `approval_unity_coupling · (mean_approval
+    /// − 0.5)` — a content polity steadies the ship, a resentful one erodes it toward
+    /// the crisis the beats watch for. 0 = faction mood does not touch cohesion.
+    #[serde(default)]
+    pub approval_unity_coupling: f32,
 }

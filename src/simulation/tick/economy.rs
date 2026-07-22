@@ -110,6 +110,18 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.unity = (sim.population.unity + recovery).min(1.0);
     }
 
+    // A ship holds together as well as its peoples are content (content-depth
+    // factions round 15): the faction system finally touches the ship's own
+    // cohesion. Each year unity drifts by the member-weighted mood of the aboard
+    // peoples — a content polity steadies the ship, a resentful one erodes it —
+    // so mistreating your factions doesn't only risk their departure, it wears at
+    // the unity the crisis and recovery beats turn on. Neutral mood (0.5) is inert.
+    let cohesion = data.config.factions.approval_unity_coupling;
+    if cohesion != 0.0 {
+        let mood = sim.aboard_approval_mean();
+        sim.population.unity = (sim.population.unity + cohesion * (mood - 0.5)).clamp(0.0, 1.0);
+    }
+
     // The habitat is where the people live (content-depth subsystems round 11): a
     // home kept sound lifts the ship's morale year over year, a failing one drags
     // it — the one maintenance-driven counterweight morale has to the voyage strain.
