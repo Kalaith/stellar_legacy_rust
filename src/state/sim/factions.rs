@@ -391,14 +391,19 @@ impl SimState {
     /// head count. Never drifts a people below one soul — that is the schism's and
     /// the assimilation's job, not attrition's. Deterministic, no RNG.
     pub fn apply_faction_demographic_drift(&mut self, data: &GameData) {
+        // How you treat a people bends how it grows (content-depth factions round
+        // 13): approval adds to the base bias, so a beloved people waxes and a
+        // resented one wanes even beyond its nature. Neutral approval (0.5) is inert.
+        let approval_factor = data.config.factions.approval_growth_factor;
         for fstate in &mut self.factions {
             if !fstate.is_aboard() {
                 continue;
             }
-            let bias = data
+            let base = data
                 .factions
                 .get(&fstate.faction_id)
                 .map_or(0.0, |d| d.growth_bias);
+            let bias = base + approval_factor * (fstate.approval - 0.5);
             if bias != 0.0 {
                 let grown = (fstate.members as f32 * (1.0 + bias)).round();
                 fstate.members = grown.max(1.0) as u32;
@@ -699,6 +704,54 @@ mod tests {
             sim.dominant_faction_id(),
             Some("hearth_union"),
             "a fecund launch-minority has become the majority"
+        );
+    }
+
+    #[test]
+    fn how_a_people_is_treated_bends_how_it_grows() {
+        // Content-depth factions round 13: approval bends demographic growth — the
+        // link between the approval meter (r8) and demographic drift (r11). Two
+        // peoples of identical nature (same base bias), one cherished and one
+        // resented, diverge over the generations: the beloved waxes, the resented
+        // wanes, even though nothing about their kind differs.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.approval_growth_factor > 0.0,
+            "this test needs the approval→growth coupling enabled"
+        );
+        // Both tend the same base bias; only their standing with the ship differs.
+        // (Use one faction id so the base growth_bias is identical for both runs.)
+        let grow = |approval: f32| -> u32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                7,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.factions = vec![FactionState {
+                faction_id: "meridian_accord".to_string(),
+                members: 500,
+                status: FactionStatus::Aboard,
+                approval,
+                mood_band: 0,
+            }];
+            for _ in 0..12 {
+                sim.apply_faction_demographic_drift(&data);
+            }
+            sim.factions[0].members
+        };
+        let cherished = grow(0.95);
+        let resented = grow(0.05);
+        assert!(
+            cherished > resented,
+            "a cherished people waxes where a resented one wanes \
+             (cherished {cherished} vs resented {resented})"
+        );
+        // Neutral standing leaves growth to nature alone (the base bias only).
+        let neutral = grow(0.5);
+        assert!(
+            cherished > neutral && neutral > resented,
+            "approval pushes growth both ways around a neutral baseline"
         );
     }
 

@@ -85,4 +85,13 @@ pub struct FactionConfig {
     /// is what drives a people toward the door.
     #[serde(default)]
     pub neglect_approval_penalty: f32,
+    /// How much a people's *approval* bends its per-generation demographic growth
+    /// (content-depth factions round 13): the missing link between the approval
+    /// meter (r8) and demographic drift (r11). Each generation a people's growth
+    /// bias gains `approval_growth_factor · (approval − 0.5)`, so a beloved people
+    /// (approval → 1) waxes toward the majority and a resented one (→ 0) wanes even
+    /// beyond its base bias — how you treat a people decides not just whether it
+    /// leaves but whether it grows or fades. 0 = approval does not touch growth.
+    #[serde(default)]
+    pub approval_growth_factor: f32,
 }
