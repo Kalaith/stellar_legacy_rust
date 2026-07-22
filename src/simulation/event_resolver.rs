@@ -268,6 +268,7 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
         && sim.population.morale >= template.min_morale
+        && sim.population.unity >= template.min_unity
 }
 
 /// Weighted pick among already gate-cleared candidates (sorted by id for
@@ -2003,6 +2004,30 @@ mod tests {
         assert!(
             passes_gate(&sim, event),
             "wealth it cannot eat and a larder run dry, at once"
+        );
+    }
+
+    #[test]
+    fn a_cohesion_gate_waits_for_a_reunited_ship() {
+        // Content-depth campaign-skeleton round 13: the honest gate for recovery
+        // content, the cohesion twin of min_morale. `the_mending` stays out of the
+        // pool on a fracturing ship and surfaces only once unity has climbed back.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 59, &picks);
+        let event = data.events.get("the_mending").unwrap();
+        let floor = event.min_unity;
+        assert!(floor > 0.0, "the mending gates on recovered cohesion");
+
+        sim.population.unity = floor - 0.1;
+        assert!(
+            !passes_gate(&sim, event),
+            "a fracturing ship has no mending to reflect on"
+        );
+        sim.population.unity = floor;
+        assert!(
+            passes_gate(&sim, event),
+            "a reunited ship surfaces the mending"
         );
     }
 

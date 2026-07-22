@@ -75,6 +75,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
             && !fire_crisis_beat(sim, data, &mut report)
+            && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
@@ -261,6 +262,30 @@ fn fire_crisis_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport
         contract.crisis_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.crisis_beat_family, report);
+    true
+}
+
+/// Fire a recovery beat (content-depth round 13): the crisis beat's hopeful mirror.
+/// Once the ship has fractured (a crisis beat fired) and its `unity` climbs back to
+/// or above the recovery threshold, force a beat — the mending, a ship pulling back
+/// from the brink — and reset the crisis counter so a relapse re-arms the collapse
+/// beats. Fires once per crisis episode (the reset clears the "was in crisis" flag).
+fn fire_recovery_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.recovery_beat_family.is_empty() {
+        return false;
+    }
+    let recovered = sim.contract.as_ref().is_some_and(|c| {
+        c.crisis_beats_fired > 0 && sim.population.unity >= cfg.recovery_beat_threshold
+    });
+    if !recovered {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        // The crisis is past; re-arm the collapse beats against a future relapse.
+        contract.crisis_beats_fired = 0;
+    }
+    force_family_beat(sim, data, &cfg.recovery_beat_family, report);
     true
 }
 

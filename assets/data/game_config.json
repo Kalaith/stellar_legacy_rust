@@ -165,6 +165,8 @@
       0.2
     ],
     "crisis_beat_family": "legacy_drift",
+    "recovery_beat_threshold": 0.6,
+    "recovery_beat_family": "legacy_drift",
     "flourish_beats": [
       0.8,
       0.92

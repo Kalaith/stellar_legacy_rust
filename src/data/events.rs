@@ -278,6 +278,13 @@ pub struct EventTemplate {
     /// 0.0 = ungated.
     #[serde(default)]
     pub min_morale: f32,
+    /// Cohesion gate (content-depth campaign-skeleton round 13): the event only
+    /// enters the pool while the people's `unity` is at or above this — the honest
+    /// gate for recovery/reconciliation content (the cohesion twin of `min_morale`),
+    /// so "the ship pulled back together" cannot surface on a fracturing one,
+    /// whether forced by a recovery beat or rolled. 0.0 = ungated.
+    #[serde(default)]
+    pub min_unity: f32,
     /// Mission-progress gate (content-depth campaign-skeleton round 9): the event
     /// only enters the pool while an active charter's objective is at or past this
     /// fraction — the honest gate for milestone content, so "the work is half

@@ -539,6 +539,17 @@ pub struct CampaignSkeletonConfig {
     /// The family a cohesion-collapse crisis beat draws from.
     #[serde(default)]
     pub crisis_beat_family: String,
+    /// Recovery threshold (content-depth round 13): the crisis beat's *hopeful
+    /// mirror*. Once the ship has fractured (a crisis beat has fired) and its
+    /// `unity` then climbs back to or above this, a beat is forced — the mending, a
+    /// ship pulling itself back from the brink — and the crisis counter is reset so
+    /// a relapse re-arms the collapse beats. Set well above the crisis thresholds
+    /// for hysteresis (the band between neither fires). 0 = no recovery beat.
+    #[serde(default)]
+    pub recovery_beat_threshold: f32,
+    /// The family a recovery/mending beat draws from.
+    #[serde(default)]
+    pub recovery_beat_family: String,
     /// Flourishing thresholds (content-depth round 8): the *positive* pole of the
     /// crisis beat. As the people's `morale` climbs to or past each threshold
     /// (authored low→high) a beat is forced — a thriving ship generates its own
@@ -1436,6 +1447,25 @@ mod tests {
             assert!(
                 sk.crisis_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton crisis_beats must be within (0, 1]"
+            );
+            // Content-depth round 13: the recovery threshold must sit clear above
+            // the highest crisis threshold, so a fractured ship must genuinely climb
+            // out (a hysteresis band where neither beat fires) before it mends.
+            if !sk.recovery_beat_family.is_empty() {
+                let worst_crisis = sk.crisis_beats.iter().cloned().fold(0.0_f32, f32::max);
+                assert!(
+                    sk.recovery_beat_threshold > worst_crisis && sk.recovery_beat_threshold <= 1.0,
+                    "recovery_beat_threshold {} must sit above the crisis band {worst_crisis}",
+                    sk.recovery_beat_threshold
+                );
+            }
+        }
+        // Content-depth round 13: the recovery beat's family must have events.
+        if !sk.recovery_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.recovery_beat_family),
+                "campaign_skeleton recovery_beat_family '{}' has no events",
+                sk.recovery_beat_family
             );
         }
         // Content-depth round 8: flourish beats are the ASCENDING positive pole —

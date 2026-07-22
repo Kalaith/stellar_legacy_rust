@@ -824,6 +824,79 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn a_recovery_beat_marks_a_ship_pulling_back_from_the_brink() {
+    // Content-depth campaign-skeleton round 13: the crisis beat's hopeful mirror.
+    // A ship that never fractured has nothing to recover; one that fell into a
+    // unity crisis and then climbs back out forces a recovery beat, which resets
+    // the crisis counter so a relapse re-arms the collapse beats.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.depopulation_beats.clear();
+    let crisis0 = data.config.campaign_skeleton.crisis_beats[0];
+    let recovery = data.config.campaign_skeleton.recovery_beat_threshold;
+    assert!(
+        recovery > 0.0
+            && !data
+                .config
+                .campaign_skeleton
+                .recovery_beat_family
+                .is_empty(),
+        "this test needs the recovery beat enabled"
+    );
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // A united ship that never fractured: recovery has nothing to mark.
+    sim.population.unity = recovery + 0.05;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().crisis_beats_fired,
+        0,
+        "a ship that never came apart has no mending to mark"
+    );
+
+    // Fracture it: the crisis beat fires.
+    sim.contract.as_mut().unwrap().beats.clear();
+    sim.population.unity = crisis0 - 0.02;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().crisis_beats_fired,
+        1,
+        "unity falling past the threshold forces a crisis beat"
+    );
+    if let Some(p) = sim.pending_event.clone() {
+        let t = data.events.get(&p.template_id).cloned().unwrap();
+        crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+    }
+
+    // Climb back out: the recovery beat fires and re-arms the collapse beats
+    // (only the recovery firer resets the crisis counter to zero).
+    sim.contract.as_mut().unwrap().beats.clear();
+    sim.population.unity = recovery + 0.05;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().crisis_beats_fired,
+        0,
+        "climbing back from the brink marks the mending and re-arms the collapse beats"
+    );
+}
+
+#[test]
 fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     // Content-depth charters round 10: the first scripted-narrative charter — a
     // mission architected around a *sequence* of timed beats, an authored arc

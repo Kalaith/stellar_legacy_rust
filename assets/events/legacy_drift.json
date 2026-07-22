@@ -1836,5 +1836,73 @@
     "log": "The council noted the founders' vindication, honored it, and filed it — and went on steering by its own lights, unwilling to let even a proven-wise founding become a hand on the helm from beyond the grave. It was a cooler gratitude, and a mature one, the living crediting the dead without kneeling to them."
    }
   ]
+ },
+ {
+  "id": "the_mending",
+  "category": "legacy_moment",
+  "title": "The Mending",
+  "description": "There was a season not long past when the ship came apart — the councils deadlocked, the decks drawn into camps, the founding charter invoked by every faction against every other until it meant nothing. And then, slowly and without any single reason anyone can name, it healed. The quarrels wore themselves out, the shared work reasserted itself, and a generation that grew up amid the fracture finds itself, to its own surprise, whole. A ship that has just remembered how to be one ship must decide what to make of the memory.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_unity": 0.6,
+  "outcomes": [
+   {
+    "id": "enshrine_the_reconciliation",
+    "label": "Enshrine the reconciliation",
+    "description": "Name the mending, mark it, teach it — a day of it, a rite, a story every child learns — so that the next time the ship starts to come apart, it will remember that it came back together once, and can again. A people that knows it has healed is harder to break.",
+    "population_delta": {
+     "unity": 0.05,
+     "legacy_loyalty": 0.04,
+     "stability": 0.03
+    },
+    "log": "The council made the mending into memory — a rite, a told story, a thing the ship now knows about itself — so that the reconciliation became not merely a season survived but a proof kept: that this crew, whatever it is now, can come apart and find its way back. It was a wise use of a hard-won peace, an inoculation against the next fracture written into the ship's own idea of itself."
+   },
+   {
+    "id": "let_it_pass_unmarked",
+    "label": "Let it pass unmarked, and just be whole",
+    "description": "Do not pick at it. The ship healed; naming the wound too loudly can reopen it, and a people that made itself one again out of plain exhaustion with being two does not necessarily want a monument to the quarrel. Let the peace be ordinary, and let ordinary be enough.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.03,
+     "stability": 0.02
+    },
+    "log": "The council chose not to enshrine the mending but simply to live in it, letting the reconciliation be an ordinary quiet rather than a marked triumph. It left the ship a little less armored against the next fracture and a little more at ease in this peace, a people declining to make a monument of a wound it would rather let close and forget."
+   }
+  ]
+ },
+ {
+  "id": "the_forged_unity",
+  "category": "legacy_moment",
+  "title": "The Forged Unity",
+  "description": "The old hands say a ship is never so united as just after it has nearly torn itself in half. The crew that has climbed back from a true fracture is a different thing from one that never fell — it has *tested* its bonds and found they hold, and there is a hard confidence in it, a we-have-been-through-worse that the untroubled ship can only envy. A council weighs what to do with a cohesion forged rather than inherited.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_unity": 0.6,
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "spend_the_confidence_boldly",
+    "label": "Spend the hard confidence on something bold",
+    "description": "A crew this sure of itself can attempt what a fragile one cannot — a hard course, a great work, a risk the ship would never have dared while it doubted its own seams. Put the forged unity to use before the ease of good years softens it back into the ordinary kind.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "unity": 0.03,
+     "cultural_drift": 0.03,
+     "morale": 0.02
+    },
+    "log": "The council spent the ship's hard-forged confidence on something worthy of it — a bold course a fragile crew would never have risked — trusting bonds that had already survived a fracture to survive an ambition. It moved the ship a further step from the founders' caution and toward a self-assurance the founders never had the chance to earn, the particular boldness of a people that has already been to the brink and back."
+   },
+   {
+    "id": "bank_it_as_wisdom",
+    "label": "Bank it as hard-won wisdom",
+    "description": "Do not spend the confidence chasing greatness; keep it as ballast. A ship that remembers exactly how close it came to breaking, and exactly what pulled it back, holds a steadiness worth more than any bold stroke — the sober wisdom of the once-fractured, kept as a permanent hand on the tiller.",
+    "population_delta": {
+     "stability": 0.06,
+     "legacy_loyalty": 0.03,
+     "unity": 0.02
+    },
+    "log": "The council banked the forged unity as wisdom rather than spending it as daring — the ship keeping, as permanent ballast, the sober memory of how near it had come and what had saved it. It was the steadier choice and the less glorious one, a people that had been to the brink deciding that the chief use of the return was never to go there again."
+   }
+  ]
  }
 ]
