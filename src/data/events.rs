@@ -123,6 +123,12 @@ pub struct EventOutcome {
     /// how an outcome earns or spends a people's goodwill. Aboard factions only.
     #[serde(default)]
     pub faction_approval_deltas: Vec<FactionApprovalDelta>,
+    /// Signed shift to the *smallest* aboard faction's approval (content-depth
+    /// provisioning round 8): the dynamic "who bears the cut" of a shortage triage,
+    /// resolved at apply-time so a general rationing beat need not name a people.
+    /// 0.0 = no shift.
+    #[serde(default)]
+    pub faction_approval_smallest: f32,
     #[serde(default)]
     pub log: String,
 }

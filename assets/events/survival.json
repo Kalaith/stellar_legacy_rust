@@ -1298,5 +1298,39 @@
     "log": "The ship held its water ration rather than lose the plant for a month, nursing the fouled reclaimers along and burying the handful the thin, hard water took — the old, the young, the already-ailing. The loop kept running. The founders' promise did not, quite, and everyone drank knowing it."
    }
   ]
+ },
+ {
+  "id": "the_thin_table",
+  "category": "immediate_crisis",
+  "title": "The Thin Table",
+  "description": "The larder will not cover everyone at full ration through to the next harvest, and the arithmetic is on the table in front of the council: cut every share the same and let the whole ship go hungry together, or protect the decks the voyage cannot run without and let the shortfall fall where it costs the ship least — which is to say, on the smallest and least essential of its peoples.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 3000,
+  "outcomes": [
+   {
+    "id": "share_evenly",
+    "label": "Share the shortfall equally",
+    "description": "Every deck, every people, every officer takes the same cut. It is harder on the whole ship and it feeds no one better — but no one goes to the wall while their neighbour eats, and a ship that starves together stays a ship.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": -0.04,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council cut every ration the same, top to bottom, and the whole ship went a little hungry together through to the harvest. It was the harder arithmetic and the leaner year for it — but no people learned that it was the one the ship would spend first, and that knowledge, unspent, was worth more than the food it cost."
+   },
+   {
+    "id": "cut_the_smallest",
+    "label": "Spare the ship, cut the smallest deck",
+    "description": "The voyage cannot run without its engineers, its farmers, its watch. It can, in a lean year, run without full rations for its smallest and least essential people. Protect the many by cutting the few, and keep the ship working through the shortage.",
+    "population_delta": {
+     "stability": 0.04,
+     "morale": -0.02,
+     "legacy_loyalty": -0.03
+    },
+    "faction_approval_smallest": -0.2,
+    "log": "The council spared the ship by cutting its smallest deck, and the essential work went on unbroken through the thin year while one people learned, precisely, where it stood on this ship's ledger when the food ran short. The ship stayed working. Whether it stayed whole was a question the smallest people would answer later, in their own time and their own way."
+   }
+  ]
  }
 ]

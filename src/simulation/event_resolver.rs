@@ -377,6 +377,12 @@ pub fn apply_outcome(
             state.adjust_approval(delta.delta);
         }
     }
+    // …or let the shortage fall on the smallest deck (content-depth provisioning
+    // round 8): a rationing triage that spares the many by cutting the fewest
+    // sours the people who bore it, resolved dynamically without naming them.
+    if outcome.faction_approval_smallest != 0.0 {
+        sim.adjust_smallest_faction_approval(outcome.faction_approval_smallest);
+    }
     // …and whichever outcome was taken, a riding complication (content-depth
     // round 6) lands its extra toll on top — the event was worse than usual
     // because of the state it arrived in.
@@ -513,6 +519,75 @@ mod tests {
         assert!(
             passes_gate(&sim, payoff),
             "sealing the ward unlocks the reopening decades later"
+        );
+    }
+
+    #[test]
+    fn a_shortage_triage_sours_the_deck_that_bears_the_cut() {
+        // Content-depth provisioning round 8: the "who bears the cut" coupling.
+        // Rationing the shortfall onto the smallest deck sours that people
+        // (feeding the round-8 withdrawal); sharing the cut equally sours no one.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 23, &picks);
+
+        // Identify the smallest aboard people and its launch approval.
+        let smallest_id = sim
+            .factions
+            .iter()
+            .filter(|f| f.is_aboard())
+            .min_by(|a, b| {
+                a.members
+                    .cmp(&b.members)
+                    .then_with(|| a.faction_id.cmp(&b.faction_id))
+            })
+            .unwrap()
+            .faction_id
+            .clone();
+        let approval_of = |sim: &SimState, id: &str| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .unwrap()
+                .approval
+        };
+        let before = approval_of(&sim, &smallest_id);
+
+        let event = data.events.get("the_thin_table").unwrap();
+        // It gates on a genuine shortage.
+        let famine = event.food_below.unwrap();
+        sim.resources.food = famine + 1;
+        assert!(!passes_gate(&sim, event), "a stocked larder is not triaged");
+        sim.resources.food = famine - 1;
+        assert!(
+            passes_gate(&sim, event),
+            "a real shortfall forces the choice"
+        );
+
+        // Sharing the cut equally leaves every people's standing intact.
+        let mut fair = sim.clone();
+        let share = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "share_evenly")
+            .unwrap();
+        apply_outcome(&mut fair, &data, event, share);
+        assert_eq!(
+            approval_of(&fair, &smallest_id),
+            before,
+            "an equal cut sours no one in particular"
+        );
+
+        // Cutting the smallest deck first sours precisely that people.
+        let cut = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "cut_the_smallest")
+            .unwrap();
+        apply_outcome(&mut sim, &data, event, cut);
+        assert!(
+            approval_of(&sim, &smallest_id) < before,
+            "the deck that bore the cut remembers it"
         );
     }
 

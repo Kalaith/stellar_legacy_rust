@@ -348,6 +348,28 @@ impl SimState {
         }
     }
 
+    /// Shift the smallest aboard faction's approval by `delta`, clamped
+    /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
+    /// a shortage triage, resolved dynamically so a general rationing beat need
+    /// not name a people. Ties break on the lexicographically-first id, matching
+    /// `apply_faction_loss`. No-op if no faction is aboard.
+    pub fn adjust_smallest_faction_approval(&mut self, delta: f32) {
+        let aboard = self.aboard_indices();
+        let Some(&idx) = aboard.iter().min_by(|&&a, &&b| {
+            self.factions[a]
+                .members
+                .cmp(&self.factions[b].members)
+                .then_with(|| {
+                    self.factions[a]
+                        .faction_id
+                        .cmp(&self.factions[b].faction_id)
+                })
+        }) else {
+            return;
+        };
+        self.factions[idx].adjust_approval(delta);
+    }
+
     /// Shared removal: mark the faction lost, drop its members from the head
     /// count, and log the parting in the flavor of `kind`.
     fn remove_faction(&mut self, idx: usize, kind: FactionLossKind, data: &GameData) {
