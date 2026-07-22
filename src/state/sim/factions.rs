@@ -367,6 +367,21 @@ impl SimState {
         }
     }
 
+    /// The approval of the aboard people that tends `subsystem_id` (content-depth
+    /// factions round 12), or `None` if no aboard faction tends it. The upkeep
+    /// half of the tended-subsystem coupling: `apply_subsystem_neglect_sentiment`
+    /// runs neglect → sentiment, this feeds sentiment → decay (via
+    /// `decay_subsystems`). Deterministic; the first aboard tender in roster order.
+    pub fn tender_approval(&self, data: &GameData, subsystem_id: &str) -> Option<f32> {
+        self.factions.iter().find_map(|fstate| {
+            if !fstate.is_aboard() {
+                return None;
+            }
+            let def = data.factions.get(&fstate.faction_id)?;
+            (def.tended_subsystem == subsystem_id).then_some(fstate.approval)
+        })
+    }
+
     /// Per-generation (content-depth factions round 11): each aboard people's
     /// numbers wax or wane by its `growth_bias`, so the balance of power shifts
     /// over the centuries — a fecund people grows toward the majority, a people

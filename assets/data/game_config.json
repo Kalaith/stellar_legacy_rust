@@ -93,7 +93,8 @@
     "engineering_decay_swing": 0.4,
     "medical_famine_relief_per_condition": 0.3,
     "security_unity_recovery_per_condition": 0.006,
-    "habitat_morale_swing": 0.01
+    "habitat_morale_swing": 0.01,
+    "tender_approval_decay_scale": 0.3
   },
   "campaign_skeleton": {
     "months_per_window": 240,

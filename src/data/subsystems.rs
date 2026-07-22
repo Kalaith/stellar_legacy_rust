@@ -92,4 +92,14 @@ pub struct SubsystemsConfig {
     /// 0 = the habitat's state does not touch morale.
     #[serde(default)]
     pub habitat_morale_swing: f32,
+    /// How much a module's tending-faction approval modulates its yearly decay
+    /// (content-depth factions round 12): the reverse of the neglect-to-sentiment
+    /// loop. A devoted people keeps its own domain sharp while a resentful one lets
+    /// it slide. The per-year decay multiplier is `1 + scale·(0.5 - approval)`, so a
+    /// devoted tender (approval near 1.0) slows that module's rot, a resentful one
+    /// (near 0.0) speeds it, and a neutral one leaves it be. This closes the spiral
+    /// where neglecting a module sours its tenders, who then let it rot faster
+    /// still. 0 = a faction's mood does not touch upkeep.
+    #[serde(default)]
+    pub tender_approval_decay_scale: f32,
 }

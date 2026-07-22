@@ -272,17 +272,27 @@ pub fn decay_subsystems(sim: &mut SimState, data: &GameData, wear: f32) {
         .map_or(0.5, |s| s.condition);
     let keystone_mult = (1.0 + swing * (0.5 - eng_condition)).max(0.0);
 
+    // Tender-approval coupling (content-depth factions round 12): the aboard people
+    // that tends a module modulates its decay by their mood — devotion keeps it
+    // sharp, resentment lets it slide — closing the neglect → sour → rot spiral.
+    let tender_scale = data.config.subsystems.tender_approval_decay_scale;
+
     for id in GameData::sorted_ids(&data.subsystems) {
         let Some(def) = data.subsystems.get(&id) else {
             continue;
         };
         // Engineering decays at its own rate; the bay is the source of the
-        // coupling, not subject to it.
-        let mult = if id == "engineering_bay" {
+        // keystone coupling, not subject to it.
+        let mut mult = if id == "engineering_bay" {
             1.0
         } else {
             keystone_mult
         };
+        if tender_scale != 0.0 {
+            if let Some(approval) = sim.tender_approval(data, &id) {
+                mult *= (1.0 + tender_scale * (0.5 - approval)).max(0.0);
+            }
+        }
         let decay = def.decay_per_year * mult;
         if let Some(state) = sim.subsystems.get_mut(&id) {
             state.condition = (state.condition - decay * wear).max(0.0);
@@ -494,6 +504,45 @@ mod tests {
             .config
             .subsystems
             .engineering_decay_swing
+    }
+
+    #[test]
+    fn a_devoted_people_keeps_its_domain_sharper_than_a_resentful_one() {
+        // Content-depth factions round 12: a module's tending faction modulates its
+        // decay by their mood, closing the neglect → sour → rot spiral. The Verdant
+        // Kin tend agriculture; a year under a devoted Kin wears the farm less than
+        // a year under a resentful one, all else equal.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.subsystems.tender_approval_decay_scale > 0.0,
+            "this test needs the tender-approval coupling enabled"
+        );
+
+        let wear_farm = |approval: f32| -> f32 {
+            let (_, mut sim) = campaign(8);
+            // A single aboard people that tends the farm, at the given mood.
+            sim.factions = vec![FactionState {
+                faction_id: "verdant_kin".to_string(),
+                members: sim.population.count,
+                status: FactionStatus::Aboard,
+                approval,
+                mood_band: 0,
+            }];
+            sim.subsystems.get_mut("agriculture").unwrap().condition = 0.8;
+            // Hold the keystone neutral so only the tenders' mood differs.
+            sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.5;
+            decay_subsystems(&mut sim, &data, 1.0);
+            0.8 - sim.subsystems["agriculture"].condition
+        };
+
+        let devoted = wear_farm(0.95);
+        let resentful = wear_farm(0.05);
+        assert!(
+            resentful > devoted,
+            "a resentful people lets its farm rot faster than a devoted one \
+             (resentful {resentful} vs devoted {devoted})"
+        );
     }
 
     #[test]
