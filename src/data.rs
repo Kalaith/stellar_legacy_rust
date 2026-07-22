@@ -413,6 +413,18 @@ pub struct FlavorConfig {
     /// (content-depth voice round 12). An absolute count (founding is ~1000).
     #[serde(default)]
     pub ambient_population_threshold: u32,
+    /// Ambient lines for a *long-hungry* ship (content-depth voice round 13): once
+    /// the food store has sat below the lean line for `ambient_lean_years_threshold`
+    /// years or more (`SimState.lean_food_years`), the quiet stretches draw from this
+    /// pool — the lived-in texture gone thin and rationed, the daily preoccupation
+    /// with the next plate. Takes precedence over `ambient_hollow` (a sustained
+    /// hunger is the most immediate lived condition). Empty = always use the others.
+    #[serde(default)]
+    pub ambient_lean: Vec<String>,
+    /// Consecutive lean years at or past which quiet stretches read from
+    /// `ambient_lean` (content-depth voice round 13).
+    #[serde(default)]
+    pub ambient_lean_years_threshold: u32,
     /// Years of event-less quiet between ambient lines (0 = ambient off).
     #[serde(default)]
     pub ambient_gap_years: u32,

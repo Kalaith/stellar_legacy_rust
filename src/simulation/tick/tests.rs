@@ -307,6 +307,76 @@ fn a_hollowed_out_ships_quiet_reads_empty() {
 }
 
 #[test]
+fn a_long_hungry_ships_quiet_reads_lean() {
+    // Content-depth voice round 13: the ambient dead-air lines reflect a sustained
+    // hunger. Once the ship has been lean for years, a quiet stretch draws from the
+    // lean pool — the rationed, harvest-preoccupied texture — and it takes
+    // precedence over the hollow pool, since a long hunger is the most immediate
+    // lived condition.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.depopulation_beats.clear();
+    let gap = data.config.flavor.ambient_gap_years;
+    let lean_years = data.config.flavor.ambient_lean_years_threshold;
+    assert!(
+        gap > 0 && lean_years > 0 && data.config.flavor.ambient_lean.len() >= 4,
+        "this test needs the scarcity-aware ambient pool enabled"
+    );
+
+    let run = |lean: u32, count: u32| -> Vec<String> {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            6,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.population.count = count;
+        // A lean run holds the larder below the lean line so the tick *keeps* the
+        // injected streak (incrementing, not resetting); a fed run stocks it high so
+        // the tick zeroes the streak. Either way the store stays above upkeep, so no
+        // famine muddies the ambient read.
+        let food = if lean > 0 { 2_000 } else { 1_000_000 };
+        for _ in 0..gap {
+            sim.resources.food = food;
+            sim.lean_food_years = lean;
+            advance_year(&mut sim, &data);
+        }
+        sim.log.iter().map(|l| l.text.clone()).collect()
+    };
+    let lean_pool = &data.config.flavor.ambient_lean;
+    let ambient = &data.config.flavor.ambient;
+    let hollow = &data.config.flavor.ambient_hollow;
+
+    // A long-hungry ship reads lean…
+    let hungry = run(lean_years, 1000);
+    assert!(
+        hungry.iter().any(|t| lean_pool.contains(t)),
+        "a long-hungry ship's quiet reads lean"
+    );
+    // …a well-fed ship reads its ordinary quiet…
+    let fed = run(0, 1000);
+    assert!(
+        fed.iter().any(|t| ambient.contains(t)) && !fed.iter().any(|t| lean_pool.contains(t)),
+        "a well-fed ship's quiet is not lean"
+    );
+    // …and on a ship both hungry and hollowed, hunger is the louder note.
+    let hungry_and_hollow = run(
+        lean_years,
+        data.config.flavor.ambient_population_threshold - 1,
+    );
+    assert!(
+        hungry_and_hollow.iter().any(|t| lean_pool.contains(t))
+            && !hungry_and_hollow.iter().any(|t| hollow.contains(t)),
+        "a sustained hunger speaks louder in the quiet than an empty deck"
+    );
+}
+
+#[test]
 fn voyage_drift_scales_by_legacy() {
     let data = GameData::load().unwrap();
     let mut adaptors = SimState::new_campaign(

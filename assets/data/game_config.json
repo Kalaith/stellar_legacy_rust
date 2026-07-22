@@ -327,6 +327,16 @@
       "Someone counts the lit windows along the spine on a slow watch and stops counting, because the dark ones outnumber them now and there is no comfort in the tally."
     ],
     "ambient_population_threshold": 500,
+    "ambient_lean": [
+      "The mess line moves fast now: the ration is measured, the plate is small, and there is no second helping to slow anyone down. Everyone has learned not to look at the serving spoon too hopefully.",
+      "The grow-decks run at a hard, joyless pitch, every lamp burning and every bed doubled, coaxing calories out of soil that is asked for more than it can easily give.",
+      "Children are taught to clean the plate to the glaze and to name it a virtue. Their grandparents remember when it was only manners.",
+      "The talk in the corridors circles back, always, to the harvest — the yield figures traded like weather, the good beds and the failing ones known to everyone by name.",
+      "A festival comes and the feast is a gesture: a slightly fuller plate, a sweet no one has tasted in a year, and the ache of pretending, for an evening, that the larder is not what it is.",
+      "The old recipes are pared down and down again, the ship's cooks grown expert at the alchemy of making little seem like enough, and the crew expert at believing them.",
+      "No one is starving, quite. But the hunger has moved in — a low, constant tenant behind the day's work — and the ship has stopped expecting it to leave."
+    ],
+    "ambient_lean_years_threshold": 10,
     "phase_lines": {
       "travel": [
         "Departure burn complete — the ship is underway.",
