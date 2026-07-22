@@ -78,6 +78,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
             && !fire_homecoming_beat(sim, data, &mut report)
+            && !fire_power_transition_beat(sim, data, &mut report)
             && !fire_anniversary_beat(sim, data, &mut report)
             && !fire_dead_air_beat(sim, data, &mut report)
         {
@@ -326,6 +327,60 @@ fn fire_homecoming_beat(sim: &mut SimState, data: &GameData, report: &mut TickRe
     }
     force_family_beat(sim, data, &cfg.homecoming_beat_family, report);
     true
+}
+
+/// Fire a power-transition beat (content-depth round 11): a beat keyed to a
+/// *political* change rather than a stat or a time. When the dominant faction
+/// differs from the one the skeleton last marked — demographic drift has grown a
+/// minority into the majority, or a schism has unseated the largest people — a
+/// beat is forced: the ship reckoning with new leadership. The first observation a
+/// campaign only *records* the majority (no beat at launch). Fires on the change.
+fn fire_power_transition_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    report: &mut TickReport,
+) -> bool {
+    let family = &data.config.campaign_skeleton.power_transition_beat_family;
+    // Only a beat during an active voyage, and only on a *decisive* change of
+    // majority — a clear plurality, not a launch-time tie-break wobble.
+    if family.is_empty() || sim.contract.is_none() {
+        return false;
+    }
+    let Some(current) = clear_majority_faction(sim) else {
+        return false;
+    };
+    if sim.last_dominant_faction.is_empty() {
+        // First clear majority this voyage: record it, do not fire.
+        sim.last_dominant_faction = current;
+        return false;
+    }
+    if current == sim.last_dominant_faction {
+        return false;
+    }
+    sim.last_dominant_faction = current;
+    let family = family.clone();
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// The aboard faction that clearly runs the ship (content-depth round 11): the
+/// largest, but only when it holds a decisive lead (over 1.1× the next, or sole
+/// people aboard) — so a near-even split, where the majority wobbles on
+/// tie-breaks, counts as *no* clear majority and marks no transition.
+fn clear_majority_faction(sim: &SimState) -> Option<String> {
+    let mut aboard: Vec<(&str, u32)> = sim
+        .factions
+        .iter()
+        .filter(|f| f.is_aboard())
+        .map(|f| (f.faction_id.as_str(), f.members))
+        .collect();
+    if aboard.is_empty() {
+        return None;
+    }
+    aboard.sort_by(|a, b| b.1.cmp(&a.1).then_with(|| a.0.cmp(b.0)));
+    let (top_id, top) = aboard[0];
+    let second = aboard.get(1).map_or(0, |x| x.1);
+    (second == 0 || top as f32 > second as f32 * 1.1).then(|| top_id.to_owned())
 }
 
 /// Fire an anniversary beat (content-depth round 7): a *periodic* archetype, not

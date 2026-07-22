@@ -544,6 +544,14 @@ pub struct CampaignSkeletonConfig {
     /// Empty = no homecoming beat.
     #[serde(default)]
     pub homecoming_beat_family: String,
+    /// Power-transition beat family (content-depth round 11): a beat keyed not to
+    /// a stat or a time but to a *political* change — the first tick the dominant
+    /// faction differs from the one the skeleton last marked (demographic drift
+    /// grew a minority into the majority, or a schism unseated the largest people),
+    /// a beat is forced from this family: the ship reckoning with new leadership.
+    /// Empty = no power-transition beat.
+    #[serde(default)]
+    pub power_transition_beat_family: String,
     /// Anniversary cadence (content-depth round 7): every this-many years of the
     /// voyage, a beat is forced from `anniversary_beat_family` — a periodic
     /// archetype (vs the threshold beats), giving the voyage a commemorative

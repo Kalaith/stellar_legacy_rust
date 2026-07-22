@@ -1731,5 +1731,73 @@
     "log": "The ship let go of the homeport in the logs and made its peace with meeting whatever now held that name — a changed place greeting a changed crew, two strangers with a shared story and no living witness to it between them. It was a colder homecoming than the founders had promised and a truer one than they could have imagined: not a return to anything, but a meeting, between a voyage and a world that had each become someone else while the other was away."
    }
   ]
+ },
+ {
+  "id": "the_shifting_helm",
+  "category": "legacy_moment",
+  "title": "The Shifting Helm",
+  "description": "The census makes it plain what the decades made slowly true: the people who now fill the most berths, who sit the most council seats, whose children crowd the schools, are not the people who did so at launch. The balance has tipped over the generations, quietly, cradle by cradle, and with it the hands on the ship's helm. A people that boarded a minority sets the course now, and must decide how to steer a ship built in another's image.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "govern_in_continuity",
+    "label": "Steer the ship as it was built to be steered",
+    "description": "A majority is not a mandate to remake everything. Take the helm and keep the ship's inherited course — the founding charter, the old offices, the ways that worked for the people who are now the fewer — and let the change of hands be a change of hands and nothing more.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "stability": 0.05,
+     "unity": 0.03,
+     "morale": -0.02
+    },
+    "log": "The new majority took the helm and steered by the old stars — the founding charter kept, the inherited offices honoured, the ship run as it had always been run though different hands now ran it. It was a generous restraint and a slightly airless one, a people declining to remake a ship into their own image out of respect for the image it already wore. The continuity held. Whether it was the new majority's ship or only the old majority's ship in new hands was a question the council carefully did not put."
+   },
+   {
+    "id": "remake_in_our_image",
+    "label": "Make it the ship of the people who fill it",
+    "description": "A ship belongs to the people who live it, not the ones who drew it. Reshape the offices, the calendar, the assumptions to fit the majority that actually crews the decks now — not out of grievance, but because a home should look like the people in it.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "cultural_drift": 0.06,
+     "morale": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The new majority remade the ship in its own image — the offices reshaped, the calendar redrawn, the founding assumptions quietly retired in favour of the ones the living actually held — not in anger but in the plain conviction that a home should look like the people who live in it. The ship that resulted was warmer to its majority and stranger to its founders, and drifted a further degree from the thing that had left home, which the new majority counted not a loss but a coming-of-age."
+   }
+  ]
+ },
+ {
+  "id": "the_inherited_ship",
+  "category": "legacy_moment",
+  "title": "The Inherited Ship",
+  "description": "A young officer of the ship's new majority walks the founder decks and feels the strangeness of them: the corridors laid out to another people's habits, the shrines to another people's dead, the whole architecture of the voyage shaped by assumptions its makers never thought to question and its inheritors no longer share. The ship was built by and for a people this generation is no longer chiefly made of. The question of what to do with an inheritance you did not choose comes, as it always does, to the council.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "keep_faith_with_the_build",
+    "label": "Keep faith with the ship as built",
+    "description": "The founders built well, for reasons that held, and a people that tears out an inheritance it does not understand often finds it needed the parts it threw away. Live in the ship as given, learn why it was made this way, and change nothing that is not broken.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.04
+    },
+    "log": "The council chose to keep faith with the ship as the founders built it — to live in the inherited architecture, learn the reasons behind its stranger choices, and change nothing merely because it was strange. It was a humility toward the dead that the dead had not earned and the living freely gave, and it kept the ship a coherent thing across the change of its people, an inheritance carried rather than gutted."
+   },
+   {
+    "id": "reshape_for_the_living",
+    "label": "Reshape the ship for who lives here now",
+    "description": "Reverence for a build is not the same as a working home. Rework the decks, the shrines, the assumptions for the people who actually crew them — keep what serves, retire what only ever served the founders, and let the ship become an honest reflection of its living majority.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.05,
+     "morale": 0.03,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The council reworked the inherited ship for the people who lived in it now — the founder decks re-laid, the old shrines kept or quietly closed by whether anyone still prayed at them, the founding assumptions weighed on their merits rather than their pedigree. What came out the far side was less a monument and more a home, honest about its living majority and a further step from its founders, which the young officers who had felt the strangeness counted exactly right."
+   }
+  ]
  }
 ]

@@ -369,6 +369,12 @@ pub struct SimState {
     /// through. Incremented as each event resolves.
     #[serde(default)]
     pub event_fire_counts: HashMap<String, u32>,
+    /// The dominant faction last marked by the skeleton (content-depth campaign
+    /// skeleton round 11): so that when demographic drift or a schism flips *which
+    /// people runs the ship*, a power-transition beat can fire on the change. Empty
+    /// until the first tick records the launch majority (no spurious beat at start).
+    #[serde(default)]
+    pub last_dominant_faction: String,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -455,6 +461,7 @@ impl SimState {
             consequences: Vec::new(),
             scheduled_events: Vec::new(),
             event_fire_counts: HashMap::new(),
+            last_dominant_faction: String::new(),
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),
             log: Vec::new(),

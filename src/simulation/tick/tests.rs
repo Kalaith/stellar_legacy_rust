@@ -332,6 +332,10 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .power_transition_beat_family
+        .clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -767,6 +771,10 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .power_transition_beat_family
+        .clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -841,6 +849,10 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .power_transition_beat_family
+        .clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -978,6 +990,80 @@ fn a_scheduled_followup_fires_on_its_determined_year_not_before() {
     assert!(
         sim.log.iter().any(|l| l.text.contains("capsule")),
         "the opening is narrated"
+    );
+}
+
+#[test]
+fn a_power_transition_beat_fires_when_the_ship_changes_hands() {
+    // Content-depth campaign-skeleton round 11: a beat keyed to a political change.
+    // With reactive rolls and the threshold beats off, nothing fires while the
+    // majority holds — but the first tick a different people runs the ship, the
+    // power-transition beat is forced (and the launch majority is only recorded,
+    // never marked with a beat).
+    use crate::state::sim::factions::{FactionState, FactionStatus};
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    assert!(
+        !data
+            .config
+            .campaign_skeleton
+            .power_transition_beat_family
+            .is_empty(),
+        "this test needs the power-transition beat enabled"
+    );
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+    // A clear majority so demographic noise cannot flip it on its own.
+    let fs = |id: &str, m: u32| FactionState {
+        faction_id: id.to_string(),
+        members: m,
+        status: FactionStatus::Aboard,
+        approval: 0.5,
+        mood_band: 0,
+    };
+    sim.factions = vec![fs("steel_covenant", 700), fs("hearth_union", 300)];
+    sim.population.count = 1000;
+
+    // First year: the launch majority is only recorded, no beat.
+    advance_year(&mut sim, &data);
+    assert_eq!(sim.last_dominant_faction, "steel_covenant");
+
+    // Flip to a decisive new majority: the transition beat fires (marking the new
+    // majority is the firer's own act, so the updated record proves it fired).
+    sim.factions[0].members = 100;
+    sim.factions[1].members = 900;
+    assert_eq!(sim.dominant_faction_id(), Some("hearth_union"));
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.last_dominant_faction, "hearth_union",
+        "the skeleton fires on the change and marks the new majority"
+    );
+
+    // Resolve whatever beat it surfaced, then advance again: the majority holds,
+    // so no further transition beat and the record stays put.
+    if let Some(p) = sim.pending_event.clone() {
+        let t = data.events.get(&p.template_id).cloned().unwrap();
+        crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+    }
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.last_dominant_faction, "hearth_union",
+        "a steady majority is not re-marked"
     );
 }
 
