@@ -886,5 +886,53 @@
     "log": "The ship held itself apart — a guest to the end, courteous and whole and quietly homesick — and would not let the residency remake it. The founders' ways stayed intact and a little brittle for the effort, and the crew kept a home in their heads that most of them would never see, and stayed, against every easy current, the ship that had left."
    }
   ]
+ },
+ {
+  "id": "the_full_coffers",
+  "category": "generational_challenge",
+  "title": "The Full Coffers",
+  "description": "The ledgers have never looked so fat. Contract after contract paid out well, the odd salvage sold high, and the treasury has swollen to a sum the founders would have called a fortune and the living have started, dangerously, to call normal. A rich ship draws opinions on what wealth is for, and they are not all the same opinion.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "credits_above": 25000,
+  "outcomes": [
+   {
+    "id": "bank_the_war_chest",
+    "label": "Bank it against the lean contracts",
+    "description": "A voyage treasury is not a purse to empty in a good decade. Hold the wealth in reserve against the charter that pays badly, the port that gouges, the repair that cannot wait — a war chest for the years the ledgers will not look so kind.",
+    "resource_delta": {
+     "credits": -500
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "unity": 0.02
+    },
+    "long_term_consequences": [
+     "war_chest"
+    ],
+    "log": "The council chose to sit on its fortune rather than spend it, banking the fat treasury into a reserve against the lean contracts everyone knew would come. It won the ship no cheers and no comforts, only the deep, unglamorous safety of a hull that can always cover its own bills."
+   },
+   {
+    "id": "spend_on_the_ship",
+    "label": "Pour it into the ship and its people",
+    "description": "Wealth banked forever is wealth wasted. Spend the surplus on the decks and the folk who crew them — overdue upgrades, open hands, the comforts a hard voyage has long gone without — and let prosperity be felt rather than merely counted.",
+    "resource_delta": {
+     "credits": -6000,
+     "minerals": 400
+    },
+    "population_delta": {
+     "morale": 0.07,
+     "unity": 0.03,
+     "cultural_drift": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition_delta": 0.12
+     }
+    ],
+    "log": "The council spent the fat treasury on the ship itself — the habitat decks refit, long-deferred comforts restored, the people's own hands opened — and for a while the voyage felt less like an endurance and more like a life. The coffers came down hard, and the ship that spent them learned, a little, to expect plenty."
+   }
+  ]
  }
 ]

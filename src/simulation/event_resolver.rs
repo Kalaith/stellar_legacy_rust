@@ -189,6 +189,15 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Abundance gates (content-depth provisioning round 11): the mirror — the
+    // event stays out of the pool until the ship is genuinely flush.
+    if template.food_above.is_some_and(|t| sim.resources.food < t)
+        || template
+            .credits_above
+            .is_some_and(|t| sim.resources.credits < t)
+    {
+        return false;
+    }
     // Era ceilings (content-depth round 4): 0 = ungated, else the event has
     // passed out of its era once the voyage is beyond the cap.
     if template.max_year != 0 && sim.year() > template.max_year {
@@ -1807,6 +1816,61 @@ mod tests {
         assert!(
             passes_gate(&sim, event),
             "hunger and cold together bring it"
+        );
+    }
+
+    #[test]
+    fn an_abundance_gate_waits_for_real_plenty_and_softness_worsens_the_winter() {
+        // Content-depth provisioning round 11: the first gate keyed to *plenty*
+        // rather than want. `the_fat_years` stays out of the pool at ordinary
+        // stores and only surfaces when the granaries are genuinely swollen — and
+        // feasting through it (grown_soft) makes the later long winter bite harder.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 41, &picks);
+        let fat = data.events.get("the_fat_years").unwrap();
+        let threshold = fat.food_above.expect("the fat years gate on abundance");
+
+        // Ordinary and even lean stores: no fat-years choice.
+        sim.resources.food = threshold - 1;
+        assert!(
+            !passes_gate(&sim, fat),
+            "a merely comfortable ship has no surplus to reckon with"
+        );
+        // Granaries swollen past the threshold: the choice of plenty arrives.
+        sim.resources.food = threshold + 1;
+        assert!(
+            passes_gate(&sim, fat),
+            "genuine abundance surfaces the fat-years choice"
+        );
+
+        // The loop closes on the long winter: a ship that grew soft in the fat
+        // years carries the soft-generation complication where a thrifty one does
+        // not — the abundance choice reaches forward into the later famine.
+        let winter = data.events.get("the_long_winter").unwrap();
+        let soft = winter
+            .complications
+            .iter()
+            .find(|c| c.requires_consequence.iter().any(|s| s == "grown_soft"))
+            .expect("the long winter carries the soft-generation complication");
+        assert!(
+            active_complication(&sim, winter).is_none(),
+            "a ship that never feasted meets the winter with its thrift intact"
+        );
+        // Feast through the fat years, then face the winter.
+        let live_well = fat
+            .outcomes
+            .iter()
+            .position(|o| o.long_term_consequences.iter().any(|s| s == "grown_soft"))
+            .unwrap();
+        apply_outcome(&mut sim, &data, fat, live_well);
+        assert!(
+            sim.consequences.iter().any(|c| c == "grown_soft"),
+            "living well in the fat years softens the ship"
+        );
+        assert!(
+            active_complication(&sim, winter).is_some_and(|c| c.id == soft.id),
+            "the softened generation bears the long winter worse"
         );
     }
 

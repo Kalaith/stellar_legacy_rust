@@ -315,6 +315,16 @@ pub struct EventTemplate {
     pub spare_parts_below: Option<i64>,
     #[serde(default)]
     pub energy_below: Option<i64>,
+    /// Provisioning-*abundance* gates (content-depth provisioning round 11): the
+    /// inverse of the shortage set — the event only enters the pool while the ship
+    /// is genuinely flush, food store at or above `food_above`, treasury at or
+    /// above `credits_above`. `None` = that resource ungated. The first gates that
+    /// key on *plenty* rather than want, so a fat-years choice reads as a
+    /// consequence of prosperity rather than a random roll.
+    #[serde(default)]
+    pub food_above: Option<i64>,
+    #[serde(default)]
+    pub credits_above: Option<i64>,
     /// Multiplier on this template's roll weight per legacy id (GDD §6).
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,

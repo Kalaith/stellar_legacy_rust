@@ -677,6 +677,21 @@
     },
     "log": "The council threw the whole reserve at the long winter and broke it in a season, leaving the coffers bare and the ship warm. It was reckless and it worked, which is its own kind of tradition now."
    }
+  ],
+  "complications": [
+   {
+    "id": "the_soft_generation",
+    "requires_consequence": [
+     "grown_soft"
+    ],
+    "description_add": "And this is a ship that forgot how to be hungry. The fat years raised a generation on full plates and lengthened feast-days, and now that the winter has come at last, they meet it with no thrift in the muscle and no memory of going without — the rationing bites a people who never learned to bear it.",
+    "population_delta": {
+     "count": -25,
+     "morale": -0.05,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The long winter fell hardest on the generation the fat years had softened — they had never rationed, never gone cold and counted it ordinary, and the crossing took more of them than it should have, and took more heart besides. A ship pays for its plenty in the winter that follows it."
+   }
   ]
  },
  {
@@ -1474,6 +1489,50 @@
      "stability": -0.03
     },
     "log": "The ship crossed the dearth by spending everything it had — the lockers emptied, the margins burned, the reserves that were meant for other emergencies thrown at this one — and came out the far side fed and hollow, alive on nothing, one bad year now from a crisis it had disarmed itself against. It had survived the charted reach. It would spend the next stretch of dark rebuilding what surviving it cost."
+   }
+  ]
+ },
+ {
+  "id": "the_fat_years",
+  "category": "generational_challenge",
+  "title": "The Fat Years",
+  "description": "A generation that has never known a thin plate stands in granaries stacked past anything the founders held — bumper harvest on bumper harvest, the stores swollen half again beyond the launch stock, the reclaimers running sweet, the fields generous. Plenty is its own quiet question, and a fat ship forgets to ask it: what is a surplus for?",
+  "requires_decision": true,
+  "family": "survival",
+  "food_above": 18000,
+  "outcomes": [
+   {
+    "id": "keep_the_thrift",
+    "label": "Bank it, and keep the founders' thrift",
+    "description": "A ship that has known no hunger should remember it anyway — in its sealed reserves if not in its bellies. Harden the surplus into deep stores, hold the rations where they stand, and let the fat years pay for a lean one no one alive can yet imagine.",
+    "resource_delta": {
+     "food": -1500
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "stability": 0.05,
+     "legacy_loyalty": 0.03,
+     "morale": -0.01
+    },
+    "long_term_consequences": [
+     "kept_the_thrift"
+    ],
+    "log": "The council read the swollen granaries not as licence but as warning, and did with the fat years what the founders would have done — sealed the surplus into hardened vaults, kept the plates measured, and taught a generation that had never gone hungry to respect a hunger it had never met. It was an austere answer to abundance, and the kind that keeps a ship alive across centuries it cannot see."
+   },
+   {
+    "id": "live_well",
+    "label": "Ease the rations — let the ship live well",
+    "description": "Discipline is for lean years, and these are not lean. Lengthen the feast-days, open the fuller plates, let a generation know plenty as its birthright rather than a thing to be hoarded against a famine that may never come.",
+    "population_delta": {
+     "morale": 0.08,
+     "unity": 0.04,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.03
+    },
+    "long_term_consequences": [
+     "grown_soft"
+    ],
+    "log": "The ship let itself live well in the fat years — the plates fuller, the feast-days longer, a whole generation raised to know plenty as the natural order rather than a windfall to be feared. They were happy years, and honestly earned, and they quietly unlearned the one skill the founders had drilled deepest: how to go without."
    }
   ]
  }
