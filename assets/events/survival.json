@@ -1768,5 +1768,83 @@
     "log": "The council stopped fighting the hunger and began, instead, to belong to it — ration woven into rite, thrift bred into the young until going without was less a hardship than a heritage. The ship that came out of the long lean was a hardier and a hungrier thing than the founders launched, a people who had made scarcity into character, and who would look on any future plenty with the deep suspicion of those who have learned not to trust a full plate."
    }
   ]
+ },
+ {
+  "id": "the_soft_generation",
+  "category": "generational_challenge",
+  "title": "The Soft Generation",
+  "description": "The granaries have stood full for as long as anyone under forty can remember. A whole generation has come to adulthood having never seen a measured plate, never counted a ration, never once believed the food might run out — plenty is not good fortune to them but simply the way of things, the natural order of a well-run ship. Their elders, who remember otherwise, watch them with an unease they cannot quite justify: what does a people do, when the dark finally tests it, that has never learned how to go without?",
+  "requires_decision": true,
+  "family": "survival",
+  "food_above": 15000,
+  "min_fat_food_years": 15,
+  "outcomes": [
+   {
+    "id": "keep_the_thrift_alive",
+    "label": "Drill the discipline they lack",
+    "description": "Manufacture the hardship the good years have spared them. Symbolic fasts, ration drills, the old lean recipes kept on the calendar though the larder groans — teach a plenty-raised generation, against its will and its comfort, the one skill a long voyage cannot do without: how to be hungry on purpose, so that being hungry by necessity does not break them.",
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.04,
+     "morale": -0.05
+    },
+    "log": "The council drilled scarcity into a generation that had never met it — fasts and ration exercises and the lean old recipes kept on the calendar amid a plenty that made them feel absurd. The young resented it as a manufactured misery, which it was, and carried out of it the one thing the fat years could not give them: the muscle-memory of going without, banked against a dark that had not tested them yet."
+   },
+   {
+    "id": "let_them_have_the_plenty",
+    "label": "Let them have their birthright",
+    "description": "The founders crossed the dark so their heirs would not have to fear it. Who are the living to deny the young the very abundance the whole voyage was for? Let them enjoy the plenty as the founders intended, unburdened by a hunger that is, for now, only a story — and trust that when the dark comes they will rise to it as their elders did.",
+    "population_delta": {
+     "morale": 0.07,
+     "unity": 0.04,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.02
+    },
+    "long_term_consequences": [
+     "grown_soft"
+    ],
+    "log": "The council let the young have the plenty their elders had crossed the dark to give them, unburdened by a fear that was only a story to them now. They were happier for it, and honestly so, and they grew up with no more idea of hunger than a fish has of drowning — a softness banked against a winter that, when it came, would ask them for a thing they had never once been made to learn."
+   }
+  ]
+ },
+ {
+  "id": "the_distrustful_plenty",
+  "category": "generational_challenge",
+  "title": "The Distrustful Plenty",
+  "description": "The stores are full again, fuller than they have been in living memory — and a ship that made scarcity into its very identity does not know what to do with them. This is a people bred to thrift, that wove rationing into rite and taught its children to fear a full plate, and now the full plates have come and the fear has not left with the hunger. The young hoard against a famine that is over. The old distrust the abundance as a trick the dark is playing. Plenty has arrived, and the ship must decide whether it is even allowed to enjoy it.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_above": 15000,
+  "requires_consequence": [
+   "bred_to_thrift"
+  ],
+  "outcomes": [
+   {
+    "id": "keep_the_lean_discipline",
+    "label": "Trust nothing — keep the lean ways",
+    "description": "The hunger taught the ship a lesson written in the bodies of the dead: the dark gives and the dark takes, and a people that forgets the taking dies of the next famine it did not believe in. Keep the rationing, keep the thrift, bank every surplus grain against the lean years that always, always come back. Let the plenty make the ship safe, not soft.",
+    "resource_delta": {
+     "food": -2000
+    },
+    "population_delta": {
+     "stability": 0.06,
+     "legacy_loyalty": 0.04,
+     "morale": -0.03
+    },
+    "log": "The ship refused to trust its own good fortune, keeping the lean discipline the long hunger had bred into it — the surplus banked and sealed rather than enjoyed, the rationing held though the larder overflowed. It was a hoarder's caution that wasted much of the plenty, and it was the caution of a people who had counted the dead of a famine they had not believed in, and did not intend to count them twice."
+   },
+   {
+    "id": "let_the_thrift_soften",
+    "label": "Let the young unlearn the fear",
+    "description": "The thrift was a survival, not a scripture. The young who never knew the long hunger see no sense in starving amid plenty, and they are not wrong — a fear kept past its cause is just a wound worn as a virtue. Let the lean identity soften, let the plenty be plenty, and let a people that suffered enough finally be allowed to stop.",
+    "population_delta": {
+     "morale": 0.07,
+     "unity": 0.04,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The ship let its hard-won thrift soften at last, the young unlearning a fear whose cause was a generation dead, the lean rites quietly retired amid a plenty that made them look less like wisdom than like a wound worn too long as a virtue. Something austere and defining went out of the ship with the fear, and something lighter came in — a people that had suffered enough, finally allowing itself to stop."
+   }
+  ]
  }
 ]

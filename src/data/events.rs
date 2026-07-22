@@ -324,6 +324,14 @@ pub struct EventTemplate {
     /// lean ship. 0 = ungated.
     #[serde(default)]
     pub min_lean_food_years: u32,
+    /// Sustained-plenty gate (content-depth provisioning round 14): the mirror of
+    /// `min_lean_food_years` — the event only enters the pool once the food store has
+    /// sat at or above the fat line for at least this many consecutive years
+    /// (`sim.fat_food_years`), the honest gate for *soft-generation* content, so a
+    /// beat about a people raised never knowing want cannot surface on a ship one
+    /// good harvest into plenty. 0 = ungated.
+    #[serde(default)]
+    pub min_fat_food_years: u32,
     /// Scheduled-only (content-depth event families round 9): the event never
     /// enters a random or beat roll — it fires solely as the timed payoff of a
     /// `schedule_followup`. Keeps a determined-clock reckoning out of the reactive

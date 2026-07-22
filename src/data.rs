@@ -132,6 +132,12 @@ pub struct GameConfig {
     /// — the state that separates a bad year from a bad generation. 0 = disabled.
     #[serde(default)]
     pub lean_food_threshold: i64,
+    /// Food store at or above which a year counts as *fat* (content-depth
+    /// provisioning round 14): the symmetric mirror of `lean_food_threshold` — the
+    /// "comfortably flush" line whose sustained crossing drives `fat_food_years`, the
+    /// state that separates a windfall year from a lifetime of plenty. 0 = disabled.
+    #[serde(default)]
+    pub fat_food_threshold: i64,
     pub hull_warning_threshold: f32,
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,

@@ -93,6 +93,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     } else {
         sim.lean_food_years = 0;
     }
+    // …and its mirror (content-depth provisioning round 14): a store still above the
+    // fat line adds a year to the plenty streak, so content can tell a lifetime of
+    // abundance — a generation raised never knowing want — from one bumper year.
+    if config.fat_food_threshold > 0 && sim.resources.food >= config.fat_food_threshold {
+        sim.fat_food_years = sim.fat_food_years.saturating_add(1);
+    } else {
+        sim.fat_food_years = 0;
+    }
 
     // A skilled security chief and a well-kept security corps both slowly steady
     // a fractious ship (content-depth subsystems round 9): crew skill + module

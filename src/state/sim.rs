@@ -394,6 +394,12 @@ pub struct SimState {
     /// hunger — a lean *generation* — apart from one hungry winter. 0 at launch.
     #[serde(default)]
     pub lean_food_years: u32,
+    /// Consecutive years the food store has sat at or above the *fat* line
+    /// (content-depth provisioning round 14): the mirror of `lean_food_years`, reset
+    /// the moment plenty ends. It's what lets content tell a lifetime of plenty — a
+    /// generation raised never knowing want — from one bumper year. 0 at launch.
+    #[serde(default)]
+    pub fat_food_years: u32,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -484,6 +490,7 @@ impl SimState {
             morale_band: 0,
             depopulation_beats_fired: 0,
             lean_food_years: 0,
+            fat_food_years: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),
             log: Vec::new(),

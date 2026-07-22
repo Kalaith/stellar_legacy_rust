@@ -269,6 +269,11 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     if sim.lean_food_years < template.min_lean_food_years {
         return false;
     }
+    // Sustained-plenty gate (content-depth round 14): the mirror — soft-generation
+    // content waits until the plenty has held for years, not just this harvest.
+    if sim.fat_food_years < template.min_fat_food_years {
+        return false;
+    }
     // Founder-authority gate (content-depth round 14): covenant-lapse content stays
     // out of the pool while the ship still holds the founders' charter binding.
     if template.max_legacy_loyalty > 0.0
@@ -2046,6 +2051,41 @@ mod tests {
         assert!(
             !passes_gate(&clean, vindication),
             "a ship that let its archive die cannot vindicate a founding it forgot"
+        );
+    }
+
+    #[test]
+    fn a_sustained_plenty_gate_waits_for_a_soft_generation() {
+        // Content-depth provisioning round 14: the mirror of the chronic-scarcity
+        // gate. `the_soft_generation` tells a lifetime of plenty from one bumper
+        // year — it needs both a currently flush larder *and* a plenty that has held
+        // for years, so a ship one good harvest into abundance does not yet face it.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 65, &picks);
+        let event = data.events.get("the_soft_generation").unwrap();
+        let flush = event.food_above.expect("gates on a full larder");
+        let years = event.min_fat_food_years;
+        assert!(years > 0, "the soft generation gates on sustained plenty");
+
+        // Flush today, but only just: no soft-generation reckoning yet.
+        sim.resources.food = flush + 1000;
+        sim.fat_food_years = years - 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "one good harvest is not yet a generation of plenty"
+        );
+        // Plenty that has held for years, still flush: it surfaces.
+        sim.fat_food_years = years;
+        assert!(
+            passes_gate(&sim, event),
+            "a lifetime of plenty raises the soft generation"
+        );
+        // A ship whose stores have since run down does not face it.
+        sim.resources.food = flush - 5000;
+        assert!(
+            !passes_gate(&sim, event),
+            "the soft-generation reckoning needs the plenty to still be present"
         );
     }
 
