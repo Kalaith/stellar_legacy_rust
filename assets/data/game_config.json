@@ -149,7 +149,12 @@
       "engineering",
       "mystery",
       "legacy_drift"
-    ]
+    ],
+    "crisis_beats": [
+      0.35,
+      0.2
+    ],
+    "crisis_beat_family": "legacy_drift"
   },
   "flavor": {
     "obituary": [

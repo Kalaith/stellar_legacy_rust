@@ -7134,5 +7134,84 @@
     "log": "The council sealed the hot decks rather than heal them — the annex, the shops beside it, the quarters of the ones who had lived too close, all walled off and written out of the deck plan. The bloom stopped at the bulkhead. The ship was smaller and sounder and short the people and the workshops it left behind the seal."
    }
   ]
+ },
+ {
+  "id": "the_two_ships",
+  "category": "legacy_moment",
+  "title": "The Two Ships",
+  "description": "The ship has come apart without a single wall being built. The crew keep separate corridors now, separate mess halls, separate words for the same things; a child raised on one side of the divide can go a lifetime barely speaking to the other. It is one hull and, by every measure that matters, two peoples.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_cultural_drift": 0.5,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "force_reintegration",
+    "label": "Force them back together",
+    "description": "Spend the council's whole authority on knocking down the invisible walls — shared shifts, shared tables, shared schools, whether they like it or not.",
+    "resource_delta": {
+     "influence": -40
+    },
+    "population_delta": {
+     "unity": 0.08,
+     "morale": -0.04,
+     "cultural_drift": -0.03
+    },
+    "log": "The council forced the two ships back into one by main strength — mixing the shifts, the tables, the classrooms, over the sullen resistance of people who had grown comfortable apart. It held, barely, and it cost the council every favor it had, and the ship was one people again the way a set bone is one bone."
+   },
+   {
+    "id": "two_communities_one_charter",
+    "label": "Let them be two under one charter",
+    "description": "Stop pretending. Recognize the two communities formally, bind them only to the shared mission, and let each keep its own life.",
+    "population_delta": {
+     "stability": 0.05,
+     "cultural_drift": 0.05,
+     "unity": -0.02
+    },
+    "log": "The council wrote the division into the charter rather than fight it — two communities, one hull, one destination, and a careful peace between. The ship ran smoother for the honesty and sailed on as two peoples who had agreed on exactly one thing, which was where they were going."
+   }
+  ]
+ },
+ {
+  "id": "the_broken_council",
+  "category": "legacy_moment",
+  "title": "The Broken Council",
+  "description": "The council itself has fractured. The blocs will not sit in the same room; sessions collapse into walkouts; a decision that once took a week now takes a decade or never comes at all. The ship is drifting not because no one is steering but because the steering has come apart in too many hands.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_cultural_drift": 0.55,
+  "min_generation": 6,
+  "outcomes": [
+   {
+    "id": "consolidate_authority",
+    "label": "Consolidate under one hand",
+    "description": "Break the deadlock by breaking the council — vest authority in a single office that can actually decide. The ship will move again. It will move less like the founders meant.",
+    "population_delta": {
+     "stability": 0.06,
+     "unity": 0.02,
+     "legacy_loyalty": -0.05,
+     "cultural_drift": 0.03
+    },
+    "log": "The deadlock was broken by ending the thing that deadlocked: one office now, one hand on the helm, and the ship deciding again with a speed it had forgotten. The founders had built a council on purpose, against exactly this. No one who remembered why was still aboard to say so."
+   },
+   {
+    "id": "let_the_decks_self_rule",
+    "label": "Let the decks rule themselves",
+    "description": "If the center cannot hold, let it go. Devolve real power to the decks — local rule, local custom — and keep only the mission in common.",
+    "population_delta": {
+     "morale": 0.04,
+     "cultural_drift": 0.06,
+     "unity": -0.05,
+     "stability": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.04
+     }
+    ],
+    "log": "The council let the center dissolve and gave the decks their own rule, and the ship became a loose confederation of corridors that shared a hull and a heading and less and less else. People were happier close to home and stranger to one another, and the common archive thinned as each deck kept only its own."
+   }
+  ]
  }
 ]

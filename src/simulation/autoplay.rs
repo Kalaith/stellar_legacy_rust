@@ -542,6 +542,7 @@ mod tests {
         // and switch off the round-5 dead-air backstop for the same reason.
         data.config.campaign_skeleton.drift_beats.clear();
         data.config.campaign_skeleton.adaptation_beats.clear();
+        data.config.campaign_skeleton.crisis_beats.clear();
         data.config.campaign_skeleton.dead_air_years = 0;
         let picks = crate::state::sim::founding_faction_ids(&data);
         let template = data.contracts.get("deep_vein_survey").unwrap().clone();

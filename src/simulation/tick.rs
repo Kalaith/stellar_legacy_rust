@@ -72,6 +72,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_due_beat(sim, data, &mut report)
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
+            && !fire_crisis_beat(sim, data, &mut report)
             && !fire_dead_air_beat(sim, data, &mut report)
         {
             roll_monthly_event(sim, data, &mut report);
@@ -230,6 +231,28 @@ fn fire_adaptation_beat(sim: &mut SimState, data: &GameData, report: &mut TickRe
         contract.adaptation_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.adaptation_beat_family, report);
+    true
+}
+
+/// Fire a cohesion-collapse crisis beat (content-depth round 6): the *descending*
+/// mirror of the drift/adaptation beats. As the people's `unity` falls to or
+/// below each authored threshold (high→low), force a beat from the crisis family
+/// — a fracturing ship generates its own reckoning rather than waiting on a
+/// random roll. Fires at most one threshold per month; returns whether it
+/// replaced the reactive roll.
+fn fire_crisis_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.crisis_beats_fired as usize) < cfg.crisis_beats.len()
+            && sim.population.unity <= cfg.crisis_beats[c.crisis_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.crisis_beats_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.crisis_beat_family, report);
     true
 }
 

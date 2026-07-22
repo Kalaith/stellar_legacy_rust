@@ -390,6 +390,16 @@ pub struct CampaignSkeletonConfig {
     /// so it stays deterministic). Must be non-empty when `dead_air_years` > 0.
     #[serde(default)]
     pub dead_air_pool: Vec<String>,
+    /// Cohesion-collapse thresholds (content-depth round 6): the *descending*
+    /// mirror of `drift_beats`/`adaptation_beats`. As the people's `unity` falls
+    /// to or below each threshold (thresholds authored high→low), a beat is
+    /// forced — the ship coming apart surfaces its own reckoning rather than
+    /// waiting on a random roll. Empty = no crisis beats.
+    #[serde(default)]
+    pub crisis_beats: Vec<f32>,
+    /// The family a cohesion-collapse crisis beat draws from.
+    #[serde(default)]
+    pub crisis_beat_family: String,
 }
 
 /// One step of the first-voyage checklist. The `id` binds it to a completion
@@ -916,6 +926,24 @@ mod tests {
             assert!(
                 beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton {label}_beats must be within (0, 1]"
+            );
+        }
+        // Content-depth round 6: crisis beats are the DESCENDING mirror — the
+        // ship's cohesion falling past each level in turn — so the same rules
+        // hold but the thresholds must be strictly descending.
+        if !sk.crisis_beats.is_empty() {
+            assert!(
+                families.contains(&sk.crisis_beat_family),
+                "campaign_skeleton crisis_beat_family '{}' has no events",
+                sk.crisis_beat_family
+            );
+            assert!(
+                sk.crisis_beats.windows(2).all(|w| w[0] > w[1]),
+                "campaign_skeleton crisis_beats must be strictly descending"
+            );
+            assert!(
+                sk.crisis_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton crisis_beats must be within (0, 1]"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

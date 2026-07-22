@@ -181,6 +181,7 @@ fn contract_completes_at_target_duration() {
     // switch it off so the silent run stays silent.
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     let mut sim = SimState::new_campaign(
         &data,
@@ -446,6 +447,42 @@ fn an_adaptation_threshold_beat_fires_as_the_people_grow_shipborn() {
 }
 
 #[test]
+fn a_crisis_beat_fires_as_the_ship_comes_apart() {
+    // Content-depth campaign-skeleton round 6: the descending mirror of the
+    // drift/adaptation beats. With reactive rolls and the other threshold beats
+    // off, the only thing that can fire is the cohesion-collapse crisis beat —
+    // and it must, once unity falls past the first threshold.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    let first = data.config.campaign_skeleton.crisis_beats[0];
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+    // Push the people just past the first collapse threshold (unity falling).
+    sim.population.unity = first - 0.02;
+
+    advance_year(&mut sim, &data);
+
+    assert_eq!(
+        sim.contract.as_ref().unwrap().crisis_beats_fired,
+        1,
+        "unity falling past the first threshold forces exactly one crisis beat"
+    );
+}
+
+#[test]
 fn dead_air_forces_a_beat_after_too_long_a_silence() {
     // Everything that could fire an event is off: no reactive rolls, no drift or
     // adaptation beats, no scheduled beats. The only thing left that can break
@@ -457,6 +494,7 @@ fn dead_air_forces_a_beat_after_too_long_a_silence() {
     data.config.dilemma_chance_per_generation = 0.0;
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
     let dead = data.config.campaign_skeleton.dead_air_years;
     assert!(
         dead > 0 && !data.config.campaign_skeleton.dead_air_pool.is_empty(),
@@ -507,6 +545,7 @@ fn ambient_flavor_surfaces_during_a_long_quiet_stretch() {
     data.config.dilemma_chance_per_generation = 0.0;
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     assert!(gap > 0, "this test needs ambient flavor enabled");
     let ambient: std::collections::HashSet<String> =

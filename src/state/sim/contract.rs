@@ -90,6 +90,12 @@ pub struct ActiveContract {
     /// the physiological parallel to `drift_beats_fired`.
     #[serde(default)]
     pub adaptation_beats_fired: u32,
+    /// How many cohesion-collapse crisis beats have fired (content-depth round 6):
+    /// the *descending* mirror of the drift/adaptation beats. Thresholds descend,
+    /// so this doubles as the index of the next (lower) unity level to watch —
+    /// each crisis beat fires once as the ship comes apart.
+    #[serde(default)]
+    pub crisis_beats_fired: u32,
 }
 
 impl ActiveContract {
