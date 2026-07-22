@@ -442,6 +442,50 @@ mod tests {
     }
 
     #[test]
+    fn the_stellar_hazard_pool_colors_only_its_destination() {
+        // Content-depth charters round 6: the stellar_hazard destination finally
+        // has a signature event pool. Its beats fire on a stellar_hazard
+        // charter's Operation and nowhere else — the charter-specific-pool
+        // contract that colors coronal_tap and the new sunward dive.
+        use crate::data::contracts::ContractPhase;
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 47, &picks);
+        let flare = data.events.get("the_coronal_flare").unwrap();
+        assert_eq!(
+            flare.requires_charter_tag,
+            vec!["stellar_hazard".to_string()]
+        );
+
+        // A star-diving charter, on station: the flare can strike.
+        let dive = data.contracts.get("the_sunward_dive").unwrap();
+        assert!(dive.tags.contains(&"stellar_hazard".to_string()));
+        let mut active = crate::simulation::contract::start_contract(dive, &sim);
+        active.phase = ContractPhase::Operation;
+        sim.contract = Some(active);
+        assert!(
+            passes_gate(&sim, flare),
+            "on station near the star, it fires"
+        );
+
+        // The same charter in transit (Travel) — the danger is being *at* the
+        // star, so the operation-phase gate holds it out.
+        sim.contract.as_mut().unwrap().phase = ContractPhase::Travel;
+        assert!(
+            !passes_gate(&sim, flare),
+            "the flare only reaches on-station"
+        );
+
+        // A deep-space survey with no stellar hazard never sees it.
+        let veiled = data.contracts.get("veiled_expanse_survey").unwrap();
+        assert!(!veiled.tags.contains(&"stellar_hazard".to_string()));
+        let mut active = crate::simulation::contract::start_contract(veiled, &sim);
+        active.phase = ContractPhase::Operation;
+        sim.contract = Some(active);
+        assert!(!passes_gate(&sim, flare), "a starless survey never flares");
+    }
+
+    #[test]
     fn a_charter_tag_gate_keys_an_event_to_its_destination() {
         let data = GameData::load().unwrap();
         let picks = crate::state::sim::founding_faction_ids(&data);

@@ -6848,5 +6848,140 @@
     "log": "The navigators refused the gambit and spent the last of the reserve on a wide, safe passage around the well — slower, and it left the tank nearly dry, but the hull came through whole and every soul aboard with it. There would be a reckoning with the fuel later. There was not one now."
    }
   ]
+ },
+ {
+  "id": "the_coronal_flare",
+  "category": "immediate_crisis",
+  "title": "The Coronal Flare",
+  "description": "The star throws a flare — a wall of plasma and hard radiation climbing out of the corona straight along the ship's track. There are minutes, not hours. The whole reason the ship is close enough to do its work is the reason the flare can reach it.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_charter_tag": [
+   "stellar_hazard"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "raise_the_shields",
+    "label": "Full shielding, dump the grid to it",
+    "description": "Throw every watt into the radiation shields and ride it out behind them. The work stops; the ship lives.",
+    "resource_delta": {
+     "energy": -500
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "log": "The ship poured its whole grid into the shields and hunkered behind them as the flare broke over it — a white roar on every sensor, and then it was past. The reactor was drained to nothing and the survey lost a week's rhythm, and not one soul took a dose that mattered."
+   },
+   {
+    "id": "angle_and_ride",
+    "label": "Angle the hull and take it",
+    "description": "No time to fully shield. Turn the ship's thickest armor to the star and endure what gets through.",
+    "ship_delta": {
+     "hull_integrity": -0.06
+    },
+    "population_delta": {
+     "count": -20,
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.03
+     }
+    ],
+    "log": "The ship turned its armored spine to the star and took the flare on the hull, and the outer decks cooked and the sensors blinded and a score on the sunward side took doses no medic could answer. The survey kept its schedule. The burial detail kept pace with it."
+   }
+  ]
+ },
+ {
+  "id": "the_radiation_years",
+  "category": "generational_challenge",
+  "title": "The Radiation Years",
+  "description": "It is not the flares that wear the ship down but the steady bath — years in the star's reach, a dose no shield fully stops, settling into the crews who work the sunward decks. The medics are counting cancers the ship has not seen in generations.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_charter_tag": [
+   "stellar_hazard"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "rotate_the_crews",
+    "label": "Rotate the crews through the shielded core",
+    "description": "Spread the exposure thin — short shifts sunward, long rest behind the shielding. The work crawls; the people last.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": 0.02
+     }
+    ],
+    "log": "The ship put its crews on short sunward shifts and long shielded rest, and the survey slowed to a crawl for it, and the wards stopped filling. It cost the schedule dearly and it kept the people whole, which is a trade a generation ship learns to make."
+   },
+   {
+    "id": "push_the_work",
+    "label": "Push the work, bear the doses",
+    "description": "Keep the crews sunward and the survey on pace. The bill comes due in the wards, and in the children born after.",
+    "population_delta": {
+     "count": -25,
+     "adaptation": 0.04,
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The ship kept its crews in the star's reach and its survey on schedule, and paid in the wards — and then, stranger, in the nurseries, where the children of the radiation years came out subtly changed, hardier to the dose their parents had soaked in, and the ship had adapted a little to a place no one was meant to live."
+   }
+  ]
+ },
+ {
+  "id": "the_stars_pulse",
+  "category": "legacy_moment",
+  "title": "The Star's Pulse",
+  "description": "This deep in the star's magnetic reach, the ship's oldest instruments sing — the founders' navigation arrays picking up the slow, vast pulse of the dying sun and rendering it, unbidden, as something almost like music. The watch has begun keeping time to it. Some say it is beautiful. The engineers say it is drowning the real signal.",
+  "requires_decision": true,
+  "family": "mystery",
+  "requires_charter_tag": [
+   "stellar_hazard"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "filter_the_pulse",
+    "label": "Filter it out, run on clean backups",
+    "description": "Strip the star's song from the instruments and navigate on shielded backup arrays. Safe, silent, and a little poorer for the quiet.",
+    "resource_delta": {
+     "energy": -200
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The engineers filtered the star's pulse out of every array and ran the ship on clean shielded backups, and the instruments read true again and the watch stood their shifts in ordinary silence. Something the crews had started to love was gone, and the survey was the more accurate for its going."
+   },
+   {
+    "id": "keep_the_rhythm",
+    "label": "Let the ship keep the star's time",
+    "description": "Fold the pulse into the ship's own rhythm — its clocks, its watches, its songs. A voyage marked by a dying star's heartbeat becomes a strange new thing.",
+    "population_delta": {
+     "unity": 0.04,
+     "cultural_drift": 0.05,
+     "morale": 0.03
+    },
+    "log": "The ship let the star into its bones — its watch-bells timed to the pulse, its work-songs built on it, a generation growing up keeping a dying sun's heartbeat for a clock. They came away from the dive one people, stranger than they went in, carrying the rhythm of a star that would be dark before their grandchildren were grown."
+   }
+  ]
  }
 ]

@@ -1409,5 +1409,101 @@
    "deep_space",
    "outbound_push"
   ]
+ },
+ {
+  "id": "the_sunward_dive",
+  "name": "Survey Writ: The Sunward Dive",
+  "objective": "exploration",
+  "description": "Not to mine the star, but to read it — the writ is to thread a research hull through the outer atmosphere of a dying sun and bring home what no instrument has recorded from the safe dark: the death-throes of a star, sampled from inside its reach. The operation is a long, slow dive under flare and radiation, the whole of it spent where no ship is meant to be.",
+  "target_duration_years": 350,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 120
+   },
+   {
+    "kind": "operation",
+    "years": 110
+   },
+   {
+    "kind": "return",
+    "years": 120
+   }
+  ],
+  "objective_target": 44,
+  "objective_unit": "coronal survey returns",
+  "milestones": [
+   {
+    "id": "first_skim",
+    "name": "First skim of the outer atmosphere",
+    "progress_threshold": 0.2
+   },
+   {
+    "id": "deep_dive",
+    "name": "Deepest safe pass logged",
+    "progress_threshold": 0.55,
+    "reward": {
+     "influence": 90
+    }
+   },
+   {
+    "id": "core_read",
+    "name": "The dying core read at last",
+    "progress_threshold": 0.9,
+    "reward": {
+     "credits": 500
+    }
+   },
+   {
+    "id": "survey_closed",
+    "name": "Survey closed, course set for the dark",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.35,
+    "target": 0.85
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.3,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.6
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "coronal_flare",
+   "radiation_years",
+   "instrument_blindness"
+  ],
+  "reward": {
+   "credits": 8600,
+   "influence": 360
+  },
+  "min_renown": 250,
+  "tags": [
+   "stellar_hazard",
+   "survey",
+   "anomaly"
+  ]
  }
 ]
