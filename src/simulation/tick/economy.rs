@@ -46,9 +46,16 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         let losses = (sim.population.count as f32 * 0.02 * mitigation).ceil() as u32;
         sim.population.count = sim.population.count.saturating_sub(losses);
         sim.population.morale = (sim.population.morale - 0.05).max(0.0);
-        sim.push_log(format!(
-            "Rations ran out. The population diminished by {losses}."
-        ));
+        // A multi-year famine reprinted one line every year (content-depth voice
+        // round 6); draw from a pool indexed by year, with the built-in as a
+        // fallback so the log never blanks.
+        let pool = &config.flavor.famine;
+        let line = if pool.is_empty() {
+            format!("Rations ran out. The population diminished by {losses}.")
+        } else {
+            pool[sim.year() as usize % pool.len()].replace("{losses}", &losses.to_string())
+        };
+        sim.push_log(line);
     }
 
     // A skilled security chief slowly steadies a fractious ship.
@@ -85,9 +92,16 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         - config.life_support_decay_per_year * wear * fuel_factor * (1.0 - ls_reduction))
         .max(0.0);
     if sim.fuel_stalled_this_year {
-        sim.push_log(
-            "The tanks ran dry in transit — the ship coasted, and its systems strained in the cold.",
-        );
+        // Like famine, a fuel stall reprinted one line per stalled year (voice
+        // round 6); pool indexed by year, built-in fallback.
+        let pool = &config.flavor.fuel_stall;
+        let line = if pool.is_empty() {
+            "The tanks ran dry in transit — the ship coasted, and its systems strained in the cold."
+                .to_owned()
+        } else {
+            pool[sim.year() as usize % pool.len()].clone()
+        };
+        sim.push_log(line);
     }
     sim.fuel_stalled_this_year = false;
 

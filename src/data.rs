@@ -279,6 +279,15 @@ pub struct FlavorConfig {
     /// the built-in line so the ending is never blank.
     #[serde(default)]
     pub extinction: Vec<String>,
+    /// A starving year (content-depth voice round 6): fires once per *year* the
+    /// larder is empty, so a multi-year famine needs variety or it reprints one
+    /// line. Placeholder: `{losses}`. Indexed by year; empty falls back.
+    #[serde(default)]
+    pub famine: Vec<String>,
+    /// A year coasting on a dry tank (content-depth voice round 6): like famine,
+    /// fires once per stalled year. Indexed by year; empty falls back.
+    #[serde(default)]
+    pub fuel_stall: Vec<String>,
     /// Atmospheric "life aboard" lines surfaced during long event-less stretches
     /// (content-depth voice round 2), so the passing centuries read as lived-in
     /// rather than empty. Dated by the log itself, indexed by year (no RNG).
@@ -969,6 +978,16 @@ mod tests {
                 "ambient_gap_years is set but the ambient pool is empty"
             );
         }
+        // Content-depth voice round 6: the recurring-crisis pools need variety
+        // (they fire per year the crisis lasts), and famine weaves in its toll.
+        assert!(
+            fl.famine.len() >= 3 && fl.famine.iter().any(|s| s.contains("{losses}")),
+            "the famine pool needs variety and a {{losses}} line"
+        );
+        assert!(
+            fl.fuel_stall.len() >= 3,
+            "the fuel-stall pool needs variety"
+        );
         // Content-depth voice round 3: phase-line pool keys must be real phases.
         for key in fl.phase_lines.keys() {
             assert!(

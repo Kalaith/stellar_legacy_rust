@@ -193,6 +193,19 @@
       "The last of the line was laid to rest with no one to follow. What the founders began ends, quietly, aboard the ship they launched.",
       "No heir came. The name that cast the ship off is the name that ends with it, somewhere the charts do not reach."
     ],
+    "famine": [
+      "Rations ran out. The population diminished by {losses}.",
+      "Another year with the larder empty; hunger took {losses} more before the count was done.",
+      "The galley served what it did not have. {losses} did not see the next harvest.",
+      "The ship ate its margins and then its people: {losses} lost to the thin year.",
+      "The rationing failed the arithmetic again. {losses} names went to the memorial wall, hunger-thin."
+    ],
+    "fuel_stall": [
+      "The tanks ran dry in transit — the ship coasted, and its systems strained in the cold.",
+      "Another year adrift on empty tanks; the ship fell further behind its own schedule, coasting and cold.",
+      "No burn this year. The ship drifted on momentum alone while its systems wore at the no-fuel rate.",
+      "The dry tanks held the ship becalmed a year longer, every deck a degree colder than the last."
+    ],
     "ambient_gap_years": 8,
     "ambient": [
       "A generation that has never seen a planet paints one, wrong and beautiful, across a cargo-bay wall.",

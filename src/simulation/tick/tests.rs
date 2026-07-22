@@ -447,6 +447,74 @@ fn an_adaptation_threshold_beat_fires_as_the_people_grow_shipborn() {
 }
 
 #[test]
+fn a_multi_year_famine_reads_with_variety() {
+    // Content-depth voice round 6: a famine that lasts several years used to
+    // reprint one line per year. It now draws from a pool indexed by year, so a
+    // long famine reads as a lengthening ordeal, not a stuck message.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        13,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+    // Starve the ship and keep it starving (no food, no food production).
+    sim.resources.food = 0;
+    sim.production.food = 0.0;
+
+    for _ in 0..6 {
+        advance_year(&mut sim, &data);
+    }
+
+    // Normalize a log line by collapsing its digit-run (the {losses} count) so it
+    // can be matched against the authored famine templates.
+    let normalize = |s: &str| -> String {
+        let mut out = String::new();
+        let mut in_digits = false;
+        for c in s.chars() {
+            if c.is_ascii_digit() {
+                if !in_digits {
+                    out.push_str("{losses}");
+                    in_digits = true;
+                }
+            } else {
+                in_digits = false;
+                out.push(c);
+            }
+        }
+        out
+    };
+    let templates: std::collections::HashSet<&str> = data
+        .config
+        .flavor
+        .famine
+        .iter()
+        .map(|s| s.as_str())
+        .collect();
+    let seen: std::collections::HashSet<String> = sim
+        .log
+        .iter()
+        .map(|e| normalize(&e.text))
+        .filter(|n| templates.contains(n.as_str()))
+        .collect();
+    assert!(
+        seen.len() >= 2,
+        "a multi-year famine should surface more than one distinct line (saw {})",
+        seen.len()
+    );
+}
+
+#[test]
 fn a_crisis_beat_fires_as_the_ship_comes_apart() {
     // Content-depth campaign-skeleton round 6: the descending mirror of the
     // drift/adaptation beats. With reactive rolls and the other threshold beats
