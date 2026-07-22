@@ -100,7 +100,11 @@
     "long_term_consequences": [
      "the_ghost_signal"
     ],
-    "log": "The ship answered its own ghost. The channel went silent, and stayed silent, and no one aboard has slept quite the same."
+    "log": "The ship answered its own ghost. The channel went silent, and stayed silent, and no one aboard has slept quite the same.",
+    "schedule_followup": {
+     "template_id": "the_appointed_signal",
+     "delay_years": 30
+    }
    },
    {
     "id": "silence_the_channel",
@@ -502,6 +506,44 @@
      "morale": 0.03
     },
     "log": "The ship let the star into its bones — its watch-bells timed to the pulse, its work-songs built on it, a generation growing up keeping a dying sun's heartbeat for a clock. They came away from the dive one people, stranger than they went in, carrying the rhythm of a star that would be dark before their grandchildren were grown."
+   }
+  ]
+ },
+ {
+  "id": "the_appointed_signal",
+  "category": "legacy_moment",
+  "title": "The Appointed Signal",
+  "description": "The year has come. A generation ago the ship pulled a signal off a dead channel — its own call sign, in a voice long dead, timestamped for a date that had not yet happened. That date is today. The channel is silent now, and the archive holds the recording, and the arithmetic is plain and impossible: for the ship to have received that signal a generation back, some ship must broadcast it, on this frequency, this year. There is only one ship on this frequency. The loop is waiting for the voyage to close it.",
+  "requires_decision": true,
+  "family": "mystery",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "send_the_signal",
+    "label": "Broadcast it, and close the loop",
+    "description": "Play the recording back into the dark on the appointed frequency, and let the ship become the source of the message its own past received. The voyage folds into itself, cause and echo sealed — a thing that should not be possible, made real by a crew that decided to keep the appointment.",
+    "population_delta": {
+     "unity": 0.05,
+     "legacy_loyalty": 0.05,
+     "cultural_drift": 0.06,
+     "morale": 0.02
+    },
+    "resource_delta": {
+     "influence": 40
+    },
+    "log": "The ship broadcast the recording of its own dead voice on the appointed frequency, and the loop closed with an almost audible click across a generation — the signal received, at last, sent. The crew came away shaken and oddly steadied, a people who had reached back through time to hand themselves a message and found, when they read it, that it said only: keep going. It was enough. It had always been enough."
+   },
+   {
+    "id": "keep_the_silence",
+    "label": "Refuse, and break the loop",
+    "description": "Leave the channel dark. Do not send the thing the ship's past already received — and let the impossibility stand open, the received signal with no sender, a hole in the world's causation the voyage declines to fill. Whatever it means, the living will not be conscripted by their own future.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.04,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The ship kept the channel dark on the appointed day and refused to send the message its own past had received, and the impossibility simply stood — a signal with no sender, a loop left open, a hole in the order of things the voyage would carry the rest of the way home. Some nights the crew still heard it in memory, its own voice out of a year that could no longer have happened, asking a question the ship had chosen, for once, not to answer."
    }
   ]
  }

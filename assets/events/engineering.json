@@ -1194,5 +1194,74 @@
     "log": "The council ran the core hot rather than pay for the reline, and the ship kept its schedule and its power budget and its good mood, and the thin shielding leaked a little more each year into decks no one was measuring, against an account that would come due in someone else's watch."
    }
   ]
+ },
+ {
+  "id": "the_bill_comes_due",
+  "category": "generational_challenge",
+  "title": "The Bill Comes Due",
+  "description": "It arrives the way these things always do: not as one failure but as all of them at once. The reroute that became permanent, the fracture left to walk, the overhaul three generations kept putting off for a leaner year that never came — the whole deferred ledger of the voyage has fallen due in a single bad decade, and every 'we'll fix it later' ever logged is now, suddenly, later.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_consequence": [
+   "deferred_maintenance"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "great_overhaul",
+    "label": "Fund the reckoning in full",
+    "description": "Stop the whole ship, empty the treasury and the parts lockers, and do the work three generations dodged — a full overhaul, every deferred fix paid off at once, at a cost that would have been a fraction of this if anyone had paid it when it was small. Pay it. The debt ends here.",
+    "resource_delta": {
+     "credits": -800,
+     "minerals": -300
+    },
+    "ship_delta": {
+     "spare_parts": -30,
+     "hull_integrity": 0.15
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.2
+     },
+     {
+      "id": "life_support_habitat",
+      "condition": 0.15
+     }
+    ],
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The ship stopped and did, in one ruinous decade, all the work that three generations had deferred — the reroutes made right, the fractures drawn out and welded, the founders' overhaul finally funded at many times its original price. The debt ended there, paid in full and at interest, and the ship that came out the far side was sound for the first time in living memory. The lesson, logged for descendants who would ignore it exactly as their forebears had: later is the most expensive word in the manual."
+   },
+   {
+    "id": "patch_forever",
+    "label": "Patch what fails, defer the rest — again",
+    "description": "There is no treasury for a full overhaul and no appetite to stop the voyage for one. Do what the last three generations did: patch whatever is actively on fire, log the rest for a leaner year, and carry the debt forward one more time. It is cheaper this decade. It is never cheaper again.",
+    "ship_delta": {
+     "hull_integrity": -0.08
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.12
+     },
+     {
+      "id": "life_support_habitat",
+      "condition": -0.1
+     }
+    ],
+    "population_delta": {
+     "stability": -0.03,
+     "morale": -0.02
+    },
+    "long_term_consequences": [
+     "deferred_maintenance"
+    ],
+    "log": "The ship did what it had always done: patched the fires it could not ignore and logged the rest for a year that would be leaner still, carrying the whole deferred ledger forward one more generation, a little heavier. The hull settled a permanent degree lower; the bay and the habitat ran a permanent degree worse. The debt did not end. It never ends when it is deferred; it only ever comes due larger, in someone else's watch."
+   }
+  ]
  }
 ]

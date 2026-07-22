@@ -556,6 +556,71 @@ mod tests {
     }
 
     #[test]
+    fn the_ghost_signal_schedules_its_own_appointed_hour() {
+        // Content-depth event families round 10: the predestination loop, closed
+        // with the round-9 scheduling. Answering the ghost signal — the ship's own
+        // call sign timestamped for a future year — schedules that year's reckoning,
+        // and the payoff is scheduled_only so it fires only when its date arrives.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "wanderers", 41, &picks);
+        sim.dynasty.generation = 2; // an age past the ghost's own drift complication is irrelevant here
+
+        let ghost = data.events.get("ghost_signal").unwrap();
+        let payoff = data.events.get("the_appointed_signal").unwrap();
+        assert!(
+            payoff.scheduled_only,
+            "the appointed signal must never roll on its own"
+        );
+        let answer = ghost
+            .outcomes
+            .iter()
+            .position(|o| o.id == "answer_the_ghost")
+            .unwrap();
+        let delay = ghost.outcomes[answer]
+            .schedule_followup
+            .as_ref()
+            .expect("answering the ghost schedules its return")
+            .delay_years;
+
+        let year0 = sim.year();
+        apply_outcome(&mut sim, &data, ghost, answer);
+        assert_eq!(sim.scheduled_events.len(), 1, "answering queues the payoff");
+        assert_eq!(sim.scheduled_events[0].template_id, "the_appointed_signal");
+        assert_eq!(
+            sim.scheduled_events[0].fire_year,
+            year0 + delay,
+            "the loop is set for the year the signal named"
+        );
+    }
+
+    #[test]
+    fn deferred_maintenance_comes_due_a_generation_on() {
+        // Content-depth event families round 10: completing a dangling thread. The
+        // "defer the fix" outcomes of three engineering crises recorded a debt no
+        // event ever collected; now it comes due a generation later.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 8, &picks);
+        let bill = data.events.get("the_bill_comes_due").unwrap();
+        assert_eq!(
+            bill.requires_consequence,
+            vec!["deferred_maintenance".to_string()]
+        );
+        sim.dynasty.generation = 5; // clear its min_generation
+
+        assert!(
+            !passes_gate(&sim, bill),
+            "no reckoning for a ship that never deferred"
+        );
+        sim.consequences.push("deferred_maintenance".to_string());
+        assert!(
+            passes_gate(&sim, bill),
+            "the deferred ledger comes due once it is on record"
+        );
+    }
+
+    #[test]
     fn a_famine_can_be_answered_by_slipping_the_mission_or_holding_to_it() {
         // Content-depth provisioning round 9: the founders' mission and the
         // living's survival compete. Diverting the work crews feeds the ship but
