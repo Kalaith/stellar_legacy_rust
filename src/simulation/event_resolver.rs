@@ -495,6 +495,66 @@ mod tests {
     }
 
     #[test]
+    fn the_embassy_pool_colors_only_inhabited_charters() {
+        // Content-depth charters round 8: the embassy/inhabited mission kind
+        // finally has a signature event pool (mirroring round 6's stellar_hazard
+        // pool), and the objective vocabulary gained Diplomacy/Salvage so the
+        // charter card names an embassy an embassy, not a rescue.
+        use crate::data::contracts::{ContractObjective, ContractPhase};
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 31, &picks);
+
+        // The reclassified charters carry their true objective now.
+        assert_eq!(
+            data.contracts.get("hearthfall_accord").unwrap().objective,
+            ContractObjective::Diplomacy,
+            "an eight-generation embassy is Diplomacy, not Rescue"
+        );
+        assert_eq!(
+            data.contracts.get("the_long_tow").unwrap().objective,
+            ContractObjective::Salvage,
+            "hauling a dead titan-ship is Salvage, not Mining"
+        );
+
+        let residency = data.events.get("the_long_residency").unwrap();
+        assert_eq!(
+            residency.requires_charter_tag,
+            vec!["inhabited".to_string()]
+        );
+
+        // On an embassy, deep into the residency: the pool fires.
+        let embassy = data.contracts.get("hearthfall_accord").unwrap();
+        assert!(embassy.tags.contains(&"inhabited".to_string()));
+        let mut active = crate::simulation::contract::start_contract(embassy, &sim);
+        active.phase = ContractPhase::Operation;
+        sim.contract = Some(active);
+        sim.dynasty.generation = 6; // clear the residency's min_generation
+        assert!(
+            passes_gate(&sim, residency),
+            "the long residency fires on an inhabited charter, on station"
+        );
+
+        // In transit to the embassy, it holds out — the residency is on-station.
+        sim.contract.as_mut().unwrap().phase = ContractPhase::Travel;
+        assert!(
+            !passes_gate(&sim, residency),
+            "there is no residency until the ship is living among them"
+        );
+
+        // A mining charter never hosts an embassy beat.
+        let mining = data.contracts.get("deep_vein_survey").unwrap();
+        assert!(!mining.tags.contains(&"inhabited".to_string()));
+        let mut active = crate::simulation::contract::start_contract(mining, &sim);
+        active.phase = ContractPhase::Operation;
+        sim.contract = Some(active);
+        assert!(
+            !passes_gate(&sim, residency),
+            "a cinder-vein camp has no host people"
+        );
+    }
+
+    #[test]
     fn the_stellar_hazard_pool_colors_only_its_destination() {
         // Content-depth charters round 6: the stellar_hazard destination finally
         // has a signature event pool. Its beats fire on a stellar_hazard

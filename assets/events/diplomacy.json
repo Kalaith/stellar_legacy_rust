@@ -749,5 +749,142 @@
     "log": "The ship pressed a fair price on people who had asked for none, and left with square holds and a squarer conscience — the founders' rule kept, that this voyage earns its way and is beholden to no one. The world's people watched the proud ship go and did not entirely understand it, and the ship, keeping its ledger clean, did not entirely understand why it needed to."
    }
   ]
+ },
+ {
+  "id": "the_mixed_generation",
+  "category": "generational_challenge",
+  "title": "The Mixed Generation",
+  "description": "Generations parked in orbit of the host world, and the inevitable has happened: a cohort of the ship's young has grown up half among the hosts — their friends, their loves, their language down on the surface. Some petition to settle and stay. Some are appalled that the question is even asked.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_charter_tag": [
+   "inhabited"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "grant_the_leave",
+    "label": "Grant leave to settle",
+    "description": "Let those who have made a life below stay and live it. The accord deepens into kinship — but the ship sails home lighter, and a little less itself.",
+    "resource_delta": {
+     "influence": 70
+    },
+    "population_delta": {
+     "count": -120,
+     "cultural_drift": 0.05,
+     "morale": 0.03
+    },
+    "log": "The ship let its mixed generation go to the world that had half-raised them, and the accord became something warmer than any treaty — blood on both sides now. The manifest counted fewer souls for the voyage home, and the founders' descendants understood, not for the first time, that a ship that touches a living world leaves part of itself behind."
+   },
+   {
+    "id": "keep_the_ship_whole",
+    "label": "Keep the ship's people whole",
+    "description": "The voyage is not a colony ship and will not be bled one berth at a time. Bring them home, all of them — and let the hosts read the refusal however they will.",
+    "population_delta": {
+     "unity": 0.05,
+     "legacy_loyalty": 0.06,
+     "morale": -0.03
+    },
+    "resource_delta": {
+     "influence": -30
+    },
+    "log": "The ship kept its people whole and carried them all home, the way a crew stays a crew. The founding families held; the hosts, watching a door close that they had thought open, cooled a degree toward the visitors who would take their welcome but not their world. Some aboard called it discipline. Some called it a smaller thing."
+   }
+  ]
+ },
+ {
+  "id": "the_hosts_petition",
+  "category": "mission_milestone",
+  "title": "The Hosts' Petition",
+  "description": "The host people come to the embassy with a need the ship alone can answer — a failing reactor they no longer understand, a plague their medicine cannot name, a library dying for want of the ship's own preserved knowledge. It is not in the charter. It is exactly what an embassy is for.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_charter_tag": [
+   "inhabited"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "give_freely",
+    "label": "Give what they need, freely",
+    "description": "Open the ship's knowledge and stores to the people it came to befriend. Spend from its own reserves and teachers, and let the gift be the accord.",
+    "resource_delta": {
+     "influence": 120,
+     "credits": -200
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.06
+     }
+    ],
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The ship gave freely — its engineers to their reactor, its physicians to their wards, its archivists to their dying library — and asked for nothing back but the friendship the charter was written to win. The standing it earned was worth more than the charter's pay, though the ship's own teaching benches ran a little thinner for the specialists it lent away."
+   },
+   {
+    "id": "trade_the_aid",
+    "label": "Trade the aid on terms",
+    "description": "Help, yes — but the ship is not a charity and its knowledge is its own inheritance. Set a fair price in goods and standing, and keep the ledger and the archive intact.",
+    "resource_delta": {
+     "credits": 350,
+     "influence": 30
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The ship helped the hosts on terms — a fair price in ore and standing for its expertise, the archive lent under contract and copied under watch. The need was met and the treasury the richer, and the accord held, cooler and more correct, a friendship that had learned to keep receipts."
+   }
+  ]
+ },
+ {
+  "id": "the_long_residency",
+  "category": "legacy_moment",
+  "title": "The Long Residency",
+  "description": "Generations now among a people not their own, and the ship's children speak the hosts' tongue more easily than the founders'. The embassy has become something the charter never named: a small floating nation that belongs, a little, to two worlds. What is the ship becoming out here?",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_charter_tag": [
+   "inhabited"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "become_the_bridge",
+    "label": "Become a bridge people",
+    "description": "Lean into what the residency has made. Let the ship be the seam between two peoples, fluent in both, at home in neither — a new thing, and a useful one.",
+    "resource_delta": {
+     "influence": 90
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.06,
+     "morale": 0.03
+    },
+    "log": "The ship chose to be what the long residency had made it — a bridge people, two tongues in every mouth, brokers and translators and kin to a world not their own. The founders' single thread of a culture braided into something wider and stranger, and the voyage that eventually turned home carried a people the launch crew would not entirely have recognized, and would not, perhaps, have entirely approved."
+   },
+   {
+    "id": "hold_the_ship_apart",
+    "label": "Stay a guest, hold apart",
+    "description": "Kindness, yes; kinship, no. The ship remains a visitor with a charter and a home to return to, and it will not dissolve itself into a foreign shore, however warm.",
+    "population_delta": {
+     "legacy_loyalty": 0.07,
+     "unity": 0.05,
+     "cultural_drift": -0.03,
+     "morale": -0.04
+    },
+    "log": "The ship held itself apart — a guest to the end, courteous and whole and quietly homesick — and would not let the residency remake it. The founders' ways stayed intact and a little brittle for the effort, and the crew kept a home in their heads that most of them would never see, and stayed, against every easy current, the ship that had left."
+   }
+  ]
  }
 ]

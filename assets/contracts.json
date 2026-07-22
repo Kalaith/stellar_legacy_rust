@@ -1025,7 +1025,7 @@
  {
   "id": "hearthfall_accord",
   "name": "Residency: The Hearthfall Accord",
-  "objective": "rescue",
+  "objective": "diplomacy",
   "description": "Carry an embassy to a struggling inhabited world and live among them for eight generations — not a landing and a departure but a long residency, tending a fragile people until an accord can hold, then coming home.",
   "target_duration_years": 460,
   "phases": [
@@ -1228,7 +1228,7 @@
  {
   "id": "the_long_tow",
   "name": "Salvage Writ: The Long Tow",
-  "objective": "mining",
+  "objective": "salvage",
   "description": "A titan-hulled colony ship died on its outbound burn three centuries ago, its reactors cold, its holds and archives intact. The reach out is short; the writ is to grapple the derelict and drag it home. The tow is the voyage — a quarter-millennium hauling a dead ship heavier than your own across the deep dark, its mass on your line the whole way.",
   "target_duration_years": 450,
   "phases": [

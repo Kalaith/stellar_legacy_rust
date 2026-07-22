@@ -10,6 +10,13 @@ pub enum ContractObjective {
     Colonization,
     Exploration,
     Rescue,
+    /// A residency among a living people, graded in standing/accords (content-depth
+    /// charters round 8). An embassy is not a rescue — this gives the charter card
+    /// the right word for a mission whose "yield" is a relationship.
+    Diplomacy,
+    /// Recovering mass from a wreck or derelict (content-depth charters round 8):
+    /// a salvage haul is not mining — no seam is worked, a dead ship is stripped.
+    Salvage,
 }
 
 impl ContractObjective {
@@ -19,6 +26,8 @@ impl ContractObjective {
             ContractObjective::Colonization => "Colonization",
             ContractObjective::Exploration => "Exploration",
             ContractObjective::Rescue => "Rescue",
+            ContractObjective::Diplomacy => "Diplomacy",
+            ContractObjective::Salvage => "Salvage",
         }
     }
 }
