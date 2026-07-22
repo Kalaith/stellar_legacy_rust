@@ -158,6 +158,11 @@
       0.2
     ],
     "crisis_beat_family": "legacy_drift",
+    "flourish_beats": [
+      0.8,
+      0.92
+    ],
+    "flourish_beat_family": "comedy",
     "anniversary_years": 100,
     "anniversary_beat_family": "legacy_drift"
   },

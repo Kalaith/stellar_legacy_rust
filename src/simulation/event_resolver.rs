@@ -181,6 +181,7 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
+        && sim.population.morale >= template.min_morale
 }
 
 /// Weighted pick among already gate-cleared candidates (sorted by id for

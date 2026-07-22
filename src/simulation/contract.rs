@@ -108,6 +108,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         adaptation_beats_fired: 0,
         crisis_beats_fired: 0,
         anniversaries_fired: 0,
+        flourish_beats_fired: 0,
     }
 }
 

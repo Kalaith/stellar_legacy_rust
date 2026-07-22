@@ -197,6 +197,13 @@ pub struct EventTemplate {
     pub min_generation: u32,
     #[serde(default)]
     pub min_cultural_drift: f32,
+    /// Well-being gate (content-depth campaign-skeleton round 8): the event only
+    /// enters the pool while the people's `morale` is at or above this — the
+    /// honest gate for golden-age/flourishing content, so a celebration never
+    /// surfaces on a miserable ship (whether forced by a flourish beat or rolled).
+    /// 0.0 = ungated.
+    #[serde(default)]
+    pub min_morale: f32,
     /// Era ceilings (content-depth campaign-skeleton round 4): the mirror of the
     /// `min_*` gates — the event leaves the pool once the voyage passes these, so
     /// content that belongs to a voyage era (e.g. the deep-middle "the ship is

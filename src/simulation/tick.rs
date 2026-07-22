@@ -73,6 +73,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
             && !fire_crisis_beat(sim, data, &mut report)
+            && !fire_flourish_beat(sim, data, &mut report)
             && !fire_anniversary_beat(sim, data, &mut report)
             && !fire_dead_air_beat(sim, data, &mut report)
         {
@@ -254,6 +255,28 @@ fn fire_crisis_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport
         contract.crisis_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.crisis_beat_family, report);
+    true
+}
+
+/// Fire a flourish beat (content-depth round 8): the *ascending* positive pole of
+/// the crisis beat. The first month the people's `morale` climbs to or past each
+/// authored threshold (low→high), force a beat from the flourish family — a
+/// thriving, well-stewarded ship surfaces its own golden age instead of the
+/// skeleton only ever answering to trouble. Fires at most one threshold per
+/// month; returns whether it replaced the reactive roll.
+fn fire_flourish_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.flourish_beats_fired as usize) < cfg.flourish_beats.len()
+            && sim.population.morale >= cfg.flourish_beats[c.flourish_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.flourish_beats_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.flourish_beat_family, report);
     true
 }
 

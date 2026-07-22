@@ -468,6 +468,16 @@ pub struct CampaignSkeletonConfig {
     /// The family a cohesion-collapse crisis beat draws from.
     #[serde(default)]
     pub crisis_beat_family: String,
+    /// Flourishing thresholds (content-depth round 8): the *positive* pole of the
+    /// crisis beat. As the people's `morale` climbs to or past each threshold
+    /// (authored low→high) a beat is forced — a thriving ship generates its own
+    /// golden age, so good stewardship surfaces its own beats, not only decline.
+    /// Empty = no flourish beats.
+    #[serde(default)]
+    pub flourish_beats: Vec<f32>,
+    /// The family a golden-age flourish beat draws from.
+    #[serde(default)]
+    pub flourish_beat_family: String,
     /// Anniversary cadence (content-depth round 7): every this-many years of the
     /// voyage, a beat is forced from `anniversary_beat_family` — a periodic
     /// archetype (vs the threshold beats), giving the voyage a commemorative
@@ -1122,6 +1132,24 @@ mod tests {
             assert!(
                 sk.crisis_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton crisis_beats must be within (0, 1]"
+            );
+        }
+        // Content-depth round 8: flourish beats are the ASCENDING positive pole —
+        // morale climbing past each level in turn — so the thresholds must be
+        // strictly ascending and in range, and the family must have events.
+        if !sk.flourish_beats.is_empty() {
+            assert!(
+                families.contains(&sk.flourish_beat_family),
+                "campaign_skeleton flourish_beat_family '{}' has no events",
+                sk.flourish_beat_family
+            );
+            assert!(
+                sk.flourish_beats.windows(2).all(|w| w[0] < w[1]),
+                "campaign_skeleton flourish_beats must be strictly ascending"
+            );
+            assert!(
+                sk.flourish_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton flourish_beats must be within [0, 1]"
             );
         }
         // Content-depth round 7: the periodic anniversary beat needs a family

@@ -108,6 +108,12 @@ pub struct ActiveContract {
     /// observed, so the next fires when the voyage passes the following multiple.
     #[serde(default)]
     pub anniversaries_fired: u32,
+    /// How many golden-age flourish beats have fired (content-depth round 8): the
+    /// *ascending* positive pole of the crisis beats. Thresholds ascend, so this
+    /// doubles as the index of the next (higher) morale level to watch — each
+    /// fires once as a thriving ship climbs into its golden years.
+    #[serde(default)]
+    pub flourish_beats_fired: u32,
 }
 
 impl ActiveContract {

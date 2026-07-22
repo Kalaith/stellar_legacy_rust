@@ -410,5 +410,76 @@
     "log": "The midpoint got a line in the log and a single raised cup on each mess deck, and then the watch went back on. It was the sort of restraint the founders would have approved of, and the sort the party faction has not entirely forgiven."
    }
   ]
+ },
+ {
+  "id": "the_golden_watch",
+  "category": "legacy_moment",
+  "title": "The Golden Watch",
+  "description": "A census turns up a quiet marvel: a whole generation has come up knowing only good years — full larders, systems that hum, not one schism or starving winter in living memory. Someone proposes the ship name it what it plainly is, a golden age, and mark it before it passes, because good fortune noticed is good fortune half-kept.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_morale": 0.8,
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "enshrine_the_age",
+    "label": "Name it, and make it a holiday",
+    "description": "Set aside a day, strike a plaque, teach the children that this was the ship at its best — a high-water mark to remember and to live up to. A people that knows it has been happy is a steadier people.",
+    "population_delta": {
+     "unity": 0.05,
+     "legacy_loyalty": 0.06,
+     "morale": 0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The ship named its golden age while it was still living in it, and struck the day into the calendar — a plaque, a feast, a story the children would inherit: that once, for a while, everything worked, and everyone knew it. Years later, in leaner times, the memory of having been happy would steady hands that had never seen the plenty firsthand."
+   },
+   {
+    "id": "spend_the_good_years",
+    "label": "Spend the good fortune on something great",
+    "description": "A golden age hoarded is only nostalgia in waiting. Pour the surplus and the high spirits into something the ship could never risk in a hard year — a grand refit, a bold survey, an ambition worthy of the good times.",
+    "resource_delta": {
+     "influence": 60
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "morale": -0.02,
+     "stability": 0.03
+    },
+    "log": "The ship spent its golden years rather than framing them — threw the surplus and the good will at an ambition it would never have dared in a lean season, and came out the other side changed and proud and a little poorer in ease. The plenty was gone, but the ship had made something of it, which is the other way to keep a good year."
+   }
+  ]
+ },
+ {
+  "id": "the_flowering",
+  "category": "generational_challenge",
+  "title": "The Flowering",
+  "description": "In the fat years the ship's hands have found time for more than survival, and it shows: a deck-opera nobody sanctioned, three new festivals invented from whole cloth, a run of murals turning the maintenance corridors into something worth walking slowly through. The ship is, quietly and for the first time, making art. The question of whether to feed it comes to the council.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_morale": 0.8,
+  "outcomes": [
+   {
+    "id": "fund_the_flowering",
+    "label": "Feed the flowering",
+    "description": "Give the deck-artists berths, time, and a little of the surplus, and let the ship become a place that makes things as well as one that survives. A culture worth carrying home is worth a few work-hours.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "cultural_drift": 0.05
+    },
+    "log": "The council fed the flowering — freed hands, found time, spent a little plenty on the making of beautiful useless things — and the ship became, over a generation, a place with a culture of its own: songs no founder wrote, holidays no charter named, a way of being that belonged to the voyage and to nowhere else. It would arrive home carrying more than cargo."
+   },
+   {
+    "id": "keep_hands_to_the_work",
+    "label": "A working celebration only",
+    "description": "Enjoy the good spirits, by all means — but the voyage is not a festival and the hands are needed. Let the arts be a evening's diversion, not a calling, and keep the ship pointed at its charter.",
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.02,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council let the good spirits run to an evening's diversion and no further, and kept the ship's hands to its charter through the fat years as through the lean. The deck-opera folded; the murals stayed, unfinished and fond. The voyage stayed exactly what the founders launched, which some counted a discipline and some a small closed door."
+   }
+  ]
  }
 ]

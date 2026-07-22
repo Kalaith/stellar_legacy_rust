@@ -602,6 +602,51 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn a_flourish_beat_fires_as_the_ship_reaches_its_golden_age() {
+    // Content-depth campaign-skeleton round 8: the ascending positive pole of the
+    // crisis beat. With reactive rolls and the other threshold beats off, the only
+    // thing that can fire is the flourish beat — and it must, once morale climbs
+    // past the first threshold, while a low-morale ship stays silent.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    let first = data.config.campaign_skeleton.flourish_beats[0];
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // A middling-morale ship generates no golden age.
+    sim.population.morale = first - 0.05;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().flourish_beats_fired,
+        0,
+        "a ship short of the threshold has no golden age to mark"
+    );
+
+    // Lift the people past the first flourish threshold — the beat must fire.
+    sim.population.morale = first + 0.02;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().flourish_beats_fired,
+        1,
+        "morale climbing past the first threshold forces exactly one flourish beat"
+    );
+}
+
+#[test]
 fn dead_air_forces_a_beat_after_too_long_a_silence() {
     // Everything that could fire an event is off: no reactive rolls, no drift or
     // adaptation beats, no scheduled beats. The only thing left that can break
