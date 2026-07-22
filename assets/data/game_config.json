@@ -251,6 +251,19 @@
       "{name} have begun keeping the ship's festivals as if they were their own, which, increasingly, they are.",
       "Something has warmed between the ship and {name}; they answer a hard year now the way kin do, without being asked twice."
     ],
+    "subsystem_repair": [
+      "The {name} was patched back toward working order, good for another stretch of the dark.",
+      "Field crews nursed the {name} back to something like health — not pristine, but holding.",
+      "The {name} runs truer after a hard shift of repairs; the ship breathes a little easier for it.",
+      "They coaxed the {name} back from the edge with spare parts and stubbornness, the way the ship keeps itself alive.",
+      "The {name} is mended as far as hands and stores allow out here — enough to carry on, which is enough."
+    ],
+    "subsystem_training": [
+      "A new cohort trained up on the {name}; the craft passes to hands that will outlast the teachers.",
+      "The {name}'s know-how was drilled into a fresh cohort — one more link in a chain the founders started.",
+      "Young hands took their lessons on the {name} and came away able; the knowledge lives another generation.",
+      "The ship schooled a new cohort in the {name} against the day the last who understood it is gone."
+    ],
     "ambient_gap_years": 8,
     "ambient": [
       "A generation that has never seen a planet paints one, wrong and beautiful, across a cargo-bay wall.",

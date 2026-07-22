@@ -349,6 +349,17 @@ pub struct FlavorConfig {
     /// positive twin, when goodwill has climbed high. Placeholder `{name}`.
     #[serde(default)]
     pub faction_warming: Vec<String>,
+    /// A subsystem patched back toward working order (content-depth voice round 9):
+    /// the field-repair verb fires repeatedly across a voyage, so the flat line it
+    /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
+    /// clock; empty falls back to the built-in line.
+    #[serde(default)]
+    pub subsystem_repair: Vec<String>,
+    /// A new cohort trained up on a subsystem (content-depth voice round 9): the
+    /// knowledge-training verb, likewise repeatable. Placeholder `{name}`. Indexed
+    /// by the month clock; empty falls back to the built-in line.
+    #[serde(default)]
+    pub subsystem_training: Vec<String>,
     /// Atmospheric "life aboard" lines surfaced during long event-less stretches
     /// (content-depth voice round 2), so the passing centuries read as lived-in
     /// rather than empty. Dated by the log itself, indexed by year (no RNG).
@@ -761,6 +772,29 @@ mod tests {
                 a.contains("the Keepers"),
                 "the {label} line names the people"
             );
+        }
+    }
+
+    #[test]
+    fn subsystem_maintenance_voice_is_authored_and_names_the_module() {
+        // Content-depth voice round 9: the field-repair and knowledge-training
+        // verbs fire repeatedly across a voyage, so both pools need variety and
+        // must weave in the module name.
+        let data = GameData::load().unwrap();
+        let flavor = &data.config.flavor;
+        for (pool, label) in [
+            (&flavor.subsystem_repair, "repair"),
+            (&flavor.subsystem_training, "training"),
+        ] {
+            assert!(pool.len() >= 3, "the subsystem {label} pool needs variety");
+            assert!(
+                pool.iter().all(|s| s.contains("{name}")),
+                "every subsystem {label} line must name the module"
+            );
+            let a = FlavorConfig::line_with_name(pool, 0, "engineering bay").unwrap();
+            let b = FlavorConfig::line_with_name(pool, 1, "engineering bay").unwrap();
+            assert_ne!(a, b, "consecutive {label} lines must differ");
+            assert!(a.contains("engineering bay"), "the {label} line names it");
         }
     }
 

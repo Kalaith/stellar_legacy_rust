@@ -169,7 +169,15 @@ pub fn repair_subsystem(sim: &mut SimState, data: &GameData, id: &str) -> Result
     if let Some(state) = sim.subsystems.get_mut(id) {
         state.condition = restored;
     }
-    sim.push_log(format!("The {name} is patched back toward working order."));
+    // Data-driven so a voyage's many field repairs do not reprint one line
+    // (content-depth voice round 9); indexed by the month clock, built-in fallback.
+    let line = crate::data::FlavorConfig::line_with_name(
+        &data.config.flavor.subsystem_repair,
+        sim.month_clock as usize,
+        &name,
+    )
+    .unwrap_or_else(|| format!("The {name} is patched back toward working order."));
+    sim.push_log(line);
     Ok(())
 }
 
@@ -239,7 +247,13 @@ pub fn train_subsystem_knowledge(
     if let Some(state) = sim.subsystems.get_mut(id) {
         state.knowledge = (state.knowledge + cfg.train_knowledge_gain).min(1.0);
     }
-    sim.push_log(format!("A new cohort trains up on the {name}."));
+    let line = crate::data::FlavorConfig::line_with_name(
+        &data.config.flavor.subsystem_training,
+        sim.month_clock as usize,
+        &name,
+    )
+    .unwrap_or_else(|| format!("A new cohort trains up on the {name}."));
+    sim.push_log(line);
     Ok(())
 }
 
@@ -477,6 +491,32 @@ mod tests {
         repair_subsystem(&mut sim, &data, "medical_bay").unwrap();
         assert!(sim.subsystems["medical_bay"].condition > 0.3);
         assert!(sim.resources.minerals < minerals_before);
+    }
+
+    #[test]
+    fn a_repair_draws_its_line_from_the_pool_not_the_flat_fallback() {
+        // Content-depth voice round 9: the field-repair verb fires many times a
+        // voyage, so it draws a varied pooled line naming the module, not the one
+        // flat "patched back toward working order" string it used to reprint.
+        let (data, mut sim) = campaign(4);
+        sim.resources.minerals = 100_000;
+        sim.ship.spare_parts = 100;
+        let bay = data.subsystems.get("medical_bay").unwrap().name.clone();
+        sim.subsystems.get_mut("medical_bay").unwrap().knowledge = 0.9;
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.3;
+
+        let log_before = sim.log.len();
+        repair_subsystem(&mut sim, &data, "medical_bay").unwrap();
+        let line = &sim.log[log_before].text;
+        assert!(line.contains(&bay), "the repair line names the module");
+        assert!(
+            data.config
+                .flavor
+                .subsystem_repair
+                .iter()
+                .any(|t| line == &t.replace("{name}", &bay)),
+            "the line comes from the pool, not the flat fallback: {line}"
+        );
     }
 
     #[test]
