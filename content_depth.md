@@ -117,7 +117,10 @@ adds depth. One deliberate coupling per iteration is a good bar.
    harness), `cargo clippy --all-targets --all-features -- -D warnings`, `cargo fmt -- --check`.
    If the iteration changed pacing-relevant content, eyeball a harness transcript for
    dead air / event spam.
-5. **Log it** in the rotation log below (one line), commit with a message naming the axis.
+5. **Log it** in the rotation log below (one line), then commit — **`mytherra` house style** (matching the `RustGames/mytherra` history):
+   - **Subject**: an evocative *in-world* sentence naming the change's effect in the fiction (not a functional summary), plus a `(GDD <a> <-> <b>)` cross-reference to the `gdd.md` §sections it couples — e.g. `An embassy is graded on the peace it keeps … (GDD 5.2 <-> 5.4)`. §5.1 economy · §5.2 contracts · §5.3 dynasty · §5.4 events · §5.5 factions · §5.6 determinism · §6 data model · §7 world/progression.
+   - **Body**: the *before* state (what was flat/blind/missing) → what changed → the deeper loop it closes / why it matters at generational scale → a "data-driven and deterministic" implementation note naming the schema/field + the test added → a final `N tests pass (one new), determinism preserved` line → the `Co-Authored-By` trailer.
+   - Keep it about the *systems coupling*, in the game's voice; the rotation-log line above stays the terse functional record.
 
 ## Quality bars (reject content that fails these)
 
