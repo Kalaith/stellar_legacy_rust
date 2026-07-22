@@ -1654,5 +1654,82 @@
     "log": "The ship finished its charter and let itself feel the strange hollow after — the mission that had shaped every life aboard now behind them, the long return ahead an open page. Some drifted; some invented new reasons; all of them understood, for the first time, that a purpose fulfilled is a purpose that no longer holds you, and that what a people does with its freedom is a harder question than what it does with its orders."
    }
   ]
+ },
+ {
+  "id": "the_homeward_face",
+  "category": "legacy_moment",
+  "title": "The Homeward Face",
+  "description": "The ship has turned for home, and a generation that has known only the outbound dark does the arithmetic of arrival: the homeport its charts remember will remember the founders — their speech, their calendar, their faces — and will be waiting to greet those founders in the crew that comes back. But the crew that comes back is not those founders, and has not been for a long time. The question of what face to wear into homeport cannot be put off much longer.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "return"
+  ],
+  "min_cultural_drift": 0.4,
+  "outcomes": [
+   {
+    "id": "wear_the_founders_face",
+    "label": "Arrive as the founders' faithful",
+    "description": "Home does not need to know how far the voyage drifted. Rehearse the old speech, restore the old calendar for the arrival, present the ship home wanted to see — the founders' errand faithfully run by the founders' faithful children. Give the homeport its homecoming, whatever it costs the truth.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "stability": 0.05,
+     "morale": -0.04,
+     "cultural_drift": -0.02
+    },
+    "log": "The ship drilled itself back toward the founders' ways for the length of the return — the old speech, the old calendar, the homecoming the homeport was waiting for — and resolved to arrive as the faithful children of the crew that left. It was a kindness and a performance both, a whole generation learning to wear a face that had not been the ship's true face in a century, so that home could have the reunion it had kept a light burning for."
+   },
+   {
+    "id": "arrive_as_we_are",
+    "label": "Arrive as who the voyage made us",
+    "description": "The people who come home are the people the voyage made, and they will not land wearing a mask of the dead to spare the living a surprise. Meet the homeport honestly — changed speech, changed ways, changed faces — and let home meet the crew that actually flew the dark, not the ghost it expected.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.05,
+     "adaptation": 0.04,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The ship decided it would land as itself and not as its founders' ghost — the drifted speech, the invented holidays, the faces a century of the dark had made — and let the homeport meet the people who had actually flown it rather than the ones it had waved off. Some of the crew feared the welcome would be colder for the honesty. Most judged that a home worth coming back to could bear to learn who had come back, and that a reunion built on a mask is a reunion with no one at all."
+   }
+  ]
+ },
+ {
+  "id": "the_stranger_homeport",
+  "category": "legacy_moment",
+  "title": "The Stranger Homeport",
+  "description": "The return course brings the latest word of home with it, and the word is strange: the homeport the founders left is centuries gone about its own business, changed in ways no one aboard has lived to watch — new powers, new tongues, a memory of the voyage grown thin and half-legendary. The ship is not returning to the world it departed. Both ends of the journey have drifted, and only now, turning for home, does the crew reckon with a homecoming to a place as much a stranger as they are.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "hold_the_remembered_home",
+    "label": "Hold to the home the founders carried",
+    "description": "The homeport in the founding logs is the one the voyage was sent from and sworn to; keep faith with that home, teach the children the world the founders knew, and let the arrival sort out the difference between the remembered place and the real one.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "stability": 0.03,
+     "morale": -0.03,
+     "cultural_drift": -0.02
+    },
+    "log": "The ship kept faith with the home its founders had carried in the logs — the streets and the songs and the promises of a place centuries gone — and taught its children to come home to that. It was a loyalty and a setup both: a people sailing toward a memory, who would meet the real homeport, whatever it had become, with the founders' expectations and the founders' certainty, and learn the difference the hard way, at the dock."
+   },
+   {
+    "id": "meet_home_as_it_is",
+    "label": "Accept that home has changed too",
+    "description": "The founders' homeport is as dead as the founders. Whatever waits at the dock is a new place that half-remembers an old errand, and the ship will meet it as it is — no grievance that it changed, no pretence that it didn't — two strangers who happen to share a name and a story, deciding what that is worth now.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.04,
+     "unity": 0.04,
+     "morale": 0.02,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The ship let go of the homeport in the logs and made its peace with meeting whatever now held that name — a changed place greeting a changed crew, two strangers with a shared story and no living witness to it between them. It was a colder homecoming than the founders had promised and a truer one than they could have imagined: not a return to anything, but a meeting, between a voyage and a world that had each become someone else while the other was away."
+   }
+  ]
  }
 ]

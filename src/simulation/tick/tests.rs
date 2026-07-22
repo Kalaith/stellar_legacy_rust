@@ -278,6 +278,7 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -711,6 +712,7 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -783,6 +785,7 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -920,6 +923,87 @@ fn a_scheduled_followup_fires_on_its_determined_year_not_before() {
     assert!(
         sim.log.iter().any(|l| l.text.contains("capsule")),
         "the opening is narrated"
+    );
+}
+
+#[test]
+fn the_homecoming_beat_fires_when_the_voyage_turns_for_home() {
+    // Content-depth campaign-skeleton round 10: the first beat keyed to a phase.
+    // With reactive rolls and the threshold beats off, nothing fires while the
+    // ship is still outbound or on station — but the moment it enters its Return
+    // leg, the homecoming beat is forced, exactly once.
+    use crate::data::contracts::ContractPhase;
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    assert!(
+        !data
+            .config
+            .campaign_skeleton
+            .homecoming_beat_family
+            .is_empty(),
+        "this test needs the homecoming beat enabled"
+    );
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    // The phase is derived from months_elapsed, so drive the test by the clock:
+    // months of travel + operation before the return leg begins.
+    let mut months_before_return = 0u32;
+    for p in &template.phases {
+        if p.kind == ContractPhase::Return {
+            break;
+        }
+        months_before_return += p.years * 12;
+    }
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Still on the outbound/operation legs: no homecoming beat.
+    sim.contract.as_mut().unwrap().months_elapsed = months_before_return - 24;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().phase,
+        ContractPhase::Operation,
+        "still on station a year before the turn"
+    );
+    assert!(
+        !sim.contract.as_ref().unwrap().homecoming_beat_fired,
+        "the ship has not yet turned for home"
+    );
+
+    // Cross into the return leg: the beat fires this year, and only once.
+    sim.contract.as_mut().unwrap().months_elapsed = months_before_return - 6;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().phase,
+        ContractPhase::Return,
+        "the voyage has turned for home"
+    );
+    assert!(
+        sim.contract.as_ref().unwrap().homecoming_beat_fired,
+        "turning for home forces the homecoming beat"
+    );
+    // Resolve any block and advance again — it does not re-fire.
+    if let Some(p) = sim.pending_event.clone() {
+        let t = data.events.get(&p.template_id).cloned().unwrap();
+        crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+    }
+    advance_year(&mut sim, &data);
+    assert!(
+        sim.contract.as_ref().unwrap().homecoming_beat_fired,
+        "the homecoming beat fires at most once a voyage"
     );
 }
 

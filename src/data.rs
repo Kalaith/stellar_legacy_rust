@@ -525,6 +525,14 @@ pub struct CampaignSkeletonConfig {
     /// The family a mission-progress objective beat draws from.
     #[serde(default)]
     pub objective_beat_family: String,
+    /// Homecoming beat family (content-depth round 10): the first beat keyed to a
+    /// voyage *phase* rather than a stat, time, or the objective. Once the charter
+    /// turns for home (enters its Return leg) a single beat is forced from this
+    /// family — the climactic identity reckoning the doc names, a generation
+    /// meeting a homeport that still remembers the founders it no longer resembles.
+    /// Empty = no homecoming beat.
+    #[serde(default)]
+    pub homecoming_beat_family: String,
     /// Anniversary cadence (content-depth round 7): every this-many years of the
     /// voyage, a beat is forced from `anniversary_beat_family` — a periodic
     /// archetype (vs the threshold beats), giving the voyage a commemorative

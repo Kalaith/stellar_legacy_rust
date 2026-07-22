@@ -119,6 +119,10 @@ pub struct ActiveContract {
     /// to watch — each fires once as the work crosses its mark.
     #[serde(default)]
     pub objective_beats_fired: u32,
+    /// Whether this voyage's single homecoming beat has fired (content-depth round
+    /// 10): forced once the charter enters its Return leg.
+    #[serde(default)]
+    pub homecoming_beat_fired: bool,
     /// This charter's scripted timed beats (content-depth charters round 9),
     /// copied from the template at launch; `at_year` is years since this voyage's
     /// launch. Ascending, fired in order.

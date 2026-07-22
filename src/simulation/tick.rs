@@ -77,6 +77,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_crisis_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
+            && !fire_homecoming_beat(sim, data, &mut report)
             && !fire_anniversary_beat(sim, data, &mut report)
             && !fire_dead_air_beat(sim, data, &mut report)
         {
@@ -301,6 +302,29 @@ fn fire_objective_beat(sim: &mut SimState, data: &GameData, report: &mut TickRep
         contract.objective_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.objective_beat_family, report);
+    true
+}
+
+/// Fire the homecoming beat (content-depth round 10): the first beat keyed to a
+/// voyage *phase*. The moment the charter turns for home — enters its Return leg —
+/// a single beat is forced from the homecoming family, the voyage's climactic
+/// identity reckoning as a generation faces arrival at a homeport it no longer
+/// resembles. Fires at most once per voyage; returns whether it replaced the roll.
+fn fire_homecoming_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.homecoming_beat_family.is_empty() {
+        return false;
+    }
+    let turning_home = sim.contract.as_ref().is_some_and(|c| {
+        !c.homecoming_beat_fired && c.phase == crate::data::contracts::ContractPhase::Return
+    });
+    if !turning_home {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.homecoming_beat_fired = true;
+    }
+    force_family_beat(sim, data, &cfg.homecoming_beat_family, report);
     true
 }
 
