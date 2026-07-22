@@ -136,6 +136,15 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Faction-approval gates (content-depth round 8): a grievance/withdrawal beat
+    // fires only while the named people is aboard and has soured to its threshold.
+    if !template.faction_approval_below.iter().all(|gate| {
+        sim.factions
+            .iter()
+            .any(|f| f.faction_id == gate.id && f.is_aboard() && f.approval <= gate.below)
+    }) {
+        return false;
+    }
     if !template.knowledge_below.iter().all(|gate| {
         sim.subsystems
             .get(&gate.id)
@@ -355,6 +364,18 @@ pub fn apply_outcome(
             state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
         }
     }
+    // …or earn / spend a people's goodwill (content-depth round 8): the choice
+    // shifts named aboard factions' approval, which decides whether a slighted
+    // people eventually withdraws. Factions not aboard are ignored.
+    for delta in &outcome.faction_approval_deltas {
+        if let Some(state) = sim
+            .factions
+            .iter_mut()
+            .find(|f| f.faction_id == delta.id && f.is_aboard())
+        {
+            state.adjust_approval(delta.delta);
+        }
+    }
     // …and whichever outcome was taken, a riding complication (content-depth
     // round 6) lands its extra toll on top — the event was worse than usual
     // because of the state it arrived in.
@@ -491,6 +512,102 @@ mod tests {
         assert!(
             passes_gate(&sim, payoff),
             "sealing the ward unlocks the reopening decades later"
+        );
+    }
+
+    #[test]
+    fn faction_approval_gates_a_slighted_peoples_withdrawal() {
+        // Content-depth factions round 8: the reserved approval mechanic. Event
+        // choices earn or spend a people's goodwill, and a faction slighted past
+        // a threshold generates its own withdrawal — so *how you treat a people*,
+        // not only how far the voyage has drifted, decides whether it stays.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 19, &picks);
+        sim.dynasty.generation = 4; // clear the withdrawal's min_generation
+
+        // Ensure the First Flame is aboard at the launch midpoint.
+        if sim.factions.iter().all(|f| f.faction_id != "first_flame") {
+            sim.factions.push(FactionState {
+                faction_id: "first_flame".to_string(),
+                members: 300,
+                status: FactionStatus::Aboard,
+                approval: crate::state::sim::factions::default_approval(),
+            });
+            sim.population.count += 300;
+        }
+        let flame_approval = |sim: &SimState| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == "first_flame")
+                .map(|f| f.approval)
+        };
+        assert_eq!(flame_approval(&sim), Some(0.5), "a people launches neutral");
+
+        let petition = data.events.get("the_flame_petition").unwrap();
+        let withdrawal = data.events.get("the_flame_withdrawal").unwrap();
+
+        // The grievance fires whenever the Flame is aboard; the withdrawal waits
+        // until they have actually soured.
+        assert!(
+            passes_gate(&sim, petition),
+            "the Keepers can always petition"
+        );
+        assert!(
+            !passes_gate(&sim, withdrawal),
+            "a content people does not withdraw"
+        );
+
+        // Slight them once — approval drops but not yet past the threshold.
+        let slight = petition
+            .outcomes
+            .iter()
+            .position(|o| o.id == "hold_the_line")
+            .unwrap();
+        apply_outcome(&mut sim, &data, petition, slight);
+        assert!(
+            flame_approval(&sim).unwrap() < 0.5,
+            "the slight is remembered"
+        );
+        assert!(
+            !passes_gate(&sim, withdrawal),
+            "one slight is not yet a departure"
+        );
+
+        // Slight them again — now they have soured past the threshold and the
+        // withdrawal enters the pool.
+        apply_outcome(&mut sim, &data, petition, slight);
+        assert!(
+            passes_gate(&sim, withdrawal),
+            "a people slighted past the threshold moves to leave"
+        );
+
+        // Paying to keep them lifts approval back above the line and closes the
+        // withdrawal (the loop can recover).
+        let mut kept = sim.clone();
+        let beg = withdrawal
+            .outcomes
+            .iter()
+            .position(|o| o.id == "beg_them_stay")
+            .unwrap();
+        apply_outcome(&mut kept, &data, withdrawal, beg);
+        assert!(kept.is_faction_aboard("first_flame"), "bought back aboard");
+        assert!(
+            !passes_gate(&kept, withdrawal),
+            "goodwill restored closes the withdrawal"
+        );
+
+        // Or letting them go actually sheds the people.
+        let go = withdrawal
+            .outcomes
+            .iter()
+            .position(|o| o.id == "let_them_go")
+            .unwrap();
+        apply_outcome(&mut sim, &data, withdrawal, go);
+        assert!(
+            !sim.is_faction_aboard("first_flame"),
+            "the slighted people departs"
         );
     }
 

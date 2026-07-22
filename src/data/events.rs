@@ -54,6 +54,25 @@ pub struct SubsystemGate {
     pub below: f32,
 }
 
+/// A signed shift to a named faction's approval (content-depth factions round 8):
+/// the coupling that lets an event choice earn or spend a people's goodwill.
+/// Clamped to [0, 1] on apply; a no-op if that faction is not aboard.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FactionApprovalDelta {
+    pub id: String,
+    pub delta: f32,
+}
+
+/// A gate keyed to a faction's approval falling to or below `below` (content-depth
+/// factions round 8): the event fires only while the named faction is aboard *and*
+/// has soured to at least this degree — a grievance beat, or the withdrawal of a
+/// people pushed too far.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FactionApprovalGate {
+    pub id: String,
+    pub below: f32,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventOutcome {
     pub id: String,
@@ -100,6 +119,10 @@ pub struct EventOutcome {
     /// succession restore its lost know-how.
     #[serde(default)]
     pub subsystem_deltas: Vec<SubsystemDelta>,
+    /// Signed shifts to named factions' approval (content-depth factions round 8):
+    /// how an outcome earns or spends a people's goodwill. Aboard factions only.
+    #[serde(default)]
+    pub faction_approval_deltas: Vec<FactionApprovalDelta>,
     #[serde(default)]
     pub log: String,
 }
@@ -207,6 +230,12 @@ pub struct EventTemplate {
     /// Empty = no faction-presence requirement.
     #[serde(default)]
     pub requires_factions_aboard: Vec<String>,
+    /// Faction-approval gate (content-depth factions round 8): the event fires
+    /// only while every named faction is aboard *and* soured to or below its
+    /// threshold — the grievance/withdrawal beats a mistreated people generate.
+    /// Empty = ungated.
+    #[serde(default)]
+    pub faction_approval_below: Vec<FactionApprovalGate>,
     /// Knowledge-crisis gates (content-depth iteration): the event only fires
     /// while every listed subsystem's knowledge has decayed to or below its
     /// threshold. Empty = ungated.

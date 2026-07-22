@@ -1414,5 +1414,105 @@
     "log": "The council let the holiday be what it had become — untethered from its founding, kept for its own warm sake, a tradition whose only remaining reason was that the ship had always kept it. Which is, in the end, the reason for most traditions, and the founders, whatever they were, had wanted the ship to go on."
    }
   ]
+ },
+ {
+  "id": "the_flame_petition",
+  "category": "generational_challenge",
+  "title": "The Keepers' Petition",
+  "description": "The Keepers of the First Flame come before the council with a grievance dressed as a request: the reactor-shrine's eternal burn, they say, has been treated as a machine to be throttled when the grow-decks want power, and a faith cannot be dimmed at a quartermaster's convenience. They ask that the flame be given standing that no ration board can override.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "first_flame"
+  ],
+  "outcomes": [
+   {
+    "id": "grant_the_shrine",
+    "label": "Grant the flame its standing",
+    "description": "Write the eternal burn into the ship's law above the ration board. The Keepers are honoured — and the grow-decks and industry learn to make do with what the shrine leaves them.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "unity": 0.02
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "first_flame",
+      "delta": 0.12
+     }
+    ],
+    "log": "The council gave the First Flame's shrine standing above the ration board, and the Keepers bowed to a ship that understood a faith is not a furnace to be banked. The grow-decks ran a little dimmer for it, and the Keepers, for a while, counted themselves a people heard."
+   },
+   {
+    "id": "hold_the_line",
+    "label": "The ship's needs come first",
+    "description": "A voyage runs on power budgets, not creeds, and the shrine will take its share like every other draw when the ship is short. Say so plainly, whatever the Keepers make of it.",
+    "population_delta": {
+     "stability": 0.04,
+     "morale": -0.02
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "first_flame",
+      "delta": -0.18
+     }
+    ],
+    "log": "The council told the Keepers plainly that the shrine would be throttled with everything else when the ship ran short, faith or no faith. It was true, and it was well-run, and the Keepers of the First Flame went back to their decks having learned exactly where their fire stood on this ship's ledger. They did not forget it."
+   }
+  ]
+ },
+ {
+  "id": "the_flame_withdrawal",
+  "category": "generational_challenge",
+  "title": "The Flame Withdraws",
+  "description": "The Keepers of the First Flame have stopped petitioning. Slighted one time too many on a ship that has made plain, over generations, that their faith is a line item, they have quietly gathered their people and their portable braziers and asked for a berth's worth of the ship — a shuttle, a share of stores, and leave to go find a world that will let their fire burn without a quartermaster's leave.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "first_flame"
+  ],
+  "faction_approval_below": [
+   {
+    "id": "first_flame",
+    "below": 0.3
+   }
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "let_them_go",
+    "label": "Release them with honour",
+    "description": "A people held against their will is no people at all. Give the Keepers their share and a proper farewell, and let the ship sail on without the fire it could not keep.",
+    "faction_loss": "departed",
+    "faction_loss_id": "first_flame",
+    "population_delta": {
+     "stability": 0.03,
+     "unity": -0.05,
+     "legacy_loyalty": -0.06
+    },
+    "log": "The ship gave the Keepers of the First Flame their berth and their stores and a farewell with the honours due a founding people, and the eternal flame went with them into the dark to find a world that would keep it. The ship sailed on lighter and colder, and those who remained understood that a people slighted long enough will, in the end, simply leave."
+   },
+   {
+    "id": "beg_them_stay",
+    "label": "Pay any price to keep them",
+    "description": "Losing a founding people is a wound the voyage may not survive. Give the Keepers everything they asked for and more — the shrine's standing, a public penance, a seat on the council — and win them back at whatever it costs.",
+    "resource_delta": {
+     "energy": -400,
+     "influence": -50
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "first_flame",
+      "delta": 0.3
+     }
+    ],
+    "log": "The council did what pride had refused for generations: it went to the Keepers with a penance and a place at the table and the shrine's standing written above the ration board at last, and it paid for the reconciliation in power and standing both. The First Flame stayed, mollified and watchful, and the ship kept its founding fire — having learned, expensively, that goodwill spent is dearer to buy back than it ever was to keep."
+   }
+  ]
  }
 ]

@@ -40,11 +40,30 @@ pub struct FactionState {
     pub faction_id: String,
     pub members: u32,
     pub status: FactionStatus,
+    /// How content this people is with how the ship has treated them (content-depth
+    /// factions round 8): 0 (embittered) .. 1 (devoted), 0.5 at launch. Event
+    /// choices shift it (`EventOutcome::faction_approval_deltas`), and a people
+    /// slighted past a threshold becomes eligible for its own withdrawal — so
+    /// *how you treat a faction*, not only how far the voyage has drifted,
+    /// decides whether it stays. `#[serde(default)]` keeps old saves loading at
+    /// the neutral midpoint.
+    #[serde(default = "default_approval")]
+    pub approval: f32,
+}
+
+/// Launch/neutral approval — a people that neither loves nor resents the ship yet.
+pub fn default_approval() -> f32 {
+    0.5
 }
 
 impl FactionState {
     pub fn is_aboard(&self) -> bool {
         self.status == FactionStatus::Aboard
+    }
+
+    /// Shift approval by `delta`, clamped to [0, 1].
+    pub fn adjust_approval(&mut self, delta: f32) {
+        self.approval = (self.approval + delta).clamp(0.0, 1.0);
     }
 }
 
@@ -72,6 +91,7 @@ pub fn build_founding_factions(faction_ids: &[String], total: u32) -> Vec<Factio
             faction_id: id.clone(),
             members: base + if (i as u32) < remainder { 1 } else { 0 },
             status: FactionStatus::Aboard,
+            approval: default_approval(),
         })
         .collect()
 }
@@ -410,6 +430,7 @@ impl SimState {
             faction_id: faction_id.to_owned(),
             members: cfg.recruit_group_size,
             status: FactionStatus::Aboard,
+            approval: default_approval(),
         });
         self.population.count += cfg.recruit_group_size;
         let name = log_name(&data.factions, faction_id);
@@ -449,6 +470,7 @@ mod tests {
             faction_id: id.to_owned(),
             members,
             status: FactionStatus::Aboard,
+            approval: default_approval(),
         }
     }
 

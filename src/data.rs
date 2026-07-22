@@ -812,6 +812,13 @@ mod tests {
                         .iter()
                         .flat_map(|c| c.requires_factions_aboard.iter()),
                 )
+                // Content-depth round 8: approval gate + approval-delta faction ids.
+                .chain(e.faction_approval_below.iter().map(|g| &g.id))
+                .chain(
+                    e.outcomes
+                        .iter()
+                        .flat_map(|o| o.faction_approval_deltas.iter().map(|d| &d.id)),
+                )
             {
                 assert!(
                     data.factions.get(fid).is_some(),
