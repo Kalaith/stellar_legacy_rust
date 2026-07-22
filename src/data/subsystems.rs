@@ -70,4 +70,18 @@ pub struct SubsystemsConfig {
     /// decays at its own rate.
     #[serde(default)]
     pub engineering_decay_swing: f32,
+    /// Fraction of famine losses the medical bay itself prevents at full
+    /// condition (content-depth subsystems round 9): the two modules that only
+    /// ever *cost* the ship now earn their keep, and — unlike the tier-based
+    /// bonuses — by how well they are *kept*. A bay in good repair saves more of
+    /// the starving; it scales by condition and stacks with a serving medic
+    /// (combined reduction capped). 0 = no bay-level relief.
+    #[serde(default)]
+    pub medical_famine_relief_per_condition: f32,
+    /// Yearly unity recovery from a well-kept security/justice system at full
+    /// condition (content-depth subsystems round 9), scaling by condition and
+    /// stacking with a serving security chief. Only steadies a ship below the
+    /// crew recovery ceiling. 0 = no bay-level recovery.
+    #[serde(default)]
+    pub security_unity_recovery_per_condition: f32,
 }

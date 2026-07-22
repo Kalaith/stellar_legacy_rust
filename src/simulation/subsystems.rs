@@ -318,6 +318,30 @@ pub fn life_support_decay_reduction(sim: &SimState, data: &GameData) -> f32 {
     effective_severity(def, state)
 }
 
+/// Fraction of famine losses the medical bay itself prevents (content-depth
+/// subsystems round 9): a bay in good repair keeps more of the starving alive.
+/// Scales by *condition* — upkeep finally buys output, not just the absence of a
+/// breakdown — and stacks with the serving medic (the caller caps the total).
+pub fn medical_famine_relief(sim: &SimState, data: &GameData) -> f32 {
+    let condition = sim
+        .subsystems
+        .get("medical_bay")
+        .map_or(0.0, |s| s.condition);
+    condition * data.config.subsystems.medical_famine_relief_per_condition
+}
+
+/// Yearly unity recovery from a well-kept security/justice system (content-depth
+/// subsystems round 9): a functioning corps steadies a fractious ship. Scales by
+/// *condition* and, like the security chief, only helps a ship still below the
+/// crew recovery ceiling. Stacks with the chief.
+pub fn security_unity_recovery(sim: &SimState, data: &GameData) -> f32 {
+    if sim.population.unity >= data.config.crew.unity_recovery_ceiling {
+        return 0.0;
+    }
+    let condition = sim.subsystems.get("security").map_or(0.0, |s| s.condition);
+    condition * data.config.subsystems.security_unity_recovery_per_condition
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -328,6 +352,44 @@ mod tests {
         let picks = founding_faction_ids(&data);
         let sim = SimState::new_campaign(&data, "preservers", seed, &picks);
         (data, sim)
+    }
+
+    #[test]
+    fn a_well_kept_medical_bay_and_corps_earn_their_keep_by_condition() {
+        // Content-depth subsystems round 9: the two modules that only ever cost
+        // the ship now pay it back, and by how well they are *kept*. A sound
+        // medical bay softens famine relief above a wrecked one; a sound security
+        // corps recovers more unity than a wrecked one.
+        let (data, mut sim) = campaign(9);
+
+        // Medical: relief scales with condition, so a rotted bay saves fewer.
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 1.0;
+        let relief_sound = medical_famine_relief(&sim, &data);
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.1;
+        let relief_wrecked = medical_famine_relief(&sim, &data);
+        assert!(
+            relief_sound > relief_wrecked && relief_wrecked >= 0.0,
+            "a bay in good repair keeps more of the starving alive"
+        );
+
+        // Security: recovery scales with condition, but only below the ceiling.
+        sim.population.unity = 0.3;
+        sim.subsystems.get_mut("security").unwrap().condition = 1.0;
+        let recover_sound = security_unity_recovery(&sim, &data);
+        sim.subsystems.get_mut("security").unwrap().condition = 0.1;
+        let recover_wrecked = security_unity_recovery(&sim, &data);
+        assert!(
+            recover_sound > recover_wrecked,
+            "a functioning corps steadies the ship more than a decayed one"
+        );
+        // Above the ceiling neither the chief nor the corps manufactures harmony.
+        sim.population.unity = data.config.crew.unity_recovery_ceiling;
+        sim.subsystems.get_mut("security").unwrap().condition = 1.0;
+        assert_eq!(
+            security_unity_recovery(&sim, &data),
+            0.0,
+            "a steady ship needs no steadying"
+        );
     }
 
     #[test]

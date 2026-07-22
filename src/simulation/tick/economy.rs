@@ -42,7 +42,13 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.resources.food -= upkeep;
     } else {
         sim.resources.food = 0;
-        let mitigation = 1.0 - crew::famine_loss_reduction(sim, data);
+        // The serving medic *and* the medical bay itself keep some of the
+        // starving alive (content-depth subsystems round 9); the combined
+        // reduction is capped so a famine is never entirely painless.
+        let reduction = (crew::famine_loss_reduction(sim, data)
+            + subsystems::medical_famine_relief(sim, data))
+        .min(0.9);
+        let mitigation = 1.0 - reduction;
         let losses = (sim.population.count as f32 * 0.02 * mitigation).ceil() as u32;
         sim.population.count = sim.population.count.saturating_sub(losses);
         sim.population.morale = (sim.population.morale - 0.05).max(0.0);
@@ -58,8 +64,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.push_log(line);
     }
 
-    // A skilled security chief slowly steadies a fractious ship.
-    let recovery = crew::unity_recovery(sim, data);
+    // A skilled security chief and a well-kept security corps both slowly steady
+    // a fractious ship (content-depth subsystems round 9): crew skill + module
+    // condition stack.
+    let recovery = crew::unity_recovery(sim, data) + subsystems::security_unity_recovery(sim, data);
     if recovery > 0.0 {
         sim.population.unity = (sim.population.unity + recovery).min(1.0);
     }
