@@ -621,6 +621,80 @@ mod tests {
     }
 
     #[test]
+    fn a_charted_dearth_arrives_on_its_date_softened_only_if_provisioned() {
+        // Content-depth provisioning round 10: foresight on a determined clock.
+        // Charting the dearth schedules its guaranteed arrival; laying in stores
+        // seeds the consequence the payoff's complication reads to soften it; the
+        // payoff itself is scheduled-only and never rolls on its own.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 33, &picks);
+
+        let setup = data.events.get("the_charted_dearth").unwrap();
+        let payoff = data.events.get("the_dearth_arrives").unwrap();
+        assert!(
+            payoff.scheduled_only,
+            "the dearth fires only when its charted year comes"
+        );
+        // Its relief complication rides on the laid-in-stores consequence.
+        let comp = payoff
+            .complications
+            .iter()
+            .find(|c| {
+                c.requires_consequence
+                    .contains(&"laid_in_for_dearth".to_string())
+            })
+            .expect("a relief complication for the provisioned ship");
+
+        // Laying in stores queues the dearth *and* records the foresight.
+        let lay_in = setup
+            .outcomes
+            .iter()
+            .position(|o| o.id == "lay_in_stores")
+            .unwrap();
+        let delay = setup.outcomes[lay_in]
+            .schedule_followup
+            .as_ref()
+            .unwrap()
+            .delay_years;
+        let year0 = sim.year();
+        apply_outcome(&mut sim, &data, setup, lay_in);
+        assert_eq!(sim.scheduled_events[0].template_id, "the_dearth_arrives");
+        assert_eq!(sim.scheduled_events[0].fire_year, year0 + delay);
+        assert!(
+            sim.consequences.contains(&"laid_in_for_dearth".to_string()),
+            "laying in is on record for the complication to find"
+        );
+
+        // With the foresight on record, the relief complication rides the payoff.
+        assert!(
+            active_complication(&sim, payoff).is_some_and(|c| c.id == comp.id),
+            "the laid-in stores answer the dearth"
+        );
+
+        // A ship that trusted to slack has no such relief.
+        let mut unready = SimState::new_campaign(&data, "preservers", 33, &picks);
+        assert!(
+            active_complication(&unready, payoff).is_none(),
+            "an unprovisioned ship meets the dearth bare"
+        );
+        // And trusting the slack still schedules the (unsoftened) dearth.
+        let trust = setup
+            .outcomes
+            .iter()
+            .position(|o| o.id == "trust_the_slack")
+            .unwrap();
+        apply_outcome(&mut unready, &data, setup, trust);
+        assert_eq!(sim.scheduled_events.len(), 1);
+        assert!(
+            !unready
+                .consequences
+                .contains(&"laid_in_for_dearth".to_string()),
+            "trusting the slack lays in nothing"
+        );
+    }
+
+    #[test]
     fn a_famine_can_be_answered_by_slipping_the_mission_or_holding_to_it() {
         // Content-depth provisioning round 9: the founders' mission and the
         // living's survival compete. Diverting the work crews feeds the ship but

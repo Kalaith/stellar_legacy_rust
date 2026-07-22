@@ -1372,5 +1372,109 @@
     "log": "The council held the crews to the charter through the lean season and let the shortage bite unanswered, and it bit: the memorial wall grew, and the mission did not slip a day. The founders' work came first, exactly as they had written it, paid for in a generation that starved a little rather than set the task down. Some called it discipline. The hungry, mostly, called it the founders' due, and meant it."
    }
   ]
+ },
+ {
+  "id": "the_charted_dearth",
+  "category": "generational_challenge",
+  "title": "The Charted Dearth",
+  "description": "The navigators bring the council a number, not a crisis: sixty years ahead, on the charted course, lies a long lean stretch — a reach of the dark with nothing to skim, no world to stop at, no relay to beg from, a computed gap between one resupply and the next that the ship will cross on whatever it carries in. It is not an emergency. It is a date. The only question is what the ship does with sixty years of warning.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "max_generation": 7,
+  "outcomes": [
+   {
+    "id": "trust_the_slack",
+    "label": "Trust to the ship's slack",
+    "description": "Sixty years is a long time to hoard against a stretch the models might have drawn wrong, and the ship has always found a way. Note the dearth in the log, carry on as the voyage is provisioned, and meet the lean reach when it comes with whatever the ship happens to be holding.",
+    "population_delta": {
+     "morale": 0.02
+    },
+    "schedule_followup": {
+     "template_id": "the_dearth_arrives",
+     "delay_years": 60
+    },
+    "log": "The council noted the charted dearth in the log, judged sixty years too long to hoard against a line on a projection, and carried on as provisioned. The reach was still coming — the arithmetic did not care whether anyone prepared for it — but the ship would meet it on whatever it was holding when the day arrived, and trust, as it always had, to slack and luck."
+   },
+   {
+    "id": "lay_in_stores",
+    "label": "Lay in against the day",
+    "description": "A warning sixty years out is a gift a lean ship rarely gets. Spend the good decades building sealed reserves against the charted stretch — grain, volatiles, the dull discipline of putting by while there is plenty — so that when the dearth arrives on its date, the ship arrives with it prepared.",
+    "resource_delta": {
+     "credits": -350,
+     "food": -1000
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.02
+    },
+    "long_term_consequences": [
+     "laid_in_for_dearth"
+    ],
+    "schedule_followup": {
+     "template_id": "the_dearth_arrives",
+     "delay_years": 60
+    },
+    "log": "The council spent the good decades laying in against the charted dearth — sealed vaults filled a little at a time, the dull unglamorous discipline of putting by sixty years before the need — and logged the reserves against a date most of those who stocked them would not live to see. The reach was coming. This time, the ship would be holding more than luck when it arrived."
+   }
+  ]
+ },
+ {
+  "id": "the_dearth_arrives",
+  "category": "immediate_crisis",
+  "title": "The Dearth Arrives",
+  "description": "It comes exactly when the navigators said it would, two generations after they said it: the long lean reach of the dark, nothing to skim and nowhere to stop, the computed gap the founders' descendants were warned of and largely forgot. The larder must cover the crossing on what the ship laid in — or did not.",
+  "requires_decision": true,
+  "family": "survival",
+  "scheduled_only": true,
+  "complications": [
+   {
+    "id": "the_stores_answer",
+    "requires_consequence": [
+     "laid_in_for_dearth"
+    ],
+    "description_add": "But the sealed reserves a wiser generation laid in sixty years ago answer now, exactly as they were meant to — the crossing is a hardship, not a catastrophe.",
+    "resource_delta": {
+     "food": 2400
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The vaults the founders' descendants filled two generations early opened into the dearth and carried the ship across it with room to spare — the foresight of people long dead feeding a crossing they had computed but never seen. The lesson logged itself: the cheapest larder a ship ever fills is the one it fills sixty years early."
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "ration_the_crossing",
+    "label": "Ration the crossing hard",
+    "description": "Cut every share to the bone and cross the lean reach on discipline — hunger shared out equal and thin, the ship holding its people together through the gap on will and arithmetic.",
+    "population_delta": {
+     "count": -60,
+     "morale": -0.05,
+     "unity": 0.04
+    },
+    "log": "The ship rationed the charted crossing to the bone and held its people together through the lean reach on shared hunger and iron discipline. The memorial wall grew; unity held, the way it does when a hardship is borne fairly and foreseen. The ship came out the far side thinner and whole, into a stretch of dark with something to skim again at last."
+   },
+   {
+    "id": "spend_the_reserves",
+    "label": "Spend down every reserve",
+    "description": "Empty the lockers, burn the margins, sell the future to buy the present — cross the dearth by throwing every reserve the ship has at it and arrive on the far side alive and stripped to nothing.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "ship_delta": {
+     "spare_parts": -15
+    },
+    "population_delta": {
+     "morale": 0.02,
+     "stability": -0.03
+    },
+    "log": "The ship crossed the dearth by spending everything it had — the lockers emptied, the margins burned, the reserves that were meant for other emergencies thrown at this one — and came out the far side fed and hollow, alive on nothing, one bad year now from a crisis it had disarmed itself against. It had survived the charted reach. It would spend the next stretch of dark rebuilding what surviving it cost."
+   }
+  ]
  }
 ]
