@@ -69,6 +69,17 @@ pub fn meets_in_world_gate(sim: &SimState, template: &ContractTemplate) -> bool 
         .requires_faction_aboard
         .iter()
         .all(|id| sim.is_faction_aboard(id))
+        // Deed gates (content-depth charters round 14): a writ can require the ship
+        // to have *done* something (how a charter arc unlocks its next leg) or be
+        // barred by a dark deed on record.
+        && template
+            .requires_consequence
+            .iter()
+            .all(|tag| sim.consequences.contains(tag))
+        && !template
+            .forbidden_consequence
+            .iter()
+            .any(|tag| sim.consequences.contains(tag))
 }
 
 /// Instantiate an active contract from a template at the current sim state.
@@ -344,6 +355,41 @@ mod tests {
             tapped_morale > survey_morale && tapped_hull > survey_hull,
             "the star's reach wears morale and hull faster than a quiet survey \
              (tap {tapped_morale}/{tapped_hull} vs survey {survey_morale}/{survey_hull})"
+        );
+    }
+
+    #[test]
+    fn a_charter_arc_unlocks_its_next_leg_only_once_the_first_is_done() {
+        // Content-depth charters round 14: a charter arc. The Karst Belt works are
+        // offered only to a ship that has proven the veins (the survey's completion
+        // mark) — and, being delicate high-trust work, only to a ship that has not
+        // broken its word.
+        let data = GameData::load().unwrap();
+        let survey = data.contracts.get("deep_vein_survey").unwrap();
+        let works = data.contracts.get("the_karst_works").unwrap();
+        let seed = &survey.completion_consequence;
+        assert!(!seed.is_empty(), "the survey seeds an arc on completion");
+        assert_eq!(&works.requires_consequence, &vec![seed.clone()]);
+
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 71, &picks);
+
+        // A ship that has never surveyed the belt is not offered the works…
+        assert!(
+            !meets_in_world_gate(&sim, works),
+            "the permanent works need the veins proven first"
+        );
+        // …but a ship that completed the survey is.
+        sim.consequences.push(seed.clone());
+        assert!(
+            meets_in_world_gate(&sim, works),
+            "proving the veins unlocks the works"
+        );
+        // …unless it has broken a bargain — the consortium won't trust it.
+        sim.consequences.push("broke_a_bargain".to_string());
+        assert!(
+            !meets_in_world_gate(&sim, works),
+            "a known oathbreaker is barred from the delicate works"
         );
     }
 

@@ -480,6 +480,20 @@ impl Game {
             if let Some(payout) = payout {
                 sim.resources.apply(&payout);
             }
+            // A charter seen through to full term leaves its mark (content-depth
+            // charters round 14): the seed of an arc — a survey proves the ground a
+            // later colony writ needs, so the follow-on appears on the next board.
+            if let Some(mark) = sim
+                .contract
+                .as_ref()
+                .and_then(|c| self.data.contracts.get(&c.template_id))
+                .map(|t| t.completion_consequence.clone())
+                .filter(|m| !m.is_empty())
+            {
+                if !sim.consequences.contains(&mark) {
+                    sim.consequences.push(mark);
+                }
+            }
             sim.contract = None;
 
             self.chronicle.record(entry);

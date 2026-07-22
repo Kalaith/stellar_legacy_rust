@@ -175,7 +175,8 @@
   "tags": [
    "mining",
    "deep_space"
-  ]
+  ],
+  "completion_consequence": "karst_veins_proven"
  },
  {
   "id": "veiled_expanse_survey",
@@ -1746,6 +1747,106 @@
   ],
   "requires_faction_aboard": [
    "verdant_kin"
+  ]
+ },
+ {
+  "id": "the_karst_works",
+  "name": "Karst Belt Works: Permanent Extraction",
+  "objective": "colonization",
+  "description": "The Karst Belt is charted and its richest veins proven; now a consortium wants them worked in earnest. Return to the belt and raise a permanent extraction settlement — refineries, habs, a self-sustaining crew — the mission that only exists because an earlier voyage did the surveying, and only for a hull whose word is still good.",
+  "target_duration_years": 400,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 120
+   },
+   {
+    "kind": "operation",
+    "years": 200
+   },
+   {
+    "kind": "return",
+    "years": 80
+   }
+  ],
+  "objective_target": 25000,
+  "objective_unit": "tonnes brought online",
+  "milestones": [
+   {
+    "id": "arrival",
+    "name": "Belt reached",
+    "progress_threshold": 0.05
+   },
+   {
+    "id": "first_refinery",
+    "name": "First refinery lit",
+    "progress_threshold": 0.4,
+    "reward": {
+     "credits": 80
+    }
+   },
+   {
+    "id": "self_sustaining",
+    "name": "Settlement self-sustaining",
+    "progress_threshold": 0.85
+   },
+   {
+    "id": "works_certified",
+    "name": "Works certified operational",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.4,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.2,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.15,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "succession_crisis",
+   "famine"
+  ],
+  "reward": {
+   "credits": 9000,
+   "minerals": 1500,
+   "influence": 120
+  },
+  "min_renown": 100,
+  "tags": [
+   "mining",
+   "colony",
+   "long_station"
+  ],
+  "requires_consequence": [
+   "karst_veins_proven"
+  ],
+  "forbidden_consequence": [
+   "broke_a_bargain"
   ]
  }
 ]

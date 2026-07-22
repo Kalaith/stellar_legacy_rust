@@ -166,6 +166,24 @@ pub struct ContractTemplate {
     /// rather than only in the crises it throws. Default (all-zero) = no toll.
     #[serde(default)]
     pub annual_toll: AnnualToll,
+    /// In-world availability gate on the ship's *deeds* (content-depth charters
+    /// round 14): the writ is offered only once every listed consequence is on
+    /// record — how a **charter arc** is built, so completing one mission unlocks
+    /// the follow-on. The consequence-twin of `requires_faction_aboard`. Empty =
+    /// no deed required.
+    #[serde(default)]
+    pub requires_consequence: Vec<String>,
+    /// The negative twin (content-depth charters round 14): the writ is barred if
+    /// *any* listed consequence is on record — delicate work a ship's dark history
+    /// disqualifies it from. Empty = nothing bars it.
+    #[serde(default)]
+    pub forbidden_consequence: Vec<String>,
+    /// Consequence recorded when this charter is seen through to full term
+    /// (content-depth charters round 14): the seed of a **charter arc** — a survey
+    /// completed proves the ground a later colony writ needs. Empty = the charter
+    /// leaves no such mark.
+    #[serde(default)]
+    pub completion_consequence: String,
 }
 
 /// A charter's standing per-year toll (content-depth charters round 13). Each delta

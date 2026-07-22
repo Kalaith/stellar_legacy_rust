@@ -1422,6 +1422,33 @@ mod tests {
             data.contracts.iter().any(|(_, c)| !c.annual_toll.is_none()),
             "some charter should exact a per-year route toll"
         );
+        // Content-depth charters round 14: a charter's deed gates must name a
+        // consequence *something* produces — an event outcome or another charter's
+        // completion — or the writ (or its bar) could never resolve (typo guard).
+        let charter_produced: std::collections::HashSet<&String> = data
+            .events
+            .iter()
+            .flat_map(|(_, e)| e.outcomes.iter())
+            .flat_map(|o| o.long_term_consequences.iter())
+            .chain(
+                data.contracts
+                    .iter()
+                    .filter(|(_, c)| !c.completion_consequence.is_empty())
+                    .map(|(_, c)| &c.completion_consequence),
+            )
+            .collect();
+        for (id, c) in data.contracts.iter() {
+            for tag in c
+                .requires_consequence
+                .iter()
+                .chain(c.forbidden_consequence.iter())
+            {
+                assert!(
+                    charter_produced.contains(tag),
+                    "charter '{id}' gates on consequence '{tag}' nothing records"
+                );
+            }
+        }
         // Content-depth charters round 12: at least one charter should key on an
         // in-world gate, so the mechanic is exercised.
         assert!(
