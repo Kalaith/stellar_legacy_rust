@@ -31,13 +31,10 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         TextStyle::new(22.0, term::primary()).params(),
     );
     y += 20.0;
-    draw_typed_block(
-        &template.description,
-        content.x,
-        y,
-        content.w,
-        ctx.modal_reveal,
-    );
+    // Show the twist a riding complication adds (content-depth round 6): the
+    // sim is paused, so this reads the same state the outcome will resolve in.
+    let description = crate::simulation::event_resolver::shown_description(ctx.sim, template);
+    draw_typed_block(&description, content.x, y, content.w, ctx.modal_reveal);
     y += 84.0;
 
     for (i, outcome) in template.outcomes.iter().enumerate() {

@@ -2,10 +2,44 @@
 
 pub mod skeleton;
 
-use crate::data::events::{EventCategory, EventOutcome, EventTemplate};
+use crate::data::events::{Complication, EventCategory, EventOutcome, EventTemplate};
 use crate::data::{GameConfig, GameData};
 use crate::simulation::subsystems;
 use crate::state::sim::{PendingEvent, SimState};
+
+/// The one complication (content-depth round 6) riding this event right now, if
+/// any: the first, in authored order, whose gates all hold for the current sim.
+/// The sim is paused while an event blocks, so this returns the same answer at
+/// present-time (to append its description) and apply-time (to land its deltas).
+pub fn active_complication<'a>(
+    sim: &SimState,
+    template: &'a EventTemplate,
+) -> Option<&'a Complication> {
+    template.complications.iter().find(|c| {
+        sim.population.cultural_drift >= c.min_cultural_drift
+            && c.condition_below.iter().all(|gate| {
+                sim.subsystems
+                    .get(&gate.id)
+                    .is_some_and(|s| s.condition <= gate.below)
+            })
+            && c.requires_consequence
+                .iter()
+                .all(|tag| sim.consequences.contains(tag))
+            && c.food_below.is_none_or(|t| sim.resources.food <= t)
+    })
+}
+
+/// An event's description as it should be shown: the template's, plus the riding
+/// complication's `description_add` when one is active. Used by the modal so the
+/// twist is visible before the player chooses.
+pub fn shown_description(sim: &SimState, template: &EventTemplate) -> String {
+    match active_complication(sim, template) {
+        Some(c) if !c.description_add.is_empty() => {
+            format!("{} {}", template.description, c.description_add)
+        }
+        _ => template.description.clone(),
+    }
+}
 
 /// `event_chance = min(cap, base + years_since_event*0.1 + contract_progress*0.2)`.
 pub fn event_chance(config: &GameConfig, years_since_event: u32, contract_progress: f32) -> f32 {
@@ -258,6 +292,10 @@ pub fn apply_outcome(
     let Some(outcome) = template.outcomes.get(outcome_index) else {
         return;
     };
+    // Snapshot the riding complication (content-depth round 6) from the state as
+    // it stood *before* this outcome — the same state the player saw the twist
+    // in — so the outcome's own deltas can't move the gate out from under it.
+    let complication = active_complication(sim, template).cloned();
     // A subsystem buffering this event's family softens its harm (W5): every
     // negative delta is scaled down; the boons land in full.
     let (resource_delta, ship_delta, population_delta) = subsystems::buffered_deltas(
@@ -310,6 +348,23 @@ pub fn apply_outcome(
         if let Some(state) = sim.subsystems.get_mut(&delta.id) {
             state.condition = (state.condition + delta.condition).clamp(0.0, 1.0);
             state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
+        }
+    }
+    // …and whichever outcome was taken, a riding complication (content-depth
+    // round 6) lands its extra toll on top — the event was worse than usual
+    // because of the state it arrived in.
+    if let Some(c) = &complication {
+        sim.resources.apply(&c.resource_delta);
+        sim.ship.apply(&c.ship_delta);
+        sim.population.apply(&c.population_delta);
+        for delta in &c.subsystem_deltas {
+            if let Some(state) = sim.subsystems.get_mut(&delta.id) {
+                state.condition = (state.condition + delta.condition).clamp(0.0, 1.0);
+                state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
+            }
+        }
+        if !c.log.is_empty() {
+            sim.push_log(c.log.clone());
         }
     }
     sim.pending_event = None;
@@ -611,6 +666,49 @@ mod tests {
         assert!(
             sim.subsystems["engineering_bay"].knowledge < before,
             "the machinists' craft leaves with them"
+        );
+    }
+
+    #[test]
+    fn a_complication_rides_only_when_its_state_gate_holds_and_lands_extra_toll() {
+        // Content-depth event families round 6: system_failure carries a
+        // complication that rides only while the engineering bay is itself
+        // failing. When it rides it (a) shows in the description and (b) lands an
+        // extra toll on top of whichever outcome was taken.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let template = data.events.get("system_failure").unwrap();
+        assert!(!template.complications.is_empty());
+
+        // Sound bay: no complication rides; the description is the plain one.
+        let mut sound = SimState::new_campaign(&data, "adaptors", 51, &picks);
+        sound
+            .subsystems
+            .get_mut("engineering_bay")
+            .unwrap()
+            .condition = 0.9;
+        assert!(active_complication(&sound, template).is_none());
+        assert_eq!(shown_description(&sound, template), template.description);
+
+        // Failing bay: the complication rides, and its twist joins the shown text.
+        let mut failing = SimState::new_campaign(&data, "adaptors", 51, &picks);
+        failing
+            .subsystems
+            .get_mut("engineering_bay")
+            .unwrap()
+            .condition = 0.2;
+        assert!(active_complication(&failing, template).is_some());
+        assert!(shown_description(&failing, template).len() > template.description.len());
+
+        // Same outcome, two states: the complicated run takes the heavier hull hit.
+        let hull_of = |mut sim: SimState| {
+            apply_outcome(&mut sim, &data, template, 0); // emergency_repair
+            sim.ship.hull_integrity
+        };
+        let (a, b) = (sound.clone(), failing.clone());
+        assert!(
+            hull_of(b) < hull_of(a),
+            "the complication lands an extra toll the flat event does not"
         );
     }
 

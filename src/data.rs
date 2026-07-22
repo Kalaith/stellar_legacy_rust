@@ -677,6 +677,14 @@ mod tests {
                         .iter()
                         .flat_map(|o| o.subsystem_deltas.iter().map(|d| &d.id)),
                 )
+                // Content-depth round 6: complication gates and deltas name
+                // subsystems too.
+                .chain(e.complications.iter().flat_map(|c| {
+                    c.condition_below
+                        .iter()
+                        .map(|g| &g.id)
+                        .chain(c.subsystem_deltas.iter().map(|d| &d.id))
+                }))
             {
                 assert!(
                     data.subsystems.get(sid).is_some(),
@@ -694,7 +702,11 @@ mod tests {
             .flat_map(|o| o.long_term_consequences.iter())
             .collect();
         for (id, e) in data.events.iter() {
-            for tag in &e.requires_consequence {
+            for tag in e.requires_consequence.iter().chain(
+                e.complications
+                    .iter()
+                    .flat_map(|c| c.requires_consequence.iter()),
+            ) {
                 assert!(
                     produced.contains(tag),
                     "event '{id}' gates on consequence '{tag}' no outcome records"

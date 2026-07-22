@@ -104,6 +104,44 @@ pub struct EventOutcome {
     pub log: String,
 }
 
+/// A state-gated twist that can ride along on an event (content-depth event
+/// families round 6): "an event that can arrive with 2–3 complications is worth
+/// three flat events." When its gates pass, the complication's `description_add`
+/// is appended to the event as shown, and — whichever outcome the player takes —
+/// its deltas and `log` land on top. The sim is paused while an event blocks, so
+/// the same complication resolves at present-time and apply-time from identical
+/// state; no stored field, and the outcome list is untouched. At most one
+/// complication (the first whose gates pass, in authored order) rides at a time.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Complication {
+    pub id: String,
+    /// Gates (all must hold): the drift the people have reached, subsystems
+    /// physically failing, prior consequences recorded, a food shortage. Empty /
+    /// 0.0 / None = that gate ignored.
+    #[serde(default)]
+    pub min_cultural_drift: f32,
+    #[serde(default)]
+    pub condition_below: Vec<SubsystemGate>,
+    #[serde(default)]
+    pub requires_consequence: Vec<String>,
+    #[serde(default)]
+    pub food_below: Option<i64>,
+    /// Sentence appended to the event's description when the complication rides.
+    pub description_add: String,
+    /// Extra consequences applied on top of the chosen outcome, and the line that
+    /// narrates them.
+    #[serde(default)]
+    pub resource_delta: ResourceDelta,
+    #[serde(default)]
+    pub ship_delta: ShipDelta,
+    #[serde(default)]
+    pub population_delta: PopulationDelta,
+    #[serde(default)]
+    pub subsystem_deltas: Vec<SubsystemDelta>,
+    #[serde(default)]
+    pub log: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EventTemplate {
     pub id: String,
@@ -189,4 +227,8 @@ pub struct EventTemplate {
     #[serde(default)]
     pub legacy_weight_modifiers: HashMap<String, f32>,
     pub outcomes: Vec<EventOutcome>,
+    /// State-gated twists this event can arrive with (content-depth round 6).
+    /// Empty = the event always plays flat.
+    #[serde(default)]
+    pub complications: Vec<Complication>,
 }

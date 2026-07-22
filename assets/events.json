@@ -38,7 +38,29 @@
     "log": "Power was rerouted around the failure. The bypass will outlive its welcome."
    }
   ],
-  "family": "engineering"
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "bay_already_failing",
+    "condition_below": [
+     {
+      "id": "engineering_bay",
+      "below": 0.4
+     }
+    ],
+    "description_add": "Worse: the engineering bay is itself half-wrecked, and the hands who might fix the failure are already fighting to keep the bay's own lights on.",
+    "ship_delta": {
+     "hull_integrity": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "With the engineering bay already failing, the repair went harder than it should have and cost the worn bay a little more of what little it had left."
+   }
+  ]
  },
  {
   "id": "population_growth",
@@ -72,7 +94,21 @@
     "log": "Rations held steady through the birth cohort. Some decks kept score."
    }
   ],
-  "family": "survival"
+  "family": "survival",
+  "complications": [
+   {
+    "id": "boom_on_a_thin_larder",
+    "food_below": 3000,
+    "description_add": "And the larder is already thin — a birth cohort is a blessing the galley is in no position to feed.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The new cohort arrived into a hungry year, and the galley stretched an already-thin larder thinner to feed them."
+   }
+  ]
  },
  {
   "id": "arrival_at_target",
@@ -135,7 +171,19 @@
     "log": "The schism was left to run its course. One faction would not be reconciled; they took a decommissioned shuttle and their grievances, and departed on their own course."
    }
   ],
-  "family": "legacy_drift"
+  "family": "legacy_drift",
+  "complications": [
+   {
+    "id": "schism_on_a_drifted_ship",
+    "min_cultural_drift": 0.6,
+    "description_add": "This is no longer a quarrel over calendars — on a ship drifted this far from its founding, the decks scarcely share a language for the disagreement anymore.",
+    "population_delta": {
+     "unity": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "On a ship so far drifted from its founders, even the reckoning landed in half-shared words, and left the decks a little further apart than it found them."
+   }
+  ]
  },
  {
   "id": "micrometeoroid_storm",
