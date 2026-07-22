@@ -302,7 +302,26 @@
     "log": "The council drew on the war chest a wiser generation had banked and bought the crack out of existence — a full frame replacement, shipyard-grade, the spine made whole rather than braced and watched. The reserve came down hard, but this was the very thing it had been saved for, and the ship sailed on with one fewer sword over its head."
    }
   ],
-  "family": "engineering"
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "a_ship_that_defers",
+    "requires_consequence": [
+     "deferred_maintenance"
+    ],
+    "applies_to_outcomes": [
+     "monitor_it"
+    ],
+    "description_add": "And this is a ship with a habit of looking away: the last round of deferred repairs is still pending, the ledger of 'later' grown long. To defer this crack too is to add it to a list the ship has already shown it does not come back to.",
+    "ship_delta": {
+     "hull_integrity": -0.06
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The crack went onto the ship's long list of laters, and on a hull already carrying a backlog of deferred work it did what deferred cracks do — spread further and faster than one neglect alone would explain, the whole habit of putting-off coming due in a single widening seam."
+   }
+  ]
  },
  {
   "id": "reactor_scram",

@@ -232,6 +232,15 @@ pub struct Complication {
     /// 0 = no recurrence requirement.
     #[serde(default)]
     pub min_prior_occurrences: u32,
+    /// Choice targeting (content-depth event families round 14): when non-empty,
+    /// the complication's extra toll and log land *only* if the chosen outcome's id
+    /// is listed here — so a twist can punish a *specific* decision (an unstable
+    /// reactor makes *pushing through* worse but leaves *scramming* alone) rather
+    /// than every choice alike. The `description_add` still always shows (the twist
+    /// is visible before the choice). Empty = the toll lands on whichever outcome is
+    /// taken (the round-6 behavior).
+    #[serde(default)]
+    pub applies_to_outcomes: Vec<String>,
     /// Sentence appended to the event's description when the complication rides.
     pub description_add: String,
     /// Extra consequences applied on top of the chosen outcome, and the line that

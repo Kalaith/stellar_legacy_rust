@@ -1108,6 +1108,22 @@ mod tests {
                 );
             }
         }
+        // Content-depth round 14: a complication that targets specific choices must
+        // name real outcomes of its own event (typo guard), or the toll could never
+        // land.
+        for (id, e) in data.events.iter() {
+            let outcome_ids: std::collections::HashSet<&String> =
+                e.outcomes.iter().map(|o| &o.id).collect();
+            for c in &e.complications {
+                for oid in &c.applies_to_outcomes {
+                    assert!(
+                        outcome_ids.contains(oid),
+                        "event '{id}' complication '{}' targets unknown outcome '{oid}'",
+                        c.id
+                    );
+                }
+            }
+        }
         // Content-depth round 12: the first outcome of every event must be
         // unconditional, so a ship is never left with no legal choice and the
         // auto-resolve/index-0 contract always lands on an available outcome.

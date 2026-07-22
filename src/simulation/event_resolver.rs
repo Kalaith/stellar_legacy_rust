@@ -495,10 +495,14 @@ pub fn apply_outcome(
             contract.objective_progress = (contract.objective_progress + shift).max(0.0);
         }
     }
-    // …and whichever outcome was taken, a riding complication (content-depth
-    // round 6) lands its extra toll on top — the event was worse than usual
-    // because of the state it arrived in.
-    if let Some(c) = &complication {
+    // …and a riding complication (content-depth round 6) lands its extra toll on
+    // top — the event was worse than usual because of the state it arrived in.
+    // Round 14: unless the complication targets specific choices, in which case its
+    // toll lands only when one of those choices was the one taken.
+    let toll_applies = complication.as_ref().is_some_and(|c| {
+        c.applies_to_outcomes.is_empty() || c.applies_to_outcomes.contains(&outcome.id)
+    });
+    if let Some(c) = complication.as_ref().filter(|_| toll_applies) {
         sim.resources.apply(&c.resource_delta);
         sim.ship.apply(&c.ship_delta);
         sim.population.apply(&c.population_delta);
@@ -1573,6 +1577,64 @@ mod tests {
         assert!(
             available_outcome_indices(&sim, fracture).contains(&repair),
             "the banked reserve unlocks the proper repair years later"
+        );
+    }
+
+    #[test]
+    fn a_choice_targeting_complication_punishes_only_the_choice_it_names() {
+        // Content-depth event families round 14: outcome-conditional complications.
+        // The hull fracture's deferral twist rides on a ship that already puts work
+        // off, but its extra toll lands only on the choice to defer *again* — fixing
+        // the crack (or paying for a proper repair) escapes it.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let event = data.events.get("hull_fracture").unwrap();
+        let comp = event
+            .complications
+            .iter()
+            .find(|c| c.applies_to_outcomes.iter().any(|o| o == "monitor_it"))
+            .expect("hull_fracture carries a choice-targeting complication");
+        let defer = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "monitor_it")
+            .unwrap();
+        let fix = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "reinforce_now")
+            .unwrap();
+
+        // The twist rides only on a ship that already carries deferred work.
+        let mut deferring = SimState::new_campaign(&data, "preservers", 67, &picks);
+        deferring
+            .consequences
+            .push("deferred_maintenance".to_string());
+        assert!(
+            active_complication(&deferring, event).is_some_and(|c| c.id == comp.id),
+            "the deferral twist rides on a ship that already defers"
+        );
+
+        // Hull change from applying an outcome, with or without the deferral history.
+        let hull_delta = |outcome: usize, deferred: bool| -> f32 {
+            let mut sim = SimState::new_campaign(&data, "preservers", 67, &picks);
+            sim.resources.minerals = 100_000; // afford the reinforce
+            if deferred {
+                sim.consequences.push("deferred_maintenance".to_string());
+            }
+            let h0 = sim.ship.hull_integrity;
+            apply_outcome(&mut sim, &data, event, outcome);
+            sim.ship.hull_integrity - h0
+        };
+
+        // Deferring *again* on a deferring ship costs extra hull; fixing it does not.
+        assert!(
+            hull_delta(defer, true) < hull_delta(defer, false),
+            "deferring again eats the complication's extra toll"
+        );
+        assert!(
+            (hull_delta(fix, true) - hull_delta(fix, false)).abs() < 1e-6,
+            "fixing the crack is untouched — the twist targets only the defer choice"
         );
     }
 
