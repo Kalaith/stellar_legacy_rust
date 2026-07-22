@@ -254,6 +254,20 @@
       "{name} have begun keeping the ship's festivals as if they were their own, which, increasingly, they are.",
       "Something has warmed between the ship and {name}; they answer a hard year now the way kin do, without being asked twice."
     ],
+    "ship_mood_darkening": [
+      "A heaviness has settled on the ship of late. Folk keep to their own decks, the corridors have gone quiet in a way that is not rest, and the old songs are sung less and lower.",
+      "There is a greyness in the crew this year that no roster change explains — a whole ship carrying its mornings a little harder, laughing a little less, the light in the common decks somehow thinner.",
+      "The mood aboard has turned. It shows in small things: shorter tempers at the mess, longer silences on the night watch, a generation that has stopped believing the good years are coming back.",
+      "Something has gone out of the ship's spirit. The work still gets done, but joylessly, the way a tired people does a thing because stopping is worse — and everyone aboard can feel the weight of it.",
+      "A low season has come over the decks. No single grief accounts for it; it is the sum of a hard stretch settling into the bones of the crew, the ship itself seeming to sail heavier for it."
+    ],
+    "ship_mood_lifting": [
+      "A lightness has come over the ship of late. The common decks are loud again in the good way, the festivals better attended, the crew carrying itself like a people that expects tomorrow to be worth showing up for.",
+      "Something has lifted in the ship's spirit this year. Folk linger over the shared meals, the corridors ring with the small noise of contentment, and even the hard watches are stood with a lighter heart.",
+      "The mood aboard has turned bright. It shows in the singing that starts up unbidden, the children given room to be loud, a whole ship remembering that the long voyage can also be a life well lived.",
+      "A warmth has spread through the decks that no single feast explains — the accumulated weight of good years, felt at last as ease, the crew moving through its days gladder than it has been in a generation.",
+      "The ship is happy this season, plainly and without apology. The work goes quicker for it, quarrels settle before they harden, and the founders, could they see it, would know their gamble had bought their heirs some joy."
+    ],
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

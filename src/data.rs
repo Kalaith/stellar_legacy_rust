@@ -357,6 +357,17 @@ pub struct FlavorConfig {
     /// positive twin, when goodwill has climbed high. Placeholder `{name}`.
     #[serde(default)]
     pub faction_warming: Vec<String>,
+    /// The *whole ship's* morale crossing *into* a heavy band (content-depth voice
+    /// round 11): the collective parallel to `faction_souring` — where that voices
+    /// one people souring, this voices the decks as a whole going grim. No name;
+    /// indexed by year; empty falls back to silence.
+    #[serde(default)]
+    pub ship_mood_darkening: Vec<String>,
+    /// The whole ship's morale crossing *into* a light band (content-depth voice
+    /// round 11): the positive twin, the decks lifting together. No name; indexed
+    /// by year; empty falls back to silence.
+    #[serde(default)]
+    pub ship_mood_lifting: Vec<String>,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -807,6 +818,24 @@ mod tests {
                 a.contains("the Keepers"),
                 "the {label} line names the people"
             );
+        }
+    }
+
+    #[test]
+    fn ship_mood_voice_is_authored_and_varies() {
+        // Content-depth voice round 11: the ship's collective morale crossing into
+        // a grim or a buoyant band draws a pooled ambient line — the ship-wide twin
+        // of the faction-mood voice. No name to weave, but both pools need variety.
+        let data = GameData::load().unwrap();
+        let flavor = &data.config.flavor;
+        for (pool, label) in [
+            (&flavor.ship_mood_darkening, "darkening"),
+            (&flavor.ship_mood_lifting, "lifting"),
+        ] {
+            assert!(pool.len() >= 3, "the ship-mood {label} pool needs variety");
+            let a = FlavorConfig::line_with_name(pool, 0, "").unwrap();
+            let b = FlavorConfig::line_with_name(pool, 1, "").unwrap();
+            assert_ne!(a, b, "consecutive ship-mood {label} lines must differ");
         }
     }
 

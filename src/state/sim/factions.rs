@@ -429,6 +429,31 @@ impl SimState {
         }
     }
 
+    /// Give the *ship's* overall morale a voice (content-depth voice round 11):
+    /// the collective parallel to `announce_faction_moods`. When the whole crew's
+    /// morale crosses *into* a heavy or a light band — not every year it sits
+    /// there — surface one pooled ambient line, so the decks going grim or lifting
+    /// together says so. Deterministic (indexed by year), no RNG; settling back to
+    /// steady is silent but remembered so a later crossing announces afresh.
+    pub fn announce_ship_mood(&mut self, data: &GameData) {
+        let band = mood_band_for(self.population.morale);
+        if band == self.morale_band {
+            return;
+        }
+        let pool = match band {
+            -1 => &data.config.flavor.ship_mood_darkening,
+            1 => &data.config.flavor.ship_mood_lifting,
+            _ => {
+                self.morale_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.morale_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -716,6 +741,58 @@ mod tests {
             sim.log.len() > log_before,
             "a people won back to contentment says so"
         );
+    }
+
+    #[test]
+    fn the_ships_collective_mood_says_so_once_when_it_turns() {
+        // Content-depth voice round 11: the ship-wide morale voice. Crossing into a
+        // grim band surfaces one pooled line, then stays quiet while it sits there,
+        // and a recovery into a buoyant band gets its own, opposite line.
+        let (data, mut sim, _picks) = armed(19);
+        let mood_lines = |sim: &SimState| {
+            let dark = &data.config.flavor.ship_mood_darkening;
+            let light = &data.config.flavor.ship_mood_lifting;
+            sim.log
+                .iter()
+                .filter(|l| {
+                    dark.iter().chain(light.iter()).any(|p| {
+                        // Match on a distinctive opening clause so we count only
+                        // these pooled lines, not other log text.
+                        l.text.contains("heaviness has settled")
+                            || l.text.contains("lightness has come")
+                            || l.text.contains("mood aboard has turned")
+                            || l.text.contains("greyness in the crew")
+                            || l.text.contains("gone out of the ship's spirit")
+                            || l.text.contains("low season")
+                            || l.text.contains("something has lifted")
+                            || l.text.contains("warmth has spread")
+                            || l.text.contains("happy this season")
+                            || p == &l.text
+                    })
+                })
+                .count()
+        };
+
+        // At its launch baseline the ship says nothing (the starting band is
+        // recorded, not announced).
+        sim.announce_ship_mood(&data);
+        assert_eq!(mood_lines(&sim), 0, "the launch baseline is silent");
+
+        // Sink the crew into a grim band — one announcement.
+        sim.population.morale = 0.2;
+        sim.announce_ship_mood(&data);
+        assert_eq!(mood_lines(&sim), 1, "the decks going grim says so once");
+        assert_eq!(sim.morale_band, -1);
+
+        // Still grim next year — no reprint.
+        sim.announce_ship_mood(&data);
+        assert_eq!(mood_lines(&sim), 1, "staying grim is not re-announced");
+
+        // Lift them into a buoyant band — a second, distinct line.
+        sim.population.morale = 0.85;
+        sim.announce_ship_mood(&data);
+        assert_eq!(mood_lines(&sim), 2, "the ship lifting says so afresh");
+        assert_eq!(sim.morale_band, 1);
     }
 
     #[test]

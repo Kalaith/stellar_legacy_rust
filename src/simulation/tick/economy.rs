@@ -140,6 +140,12 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // hopeful crew slowly becomes someone else the longer they fly.
     apply_voyage_drift(sim, data);
 
+    // …and give the ship's *collective* morale a voice (content-depth voice round
+    // 11), now that the year's habitat lift and voyage strain have both settled:
+    // when the whole crew's spirits cross into a grim or a buoyant band, the decks
+    // say so once — the ship-wide twin of the faction-mood announcement above.
+    sim.announce_ship_mood(data);
+
     // Generational tick (GDD §5.3).
     sim.dynasty.years_since_generation += 1;
     if sim.dynasty.years_since_generation >= config.generation_interval_years {
