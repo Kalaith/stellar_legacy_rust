@@ -7485,5 +7485,150 @@
     "log": "The council let the holiday be what it had become — untethered from its founding, kept for its own warm sake, a tradition whose only remaining reason was that the ship had always kept it. Which is, in the end, the reason for most traditions, and the founders, whatever they were, had wanted the ship to go on."
    }
   ]
+ },
+ {
+  "id": "the_debt_called_in",
+  "category": "generational_challenge",
+  "title": "The Debt Called In",
+  "description": "A ship matches course out of the dark and hails on an old frequency, naming a bargain no one now living aboard remembers making — the fuel a desperate generation once took on a stranger's terms. They have come to collect the favor, and they are patient people: they will name the price, and they will wait for the answer, and they do not look like they have ever been told no.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_consequence": [
+   "owed_a_favor"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "honor_the_debt",
+    "label": "Honor the founders' word",
+    "description": "The people who made the deal are dust, but the ship that carried them is the same ship. Pay what is asked — cargo, labor, a berth for some of their own — and be free of it clean.",
+    "resource_delta": {
+     "minerals": -250,
+     "influence": 30
+    },
+    "ship_delta": {
+     "spare_parts": -6
+    },
+    "population_delta": {
+     "unity": 0.06,
+     "legacy_loyalty": 0.08,
+     "morale": -0.02
+    },
+    "log": "The ship paid the old favor in full — a hold of ore, a season of its people's hands, and a story that would be told for a while: that this hull keeps its word across generations, that a bargain struck under one captain is still a bargain under their great-grandchildren. The debt closed clean. Some things are worth more than a hold of ore.",
+    "long_term_consequences": [
+     "kept_a_bargain"
+    ]
+   },
+   {
+    "id": "renege_the_debt",
+    "label": "Refuse — the debt died with them",
+    "description": "The ship is stronger now than the beggar that signed. Tell them plainly: the ones who owed you are dead, we owe you nothing, burn off. Keep everything. Carry whatever refusing will come to mean.",
+    "population_delta": {
+     "morale": 0.03,
+     "unity": -0.05,
+     "legacy_loyalty": -0.07,
+     "cultural_drift": 0.04
+    },
+    "log": "The ship told the strangers their debt had died with the debtors, and burned away before an answer came. Nothing was paid. But a ship that will disown its own founders' word teaches its children a lesson about what a promise is worth, and out in the dark, word travels between the ones who trade in favors.",
+    "long_term_consequences": [
+     "broke_a_bargain"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "the_marked_hull",
+  "category": "generational_challenge",
+  "title": "The Marked Hull",
+  "description": "A waystation the voyage badly needs — fuel, a berth to make repairs, air that someone else has already scrubbed — refuses the ship at the threshold. Word has travelled, the harbormaster says, from ship to ship along the trade-dark: this is the hull that took what it needed and disowned the debt when the bill came. The ones who deal in favors have long memories, and they talk.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_consequence": [
+   "broke_a_bargain"
+  ],
+  "min_generation": 6,
+  "outcomes": [
+   {
+    "id": "make_amends",
+    "label": "Pay the old debt double",
+    "description": "Buy the name back. Find the ones who were wronged, or their heirs, and settle the founders' broken bargain at twice its worth — the only currency that reopens a closed door is proof the ship has learned to keep its word.",
+    "resource_delta": {
+     "credits": -700,
+     "minerals": -200
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.05,
+     "stability": 0.04
+    },
+    "log": "The ship hunted down the debt it had disowned and paid it double, in coin and in a public accounting, so that the story travelling the dark would change its ending. The doors opened again, slowly. A reputation is cheaper to keep than to buy back, the manifest noted, in effect if not in words."
+   },
+   {
+    "id": "run_the_closed_ports",
+    "label": "Run the closed ports",
+    "description": "The ship owes no one an apology and will not beg for a berth. Make the crossing on its own reserves, past every door that will not open, and be harder for it.",
+    "ship_delta": {
+     "fuel": -0.15,
+     "hull_integrity": -0.08,
+     "spare_parts": -5
+    },
+    "population_delta": {
+     "unity": 0.05,
+     "morale": -0.05,
+     "adaptation": 0.04
+    },
+    "log": "The ship ran the gauntlet of closed ports on its own reserves, scrubbing its own air and mending its own hull past waystation after waystation that would not have it. It arrived threadbare and proud and entirely self-reliant, having learned the hard way the price of a name — and having decided, deck by deck, to pay it in fuel and hull rather than apology."
+   }
+  ]
+ },
+ {
+  "id": "the_open_hand",
+  "category": "generational_challenge",
+  "title": "The Open Hand",
+  "description": "A settled world hails the passing voyage and offers to fill its holds — food, water, volatiles — and asks for nothing in return. No trade, no favor owed, no price named. Just a gift, freely given by people who remember what the long dark costs. And a ship that has learned to trade for everything, to owe nothing and be owed nothing, discovers it has no ready answer for a gift.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "accept_the_gift",
+    "label": "Accept the open hand",
+    "description": "Take the gift as it is offered, freely, and let the ship be the kind of thing that can receive as well as earn. Full holds, and a debt of the only kind that cannot be collected — gratitude.",
+    "resource_delta": {
+     "food": 2000
+    },
+    "ship_delta": {
+     "fuel": 0.15
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship took the gift with both hands and full holds, and something in the founders' proud self-reliance loosened a little — the belief that the voyage owed the universe nothing and could be owed nothing, that every exchange was a ledger. The gardens of that world went with them for a generation in the food and in a quieter change: a ship learning it was allowed to be given to."
+   },
+   {
+    "id": "insist_on_fair_trade",
+    "label": "Insist on a fair trade",
+    "description": "The voyage does not take charity. Press payment on them — ore, labor, knowledge — and keep the ledger square and the ship's dignity intact, even if it means leaving with less than an open hand would have filled.",
+    "resource_delta": {
+     "food": 1000,
+     "minerals": -150
+    },
+    "ship_delta": {
+     "fuel": 0.08
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.04,
+     "morale": -0.02
+    },
+    "log": "The ship pressed a fair price on people who had asked for none, and left with square holds and a squarer conscience — the founders' rule kept, that this voyage earns its way and is beholden to no one. The world's people watched the proud ship go and did not entirely understand it, and the ship, keeping its ledger clean, did not entirely understand why it needed to."
+   }
+  ]
  }
 ]

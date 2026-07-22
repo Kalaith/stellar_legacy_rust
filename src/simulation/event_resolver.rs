@@ -904,6 +904,76 @@ mod tests {
     }
 
     #[test]
+    fn the_provisioners_debt_becomes_a_branching_generational_chain() {
+        // Content-depth provisioning round 7: complete the dangling `owed_a_favor`
+        // debt the fuel-bargain seeded. Generations on, the strangers collect
+        // (`the_debt_called_in`); reneging seeds `broke_a_bargain`, which itself
+        // re-fires as `the_marked_hull` a further stretch on — a real branching
+        // arc, not a single flat payoff.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 51, &picks);
+
+        let called_in = data.events.get("the_debt_called_in").unwrap();
+        assert_eq!(
+            called_in.requires_consequence,
+            vec!["owed_a_favor".to_string()]
+        );
+        sim.dynasty.generation = 5; // clear min_generation
+
+        // No debt on record → the collectors never come.
+        assert!(
+            !passes_gate(&sim, called_in),
+            "no collector comes for a debt that was never taken"
+        );
+        sim.consequences.push("owed_a_favor".to_string());
+        assert!(passes_gate(&sim, called_in), "the taken favor comes due");
+
+        // Honoring the debt closes it clean and never marks the hull.
+        let mut honor = sim.clone();
+        let hon = called_in
+            .outcomes
+            .iter()
+            .position(|o| o.id == "honor_the_debt")
+            .unwrap();
+        apply_outcome(&mut honor, &data, called_in, hon);
+        assert!(
+            !honor.consequences.contains(&"broke_a_bargain".to_string()),
+            "keeping the founders' word does not brand the ship an oathbreaker"
+        );
+
+        // Reneging keeps resources but seeds the reputation consequence.
+        let mut renege = sim.clone();
+        let ren = called_in
+            .outcomes
+            .iter()
+            .position(|o| o.id == "renege_the_debt")
+            .unwrap();
+        apply_outcome(&mut renege, &data, called_in, ren);
+        assert!(
+            renege.consequences.contains(&"broke_a_bargain".to_string()),
+            "disowning the debt marks the hull"
+        );
+
+        // The mark re-fires generations later, and only for a ship that reneged.
+        let marked = data.events.get("the_marked_hull").unwrap();
+        assert_eq!(
+            marked.requires_consequence,
+            vec!["broke_a_bargain".to_string()]
+        );
+        renege.dynasty.generation = 7; // clear the marked hull's later gate
+        assert!(
+            passes_gate(&renege, marked),
+            "the closed ports find the ship that broke its word"
+        );
+        honor.dynasty.generation = 7;
+        assert!(
+            !passes_gate(&honor, marked),
+            "a ship that kept its word is never turned away"
+        );
+    }
+
+    #[test]
     fn the_tempting_world_trades_food_for_a_biocontamination_risk() {
         // Content-depth provisioning round 6: a garden-stop archetype the set
         // lacked — resupply from a living world, but the harvest can bring
