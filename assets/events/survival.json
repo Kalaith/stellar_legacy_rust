@@ -1644,5 +1644,86 @@
     "log": "The council refused to trade the ship's soul for its odds, keeping the festivals and the schools and the ordinary dignities even as the muster fell into the manuals' red. It was a gamble with arithmetic the founders would have called reckless, and it meant that whoever arrived, or didn't, did so as people rather than as frightened cargo."
    }
   ]
+ },
+ {
+  "id": "the_gilded_hunger",
+  "category": "immediate_crisis",
+  "title": "The Gilded Hunger",
+  "description": "The treasury has never been fatter and the larder never thinner — a fortune banked from good contracts sits idle in the ledgers while the granaries run to dust, and the nearest port where a credit might buy a loaf is lightyears and lifetimes off. The oldest lesson of the deep dark comes due again in the empty mess halls: out here, you cannot eat money.",
+  "requires_decision": true,
+  "family": "survival",
+  "credits_above": 20000,
+  "food_below": 3000,
+  "outcomes": [
+   {
+    "id": "endure_on_discipline",
+    "label": "Endure it — wealth is worthless out here",
+    "description": "Ration to the bone and bear the loss. The founders knew what the fat ledgers make it easy to forget: between the ports, a hull's only true wealth is what grows in its own decks. Hold the treasury for the day it means something again, and meet the famine the way people always have — together, and short.",
+    "population_delta": {
+     "count": -30,
+     "legacy_loyalty": 0.05,
+     "stability": 0.04,
+     "morale": -0.03
+    },
+    "log": "The council let the fortune sit untouched and met the hunger on the founders' terms — rationed to the bone, borne together, the dead counted and the treasury kept whole for a port generations off. It was the hard old wisdom of the dark relearned, that a hull between waystations is only ever as rich as its own fields, and the ledgers full of useless credits were a bitter comfort in the empty mess halls."
+   },
+   {
+    "id": "buy_a_way_out",
+    "label": "Burn the reserve chasing a resupply",
+    "description": "Spend the fuel to reach the faint chance — a charted rock, a rumored waystation, anywhere the money might finally buy a hold of grain. It is a gamble with the voyage's own margin, but a full treasury is no use to a crew that starves before it can spend it.",
+    "resource_delta": {
+     "credits": -8000,
+     "food": 2200
+    },
+    "ship_delta": {
+     "fuel": -0.2
+    },
+    "population_delta": {
+     "morale": 0.02,
+     "count": -8
+    },
+    "log": "The council burned deep into the fuel reserve and cracked the treasury open, chasing a waystation the charts only half-promised — and found it, barely, a grudging trader who took the ship's money and gave grain the crew fell upon. The famine broke. The tank ran perilous and the coffers came down hard, and the ship learned that a fortune is worth exactly the fuel it takes to reach a place to spend it."
+   }
+  ]
+ },
+ {
+  "id": "the_well_stocked_doldrums",
+  "category": "immediate_crisis",
+  "title": "The Well-Stocked Doldrums",
+  "description": "There is a strange, fat helplessness aboard. The holds are full — a bumper century of harvests, the granaries brimming — and the fuel tank is all but dry, the ship coasting on the last of its reaction mass through a dead reach of the dark with no push left in it. A crew with everything to eat and no way to move, becalmed and comfortable and going nowhere.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_above": 18000,
+  "fuel_below": 0.25,
+  "outcomes": [
+   {
+    "id": "wait_it_out",
+    "label": "Conserve the fuel and wait it out",
+    "description": "There is food to spare and no reason to panic. Cut the drive to a whisper, live off the full larder, and let patience and a passing current do what the empty tank cannot. The ship loses time it cannot spend, but a fed crew can afford to wait where a hungry one cannot.",
+    "population_delta": {
+     "morale": 0.03,
+     "stability": 0.04,
+     "legacy_loyalty": 0.02
+    },
+    "log": "The council cut the drive to nothing and let the ship drift the dead reach on its brimming stores, a fed and patient crew waiting out the doldrums no fuel could break. It cost the voyage long idle years it would rather have spent, and it cost nothing that mattered, because a ship with a full larder and its people calm can afford to wait for the dark to move it when it cannot move itself."
+   },
+   {
+    "id": "burn_free_now",
+    "label": "Spend the last fuel to break free",
+    "description": "Doldrums have a way of becoming graves. Burn what fuel remains in one hard push to claw back into a live current while the drive still answers, and trust the full holds to carry a crew that will, after this, have almost no reaction mass at all.",
+    "resource_delta": {
+     "minerals": -200
+    },
+    "ship_delta": {
+     "fuel": -0.18,
+     "hull_integrity": -0.03
+    },
+    "population_delta": {
+     "morale": -0.02,
+     "unity": 0.03
+    },
+    "log": "The council spent nearly the last of the fuel in one hard burn and clawed the ship back into a living current before the dead reach could close around it for good. It left the tank a whisper from empty and the hull the worse for the strain, and it kept the voyage a voyage rather than a well-fed tomb drifting fat and purposeless in the deep."
+   }
+  ]
  }
 ]

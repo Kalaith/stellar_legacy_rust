@@ -1917,6 +1917,42 @@ mod tests {
     }
 
     #[test]
+    fn a_paradox_gate_needs_abundance_and_scarcity_at_once() {
+        // Content-depth provisioning round 12: the abundance gates (it75) gain their
+        // first interaction with the shortage set. `the_gilded_hunger` surfaces only
+        // when the ship is *both* rich in credits and starving — a fortune it cannot
+        // eat — so neither condition alone brings it.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 53, &picks);
+        let event = data.events.get("the_gilded_hunger").unwrap();
+        let rich = event.credits_above.expect("gates on a fat treasury");
+        let starving = event.food_below.expect("gates on an empty larder");
+
+        // Rich but fed: no paradox.
+        sim.resources.credits = rich + 1;
+        sim.resources.food = starving + 1000;
+        assert!(
+            !passes_gate(&sim, event),
+            "a rich, fed ship has no gilded hunger"
+        );
+        // Starving but poor: the ordinary famine, not this one.
+        sim.resources.credits = rich - 1000;
+        sim.resources.food = starving - 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "a poor, starving ship faces plain famine, not gilded hunger"
+        );
+        // Rich *and* starving: the fortune it cannot eat.
+        sim.resources.credits = rich + 1;
+        sim.resources.food = starving - 1;
+        assert!(
+            passes_gate(&sim, event),
+            "wealth it cannot eat and a larder run dry, at once"
+        );
+    }
+
+    #[test]
     fn a_depopulation_gate_waits_for_a_thinned_crew() {
         // Content-depth campaign-skeleton round 12: the honest gate for crew-thinning
         // content, the descending mirror of min_morale. `the_thinning_decks` stays
