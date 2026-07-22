@@ -902,6 +902,23 @@ mod tests {
                 "campaign_skeleton pool family '{fam}' has no events"
             );
         }
+        // Content-depth charters round 7: a charter's beat-pool bias must name
+        // real families, or a biased beat could land on an empty pool. At least
+        // one charter must carry a bias, so the mechanic stays exercised.
+        assert!(
+            data.contracts
+                .iter()
+                .any(|(_, c)| !c.beat_families.is_empty()),
+            "some charter should bias its seeded skeleton via beat_families"
+        );
+        for (id, c) in data.contracts.iter() {
+            for fam in &c.beat_families {
+                assert!(
+                    families.contains(fam),
+                    "charter '{id}' beat_families '{fam}' has no events"
+                );
+            }
+        }
         // Content-depth round 5: the dead-air backstop needs a pool to draw from
         // when it is switched on, or a forced beat has nothing to force.
         if sk.dead_air_years > 0 {

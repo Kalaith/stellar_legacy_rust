@@ -81,6 +81,13 @@ pub struct ActiveContract {
     /// `EventTemplate::requires_charter_tag`.
     #[serde(default)]
     pub tags: Vec<String>,
+    /// Charter beat-pool override (content-depth charters round 7): extra event
+    /// families layered into *every* seeded beat's draw for this voyage, so a
+    /// charter biases the campaign it generates — an embassy leans diplomacy, a
+    /// derelict recovery leans mystery. Copied from the charter at launch. Empty
+    /// = no bias (the phase/era pools alone).
+    #[serde(default)]
+    pub beat_families: Vec<String>,
     /// How many cultural-drift threshold beats have fired so far (content-depth
     /// round 2). Thresholds are ascending, so this doubles as the index of the
     /// next threshold to watch — each drift beat fires exactly once.

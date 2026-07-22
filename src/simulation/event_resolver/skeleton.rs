@@ -63,6 +63,9 @@ pub fn generate_beats(
         if month >= late_cutoff {
             draw.extend(cfg.late_pool.iter().map(String::as_str));
         }
+        // The charter's own bias (content-depth round 7): its families ride in
+        // every window's draw, weighting the campaign toward the mission's flavor.
+        draw.extend(contract.beat_families.iter().map(String::as_str));
         let family = draw[rng.below(draw.len())].to_owned();
         beats.push(CampaignBeat {
             month_clock: month,
@@ -128,6 +131,37 @@ mod tests {
             );
             assert!(valid.contains(beat.family.as_str()));
         }
+    }
+
+    #[test]
+    fn a_charter_beat_bias_shapes_its_seeded_campaign() {
+        // Content-depth charters round 7: a charter's beat_families ride in every
+        // window's draw, so the mission biases the campaign it generates. A heavy
+        // bias must visibly dominate the schedule vs the same charter unbiased.
+        let data = GameData::load().unwrap();
+        let picks = founding_faction_ids(&data);
+        let cfg = &data.config.campaign_skeleton;
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+
+        let count_family = |beat_families: Vec<String>| -> usize {
+            let mut sim = SimState::new_campaign(&data, "preservers", 3, &picks);
+            let mut contract = start_contract(&template, &sim);
+            contract.beat_families = beat_families;
+            generate_beats(&mut sim.rng, &contract, cfg)
+                .iter()
+                .filter(|b| b.family == "comedy")
+                .count()
+        };
+
+        // A charter with no bias draws comedy only from the shared any_pool.
+        let baseline = count_family(Vec::new());
+        // The same charter biased hard toward comedy fills up with it.
+        let biased = count_family(vec!["comedy".to_string(); 30]);
+        assert!(
+            biased > baseline,
+            "the charter's beat bias should weight its campaign toward that family \
+             (biased {biased} vs baseline {baseline})"
+        );
     }
 
     #[test]

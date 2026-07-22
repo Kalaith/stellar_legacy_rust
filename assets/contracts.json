@@ -361,6 +361,9 @@
   "tags": [
    "relief",
    "inhabited"
+  ],
+  "beat_families": [
+   "diplomacy"
   ]
  },
  {
@@ -726,6 +729,10 @@
    "relief",
    "derelict",
    "hostile_space"
+  ],
+  "beat_families": [
+   "mystery",
+   "ethics"
   ]
  },
  {
@@ -1106,6 +1113,9 @@
    "relief",
    "inhabited",
    "long_station"
+  ],
+  "beat_families": [
+   "diplomacy"
   ]
  },
  {
@@ -1504,6 +1514,9 @@
    "stellar_hazard",
    "survey",
    "anomaly"
+  ],
+  "beat_families": [
+   "science_anomaly"
   ]
  }
 ]

@@ -121,4 +121,10 @@ pub struct ContractTemplate {
     /// its voyage can surface (e.g. `hostile_space`, `garden`, `long_haul`).
     #[serde(default)]
     pub tags: Vec<String>,
+    /// Beat-pool bias (content-depth charters round 7): extra event families
+    /// layered into every seeded beat's draw for this voyage, so the charter
+    /// shapes the campaign it generates. Must be real families with events.
+    /// Empty = the standard phase/era pools only.
+    #[serde(default)]
+    pub beat_families: Vec<String>,
 }
