@@ -61,4 +61,13 @@ pub struct SubsystemsConfig {
     pub train_knowledge_gain: f32,
     pub train_cost_credits: i64,
     pub agriculture_food_bonus_per_tier: f32,
+    /// Keystone coupling (content-depth subsystems round 7): the engineering bay
+    /// is where the ship mends itself, so its condition modulates how fast every
+    /// *other* module decays. The per-year decay multiplier is
+    /// `1 + engineering_decay_swing * (0.5 - engineering_condition)` — a bay in
+    /// top repair (cond 1.0) slows the rest of the ship's rot, a failing one
+    /// (cond 0.0) speeds it, neutral at 0.5. 0 = no coupling. Engineering itself
+    /// decays at its own rate.
+    #[serde(default)]
+    pub engineering_decay_swing: f32,
 }

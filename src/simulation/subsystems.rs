@@ -248,11 +248,28 @@ pub fn train_subsystem_knowledge(
 /// Yearly subsystem condition decay (W5), eased by the same maintained/relief
 /// `wear` factor the hull uses.
 pub fn decay_subsystems(sim: &mut SimState, data: &GameData, wear: f32) {
+    // Keystone coupling (content-depth round 7): the engineering bay is where the
+    // ship mends itself, so its condition scales every *other* module's decay —
+    // a sound bay holds the whole ship together, a failing one lets it all rot.
+    let swing = data.config.subsystems.engineering_decay_swing;
+    let eng_condition = sim
+        .subsystems
+        .get("engineering_bay")
+        .map_or(0.5, |s| s.condition);
+    let keystone_mult = (1.0 + swing * (0.5 - eng_condition)).max(0.0);
+
     for id in GameData::sorted_ids(&data.subsystems) {
         let Some(def) = data.subsystems.get(&id) else {
             continue;
         };
-        let decay = def.decay_per_year;
+        // Engineering decays at its own rate; the bay is the source of the
+        // coupling, not subject to it.
+        let mult = if id == "engineering_bay" {
+            1.0
+        } else {
+            keystone_mult
+        };
+        let decay = def.decay_per_year * mult;
         if let Some(state) = sim.subsystems.get_mut(&id) {
             state.condition = (state.condition - decay * wear).max(0.0);
         }
@@ -311,6 +328,41 @@ mod tests {
         let picks = founding_faction_ids(&data);
         let sim = SimState::new_campaign(&data, "preservers", seed, &picks);
         (data, sim)
+    }
+
+    #[test]
+    fn a_failing_engineering_bay_rots_the_whole_ship_faster() {
+        // Content-depth subsystems round 7: the engineering bay is the keystone —
+        // its condition scales every *other* module's decay. A year with a sound
+        // bay wears the medical bay less than a year with a failing one.
+        assert!(
+            data_swing() > 0.0,
+            "this test needs the keystone coupling enabled"
+        );
+
+        let wear_med = |eng: f32| -> f32 {
+            let (data, mut sim) = campaign(5);
+            sim.subsystems.get_mut("engineering_bay").unwrap().condition = eng;
+            sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.8;
+            decay_subsystems(&mut sim, &data, 1.0);
+            0.8 - sim.subsystems["medical_bay"].condition
+        };
+
+        let sound = wear_med(1.0); // top-repair bay slows the rot
+        let failing = wear_med(0.0); // a failing bay speeds it
+        assert!(
+            failing > sound,
+            "a failing engineering bay should rot the ship faster than a sound one \
+             (failing {failing} vs sound {sound})"
+        );
+    }
+
+    fn data_swing() -> f32 {
+        GameData::load()
+            .unwrap()
+            .config
+            .subsystems
+            .engineering_decay_swing
     }
 
     #[test]

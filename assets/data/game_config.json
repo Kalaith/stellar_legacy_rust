@@ -87,7 +87,8 @@
     "education_transmission_per_tier": 0.08,
     "train_knowledge_gain": 0.1,
     "train_cost_credits": 600,
-    "agriculture_food_bonus_per_tier": 0.05
+    "agriculture_food_bonus_per_tier": 0.05,
+    "engineering_decay_swing": 0.4
   },
   "campaign_skeleton": {
     "months_per_window": 240,
