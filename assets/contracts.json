@@ -1517,6 +1517,12 @@
   ],
   "beat_families": [
    "science_anomaly"
+  ],
+  "scheduled_beats": [
+   {
+    "template_id": "the_stars_appointed_hour",
+    "at_year": 180
+   }
   ]
  }
 ]

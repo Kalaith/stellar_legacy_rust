@@ -70,6 +70,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && report.contract_completed.is_none()
             && !report.dynasty_extinct
             && !fire_scheduled_beat(sim, data, &mut report)
+            && !fire_charter_scheduled_beat(sim, data, &mut report)
             && !fire_due_beat(sim, data, &mut report)
             && !fire_drift_beat(sim, data, &mut report)
             && !fire_adaptation_beat(sim, data, &mut report)
@@ -340,6 +341,53 @@ fn force_family_beat(sim: &mut SimState, data: &GameData, family: &str, report: 
     }
 }
 
+/// Force a specific event by id (content-depth): build a pending event for it and
+/// apply it, bypassing gates — the shared path for both the scheduled follow-up
+/// (round 9) and a charter's scripted timed beats (charters round 9).
+fn force_event_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    template_id: String,
+    report: &mut TickReport,
+) {
+    apply_pending_event(
+        sim,
+        data,
+        crate::state::sim::PendingEvent {
+            template_id,
+            rolled_month_clock: sim.month_clock,
+        },
+        report,
+    );
+    sim.last_event_month_clock = sim.month_clock;
+}
+
+/// Fire a charter's scripted timed beat (content-depth charters round 9): a
+/// mission built around a reckoning on a known clock forces its next beat once
+/// this voyage has run to its `at_year`. Beats are authored ascending and fire in
+/// order, one per month; returns whether it replaced the reactive roll.
+fn fire_charter_scheduled_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    report: &mut TickReport,
+) -> bool {
+    let due = sim.contract.as_ref().and_then(|c| {
+        let years = c.months_elapsed / 12;
+        c.scheduled_beats
+            .get(c.scheduled_beats_fired as usize)
+            .filter(|b| years >= b.at_year)
+            .map(|b| b.template_id.clone())
+    });
+    let Some(template_id) = due else {
+        return false;
+    };
+    if let Some(c) = sim.contract.as_mut() {
+        c.scheduled_beats_fired += 1;
+    }
+    force_event_beat(sim, data, template_id, report);
+    true
+}
+
 /// Fire a scheduled follow-up (content-depth event families round 9): the timed,
 /// deterministic payoff of an outcome's `schedule_followup`. Once the voyage
 /// reaches the earliest due `fire_year`, that named event is forced by id — past
@@ -363,16 +411,7 @@ fn fire_scheduled_beat(sim: &mut SimState, data: &GameData, report: &mut TickRep
         return false;
     };
     let scheduled = sim.scheduled_events.remove(idx);
-    apply_pending_event(
-        sim,
-        data,
-        crate::state::sim::PendingEvent {
-            template_id: scheduled.template_id,
-            rolled_month_clock: sim.month_clock,
-        },
-        report,
-    );
-    sim.last_event_month_clock = sim.month_clock;
+    force_event_beat(sim, data, scheduled.template_id, report);
     true
 }
 

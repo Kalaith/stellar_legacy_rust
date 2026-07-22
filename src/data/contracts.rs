@@ -136,4 +136,19 @@ pub struct ContractTemplate {
     /// Empty = the standard phase/era pools only.
     #[serde(default)]
     pub beat_families: Vec<String>,
+    /// Scripted timed beats (content-depth charters round 9): specific events this
+    /// charter forces at determined voyage years, so a mission can be built around
+    /// a reckoning on a *known clock* — a predicted stellar event, a treaty
+    /// deadline. Each names a `scheduled_only` event; `at_year` is years since
+    /// launch and the list must ascend. Empty = no scripted beats.
+    #[serde(default)]
+    pub scheduled_beats: Vec<ScheduledBeat>,
+}
+
+/// One scripted, time-fixed beat of a charter (content-depth charters round 9):
+/// the named event is forced by id once the voyage has run `at_year` years.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScheduledBeat {
+    pub template_id: String,
+    pub at_year: u32,
 }

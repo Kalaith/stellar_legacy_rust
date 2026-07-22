@@ -432,5 +432,54 @@
     "log": "The navigators logged the mirror as a gravitational artifact, held their heading straight through the ghost of their own ship, and did not dwell on how, for the span of the crossing, something ahead had matched them turn for turn."
    }
   ]
+ },
+ {
+  "id": "the_stars_appointed_hour",
+  "category": "generational_challenge",
+  "title": "The Star's Appointed Hour",
+  "description": "The founders' astronomers computed this year to the season, generations before the ship was built: the dying star will throw its great convulsion now, a once-in-an-age unshrouding of its heart, and the whole charter was written to place the ship in its light when it did. The prediction has held. The star is stirring exactly on the schedule the dead laid down, and the ship rides its atmosphere with the appointed hour upon it.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "ride_it_close",
+    "label": "Ride it out in close",
+    "description": "This is the hour the voyage was launched for. Hold the ship in tight and take the full reading — the star's bared heart, a harvest of energy and knowledge no one will have another chance at for an age — and pay whatever the closeness costs in hull and in lives.",
+    "resource_delta": {
+     "energy": 2500,
+     "influence": 150
+    },
+    "ship_delta": {
+     "hull_integrity": -0.12
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "knowledge": 0.08
+     }
+    ],
+    "population_delta": {
+     "count": -140,
+     "morale": 0.03,
+     "adaptation": 0.05
+    },
+    "log": "The ship held its place in the star's bared light through the appointed hour and took everything the founders had sent it for — a flood of energy, a harvest of knowledge, a look into a stellar heart no living eye had seen. The hull came away scorched and the memorial wall the longer for it, and the founders' three-century wager was paid in full, in both the coin they'd hoped for and the coin they'd feared."
+   },
+   {
+    "id": "pull_to_safe_distance",
+    "label": "Pull back and read it from range",
+    "description": "The founders wagered lives they would never have to spend. Honour the mission but not the recklessness: pull to a survivable distance, take the reading the ship can take without burning for it, and bring the crew home to spend the knowledge rather than dying for the last of it.",
+    "resource_delta": {
+     "energy": 800,
+     "influence": 60
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.02
+    },
+    "log": "The ship pulled back to a distance it could survive and read the star's convulsion from range — a lesser harvest than the founders dreamed, but taken by a crew that lived to carry it home. The dead had wagered the living's lives on the closeness; the living, weighing the same star, decided the founders had booked a debt that was theirs to refuse."
+   }
+  ]
  }
 ]

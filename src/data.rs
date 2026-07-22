@@ -1138,6 +1138,23 @@ mod tests {
                     "charter '{id}' beat_families '{fam}' has no events"
                 );
             }
+            // Content-depth charters round 9: a scripted timed beat must name a
+            // real, scheduled_only event, and the beats must ascend by year so
+            // they fire in order.
+            for beat in &c.scheduled_beats {
+                let target = data.events.get(&beat.template_id);
+                assert!(
+                    target.is_some_and(|e| e.scheduled_only),
+                    "charter '{id}' scheduled beat '{}' must be a scheduled_only event",
+                    beat.template_id
+                );
+            }
+            assert!(
+                c.scheduled_beats
+                    .windows(2)
+                    .all(|w| w[0].at_year <= w[1].at_year),
+                "charter '{id}' scheduled_beats must ascend by at_year"
+            );
         }
         // Content-depth round 5: the dead-air backstop needs a pool to draw from
         // when it is switched on, or a forced beat has nothing to force.

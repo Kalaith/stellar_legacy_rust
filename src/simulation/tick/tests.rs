@@ -602,6 +602,77 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
+    // Content-depth charters round 9: a mission built around a reckoning on a
+    // known clock. The sunward dive schedules a stellar beat at a fixed voyage
+    // year; it fires when the voyage reaches it, and the payoff is scheduled_only
+    // so it never rolls on its own.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.dead_air_years = 0;
+    data.config.campaign_skeleton.anniversary_years = 0;
+
+    let dive = data.contracts.get("the_sunward_dive").unwrap().clone();
+    let beat = dive
+        .scheduled_beats
+        .first()
+        .expect("the dive carries a scripted beat")
+        .clone();
+    assert!(
+        data.events.get(&beat.template_id).unwrap().scheduled_only,
+        "a scripted charter beat must be scheduled_only"
+    );
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    sim.contract = Some(start_contract(&dive, &sim));
+    // Clear the seeded skeleton so only the scripted beat can fire.
+    sim.contract.as_mut().unwrap().beats.clear();
+    assert_eq!(
+        sim.contract.as_ref().unwrap().scheduled_beats.len(),
+        1,
+        "the scripted beat is copied onto the active contract"
+    );
+
+    let resolve_pending = |sim: &mut SimState, data: &GameData| {
+        if let Some(p) = sim.pending_event.clone() {
+            let t = data.events.get(&p.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(sim, data, &t, 0);
+        }
+    };
+    // Before the appointed year the star is silent.
+    while (sim.contract.as_ref().unwrap().months_elapsed / 12) < beat.at_year {
+        assert_eq!(
+            sim.contract.as_ref().unwrap().scheduled_beats_fired,
+            0,
+            "the appointed hour has not come (year {})",
+            sim.contract.as_ref().unwrap().months_elapsed / 12
+        );
+        advance_year(&mut sim, &data);
+        resolve_pending(&mut sim, &data);
+        if sim.contract.is_none() {
+            break; // completed early (should not, mid-voyage)
+        }
+    }
+    assert!(
+        sim.contract
+            .as_ref()
+            .is_some_and(|c| c.scheduled_beats_fired == 1),
+        "the star's appointed hour fires on its year"
+    );
+}
+
+#[test]
 fn a_scheduled_followup_fires_on_its_determined_year_not_before() {
     // Content-depth event families round 9: the deterministic-timing chain. Sealing
     // the capsule queues its payoff for a fixed year; the payoff fires then and not
