@@ -1058,6 +1058,66 @@ mod tests {
     }
 
     #[test]
+    fn a_neglected_reactor_blooms_into_a_medical_crisis_a_generation_later() {
+        // Content-depth subsystems round 6: a cross-subsystem cascade *chain*.
+        // Running the reactor hot (engineering neglect) records `reactor_run_hot`;
+        // a generation on it re-fires as a radiation bloom in the medical bay —
+        // engineering→medical coupling spread across time, not one event.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "adaptors", 29, &picks);
+
+        // The creep gates on a worn engineering bay; running it hot records the tag.
+        let creep = data.events.get("the_reactor_creep").unwrap();
+        assert_eq!(creep.condition_below[0].id, "engineering_bay");
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.4;
+        assert!(passes_gate(&sim, creep), "a worn bay surfaces the creep");
+        let hot = creep
+            .outcomes
+            .iter()
+            .position(|o| o.id == "run_it_hot")
+            .unwrap();
+        apply_outcome(&mut sim, &data, creep, hot);
+        assert!(sim.consequences.contains(&"reactor_run_hot".to_string()));
+
+        // The bloom waits on that neglect *and* a later generation.
+        let bloom = data.events.get("the_radiation_bloom").unwrap();
+        assert_eq!(
+            bloom.requires_consequence,
+            vec!["reactor_run_hot".to_string()]
+        );
+        sim.dynasty.generation = bloom.min_generation.saturating_sub(1);
+        assert!(
+            !passes_gate(&sim, bloom),
+            "too soon: the bill is not yet due"
+        );
+        sim.dynasty.generation = bloom.min_generation;
+        assert!(
+            passes_gate(&sim, bloom),
+            "a generation on, the reactor's debt blooms"
+        );
+
+        // Relining the shielding at the setup instead never records the debt.
+        let mut prudent = SimState::new_campaign(&data, "adaptors", 29, &picks);
+        prudent
+            .subsystems
+            .get_mut("engineering_bay")
+            .unwrap()
+            .condition = 0.4;
+        let reline = creep
+            .outcomes
+            .iter()
+            .position(|o| o.id == "reline_the_shielding")
+            .unwrap();
+        apply_outcome(&mut prudent, &data, creep, reline);
+        prudent.dynasty.generation = bloom.min_generation;
+        assert!(
+            !passes_gate(&prudent, bloom),
+            "a ship that paid for the shielding never sees the bloom"
+        );
+    }
+
+    #[test]
     fn a_broken_garden_breakdown_couples_agriculture_to_the_medical_bay() {
         // Content-depth subsystems round 4: the agriculture breakdown gates on a
         // physically failing grow-deck, and its "fall back to soil" outcome is a

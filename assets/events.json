@@ -7026,5 +7026,113 @@
     "log": "The ship let the star into its bones — its watch-bells timed to the pulse, its work-songs built on it, a generation growing up keeping a dying sun's heartbeat for a clock. They came away from the dive one people, stranger than they went in, carrying the rhythm of a star that would be dark before their grandchildren were grown."
    }
   ]
+ },
+ {
+  "id": "the_reactor_creep",
+  "category": "generational_challenge",
+  "title": "The Reactor Creep",
+  "description": "The engineering bay has worn far enough that the reactor's radiation shielding is no longer what the founders certified. It is not failing — not yet — but the margins are gone, and the reactor techs have brought the council a choice they would rather not have made: reline the shielding now, at real cost, or run the core a little hot and defer the bill.",
+  "requires_decision": true,
+  "family": "engineering",
+  "condition_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.55
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "reline_the_shielding",
+    "label": "Reline the shielding now",
+    "description": "Spend the parts and the downtime to bring the shielding back to spec. Dull, expensive, and exactly what the founders would have done.",
+    "resource_delta": {
+     "credits": -350,
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -18
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.12
+     }
+    ],
+    "log": "The reactor techs relined the shielding to the founders' spec — a season of downtime and a fortune in parts, and the margins were back. No one will ever know what it prevented, which is the whole nature of the work."
+   },
+   {
+    "id": "run_it_hot",
+    "label": "Run the core hot, defer the bill",
+    "description": "Skip the reline, run the reactor a little harder to keep the ship on schedule, and let a later generation deal with the thin shielding.",
+    "resource_delta": {
+     "energy": 350
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "long_term_consequences": [
+     "reactor_run_hot"
+    ],
+    "log": "The council ran the core hot rather than pay for the reline, and the ship kept its schedule and its power budget and its good mood, and the thin shielding leaked a little more each year into decks no one was measuring, against an account that would come due in someone else's watch."
+   }
+  ]
+ },
+ {
+  "id": "the_radiation_bloom",
+  "category": "immediate_crisis",
+  "title": "The Radiation Bloom",
+  "description": "The bill for the hot-run reactor has come due, a generation late and in the worst currency: a bloom of cancers and stillbirths on the decks nearest the annex, where the shielding the founders' descendants declined to reline has been leaking all along. The medics traced it back and found the council minutes that chose the schedule over the shielding.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_consequence": [
+   "reactor_run_hot"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "treat_the_bloom",
+    "label": "Throw the wards at it",
+    "description": "Every resource the medical bay has, turned on the bloom — and the reline the ship should have paid for a generation ago, paid now at a premium.",
+    "resource_delta": {
+     "credits": -400,
+     "minerals": -250
+    },
+    "ship_delta": {
+     "spare_parts": -15
+    },
+    "population_delta": {
+     "count": -30,
+     "morale": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.1
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The ship relined the shielding at last and turned its whole medical bay on the bloom, and still buried thirty before it broke — the interest on a debt a dead council ran up to keep a schedule no one now remembers. The annex reads clean again. The nursery records do not."
+   },
+   {
+    "id": "evacuate_the_hot_decks",
+    "label": "Seal and abandon the hot decks",
+    "description": "Don't fight the leak — wall it off. Seal the irradiated sections, lose the space and the people who worked it, and let the annex go.",
+    "population_delta": {
+     "count": -45,
+     "stability": 0.03,
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The council sealed the hot decks rather than heal them — the annex, the shops beside it, the quarters of the ones who had lived too close, all walled off and written out of the deck plan. The bloom stopped at the bulkhead. The ship was smaller and sounder and short the people and the workshops it left behind the seal."
+   }
+  ]
  }
 ]
