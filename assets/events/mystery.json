@@ -1,0 +1,508 @@
+[
+ {
+  "id": "derelict_encounter",
+  "category": "mission_milestone",
+  "title": "A Silent Hull",
+  "description": "Sensors snag a derelict on the transit lane — an older ship, dark, drifting. It answers no hail.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "wanderers": 1.4
+  },
+  "outcomes": [
+   {
+    "id": "board_and_salvage",
+    "label": "Board and salvage",
+    "description": "Take what the dead ship offers. Not everyone approves.",
+    "resource_delta": {
+     "minerals": 400,
+     "credits": 300
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "cultural_drift": 0.03
+    },
+    "long_term_consequences": [
+     "grave_robbed"
+    ],
+    "log": "The boarding parties stripped the derelict for parts — and cut a working mass driver free of its spine, now lashed in the salvage hold.",
+    "grant_component": "mass_driver"
+   },
+   {
+    "id": "log_and_pass",
+    "label": "Log it and pass",
+    "description": "Record the position, say the words, keep the schedule.",
+    "population_delta": {
+     "unity": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The ship logged the derelict's position, spoke for its dead, and passed on."
+   }
+  ],
+  "family": "mystery"
+ },
+ {
+  "id": "dark_stretch",
+  "category": "mission_milestone",
+  "title": "The Dark Stretch",
+  "description": "Ahead lies a region the founders' charts simply stop describing — a long stretch where the sensors will have little to say.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "run_it_steady",
+    "label": "Run it steady",
+    "description": "Trust the plan and the dead reckoning.",
+    "population_delta": {
+     "stability": 0.03,
+     "unity": 0.02
+    },
+    "log": "The ship crossed the dark stretch on dead reckoning and old faith. It came out where the charts said it would."
+   }
+  ],
+  "family": "mystery"
+ },
+ {
+  "id": "midpoint_census",
+  "category": "mission_milestone",
+  "title": "The Midpoint Census",
+  "description": "The ship takes a full census at the mathematical midpoint of the voyage — every name aboard, living and remembered, counted once against the founders' manifest.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "count_them_all",
+    "label": "Count them all",
+    "description": "Read the whole manifest aloud.",
+    "population_delta": {
+     "unity": 0.05,
+     "legacy_loyalty": 0.03,
+     "stability": 0.02
+    },
+    "log": "The midpoint census was read aloud over three days, every name from the founders' manifest to the newest birth. The ship felt, briefly, like one thing."
+   }
+  ],
+  "family": "mystery"
+ },
+ {
+  "id": "ghost_signal",
+  "category": "mission_milestone",
+  "title": "The Ghost Signal",
+  "description": "A signal repeats on a dead channel — the ship's own call sign, in the ship's own voice, timestamped for a year that has not happened yet.",
+  "requires_decision": true,
+  "family": "mystery",
+  "outcomes": [
+   {
+    "id": "answer_the_ghost",
+    "label": "Answer it",
+    "description": "Speak back into the dark and see what speaks.",
+    "population_delta": {
+     "morale": -0.03,
+     "unity": 0.02
+    },
+    "long_term_consequences": [
+     "the_ghost_signal"
+    ],
+    "log": "The ship answered its own ghost. The channel went silent, and stayed silent, and no one aboard has slept quite the same."
+   },
+   {
+    "id": "silence_the_channel",
+    "label": "Kill the channel",
+    "description": "Some frequencies are best left dead.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The channel was shut and welded. Whatever was calling, the ship stopped listening."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_drifted_hear_an_omen",
+    "min_cultural_drift": 0.6,
+    "description_add": "On a ship this far from its founders, the crew no longer hear a signal — they hear an omen. The watch that caught it has already named it, and the naming is spreading faster than any explanation the engineers can offer.",
+    "population_delta": {
+     "morale": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The ghost signal fell on a crew that had drifted past explanations into signs and portents, and it became, within a season, a thing the ship believed rather than a thing the ship investigated — one more article of a faith the founders never wrote."
+   }
+  ]
+ },
+ {
+  "id": "empty_suit",
+  "category": "mission_milestone",
+  "title": "The Empty Suit",
+  "description": "A routine spacewalk finds a hardsuit tethered to the hull — sealed, powered, and empty. The manifest lists no missing suit, and no missing soul.",
+  "requires_decision": true,
+  "family": "mystery",
+  "outcomes": [
+   {
+    "id": "bring_it_in",
+    "label": "Bring it aboard",
+    "description": "Whatever it is, it belongs to us now.",
+    "resource_delta": {
+     "minerals": 40
+    },
+    "long_term_consequences": [
+     "the_empty_suit"
+    ],
+    "log": "The empty suit was brought inside and logged. Its serial number matches no record the ship has ever kept."
+   },
+   {
+    "id": "cut_it_loose",
+    "label": "Cut it loose",
+    "description": "Let the dark keep its own puzzles.",
+    "population_delta": {
+     "morale": -0.02
+    },
+    "log": "The suit was cut from the tether and let drift. It fell away slowly, arms open, as if waving."
+   }
+  ]
+ },
+ {
+  "id": "the_hum",
+  "category": "mission_milestone",
+  "title": "The Hum",
+  "description": "A vibration has entered the hull — low, steady, and coming from nowhere the engineers can name. It is not dangerous. It is only always there.",
+  "requires_decision": false,
+  "family": "mystery",
+  "outcomes": [
+   {
+    "id": "chase_the_hum",
+    "label": "Chase it down",
+    "description": "Tear open the decks until it's found.",
+    "population_delta": {
+     "stability": 0.02
+    },
+    "log": "The decks were opened and closed and opened again. The hum was never found — but the crew stopped hearing it, in time."
+   }
+  ]
+ },
+ {
+  "id": "the_cold_berth",
+  "category": "mission_milestone",
+  "title": "The Cold Berth",
+  "description": "A cabin appears on no manifest and in no memory — sealed from the inside, its logs blank, its occupant a name that matches none of the founding rolls.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "open_cold_berth",
+    "label": "Open it",
+    "description": "Cut the seal and face whatever kept its own counsel.",
+    "resource_delta": {
+     "influence": 30
+    },
+    "population_delta": {
+     "cultural_drift": 0.06,
+     "morale": -0.02
+    },
+    "grant_component": "solar_sail",
+    "log": "The cold berth held a workshop of impossible tidiness and a single stowed component, still crated. Who packed it, and when, the ship never learned."
+   },
+   {
+    "id": "leave_cold_berth",
+    "label": "Leave it sealed",
+    "description": "Some doors are load-bearing. Weld it and move on.",
+    "population_delta": {
+     "unity": 0.04,
+     "stability": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council re-welded the cold berth and struck it from the tour. The ship agreed, a little too quickly, never to speak of it."
+   }
+  ]
+ },
+ {
+  "id": "the_richer_find",
+  "category": "mission_milestone",
+  "title": "The Richer Find",
+  "description": "The survey turns up something the charter never listed — a vein, a cache, a claim worth more than the whole contract. Log it and press on, or take it and turn for home.",
+  "requires_decision": true,
+  "family": "mystery",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "uncharted"
+  ],
+  "outcomes": [
+   {
+    "id": "take_it_home",
+    "label": "Take it and turn for home",
+    "description": "Cut the charter short. Sail back on the strength of the find.",
+    "resource_delta": {
+     "credits": 3000,
+     "minerals": 400
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "force_return": true,
+    "log": "The find was worth more than the whole charter. The ship logged the site, filled its holds, and turned early for home, richer than the contract ever promised."
+   },
+   {
+    "id": "finish_the_charter",
+    "label": "Finish the charter first",
+    "description": "Honor the contract; the find will keep.",
+    "resource_delta": {
+     "influence": 50
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.03
+    },
+    "log": "The council marked the find and held to the charter. Debts are debts; the richer prize would wait for whoever came after."
+   }
+  ]
+ },
+ {
+  "id": "the_homeward_wreck",
+  "category": "mission_milestone",
+  "title": "The Homeward Wreck",
+  "description": "On the long leg home the ship passes a dead hulk, centuries derelict and picked at but not stripped. With the parts lockers thin, its bones are a temptation worth the risk of boarding.",
+  "requires_decision": true,
+  "family": "mystery",
+  "phases": [
+   "return"
+  ],
+  "spare_parts_below": 40,
+  "outcomes": [
+   {
+    "id": "strip_the_wreck",
+    "label": "Board and strip it",
+    "description": "Send crews across to salvage what the hulk still holds.",
+    "ship_delta": {
+     "spare_parts": 30
+    },
+    "resource_delta": {
+     "minerals": 200
+    },
+    "population_delta": {
+     "count": -10
+    },
+    "grant_component": "ramscoop_array",
+    "log": "The salvage crews crossed to the dead hulk and came back laden — parts, metal, and a working component nobody expected. Two never came back at all; the ship does not ask what took them."
+   },
+   {
+    "id": "leave_the_dead",
+    "label": "Leave the dead alone",
+    "description": "Whatever killed it may still be aboard. Sail on.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.02
+    },
+    "log": "The ship gave the dead hulk a wide berth and its lockers stayed thin. Some called it superstition; the elders called it the reason they were still alive to argue about it."
+   }
+  ]
+ },
+ {
+  "id": "the_sealed_deck",
+  "category": "mission_milestone",
+  "title": "The Sealed Deck",
+  "description": "A bulkhead on a lower deck was welded shut before anyone now living was born. The founding log gives no reason. A maintenance sweep wants the space back; the elders want it left as it is.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "breach_the_seal",
+    "label": "Cut it open",
+    "description": "Reclaim the volume and whatever the founders walled away with it.",
+    "ship_delta": {
+     "life_support": -0.03,
+     "spare_parts": 60
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.04
+     }
+    ],
+    "log": "The seal came away in a gust of decade-stale air. Behind it: a mothballed workshop, a founder's tools laid out as if for a shift that never started. The deck breathes with the ship again, and the shops are the richer for the salvage."
+   },
+   {
+    "id": "honor_the_seal",
+    "label": "Leave it shut",
+    "description": "Some doors the founders closed on purpose. Keep it a closed door.",
+    "population_delta": {
+     "unity": 0.05,
+     "cultural_drift": 0.03
+    },
+    "log": "The sweep was waved off. The sealed deck stays sealed, and the not-knowing becomes its own small faith — a thing the whole ship agrees not to touch, and is quietly closer for agreeing."
+   }
+  ]
+ },
+ {
+  "id": "the_second_log",
+  "category": "legacy_moment",
+  "title": "The Second Log",
+  "description": "An archivist turns up a second ship's log, kept in parallel and never filed. Its account of the founding years diverges hard from the one the schools teach — messier, less proud, harder to love.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_cultural_drift": 0.35,
+  "outcomes": [
+   {
+    "id": "publish_the_second_log",
+    "label": "Publish it",
+    "description": "Let the ship meet its truer, uglier history.",
+    "population_delta": {
+     "unity": -0.04,
+     "cultural_drift": 0.05,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.1
+     }
+    ],
+    "log": "The second log went into the archive beside the first, contradictions and all. The founders came down off their plinth a little; the record, for the first time in generations, is honest enough to be trusted."
+   },
+   {
+    "id": "seal_the_second_log",
+    "label": "Bury it",
+    "description": "The clean story holds the ship together. Keep it clean.",
+    "population_delta": {
+     "stability": 0.04,
+     "unity": 0.02
+    },
+    "long_term_consequences": [
+     "buried_second_log"
+    ],
+    "log": "The second log went into a locked file, and the archivist was thanked for their discretion. The founding stays a story fit to raise children on — and somewhere a truer one waits, filed under nothing."
+   }
+  ]
+ },
+ {
+  "id": "the_wandering_mind",
+  "category": "immediate_crisis",
+  "title": "The Wandering Mind",
+  "description": "The oldest system aboard — the founders' navigation archive — begins issuing course notes no one asked for. With the last engineers who understood it long dead, no one can say whether it is failing or thinking.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_generation": 3,
+  "knowledge_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "trust_the_mind",
+    "label": "Follow its course",
+    "description": "It has never steered you wrong. Let it steer.",
+    "ship_delta": {
+     "fuel": 0.06,
+     "hull_integrity": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": -0.05
+     }
+    ],
+    "log": "The correction shaved a decade's drift off the course and cost less mass than the navigators would have. It was right. No one can say how, and fewer each year even ask — the mind is trusted now the way weather is trusted."
+   },
+   {
+    "id": "purge_and_rebuild",
+    "label": "Wipe it, re-derive by hand",
+    "description": "Better a course you understand than one you obey.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "ship_delta": {
+     "hull_integrity": -0.03
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.15
+     }
+    ],
+    "log": "They purged the archive and re-derived the ship's course by hand from the founding tables — a year of drudgery and one bad wobble before the numbers came right. The crew understands its own heading again, and paid in sweat to."
+   }
+  ]
+ },
+ {
+  "id": "the_equidistant_dark",
+  "category": "mission_milestone",
+  "title": "The Equidistant Dark",
+  "description": "Deep in the middle of the crossing, no star near enough to grow or shrink, the long-range array shows a sky that does not change from watch to watch. A young officer reports, unsettled, that by every instrument the stars have stopped moving. They have not. It only looks that way from the exact middle of nowhere.",
+  "requires_decision": true,
+  "family": "mystery",
+  "min_generation": 6,
+  "max_generation": 13,
+  "outcomes": [
+   {
+    "id": "keep_the_beacons_lit",
+    "label": "Burn the beacons into the dark",
+    "description": "Run every running light and hail-beacon at full — a statement, to no one, that the ship is here and moving.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "log": "The ship lit itself up against the unmoving dark and threw hails into a silence that would not answer for a thousand years. Nothing heard them. But the crew slept easier for a while, knowing their ship insisted, to the whole indifferent middle of nowhere, that it was here."
+   },
+   {
+    "id": "run_dark_and_silent",
+    "label": "Run dark and silent",
+    "description": "Douse the lights, save the power, and let the ship drift the deep middle unseen even by itself.",
+    "resource_delta": {
+     "energy": 150
+    },
+    "population_delta": {
+     "unity": 0.03,
+     "morale": -0.03
+    },
+    "log": "The ship went dark to save its reactor for the far side, and the crew stood their watches by instrument alone through a sky that never moved. It was a grim, close time, and the ship came out of it thriftier and quieter and somehow more one thing than it went in."
+   }
+  ]
+ },
+ {
+  "id": "the_stars_pulse",
+  "category": "legacy_moment",
+  "title": "The Star's Pulse",
+  "description": "This deep in the star's magnetic reach, the ship's oldest instruments sing — the founders' navigation arrays picking up the slow, vast pulse of the dying sun and rendering it, unbidden, as something almost like music. The watch has begun keeping time to it. Some say it is beautiful. The engineers say it is drowning the real signal.",
+  "requires_decision": true,
+  "family": "mystery",
+  "requires_charter_tag": [
+   "stellar_hazard"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "filter_the_pulse",
+    "label": "Filter it out, run on clean backups",
+    "description": "Strip the star's song from the instruments and navigate on shielded backup arrays. Safe, silent, and a little poorer for the quiet.",
+    "resource_delta": {
+     "energy": -200
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The engineers filtered the star's pulse out of every array and ran the ship on clean shielded backups, and the instruments read true again and the watch stood their shifts in ordinary silence. Something the crews had started to love was gone, and the survey was the more accurate for its going."
+   },
+   {
+    "id": "keep_the_rhythm",
+    "label": "Let the ship keep the star's time",
+    "description": "Fold the pulse into the ship's own rhythm — its clocks, its watches, its songs. A voyage marked by a dying star's heartbeat becomes a strange new thing.",
+    "population_delta": {
+     "unity": 0.04,
+     "cultural_drift": 0.05,
+     "morale": 0.03
+    },
+    "log": "The ship let the star into its bones — its watch-bells timed to the pulse, its work-songs built on it, a generation growing up keeping a dying sun's heartbeat for a clock. They came away from the dive one people, stranger than they went in, carrying the rhythm of a star that would be dark before their grandchildren were grown."
+   }
+  ]
+ }
+]

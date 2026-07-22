@@ -1,0 +1,1302 @@
+[
+ {
+  "id": "population_growth",
+  "category": "generational_challenge",
+  "title": "Population Growth",
+  "description": "A healthy cohort of births strains food planning but promises a stronger next generation.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "expand_rations",
+    "label": "Expand rations",
+    "description": "Feed the boom.",
+    "resource_delta": {
+     "food": -300
+    },
+    "population_delta": {
+     "count": 60,
+     "morale": 0.05
+    },
+    "log": "The ship's population grew, and the galley budget grew with it."
+   },
+   {
+    "id": "ration_strictly",
+    "label": "Hold rations steady",
+    "description": "No new allocations. The nursery decks will remember.",
+    "population_delta": {
+     "count": 30,
+     "morale": -0.05,
+     "unity": -0.03
+    },
+    "log": "Rations held steady through the birth cohort. Some decks kept score."
+   }
+  ],
+  "family": "survival",
+  "complications": [
+   {
+    "id": "boom_on_a_thin_larder",
+    "food_below": 3000,
+    "description_add": "And the larder is already thin — a birth cohort is a blessing the galley is in no position to feed.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The new cohort arrived into a hungry year, and the galley stretched an already-thin larder thinner to feed them."
+   }
+  ]
+ },
+ {
+  "id": "resupply_cache",
+  "category": "mission_milestone",
+  "title": "The Cache",
+  "description": "A supply cache the mission planners seeded decades ago drifts on the course ahead, if its beacon can be trusted.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "claim_the_cache",
+    "label": "Match and claim it",
+    "description": "Spend fuel to rendezvous with the drop.",
+    "ship_delta": {
+     "fuel": -0.05
+    },
+    "resource_delta": {
+     "minerals": 500,
+     "food": 400
+    },
+    "log": "The cache gave up rations and metals — and, folded in its heart, an intact solar sail array, stowed in the salvage hold.",
+    "grant_component": "solar_sail"
+   },
+   {
+    "id": "pass_the_cache",
+    "label": "Pass it by",
+    "description": "Stay on the fuel budget; the holds are full enough.",
+    "population_delta": {
+     "legacy_loyalty": 0.02
+    },
+    "log": "The cache drifted past, unopened. The ship needs nothing yet, and the founders keep their gift."
+   },
+   {
+    "id": "the_mother_lode",
+    "label": "A fortune — sail home on it",
+    "description": "Far richer than charted. With holds full and a windfall aboard, the charter is as good as met.",
+    "resource_delta": {
+     "credits": 3000,
+     "minerals": 800
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "force_return": true,
+    "log": "The cache was no mere resupply but a mother lode — metals and salvage worth more than the whole charter. The council turns the ship for home, holds heavy with fortune."
+   }
+  ],
+  "family": "survival",
+  "food_below": 5000
+ },
+ {
+  "id": "berth_lottery",
+  "category": "generational_challenge",
+  "title": "The Berth Lottery",
+  "description": "This generation was born larger than the last, and there are more people than private berths. Someone decides who sleeps in the open decks.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "expand_quarters",
+    "label": "Expand the quarters",
+    "description": "Convert cargo and hold space into homes.",
+    "resource_delta": {
+     "minerals": -400,
+     "credits": -200
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "unity": 0.03
+    },
+    "log": "Cargo space was cut open and rebuilt into berths. The ship carries less and shelters more."
+   },
+   {
+    "id": "run_the_lottery",
+    "label": "Run the lottery",
+    "description": "Assign the open decks by lot. Fair, and resented.",
+    "population_delta": {
+     "morale": -0.05,
+     "unity": -0.03,
+     "stability": 0.03
+    },
+    "log": "Private berths were assigned by lottery. The ship called it fair, and the losers of the draw learned to sleep in the light."
+   },
+   {
+    "id": "accept_the_offer",
+    "label": "Let a people take the settlement offer",
+    "description": "A passing survey world will take a whole faction. Crowding eases; the ship is smaller for it.",
+    "population_delta": {
+     "morale": 0.03,
+     "stability": 0.04
+    },
+    "faction_loss": "settled",
+    "log": "One people accepted a standing offer to make planetfall on a surveyed world. The berths are roomier now, and a light aboard has gone out for good."
+   }
+  ],
+  "family": "survival"
+ },
+ {
+  "id": "garden_world",
+  "category": "immediate_crisis",
+  "title": "The Garden World",
+  "description": "A living world drifts across the route — blue water, breathable air, empty of people. It could refill the holds for a decade. Some aboard have already stopped calling it a stop.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "resupply_and_go",
+    "label": "Resupply and go",
+    "description": "Fill the holds; keep the schedule.",
+    "resource_delta": {
+     "food": 3000,
+     "minerals": 500
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "The ship gorged the world's bounty and pulled away before the temptation could set. The holds are full; the longing is not."
+   },
+   {
+    "id": "let_them_stay",
+    "label": "Let the willing stay",
+    "description": "A world like this asks to be lived on.",
+    "resource_delta": {
+     "food": 2000
+    },
+    "faction_loss": "settled",
+    "log": "A whole people chose the garden world over the dark. The ship sailed lighter, and grieved the leaving even as it filled its holds."
+   }
+  ],
+  "food_below": 4000
+ },
+ {
+  "id": "fuel_skim",
+  "category": "immediate_crisis",
+  "title": "The Skim",
+  "description": "A gas giant sits astride the lane, its upper atmosphere thick with reaction mass. A skimming pass could top the tanks — if the hull can take the heat.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "skim_deep",
+    "label": "Skim deep",
+    "description": "Dip low and fill the tanks.",
+    "ship_delta": {
+     "fuel": 0.6,
+     "hull_integrity": -0.03
+    },
+    "log": "The ship dipped into the storm-lit clouds and came out streaked with soot and heavy with fuel."
+   },
+   {
+    "id": "skim_shallow",
+    "label": "Skim shallow",
+    "description": "A cautious pass; take what's safe.",
+    "ship_delta": {
+     "fuel": 0.25
+    },
+    "log": "A gentle skim gave the tanks a modest gift and the hull no new scars."
+   }
+  ],
+  "fuel_below": 0.45
+ },
+ {
+  "id": "crop_blight",
+  "category": "immediate_crisis",
+  "title": "The Blight",
+  "description": "A blight has taken the on-station crop and the seed vault with it. The mission's whole purpose here is rotting in the trays, and it will not come back this trip.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "scour_and_replant",
+    "label": "Scour and replant",
+    "description": "Burn it out and try once more.",
+    "resource_delta": {
+     "minerals": -300,
+     "food": -200
+    },
+    "ship_delta": {
+     "spare_parts": -4
+    },
+    "long_term_consequences": [
+     "blighted_seed_stock"
+    ],
+    "log": "The trays were scoured to bare metal and sown again from the last clean stock. It cost dearly, and it might yet hold."
+   },
+   {
+    "id": "abandon_the_site",
+    "label": "Cut losses and turn back",
+    "description": "There is nothing left to work for here.",
+    "resource_delta": {
+     "food": -400
+    },
+    "population_delta": {
+     "morale": -0.06
+    },
+    "force_return": true,
+    "log": "The blighted decks were sealed and the mission cut short. The ship came about, holds light and hopes lighter, for the long road home."
+   }
+  ]
+ },
+ {
+  "id": "rationing_referendum",
+  "category": "generational_challenge",
+  "title": "The Rationing Referendum",
+  "description": "The stores are thin and the decks want a say in who eats. Impose the cuts from the council, or put rationing to the whole ship.",
+  "requires_decision": true,
+  "family": "survival",
+  "outcomes": [
+   {
+    "id": "impose_cuts",
+    "label": "Impose the cuts",
+    "description": "The council decides. Order over consent.",
+    "resource_delta": {
+     "food": 400
+    },
+    "population_delta": {
+     "unity": -0.06,
+     "morale": -0.05,
+     "stability": 0.04
+    },
+    "faction_loss": "departed",
+    "log": "The council rationed by decree. The stores held — but a whole quarter of the ship stopped calling the mission theirs, and one day a berth-block was simply empty."
+   },
+   {
+    "id": "put_to_vote",
+    "label": "Put it to a vote",
+    "description": "Let the ship ration itself, unevenly and loudly.",
+    "resource_delta": {
+     "food": 150
+    },
+    "population_delta": {
+     "unity": 0.05,
+     "cultural_drift": 0.05,
+     "morale": 0.02
+    },
+    "log": "The ship voted on its own hunger. The math was worse and the peace was better."
+   }
+  ]
+ },
+ {
+  "id": "green_temptation",
+  "category": "generational_challenge",
+  "title": "The Green Temptation",
+  "description": "The charter's route skims a living world, warm and unclaimed. A faction petitions to be let off here rather than sail on.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "garden"
+  ],
+  "outcomes": [
+   {
+    "id": "let_them_settle",
+    "label": "Let them settle",
+    "description": "Fewer mouths, fewer hands, a colony you did not plan.",
+    "resource_delta": {
+     "food": 500
+    },
+    "faction_loss": "settled",
+    "log": "A whole faction went down to the green world with seed and tools, and the ship sailed on lighter, quieter, and short a people."
+   },
+   {
+    "id": "hold_the_course",
+    "label": "Hold the course",
+    "description": "The charter comes first. Sail past the temptation.",
+    "population_delta": {
+     "morale": -0.06,
+     "unity": -0.04,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The council refused the green world. The charter held, and for a generation people spoke of the paradise they were not allowed to keep."
+   }
+  ]
+ },
+ {
+  "id": "the_living_decks",
+  "category": "generational_challenge",
+  "title": "The Living Decks",
+  "description": "The Verdant Kin want to convert a cargo deck into gardens — more food, more air, more green — at the cost of the salvage bay the engineers rely on.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_dominant_faction": "verdant_kin",
+  "outcomes": [
+   {
+    "id": "grow_the_gardens",
+    "label": "Grow the gardens",
+    "description": "Trade the salvage bay for green.",
+    "resource_delta": {
+     "food": 400
+    },
+    "ship_delta": {
+     "spare_parts": -6
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "adaptation": 0.04
+    },
+    "log": "The cargo deck became a forest in miniature. The galley rejoiced and the machine shop mourned its lost bench space."
+   },
+   {
+    "id": "keep_the_bay",
+    "label": "Keep the salvage bay",
+    "description": "The ship runs on parts, not petals.",
+    "population_delta": {
+     "morale": -0.04,
+     "unity": -0.03,
+     "stability": 0.04
+    },
+    "log": "The salvage bay stayed. The Kin tended window-boxes instead of a forest, and remembered being told no."
+   }
+  ]
+ },
+ {
+  "id": "the_blight_returns",
+  "category": "generational_challenge",
+  "title": "Rot in the Grow-Decks",
+  "description": "A rot spreads through the hydroponic beds faster than the gardeners can cut it back. Burn the infected racks to save the rest, or nurse them and risk the whole harvest.",
+  "requires_decision": true,
+  "family": "survival",
+  "outcomes": [
+   {
+    "id": "burn_the_racks",
+    "label": "Burn the infected racks",
+    "description": "Cut losses. Sacrifice a quarter to save three.",
+    "resource_delta": {
+     "food": -300
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.06
+     }
+    ],
+    "log": "The gardeners torched a quarter of the grow-decks and stopped the rot at the firebreak. The galley tightened its belt and the beds slowly greened again."
+   },
+   {
+    "id": "nurse_them",
+    "label": "Nurse the beds",
+    "description": "Try to save every rack. Gamble the harvest.",
+    "resource_delta": {
+     "food": -700
+    },
+    "population_delta": {
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.14
+     }
+    ],
+    "log": "The gardeners fought for every rack and lost most of them anyway. The rot burned through the decks and the ship went hungry into the next season."
+   }
+  ]
+ },
+ {
+  "id": "the_dry_tank",
+  "category": "immediate_crisis",
+  "title": "The Dry Tank",
+  "description": "The reaction-mass gauges read near-empty with the destination star still a lifetime ahead. Something has to give, or the ship coasts dark.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "fuel_below": 0.2,
+  "outcomes": [
+   {
+    "id": "cold_coast",
+    "label": "Cut the drives and coast",
+    "description": "Shut down all but life support and fall toward home on momentum alone.",
+    "population_delta": {
+     "morale": -0.07,
+     "unity": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.05
+     }
+    ],
+    "log": "The drives went cold and the ship coasted through the dark on nothing but momentum and nerve. It cost years and it cost comfort, but it kept flying."
+   },
+   {
+    "id": "strip_for_mass",
+    "label": "Feed the reactor the ship itself",
+    "description": "Break down non-essential structure for reaction mass.",
+    "ship_delta": {
+     "fuel": 0.3,
+     "hull_integrity": -0.1,
+     "spare_parts": -10
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The engineers fed whole bulkheads into the reactor. The tank climbed off empty and the ship came home lighter, barer, and scarred by its own hunger."
+   }
+  ]
+ },
+ {
+  "id": "the_lost_gardeners",
+  "category": "generational_challenge",
+  "title": "The Lost Gardeners",
+  "description": "The grow-decks yield less every cycle, and the reason is quiet: the master gardeners' craft — the reading of soil and light and blight — was never fully passed on. The beds are tended by rote, and the harvests know it.",
+  "requires_decision": true,
+  "family": "survival",
+  "knowledge_below": [
+   {
+    "id": "agriculture",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "apprentice_the_gardeners",
+    "label": "Apprentice a new generation of gardeners",
+    "description": "Set the young to the beds under what few masters remain.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "knowledge": 0.3
+     }
+    ],
+    "log": "The last master gardeners took apprentices to the beds and taught the reading of soil and rot. The next harvest was thin; the ones after that were not."
+   },
+   {
+    "id": "industrialize_the_beds",
+    "label": "Automate the beds instead",
+    "description": "Replace craft with machinery and standing recipes.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -150
+    },
+    "population_delta": {
+     "adaptation": 0.04,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.05,
+      "knowledge": -0.05
+     }
+    ],
+    "log": "The beds were handed to machines and fixed recipes, and the gardener's craft became a museum piece. The yields steadied — brittle, blind, and wholly dependent on the machinery holding."
+   }
+  ]
+ },
+ {
+  "id": "the_ice_moon",
+  "category": "mission_milestone",
+  "title": "The Ice Moon",
+  "description": "A frozen moonlet drifts near the lane, its crust thick with the volatiles that make reaction mass. Stopping to mine it costs time and labor the charter did not budget for.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "fuel_below": 0.4,
+  "outcomes": [
+   {
+    "id": "mine_the_ice",
+    "label": "Stop and mine the ice",
+    "description": "Spend the weeks. Fill the tanks off the frozen moon.",
+    "ship_delta": {
+     "fuel": 0.4
+    },
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "cultural_drift": 0.02
+    },
+    "log": "The ship anchored to the ice moon and melted its crust into the tanks. The stop cost a season and bought a decade of range."
+   },
+   {
+    "id": "burn_on_past",
+    "label": "Burn on past it",
+    "description": "The charter waits for no moon. Keep the schedule.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The navigators logged the ice moon and did not slow for it. The tanks stayed low and the schedule stayed honest, and someone noted the coordinates for a leaner day."
+   }
+  ]
+ },
+ {
+  "id": "the_seed_corn",
+  "category": "generational_challenge",
+  "title": "The Seed Corn",
+  "description": "The stores are thin enough that the granary masters raise a forbidden option: eat the seed stock — the reserve meant to replant the grow-decks — and buy this generation's bellies against the next generation's harvests.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2000,
+  "outcomes": [
+   {
+    "id": "eat_the_seed",
+    "label": "Eat the seed corn",
+    "description": "Feed the living now. Gamble the future can be rebuilt.",
+    "resource_delta": {
+     "food": 1200
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "long_term_consequences": [
+     "seed_corn_eaten"
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.08
+     }
+    ],
+    "log": "The granaries opened the seed vaults and the ship ate its own future. Bellies filled; the master gardeners wept over emptied reserves that had crossed light-years unbroken."
+   },
+   {
+    "id": "hold_the_seed",
+    "label": "Hold the seed stock",
+    "description": "The reserve is sacred. Bear the hunger.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "count": -30,
+     "morale": -0.05,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The council held the seed vaults shut and let the lean season take who it took. The grow-decks would replant; the graves would be remembered as the price of it."
+   }
+  ]
+ },
+ {
+  "id": "the_barren_decks",
+  "category": "legacy_moment",
+  "title": "The Barren Decks",
+  "description": "A generation after the seed vaults were emptied, the grow-decks still yield thin and wrong — the strains that crossed the stars are gone, replaced by whatever could be scraped together. The ship tastes the old decision at every meal.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_consequence": [
+   "seed_corn_eaten"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "buy_new_stock",
+    "label": "Trade dearly for new seed",
+    "description": "Spend whatever it takes to restock the vaults properly.",
+    "resource_delta": {
+     "credits": -1500,
+     "influence": -30
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.1,
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship spent a fortune on new seed stock from a passing convoy, and the grow-decks slowly greened into something worth eating again. The lesson stayed in the ledgers, underlined."
+   },
+   {
+    "id": "make_do",
+    "label": "Make do with what grows",
+    "description": "Adapt to the poorer strains. Save the credits.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "cultural_drift": 0.04,
+     "morale": -0.03
+    },
+    "log": "The ship made peace with its thin harvests and forgot, over a generation, that food had ever tasted otherwise. The seed corn was never mentioned; the flavor of the decision simply became normal."
+   }
+  ]
+ },
+ {
+  "id": "the_long_winter",
+  "category": "immediate_crisis",
+  "title": "The Long Winter",
+  "description": "Thin stores and a browning reactor at once — the galley cannot cook what the fields cannot grow, and the cold is creeping into the habitat decks. A ship can survive hunger or dark for a while, but rarely both together.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2500,
+  "energy_below": 1500,
+  "outcomes": [
+   {
+    "id": "ration_and_huddle",
+    "label": "Ration hard and huddle close",
+    "description": "Cut portions, concentrate warmth, and endure it as one.",
+    "population_delta": {
+     "count": -40,
+     "morale": -0.06,
+     "unity": 0.06
+    },
+    "log": "The ship pulled its people into the warm decks and thinned every plate, and the long winter took its toll in the old and the unlucky. Those who came through it came through it together."
+   },
+   {
+    "id": "spend_the_reserves",
+    "label": "Burn the reserves to break it",
+    "description": "Spend everything at once to end the crisis fast, cost be damned.",
+    "resource_delta": {
+     "credits": -700,
+     "food": 600,
+     "energy": 500
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "The council threw the whole reserve at the long winter and broke it in a season, leaving the coffers bare and the ship warm. It was reckless and it worked, which is its own kind of tradition now."
+   }
+  ]
+ },
+ {
+  "id": "the_lean_pact",
+  "category": "generational_challenge",
+  "title": "The Lean Pact",
+  "description": "With the stores thin, the whole ship swears a rationing pact — equal shares, no exceptions, officers and infants alike. It is a hard, proud thing, and how it is remembered will shape the people for generations.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2000,
+  "outcomes": [
+   {
+    "id": "swear_the_pact",
+    "label": "Swear the pact ship-wide",
+    "description": "Equal shares for all, sealed by oath.",
+    "resource_delta": {
+     "food": 300
+    },
+    "population_delta": {
+     "unity": 0.07,
+     "morale": -0.03
+    },
+    "long_term_consequences": [
+     "lean_pact_sworn"
+    ],
+    "log": "The whole ship swore the lean pact, and for one hungry generation nobody ate a bite more than anyone else. It was remembered afterward as the year the crew became one people."
+   },
+   {
+    "id": "protect_the_essential",
+    "label": "Feed the essential crew first",
+    "description": "Keep the specialists strong; ration the rest harder.",
+    "resource_delta": {
+     "food": 200
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "unity": -0.05,
+     "morale": -0.04
+    },
+    "log": "The council fed its specialists first and let the pact fail before it was sworn. The ship kept its experts sharp and its people divided into those who ate and those who watched."
+   }
+  ]
+ },
+ {
+  "id": "the_drifting_tanker",
+  "category": "mission_milestone",
+  "title": "The Drifting Tanker",
+  "description": "A fuel tanker drifts dead on the lane, its crew long gone but its tanks — the sensors insist — still substantially full. Boarding a derelict is never free, but a low tank makes the risk look reasonable.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "fuel_below": 0.35,
+  "outcomes": [
+   {
+    "id": "pump_the_tanker",
+    "label": "Board and pump the tanks",
+    "description": "Cross to the derelict and take the reaction mass.",
+    "ship_delta": {
+     "fuel": 0.5
+    },
+    "population_delta": {
+     "count": -8
+    },
+    "log": "The crews crossed to the dead tanker and pumped its tanks dry into their own. The ship came away fuelled for a decade and short a few who went aboard and did not radio back."
+   },
+   {
+    "id": "leave_the_tanker",
+    "label": "Leave it drifting",
+    "description": "A dead ship's full tanks are a bad kind of luck. Pass it by.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.02
+    },
+    "log": "The navigators logged the drifting tanker and its too-convenient bounty and steered well clear. The old hands nodded; a full derelict is a story that rarely ends well."
+   }
+  ]
+ },
+ {
+  "id": "the_overloaded_decks",
+  "category": "generational_challenge",
+  "title": "The Overloaded Decks",
+  "description": "The tow draws parasitically on the ship — its cold holds kept barely warm, its archives kept dry, all off your grid and your air. The strain is telling on life support. Bear the load, or let the dead ship go cold.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "return"
+  ],
+  "requires_charter_tag": [
+   "long_return"
+  ],
+  "outcomes": [
+   {
+    "id": "bear_the_load",
+    "label": "Bear the load",
+    "description": "Keep the prize whole. Carry its weight on your own systems.",
+    "resource_delta": {
+     "energy": -400
+    },
+    "ship_delta": {
+     "life_support": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.03
+     }
+    ],
+    "log": "The council chose to carry the tow warm and whole, and the habitat plant ran a little harder for it every year of the haul. The archives will reach home readable. The scrubbers will need answering for."
+   },
+   {
+    "id": "power_down_the_tow",
+    "label": "Let it go cold",
+    "description": "Cut the derelict off your grid. Save the ship; lose what freezes.",
+    "resource_delta": {
+     "energy": 200,
+     "minerals": -400
+    },
+    "ship_delta": {
+     "life_support": 0.02
+    },
+    "log": "They pulled the tow off the grid and let it freeze. The ship's air came easier at once — and somewhere in the dead ship's dark holds, seed-stock and film and things that do not survive the cold quietly stopped being cargo."
+   }
+  ]
+ },
+ {
+  "id": "the_fire_and_the_field",
+  "category": "generational_challenge",
+  "title": "The Fire and the Field",
+  "description": "The First Flame keeps a shrine-burn lit off the reactor — an eternal fire that has not gone dark since launch. The Verdant Kin, short of light for the grow-decks, have asked for that power. Two faiths, one reactor, and only so many megawatts.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_factions_aboard": [
+   "first_flame",
+   "verdant_kin"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "share_the_fire",
+    "label": "Ration the reactor to the gardens",
+    "description": "Dim the shrine-burn and give the surplus to the grow-decks. The faithful will grumble; the gardens will grow.",
+    "resource_delta": {
+     "energy": -300,
+     "influence": -15
+    },
+    "population_delta": {
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.03
+     }
+    ],
+    "log": "The shrine-burn was banked to a low steady glow and its spared power run to the grow-decks. The Flame's faithful watched their eternal fire dim and said nothing kind, and the gardens, for the first time in a generation, had light enough to spare."
+   },
+   {
+    "id": "keep_the_shrine_burning",
+    "label": "Keep the eternal fire at full burn",
+    "description": "The flame has not gone dark since launch and will not now. The gardens will make do.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.03,
+     "unity": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.04
+     }
+    ],
+    "log": "The eternal fire kept its full burn, and the faithful were honored, and the grow-decks stayed dim and thin. The Kin logged the harvest shortfall against the shrine and did not forget it, and the ship ate a little less to keep a fire lit."
+   }
+  ]
+ },
+ {
+  "id": "the_broken_beds",
+  "category": "immediate_crisis",
+  "title": "The Broken Beds",
+  "description": "The hydroponics decks have gone too long unmended — bed liners split, nutrient loops crusted shut, the circulation pumps seizing one by one. The gardens are dying faster than they can be picked, and a dying garden is a starving ship a few years on.",
+  "requires_decision": true,
+  "family": "survival",
+  "condition_below": [
+   {
+    "id": "agriculture",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_beds",
+    "label": "Rebuild the hydroponics",
+    "description": "Spend the parts and the power to re-lay the beds and re-seat the pumps. Modern farming, kept alive.",
+    "resource_delta": {
+     "energy": -350,
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -12
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.3
+     }
+    ],
+    "log": "The grow-decks were torn out and re-laid, pump by pump, liner by liner, until the water ran clean and green again. It cost the ship a fortune in parts and power, and it bought back the one thing the ship cannot buy: next year's food."
+   },
+   {
+    "id": "fall_back_to_soil",
+    "label": "Fall back to soil farming",
+    "description": "Abandon the failed hydroponics for low-tech soil beds. Hardier, hungrier on space, and a lean few years while it takes.",
+    "resource_delta": {
+     "food": -400
+    },
+    "population_delta": {
+     "count": -30,
+     "cultural_drift": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.14
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The ship gave up on the high hydroponics and turned to soil — dirt beds in every spare corridor, a way of farming the founders had thought left behind. It will feed the ship in time, but the lean years between broke some health that the crowded, hungry wards could not mend."
+   }
+  ]
+ },
+ {
+  "id": "the_castaways",
+  "category": "immediate_crisis",
+  "title": "The Castaways",
+  "description": "A distress beacon resolves into a crippled boat — the last of some other venture's people, generations adrift on failing air, with a hold of preserved stores they can no longer eat fast enough to matter. They ask to be taken aboard. Every berth given is another mouth for the rest of the crossing.",
+  "requires_decision": true,
+  "family": "survival",
+  "outcomes": [
+   {
+    "id": "take_them_aboard",
+    "label": "Take them aboard",
+    "description": "Open the locks. More hands, more mouths, and a debt of mercy the ship will carry — and feed — the rest of the way.",
+    "resource_delta": {
+     "food": -300
+    },
+    "population_delta": {
+     "count": 80,
+     "morale": 0.04,
+     "unity": -0.02
+    },
+    "log": "The locks opened and the castaways came aboard, gaunt and grateful, and the ship was suddenly larger and hungrier and a little more crowded in every corridor. The galley redid its arithmetic for the rest of the crossing, and no one aboard regretted the choice, exactly, though everyone felt it at the table."
+   },
+   {
+    "id": "take_the_stores_only",
+    "label": "Take the stores, not the people",
+    "description": "Trade for their preserved cargo and leave them their boat. The ship cannot feed everyone who is starving in the dark.",
+    "resource_delta": {
+     "food": 500,
+     "minerals": 100
+    },
+    "population_delta": {
+     "morale": -0.05,
+     "stability": 0.03
+    },
+    "log": "The ship took the castaways' stores at a fair rate and left them their boat and their heading, and pulled away from the beacon before it stopped transmitting. The larder was fuller for it. The crew that made the trade did not talk about it much, then or after."
+   }
+  ]
+ },
+ {
+  "id": "the_windfall_harvest",
+  "category": "mission_milestone",
+  "title": "The Windfall Harvest",
+  "description": "The garden world beneath is more generous than the survey promised — a growing season the ship could gorge on for a decade. But there is far more here than the holds can carry, and only so long before the ship must break orbit. A glut is its own kind of problem.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_charter_tag": [
+   "garden"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "put_up_the_stores",
+    "label": "Preserve it for the long haul",
+    "description": "Dry, salt, and vault everything the holds will take. The crews will relearn the old craft of putting food up against a lean century.",
+    "resource_delta": {
+     "food": 4000
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "knowledge": 0.08
+     }
+    ],
+    "log": "The whole ship turned to the harvest — picking, drying, salting, vaulting — until the holds groaned full and the crews had, between them, remembered how a people feeds itself across a barren stretch. The larder will outlast the memory of this world, and the craft of filling it was worth as much as the food."
+   },
+   {
+    "id": "trade_the_surplus",
+    "label": "Take what stores, sell the rest forward",
+    "description": "Load the holds and log the surplus as a manifest to trade at the next port of call. Food now, credits later, and none of it put up for a crisis.",
+    "resource_delta": {
+     "food": 2200,
+     "credits": 900
+    },
+    "log": "The ship took its fill and struck a forward contract on the rest — a manifest of the windfall to be redeemed at a port a century downstream. The holds are full enough and the writ is worth a good sum, and if a lean year comes before the port does, well, the ledger looked handsome at the time."
+   }
+  ]
+ },
+ {
+  "id": "the_black_market",
+  "category": "generational_challenge",
+  "title": "The Ration Market",
+  "description": "Rationing has done what rationing does: a quiet market has grown in the gaps of it, ration chits changing hands at three times face, the well-connected eating better than the fair share the council swore everyone would keep. The quartermasters want to know what the council intends to see.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 2500,
+  "outcomes": [
+   {
+    "id": "break_the_market",
+    "label": "Break the market",
+    "description": "Raid the caches, void the hoarded chits, and make an example. Everyone back to the fair share, at the point of it if need be.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": -0.03,
+     "stability": -0.02
+    },
+    "log": "Security walked the black market down in a week of hard searches and voided chits, and the fair share held again, resented and enforced. The ship ate equal and unhappy, and the ones who had been eating well remembered who had taken it from them."
+   },
+   {
+    "id": "license_the_market",
+    "label": "License it and tax it",
+    "description": "You cannot stop it, so make it pay. Legalize the trade, skim it for the common stores, and call the pragmatism a policy.",
+    "resource_delta": {
+     "credits": 250,
+     "food": -150
+    },
+    "population_delta": {
+     "stability": 0.04,
+     "unity": -0.04
+    },
+    "log": "The council licensed the ration market rather than fight it, taxed it for the common stores, and let a ship that was supposed to share alike learn to price its hunger instead. It kept the peace and paid a little into the tins, and it settled something about the ship that the founders had meant to be otherwise."
+   }
+  ]
+ },
+ {
+  "id": "the_deep_stores",
+  "category": "generational_challenge",
+  "title": "The Deep Stores",
+  "description": "The first decades are the ship's slack years — holds fuller than they will ever be again, hands to spare. A quartermaster proposes spending some of that slack now: sealed deep-vaults of preserved food against a famine no one alive has yet seen, but every long voyage eventually does. The founders would call it prudence. The hungry-for-growth call it hoarding.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "travel"
+  ],
+  "max_generation": 3,
+  "outcomes": [
+   {
+    "id": "build_the_deep_vaults",
+    "label": "Build the deep vaults",
+    "description": "Spend the early slack on sealed long-term stores. It is dead weight until the year it is everything.",
+    "resource_delta": {
+     "credits": -400,
+     "minerals": -300
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "long_term_consequences": [
+     "deep_stores_built"
+    ],
+    "log": "The ship gave its early abundance to the deep vaults — sealed holds of grain and dried protein tucked into the cold spine of the ship, meant to be forgotten until they were needed. It cost a fortune in slack the ship would rather have grown on, and it will be worth every gram the first time the gardens fail."
+   },
+   {
+    "id": "travel_light",
+    "label": "Travel light",
+    "description": "Keep the slack for growth and flexibility. A ship that hoards against every fear never gets anywhere.",
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "log": "The council kept the ship's early slack for living rather than storing, and the holds stayed lean and flexible and the decks a little more generous. It was the choice of a people who trusted the gardens, and the gardens had not yet given them reason not to."
+   }
+  ]
+ },
+ {
+  "id": "the_vaults_answer",
+  "category": "immediate_crisis",
+  "title": "The Vaults Answer",
+  "description": "The gardens have failed and the ship is hungry — but generations ago, in the slack years, someone had the foresight to build the deep vaults, and they have waited in the cold spine of the ship for exactly this. The seals can be broken. The question is only how fast.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_consequence": [
+   "deep_stores_built"
+  ],
+  "food_below": 2500,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "open_the_vaults",
+    "label": "Open the vaults",
+    "description": "This is the year they were built for. Break the seals and feed the ship.",
+    "resource_delta": {
+     "food": 2200
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.03
+    },
+    "log": "The deep vaults were opened, and grain the founders' founders had sealed away poured out onto the mess decks generations later, still good, still enough. The ship ate, and remembered a decision made by people none of them had known, and was grateful across the gap of years to hands long dead."
+   },
+   {
+    "id": "ration_the_reserve",
+    "label": "Ration the reserve",
+    "description": "One famine is rarely the last. Draw on the vaults, but sparingly, and keep some sealed for a worse year.",
+    "resource_delta": {
+     "food": 900
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.02
+    },
+    "log": "The council opened the vaults only a crack, drawing just enough to hold the ship through and sealing the rest back against a hunger yet to come. The decks grumbled at a thin ration atop a full larder, and the quartermasters slept better for a reserve kept whole."
+   }
+  ]
+ },
+ {
+  "id": "the_slingshot_gambit",
+  "category": "immediate_crisis",
+  "title": "The Slingshot Gambit",
+  "description": "The tank is nearly dry and a massive body lies across the course. The navigators lay out a gambit: an unpowered slingshot, threading the ship close through the gravity well to steal velocity for nothing — no fuel spent, if it goes right. If it goes wrong, close is very close.",
+  "requires_decision": true,
+  "family": "survival",
+  "fuel_below": 0.25,
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "slip_the_well",
+    "label": "Thread the well",
+    "description": "Take the free velocity and the risk that comes with it. Save the fuel for when there is no gravity to borrow.",
+    "ship_delta": {
+     "fuel": 0.15,
+     "hull_integrity": -0.05
+    },
+    "population_delta": {
+     "count": -12,
+     "morale": -0.02
+    },
+    "log": "The ship threaded the gravity well close enough to frighten the founders' ghosts, stole a decade of velocity for not a gram of fuel, and came out the far side scorched along one flank and short a dozen souls who had been on the wrong deck when the hull groaned. The tank was spared. The navigators did not do it twice."
+   },
+   {
+    "id": "burn_it_safe",
+    "label": "Burn it safe",
+    "description": "Spend what little fuel remains on a clean, controlled passage. Slower, poorer, and everyone lives.",
+    "ship_delta": {
+     "fuel": -0.05
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "morale": 0.02
+    },
+    "log": "The navigators refused the gambit and spent the last of the reserve on a wide, safe passage around the well — slower, and it left the tank nearly dry, but the hull came through whole and every soul aboard with it. There would be a reckoning with the fuel later. There was not one now."
+   }
+  ]
+ },
+ {
+  "id": "the_coronal_flare",
+  "category": "immediate_crisis",
+  "title": "The Coronal Flare",
+  "description": "The star throws a flare — a wall of plasma and hard radiation climbing out of the corona straight along the ship's track. There are minutes, not hours. The whole reason the ship is close enough to do its work is the reason the flare can reach it.",
+  "requires_decision": true,
+  "family": "survival",
+  "requires_charter_tag": [
+   "stellar_hazard"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "raise_the_shields",
+    "label": "Full shielding, dump the grid to it",
+    "description": "Throw every watt into the radiation shields and ride it out behind them. The work stops; the ship lives.",
+    "resource_delta": {
+     "energy": -500
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "log": "The ship poured its whole grid into the shields and hunkered behind them as the flare broke over it — a white roar on every sensor, and then it was past. The reactor was drained to nothing and the survey lost a week's rhythm, and not one soul took a dose that mattered."
+   },
+   {
+    "id": "angle_and_ride",
+    "label": "Angle the hull and take it",
+    "description": "No time to fully shield. Turn the ship's thickest armor to the star and endure what gets through.",
+    "ship_delta": {
+     "hull_integrity": -0.06
+    },
+    "population_delta": {
+     "count": -20,
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.03
+     }
+    ],
+    "log": "The ship turned its armored spine to the star and took the flare on the hull, and the outer decks cooked and the sensors blinded and a score on the sunward side took doses no medic could answer. The survey kept its schedule. The burial detail kept pace with it."
+   }
+  ]
+ },
+ {
+  "id": "the_tempting_world",
+  "category": "mission_milestone",
+  "title": "The Tempting World",
+  "description": "A world resolves below, lush past the survey's promise — forests to the poles, seas dense with protein, a growing season the hungry ship could gorge on. And that is exactly the danger: a living biosphere is a living biosphere, and nothing that has fed on it has ever come aboard a ship clean.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 4500,
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "land_and_harvest",
+    "label": "Land and harvest",
+    "description": "Fill the holds from a living world. Take the risk that something living comes up with the harvest.",
+    "resource_delta": {
+     "food": 3500
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": -0.05
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The ship gorged on a green world and came away with its holds full and a stowaway in the harvest — a mold, a spore, a something that got into the grow-decks and the wards both before anyone named it. The larder was full for a decade. The ship spent that decade learning to live with what it had carried up the gravity well."
+   },
+   {
+    "id": "sterile_resupply",
+    "label": "Skim it sterile from orbit",
+    "description": "No landing. Scoop the upper seas and the pollen-thick air through the sterilizers, take the smaller haul, and keep the ship clean.",
+    "resource_delta": {
+     "food": 1500
+    },
+    "population_delta": {
+     "stability": 0.02
+    },
+    "log": "The ship kept its distance and skimmed what it could through the sterilizers — a thinner haul than a landing would have given, and every gram of it dead and safe. The crews watched the green world turn below and did not set foot on it, and the ship sailed on hungry and clean."
+   }
+  ]
+ },
+ {
+  "id": "the_rationed_water",
+  "category": "generational_challenge",
+  "title": "The Rationed Water",
+  "description": "The water reclaimers are fouling faster than they can be scoured, and the ship has quietly moved to water rationing — a thing the founders swore would never happen on a closed-loop hull. It is not thirst yet. It is the arithmetic that leads to thirst, and the engineers want a decision before it stops being arithmetic.",
+  "requires_decision": true,
+  "family": "survival",
+  "condition_below": [
+   {
+    "id": "life_support_habitat",
+    "below": 0.5
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "deep_clean_the_reclaimers",
+    "label": "Strip and deep-clean the reclaimers",
+    "description": "Take the water plant apart to the membranes and scour it back to spec. Power, parts, and a thirsty month while it is offline.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "ship_delta": {
+     "spare_parts": -10
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.09
+     }
+    ],
+    "log": "The engineers stripped the water plant to its membranes and scoured it clean over a dry, irritable month, and the loop ran sweet again on the far side of it. The founders' promise held, barely, kept by a generation that had to be reminded it was a promise."
+   },
+   {
+    "id": "ration_the_water",
+    "label": "Hold the ration, nurse it along",
+    "description": "Don't take the plant offline. Keep the ration, run the fouled reclaimers gently, and lose the margin — and the few the thin water hits hardest.",
+    "population_delta": {
+     "count": -15,
+     "morale": -0.05,
+     "stability": 0.02
+    },
+    "log": "The ship held its water ration rather than lose the plant for a month, nursing the fouled reclaimers along and burying the handful the thin, hard water took — the old, the young, the already-ailing. The loop kept running. The founders' promise did not, quite, and everyone drank knowing it."
+   }
+  ]
+ }
+]

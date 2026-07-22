@@ -19,7 +19,9 @@ than last iteration, still coherent."
 
 1. **Data-driven everywhere.** New content lands in `assets/*.json` (+ tuning in
    `assets/data/game_config.json`). Rust changes are for *new mechanics/schema*, never for
-   embedding content. Missions are never hardcoded in Rust.
+   embedding content. Missions are never hardcoded in Rust. **Events are split one file per
+   family under `assets/events/<family>.json`** (merged at load, duplicate-id-guarded) — add a
+   new event to its family's file, not one monolith.
 2. **Determinism preserved.** Seeded campaign skeleton at LAUNCH stays reproducible — same
    seed ⇒ same campaign. New randomness goes through state-owned RNG.
 3. **Structure before volume.** If a content idea needs a schema field, add the field

@@ -1,0 +1,753 @@
+[
+ {
+  "id": "relay_contact",
+  "category": "mission_milestone",
+  "title": "A Voice on the Relay",
+  "description": "An automated relay, older than the mission, is broadcasting a handshake into the dark. It wants to talk. It may only be an echo.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "answer_it",
+    "label": "Answer the relay",
+    "description": "Trade data with the old machine. Knowledge, and exposure.",
+    "resource_delta": {
+     "influence": 40
+    },
+    "population_delta": {
+     "adaptation": 0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The ship answered the relay and came away with charts and a strange new vocabulary."
+   },
+   {
+    "id": "run_silent",
+    "label": "Run silent",
+    "description": "Log its position, tell it nothing, keep the ship's shape a secret.",
+    "population_delta": {
+     "unity": 0.03,
+     "stability": 0.02
+    },
+    "log": "The ship passed the relay in silence. Whatever it wanted, it will keep wanting."
+   }
+  ],
+  "family": "diplomacy"
+ },
+ {
+  "id": "pirate_shadow",
+  "category": "immediate_crisis",
+  "title": "The Tail",
+  "description": "A ship with no transponder has matched the voyage's heading for three days. It is not closing. It is not leaving.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "wanderers": 1.3
+  },
+  "outcomes": [
+   {
+    "id": "warn_it_off",
+    "label": "Warn it off",
+    "description": "Light it up and make the ship look expensive to attack.",
+    "resource_delta": {
+     "energy": -200
+    },
+    "population_delta": {
+     "unity": 0.03
+    },
+    "log": "A show of teeth sent the shadow drifting back into the dark. Probably."
+   },
+   {
+    "id": "ignore_it",
+    "label": "Hold course, say nothing",
+    "description": "Give it nothing to react to.",
+    "population_delta": {
+     "stability": -0.03,
+     "morale": -0.03
+    },
+    "log": "The ship held course and the tail eventually fell away. The observation decks watched the whole time."
+   }
+  ],
+  "family": "diplomacy"
+ },
+ {
+  "id": "the_slowdown",
+  "category": "generational_challenge",
+  "title": "The Slowdown",
+  "description": "The maintenance cohort has stopped working to the letter of a contract the founders wrote for a different ship. Nothing is broken yet. Everything is slower.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "concede_terms",
+    "label": "Concede the terms",
+    "description": "Rewrite the cohort's terms in their favor.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "stability": 0.03
+    },
+    "log": "The council conceded the cohort's terms. The work resumed at full speed, and every cohort now knows the council can be moved."
+   },
+   {
+    "id": "hold_the_line",
+    "label": "Hold the line",
+    "description": "The contract stands. Wait them out.",
+    "population_delta": {
+     "morale": -0.04,
+     "unity": -0.04,
+     "stability": 0.03
+    },
+    "log": "The council held the founders' terms. The slowdown ended in sullen compliance, and something between the decks did not fully mend."
+   }
+  ],
+  "family": "diplomacy"
+ },
+ {
+  "id": "convoy_hail",
+  "category": "generational_challenge",
+  "title": "The Convoy Hail",
+  "description": "A slower ship on a crossing course hails for trade — they have minerals to spare and a hunger for news and seed stock.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "outcomes": [
+   {
+    "id": "trade_with_them",
+    "label": "Open the holds",
+    "description": "Deal fairly and part friends.",
+    "resource_delta": {
+     "minerals": 400,
+     "food": -150,
+     "influence": 30
+    },
+    "log": "Goods and gossip changed hands across the dark. Both ships sailed on the richer for it."
+   },
+   {
+    "id": "wave_them_off",
+    "label": "Wave them off",
+    "description": "Keep to the schedule and the strangers at arm's length.",
+    "population_delta": {
+     "legacy_loyalty": 0.02
+    },
+    "log": "The hail went unanswered. The convoy dwindled astern, and the council wondered, later, what news it carried."
+   }
+  ]
+ },
+ {
+  "id": "boundary_claim",
+  "category": "generational_challenge",
+  "title": "The Boundary",
+  "description": "A beacon on the route broadcasts a claim: this stretch of empty dark belongs to a power no one aboard has heard of, and passage requires a toll.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "outcomes": [
+   {
+    "id": "pay_the_toll",
+    "label": "Pay the toll",
+    "description": "Cheaper than a fight, and faster.",
+    "resource_delta": {
+     "credits": -600
+    },
+    "log": "The toll was paid to a flag no one recognized. The ship passed unmolested, and a little poorer."
+   },
+   {
+    "id": "refuse_the_toll",
+    "label": "Refuse and press on",
+    "description": "No unseen flag rules the black.",
+    "population_delta": {
+     "unity": 0.03
+    },
+    "long_term_consequences": [
+     "ignored_boundary_claim"
+    ],
+    "log": "The ship pressed through the claimed dark, defiant. Nothing came of the threat — this time."
+   }
+  ]
+ },
+ {
+  "id": "asylum_request",
+  "category": "generational_challenge",
+  "title": "The Petitioners",
+  "description": "A battered craft matches speed and begs to come aboard — a handful of souls fleeing something they will not name.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "outcomes": [
+   {
+    "id": "take_them_in",
+    "label": "Take them aboard",
+    "description": "There is always room for a few more.",
+    "population_delta": {
+     "count": 60,
+     "unity": -0.02,
+     "morale": 0.02
+    },
+    "log": "The petitioners came aboard, grateful and guarded. The ship is more crowded, and less alone."
+   },
+   {
+    "id": "turn_them_away",
+    "label": "Turn them away",
+    "description": "The ship cannot carry every stray in the dark.",
+    "population_delta": {
+     "morale": -0.04,
+     "stability": 0.02
+    },
+    "long_term_consequences": [
+     "turned_away_petitioners"
+    ],
+    "log": "The council turned the petitioners away. The craft fell behind, and no one aboard spoke of it at supper."
+   }
+  ]
+ },
+ {
+  "id": "tithe_demand",
+  "category": "generational_challenge",
+  "title": "The Tithe Ships",
+  "description": "A local power intercepts the voyage and names a price for safe passage through their reach of space.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "pay_tithe",
+    "label": "Pay the tithe",
+    "description": "Credits and cargo are cheaper than a fight.",
+    "resource_delta": {
+     "credits": -600,
+     "minerals": -150,
+     "influence": 40
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The tithe ships took their cut and waved the voyage through. Word travelled that this hull pays."
+   },
+   {
+    "id": "refuse_tithe",
+    "label": "Refuse and run",
+    "description": "Burn hard past them and take the hits.",
+    "ship_delta": {
+     "hull_integrity": -0.1,
+     "fuel": -120
+    },
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The ship ran the gauntlet and wore the scars proudly. The tithe ships logged this hull as trouble."
+   },
+   {
+    "id": "offer_service",
+    "label": "Offer service, not tribute",
+    "description": "Pay in the one coin the ship mints for free — competence. Offer to survey their reach, mend what they cannot, chart their dark. Skill for passage, and no treasury the poorer for it.",
+    "resource_delta": {
+     "influence": 80
+    },
+    "ship_delta": {
+     "fuel": -0.05,
+     "spare_parts": -4
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.03
+    },
+    "log": "The voyage bought its passage with a season's work — a survey run, a failing relay rebuilt, a stretch of dark charted for people who could not spare the ships. The local power waved them through with something closer to respect than tolerance, and the crew learned that a ship good at what it does is never truly poor."
+   }
+  ]
+ },
+ {
+  "id": "boarding_alarm",
+  "category": "immediate_crisis",
+  "title": "Boarders on the Hull",
+  "description": "Grapples ring against the outer plating in the dark between stars. Someone is trying to come aboard uninvited.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "hostile_space"
+  ],
+  "outcomes": [
+   {
+    "id": "repel_them",
+    "label": "Repel the boarders",
+    "description": "Meet them at the locks. Hold the ship.",
+    "ship_delta": {
+     "hull_integrity": -0.06,
+     "spare_parts": -4
+    },
+    "population_delta": {
+     "count": -20,
+     "unity": 0.07,
+     "morale": 0.03
+    },
+    "log": "The security decks met the boarders at the airlocks and threw them back into the dark. The ship held, and remembered who held it."
+   },
+   {
+    "id": "parley",
+    "label": "Open a channel",
+    "description": "Buy passage with cargo instead of blood.",
+    "resource_delta": {
+     "minerals": -250,
+     "credits": -300,
+     "influence": 30
+    },
+    "population_delta": {
+     "morale": -0.04,
+     "stability": 0.03
+    },
+    "log": "A price was named and paid through the locks. No one died, and no one felt safe again on that stretch."
+   }
+  ]
+ },
+ {
+  "id": "the_laden_return",
+  "category": "mission_milestone",
+  "title": "The Laden Return",
+  "description": "The holds are heavy with everything the charter was worth, and a heavy ship is a slow, tempting one. Word of the cargo travels ahead on the homeward lane.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "run_dark",
+    "label": "Run dark and quiet",
+    "description": "Kill the beacons, burn fuel to stay ahead of trouble.",
+    "ship_delta": {
+     "fuel": -0.15
+    },
+    "population_delta": {
+     "stability": 0.04,
+     "morale": -0.02
+    },
+    "log": "The ship went dark and ran the homeward lane like a smuggler, holds full and running lamps cold. Nothing caught it, and no one slept easy."
+   },
+   {
+    "id": "buy_escort",
+    "label": "Hire an escort",
+    "description": "Spend part of the prize to guard the rest.",
+    "resource_delta": {
+     "credits": -1200,
+     "influence": 30
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "A hired escort shadowed the ship home for a cut of the cargo. The prize came in smaller and whole, which the council judged a fair trade."
+   }
+  ]
+ },
+ {
+  "id": "the_middle_way",
+  "category": "generational_challenge",
+  "title": "The Middle Way",
+  "description": "A quarrel between decks is curdling toward something worse, and the Meridian Accord — administrators to the marrow — propose a slow, unglamorous arbitration that will satisfy no one entirely and everyone a little.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_dominant_faction": "meridian_accord",
+  "outcomes": [
+   {
+    "id": "let_them_arbitrate",
+    "label": "Let the Accord arbitrate",
+    "description": "Weeks of hearings, a compromise no one loves, peace that holds.",
+    "resource_delta": {
+     "credits": -200,
+     "influence": 30
+    },
+    "population_delta": {
+     "stability": 0.07,
+     "unity": 0.05,
+     "morale": -0.02
+    },
+    "log": "The Accord convened its hearings and ground the quarrel down to a compromise as grey as it was durable. No one cheered; no one bled; the ship went on."
+   },
+   {
+    "id": "rule_from_the_chair",
+    "label": "Just rule from the chair",
+    "description": "Skip the process. Decide and move on.",
+    "population_delta": {
+     "stability": -0.04,
+     "morale": 0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The captain cut through the Accord's process with a single ruling. It was faster and cleaner and it left a residue of resentment the administrators had meant to dissolve."
+   }
+  ]
+ },
+ {
+  "id": "the_unlearned_watch",
+  "category": "generational_challenge",
+  "title": "The Unlearned Watch",
+  "description": "Generations of peace have hollowed out the security corps — the watch stands its posts by tradition, drills half-remembered, nobody left who has trained for a real breach. A rowdy dispute nearly turns to blood before anyone knows how to stop it.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "knowledge_below": [
+   {
+    "id": "security",
+    "below": 0.3
+   }
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "rebuild_the_corps",
+    "label": "Rebuild the corps properly",
+    "description": "Pull the old manuals, run real drills, restore the discipline.",
+    "resource_delta": {
+     "credits": -350
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "knowledge": 0.3,
+      "condition": 0.05
+     }
+    ],
+    "log": "The watch drilled in earnest for the first time in living memory. The corridors felt safer and a little more guarded, and the corps remembered what it was for."
+   },
+   {
+    "id": "keep_it_ceremonial",
+    "label": "Leave the watch ceremonial",
+    "description": "There has been no trouble in a century. Why break the peace to prepare for it?",
+    "population_delta": {
+     "morale": 0.03,
+     "stability": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "knowledge": -0.08
+     }
+    ],
+    "log": "The watch kept its polished buttons and its empty drills. The ship felt calm and was not ready, and the knowledge of how to hold a breach slid another notch toward myth."
+   }
+  ]
+ },
+ {
+  "id": "the_open_locks",
+  "category": "immediate_crisis",
+  "title": "The Open Locks",
+  "description": "The security systems have decayed to the point of uselessness — locks that won't hold, sensors gone blind, blast doors frozen open. The ship is one bad actor away from a disaster it can no longer contain.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "condition_below": [
+   {
+    "id": "security",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "refit_the_systems",
+    "label": "Refit the security systems",
+    "description": "Spend the parts to make the doors and locks trustworthy again.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "stability": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "condition": 0.28
+     }
+    ],
+    "log": "The engineers rebuilt the locks and cleared the frozen doors until the ship could hold itself shut again. It felt, for the first time in a generation, genuinely secure."
+   },
+   {
+    "id": "post_human_watches",
+    "label": "Post human watches instead",
+    "description": "No parts to spare — stand guards where the machines failed.",
+    "population_delta": {
+     "unity": -0.03,
+     "morale": -0.04,
+     "stability": 0.03
+    },
+    "log": "With no parts to spare, the ship posted living watches at every failed door. The corridors were held by tired eyes and goodwill, and everyone understood it could not last."
+   }
+  ]
+ },
+ {
+  "id": "the_trade_convoy",
+  "category": "mission_milestone",
+  "title": "The Trade Convoy",
+  "description": "On the homeward leg the ship falls in with a trade convoy working the lane — they have fuel, parts, and fresh stock, and an appetite for the minerals and salvage filling the holds. The exchange rate is theirs to set.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "trade_the_holds",
+    "label": "Trade cargo for provisions",
+    "description": "Sell minerals and salvage; buy fuel, parts, and food.",
+    "resource_delta": {
+     "minerals": -300,
+     "food": 500
+    },
+    "ship_delta": {
+     "fuel": 0.2,
+     "spare_parts": 10
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "The ship traded a hold of minerals to the convoy for full tanks and stocked lockers. The exchange favored the convoy, as it always does, and the homeward leg felt suddenly survivable."
+   },
+   {
+    "id": "keep_the_cargo",
+    "label": "Keep the cargo for port",
+    "description": "The minerals are worth more sold at home. Decline.",
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council waved the convoy off and held its cargo for a better price at home. The holds stayed full and the lockers stayed thin, a gamble on making it back before either mattered."
+   }
+  ]
+ },
+ {
+  "id": "the_courts_and_the_creed",
+  "category": "legacy_moment",
+  "title": "The Courts and the Creed",
+  "description": "The Keepers of the First Flame have grown into the ship's moral authority, and they have run out of patience with the Meridian Accord's endless arbitration — courts that, they say, weigh every truth until it means nothing. They move to dissolve the Accord's standing tribunals.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_factions_aboard": [
+   "meridian_accord",
+   "first_flame"
+  ],
+  "min_cultural_drift": 0.5,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "keep_the_courts",
+    "label": "Keep the tribunals standing",
+    "description": "Spend the influence to defend the courts against the creed. A ship ruled by faith alone is a ship that stops asking questions.",
+    "resource_delta": {
+     "influence": -25
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "unity": 0.03
+    },
+    "log": "The council kept the Accord's tribunals open over the Flame's objection, and the ship stayed a place where a grievance could be weighed rather than judged. The Keepers withdrew, displeased but aboard, and the courts sat on."
+   },
+   {
+    "id": "dissolve_the_courts",
+    "label": "Let the creed rule",
+    "description": "Abolish the tribunals. The Accord will not serve a ship that has replaced its law with a fire.",
+    "population_delta": {
+     "cultural_drift": 0.04,
+     "stability": -0.04
+    },
+    "faction_loss": "departed",
+    "faction_loss_id": "meridian_accord",
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "knowledge": -0.06
+     }
+    ],
+    "log": "The tribunals were struck, and the Meridian Accord — arbiters with nothing left to arbitrate — asked for a hull and left rather than live under a law they could not question. The ship kept its creed and lost the quiet art of settling a quarrel before it drew blood."
+   }
+  ]
+ },
+ {
+  "id": "the_provisioners_bargain",
+  "category": "mission_milestone",
+  "title": "The Provisioner's Bargain",
+  "description": "A station hails — an old automated depot, or something crewed and cagey, it is hard to say across the light-seconds — and it has fuel to sell a ship running on fumes. The price is negotiable. That is the problem: the ones who name a negotiable price for what you desperately need rarely mean coin.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "fuel_below": 0.3,
+  "outcomes": [
+   {
+    "id": "pay_in_credits",
+    "label": "Pay in hard credit",
+    "description": "Empty the treasury for the fuel and owe nothing after. Expensive, clean, done.",
+    "resource_delta": {
+     "credits": -650
+    },
+    "ship_delta": {
+     "fuel": 0.3
+    },
+    "log": "The ship paid the depot's steep price in hard credit and pumped its tanks full and owed the strangers nothing but a wary log entry. The treasury felt the bite for a generation. It was the cheapest thing the ship bought that decade, all told."
+   },
+   {
+    "id": "owe_them_a_favor",
+    "label": "Owe them a favor",
+    "description": "Take the fuel on credit — their kind of credit. Keep the treasury and carry the debt, and whatever carrying it will mean.",
+    "ship_delta": {
+     "fuel": 0.3
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "long_term_consequences": [
+     "owed_a_favor"
+    ],
+    "log": "The ship took the fuel on the strangers' terms and sailed away full-tanked and indebted to a name it had not been given, an obligation logged against a day and a price to be named later. The council told itself it had bought time. It had, and borrowed against something worse to do it."
+   }
+  ]
+ },
+ {
+  "id": "the_debt_called_in",
+  "category": "generational_challenge",
+  "title": "The Debt Called In",
+  "description": "A ship matches course out of the dark and hails on an old frequency, naming a bargain no one now living aboard remembers making — the fuel a desperate generation once took on a stranger's terms. They have come to collect the favor, and they are patient people: they will name the price, and they will wait for the answer, and they do not look like they have ever been told no.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_consequence": [
+   "owed_a_favor"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "honor_the_debt",
+    "label": "Honor the founders' word",
+    "description": "The people who made the deal are dust, but the ship that carried them is the same ship. Pay what is asked — cargo, labor, a berth for some of their own — and be free of it clean.",
+    "resource_delta": {
+     "minerals": -250,
+     "influence": 30
+    },
+    "ship_delta": {
+     "spare_parts": -6
+    },
+    "population_delta": {
+     "unity": 0.06,
+     "legacy_loyalty": 0.08,
+     "morale": -0.02
+    },
+    "log": "The ship paid the old favor in full — a hold of ore, a season of its people's hands, and a story that would be told for a while: that this hull keeps its word across generations, that a bargain struck under one captain is still a bargain under their great-grandchildren. The debt closed clean. Some things are worth more than a hold of ore.",
+    "long_term_consequences": [
+     "kept_a_bargain"
+    ]
+   },
+   {
+    "id": "renege_the_debt",
+    "label": "Refuse — the debt died with them",
+    "description": "The ship is stronger now than the beggar that signed. Tell them plainly: the ones who owed you are dead, we owe you nothing, burn off. Keep everything. Carry whatever refusing will come to mean.",
+    "population_delta": {
+     "morale": 0.03,
+     "unity": -0.05,
+     "legacy_loyalty": -0.07,
+     "cultural_drift": 0.04
+    },
+    "log": "The ship told the strangers their debt had died with the debtors, and burned away before an answer came. Nothing was paid. But a ship that will disown its own founders' word teaches its children a lesson about what a promise is worth, and out in the dark, word travels between the ones who trade in favors.",
+    "long_term_consequences": [
+     "broke_a_bargain"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "the_marked_hull",
+  "category": "generational_challenge",
+  "title": "The Marked Hull",
+  "description": "A waystation the voyage badly needs — fuel, a berth to make repairs, air that someone else has already scrubbed — refuses the ship at the threshold. Word has travelled, the harbormaster says, from ship to ship along the trade-dark: this is the hull that took what it needed and disowned the debt when the bill came. The ones who deal in favors have long memories, and they talk.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "requires_consequence": [
+   "broke_a_bargain"
+  ],
+  "min_generation": 6,
+  "outcomes": [
+   {
+    "id": "make_amends",
+    "label": "Pay the old debt double",
+    "description": "Buy the name back. Find the ones who were wronged, or their heirs, and settle the founders' broken bargain at twice its worth — the only currency that reopens a closed door is proof the ship has learned to keep its word.",
+    "resource_delta": {
+     "credits": -700,
+     "minerals": -200
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.05,
+     "stability": 0.04
+    },
+    "log": "The ship hunted down the debt it had disowned and paid it double, in coin and in a public accounting, so that the story travelling the dark would change its ending. The doors opened again, slowly. A reputation is cheaper to keep than to buy back, the manifest noted, in effect if not in words."
+   },
+   {
+    "id": "run_the_closed_ports",
+    "label": "Run the closed ports",
+    "description": "The ship owes no one an apology and will not beg for a berth. Make the crossing on its own reserves, past every door that will not open, and be harder for it.",
+    "ship_delta": {
+     "fuel": -0.15,
+     "hull_integrity": -0.08,
+     "spare_parts": -5
+    },
+    "population_delta": {
+     "unity": 0.05,
+     "morale": -0.05,
+     "adaptation": 0.04
+    },
+    "log": "The ship ran the gauntlet of closed ports on its own reserves, scrubbing its own air and mending its own hull past waystation after waystation that would not have it. It arrived threadbare and proud and entirely self-reliant, having learned the hard way the price of a name — and having decided, deck by deck, to pay it in fuel and hull rather than apology."
+   }
+  ]
+ },
+ {
+  "id": "the_open_hand",
+  "category": "generational_challenge",
+  "title": "The Open Hand",
+  "description": "A settled world hails the passing voyage and offers to fill its holds — food, water, volatiles — and asks for nothing in return. No trade, no favor owed, no price named. Just a gift, freely given by people who remember what the long dark costs. And a ship that has learned to trade for everything, to owe nothing and be owed nothing, discovers it has no ready answer for a gift.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "accept_the_gift",
+    "label": "Accept the open hand",
+    "description": "Take the gift as it is offered, freely, and let the ship be the kind of thing that can receive as well as earn. Full holds, and a debt of the only kind that cannot be collected — gratitude.",
+    "resource_delta": {
+     "food": 2000
+    },
+    "ship_delta": {
+     "fuel": 0.15
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship took the gift with both hands and full holds, and something in the founders' proud self-reliance loosened a little — the belief that the voyage owed the universe nothing and could be owed nothing, that every exchange was a ledger. The gardens of that world went with them for a generation in the food and in a quieter change: a ship learning it was allowed to be given to."
+   },
+   {
+    "id": "insist_on_fair_trade",
+    "label": "Insist on a fair trade",
+    "description": "The voyage does not take charity. Press payment on them — ore, labor, knowledge — and keep the ledger square and the ship's dignity intact, even if it means leaving with less than an open hand would have filled.",
+    "resource_delta": {
+     "food": 1000,
+     "minerals": -150
+    },
+    "ship_delta": {
+     "fuel": 0.08
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.04,
+     "morale": -0.02
+    },
+    "log": "The ship pressed a fair price on people who had asked for none, and left with square holds and a squarer conscience — the founders' rule kept, that this voyage earns its way and is beholden to no one. The world's people watched the proud ship go and did not entirely understand it, and the ship, keeping its ledger clean, did not entirely understand why it needed to."
+   }
+  ]
+ }
+]

@@ -1,0 +1,1418 @@
+[
+ {
+  "id": "cultural_schism",
+  "category": "legacy_moment",
+  "title": "Cultural Schism",
+  "description": "Two decks now keep different calendars. The disagreement has stopped being polite.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "preservers": 1.3
+  },
+  "outcomes": [
+   {
+    "id": "mediate",
+    "label": "Council mediation",
+    "description": "Spend influence to reconcile the factions.",
+    "resource_delta": {
+     "influence": -30
+    },
+    "population_delta": {
+     "unity": 0.08,
+     "cultural_drift": -0.05
+    },
+    "log": "The council brokered a settlement between the divided decks."
+   },
+   {
+    "id": "let_it_run",
+    "label": "Let it run its course",
+    "description": "Cultures drift. Intervening has costs too.",
+    "population_delta": {
+     "unity": -0.08,
+     "cultural_drift": 0.1,
+     "adaptation": 0.05
+    },
+    "long_term_consequences": [
+     "deck_rivalry"
+    ],
+    "faction_loss": "departed",
+    "log": "The schism was left to run its course. One faction would not be reconciled; they took a decommissioned shuttle and their grievances, and departed on their own course."
+   },
+   {
+    "id": "federate_the_decks",
+    "label": "Recognize both calendars",
+    "description": "Neither force the decks back together nor let the quarrel fester. Write both calendars into the charter as equal — one hull, two peoples, formally. A pluralism the founders never planned, but a stable one.",
+    "population_delta": {
+     "stability": 0.06,
+     "cultural_drift": 0.04,
+     "unity": -0.02
+    },
+    "resource_delta": {
+     "influence": -15
+    },
+    "log": "The council did the thing the founders would have found unthinkable: it wrote the disagreement into law, recognizing both calendars, both decks, one charter over two peoples. Unity frayed a little at the seam that would now never fully close — but the ship stopped tearing at it, and a stranger, sturdier thing settled in its place."
+   }
+  ],
+  "family": "legacy_drift",
+  "complications": [
+   {
+    "id": "schism_on_a_drifted_ship",
+    "min_cultural_drift": 0.6,
+    "description_add": "This is no longer a quarrel over calendars — on a ship drifted this far from its founding, the decks scarcely share a language for the disagreement anymore.",
+    "population_delta": {
+     "unity": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "On a ship so far drifted from its founders, even the reckoning landed in half-shared words, and left the decks a little further apart than it found them."
+   }
+  ]
+ },
+ {
+  "id": "skills_drought",
+  "category": "generational_challenge",
+  "title": "The Skills Drought",
+  "description": "The last founding specialists are retiring faster than apprentices can replace them. Institutional memory is thinning.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "adaptors": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "crash_apprenticeship",
+    "label": "Crash apprenticeship",
+    "description": "Pull hands from other duties to train replacements now.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "adaptation": 0.05
+    },
+    "log": "A crash apprenticeship filled the benches, if not yet the shoes."
+   },
+   {
+    "id": "lean_on_records",
+    "label": "Lean on the records",
+    "description": "Trust the archives to carry what the elders knew. Some of it will not translate.",
+    "population_delta": {
+     "adaptation": -0.05,
+     "legacy_loyalty": 0.04
+    },
+    "long_term_consequences": [
+     "lost_craft"
+    ],
+    "log": "The crews leaned on the archives. Something in the doing, not the knowing, was lost."
+   },
+   {
+    "id": "recruit_outside_hands",
+    "label": "Bring in outside hands",
+    "description": "Neither grow the skills slowly nor freeze them in records — buy them. Take on trained specialists from a passing ship or a waystation: expertise aboard within the year, at the cost of a founding crew diluted by strangers.",
+    "resource_delta": {
+     "credits": -400,
+     "influence": -20
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": -0.06,
+     "cultural_drift": 0.05
+    },
+    "log": "The ship filled its thinning benches with hired expertise — pilots, medics, machinists who had learned their craft under other stars. The work went on without a gap. But the founding families watched bloodline crews take orders from newcomers, and something of the voyage's inheritance thinned even as its competence held."
+   }
+  ],
+  "family": "legacy_drift",
+  "complications": [
+   {
+    "id": "hearth_passes_it_at_the_table",
+    "requires_dominant_faction": "hearth_union",
+    "description_add": "Under the Hearth Union the drought is softened by the table itself — craft passes hand to hand at the common meal the way it always has among them, elders and apprentices seated together, and less is lost than the archivists feared.",
+    "population_delta": {
+     "unity": 0.03,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.04
+     }
+    ],
+    "log": "The Hearth kept the drought from becoming a rout the way it kept everything — at the table, elder beside apprentice, the doing handed over with the bread. What the archives could not carry, the meal did."
+   }
+  ]
+ },
+ {
+  "id": "founders_creed",
+  "category": "legacy_moment",
+  "title": "The Founders' Creed",
+  "description": "A movement wants the founding charter read aloud each year, word for word, forever. Another wants it revised for a ship the founders never saw.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "preservers": 1.4,
+   "adaptors": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "enshrine_it",
+    "label": "Enshrine the charter",
+    "description": "The founders' words become law and liturgy both.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "cultural_drift": -0.06,
+     "adaptation": -0.04
+    },
+    "log": "The charter was enshrined, unaltered. The ship knows exactly who it was meant to be."
+   },
+   {
+    "id": "amend_it",
+    "label": "Amend the charter",
+    "description": "A living document for a living ship. Every word changed is a small funeral.",
+    "population_delta": {
+     "adaptation": 0.07,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.06
+    },
+    "long_term_consequences": [
+     "revised_charter"
+    ],
+    "log": "The charter was amended. The founders would not recognize the ship; the ship is not sure it minds."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "the_naming",
+  "category": "legacy_moment",
+  "title": "The Right to Name",
+  "description": "The destination needs a name for the charts and the histories. Every faction has one ready, and a reason it must win.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "founders_name",
+    "label": "Honor the founders' name",
+    "description": "The name they wrote into the plan, kept.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "unity": 0.03
+    },
+    "log": "The destination kept the name its founders chose. Some traditions are only words until you keep them."
+   },
+   {
+    "id": "the_ships_name",
+    "label": "Let the ship choose",
+    "description": "A vote, deck by deck. Messy, and theirs.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "unity": 0.06,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The ship named its own destination by vote. The charts bear a word no founder wrote."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "veterans_petition",
+  "category": "legacy_moment",
+  "title": "The Last Founders",
+  "description": "The final three crew who were awake at departure petition the council: they want the mission's original wording read into the record before they die, unamended.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "honor_the_petition",
+    "label": "Honor the petition",
+    "description": "Read the founding words as written. Let the old crew hear them once more.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "morale": 0.03
+    },
+    "log": "The founding words were read whole to the last who remembered them. Some wept; none objected."
+   },
+   {
+    "id": "read_the_revision",
+    "label": "Read the current charter",
+    "description": "The living ship's amended wording is the true text now. Honesty over sentiment.",
+    "population_delta": {
+     "adaptation": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "long_term_consequences": [
+     "banked_resentment"
+    ],
+    "log": "The amended charter was read instead. The last founders heard a mission they did not entirely recognize."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "native_leader",
+  "category": "legacy_moment",
+  "title": "Born to the Corridors",
+  "description": "For the first time, the dynasty's leader was born, raised, and will die aboard — with no memory, even inherited, of a world with a sky.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "mark_the_first",
+    "label": "Mark the moment",
+    "description": "Acknowledge that the ship now leads itself, from itself.",
+    "population_delta": {
+     "unity": 0.05,
+     "cultural_drift": 0.03,
+     "adaptation": 0.03
+    },
+    "log": "The ship marked its first wholly ship-born leader. Something ended quietly; something began louder."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "memory_wall",
+  "category": "legacy_moment",
+  "title": "The Memory Wall",
+  "description": "The memorial wall has run out of room. The council must decide whether to extend it, archive the oldest names, or begin again.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "preservers": 1.3
+  },
+  "outcomes": [
+   {
+    "id": "extend_the_wall",
+    "label": "Extend the wall",
+    "description": "Give the dead more room, whatever it costs the living decks.",
+    "resource_delta": {
+     "minerals": -100
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "morale": 0.03
+    },
+    "log": "The memorial wall grew a new wing. No name will be moved while the ship still flies."
+   },
+   {
+    "id": "archive_the_oldest",
+    "label": "Archive the oldest names",
+    "description": "Move the earliest dead into the record to make room.",
+    "population_delta": {
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "long_term_consequences": [
+     "banked_resentment"
+    ],
+    "log": "The oldest names went to the archive to make room for the newly gone. The founders moved over, a little."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "returning_signal",
+  "category": "legacy_moment",
+  "title": "A Voice From Home",
+  "description": "A tight-beam message from the origin world arrives, decades stale — routine, official, and addressed to a ship the senders assume is still the one that departed.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "answer_home",
+    "label": "Answer home",
+    "description": "Send a reply into a fifty-year silence.",
+    "resource_delta": {
+     "influence": 30
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.04,
+     "morale": 0.03
+    },
+    "log": "The ship answered the old signal from home. The reply will arrive to a world that may no longer be listening."
+   },
+   {
+    "id": "log_and_move_on",
+    "label": "Log it and move on",
+    "description": "Home is a place none of them will see. Face forward.",
+    "population_delta": {
+     "adaptation": 0.04,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The message from home was logged and archived, unanswered. The ship's home is the ship now."
+   }
+  ],
+  "family": "legacy_drift",
+  "min_year": 100
+ },
+ {
+  "id": "last_photograph",
+  "category": "legacy_moment",
+  "title": "The Last Sky",
+  "description": "The last surviving photograph of an open planetary sky — the founders' sky — has degraded to almost nothing. The archivists ask whether to restore it, or let it finish fading.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "preservers": 1.3
+  },
+  "outcomes": [
+   {
+    "id": "restore_it",
+    "label": "Restore the image",
+    "description": "Spend to keep the founders' sky.",
+    "resource_delta": {
+     "credits": -150
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "cultural_drift": -0.04
+    },
+    "log": "The last sky was painstakingly restored. A ship born to corridors keeps one window onto the world it left."
+   },
+   {
+    "id": "let_it_fade",
+    "label": "Let it fade",
+    "description": "Some things are meant to be let go.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The last photograph of an open sky was allowed to finish fading. The ship's children will never miss what they cannot picture."
+   }
+  ],
+  "family": "legacy_drift",
+  "min_year": 100
+ },
+ {
+  "id": "founders_ledger",
+  "category": "legacy_moment",
+  "title": "The Founder's Ledger",
+  "description": "A founder's private ledger surfaces in the archives — not the official record, but the doubts, the debts, and the compromises behind the mission's clean origin story.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "preservers": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "publish_the_ledger",
+    "label": "Publish the ledger",
+    "description": "Let the ship see its founders whole.",
+    "population_delta": {
+     "cultural_drift": 0.04,
+     "adaptation": 0.04,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The founder's private ledger was published entire. The founders are smaller now, and truer, and harder to worship."
+   },
+   {
+    "id": "seal_the_ledger",
+    "label": "Seal the ledger",
+    "description": "Some myths hold a ship together. Let this one stand.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.03,
+     "cultural_drift": -0.03
+    },
+    "log": "The ledger was sealed back into the archive. The founders keep their clean story, and the ship keeps the myth it steers by."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "the_renaming",
+  "category": "legacy_moment",
+  "title": "The Renaming",
+  "description": "A movement has grown to rename the ship — not for the world it left, which no one aboard remembers, but for the corridors that are the only home its people have known.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "rename_the_ship",
+    "label": "Rename the ship",
+    "description": "Let the ship be named by those who live in it.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship was renamed by the generation that lives in it, over the objections of the archive. The old name is a footnote now, and the corridors answer to their own."
+   },
+   {
+    "id": "keep_the_name",
+    "label": "Keep the founders' name",
+    "description": "The name is a promise to a place. Keep it.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "cultural_drift": -0.03
+    },
+    "log": "The founders' name was kept. The ship still carries the word for a world none of its people will ever walk, because the founders asked it to."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "the_faith",
+  "category": "generational_challenge",
+  "title": "The Mission Becomes Creed",
+  "description": "A generation that has never seen a planet has begun to worship the voyage itself — the charter read as scripture, the founders as saints, the destination as a promised land.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 5,
+  "min_cultural_drift": 0.5,
+  "legacy_weight_modifiers": {
+   "preservers": 1.5
+  },
+  "outcomes": [
+   {
+    "id": "bless_the_faith",
+    "label": "Let the faith carry them",
+    "description": "A ship that believes is a ship that endures.",
+    "population_delta": {
+     "unity": 0.05,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The council let the new faith grow. The crew sails on certain of its purpose, and a little further from the people who wrote the charter as a work order."
+   },
+   {
+    "id": "temper_the_faith",
+    "label": "Temper it with the record",
+    "description": "Keep the charter a charter, not a gospel.",
+    "population_delta": {
+     "stability": 0.03,
+     "unity": -0.03
+    },
+    "log": "The council read the charter aloud as the plain contract it was. Some were steadied; some felt something sacred quietly taken from them."
+   }
+  ]
+ },
+ {
+  "id": "home_silence",
+  "category": "generational_challenge",
+  "title": "The Silence From Home",
+  "description": "The long-range relays have gone quiet. Not jammed — quiet. The civilization that launched this ship has stopped answering, and no one aboard remembers its voice well enough to say when.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_year": 100,
+  "outcomes": [
+   {
+    "id": "mourn_and_go_on",
+    "label": "Mourn, and go on",
+    "description": "Whatever waits at the end, we are its people now.",
+    "population_delta": {
+     "legacy_loyalty": -0.06,
+     "unity": 0.04,
+     "adaptation": 0.03
+    },
+    "log": "The ship held a wake for a home it could no longer hear. The mission stopped being an errand for someone else and became, simply, the ship's own life."
+   },
+   {
+    "id": "keep_the_watch",
+    "label": "Keep the watch",
+    "description": "Someone must still be listening. We keep calling.",
+    "population_delta": {
+     "legacy_loyalty": 0.04,
+     "morale": -0.03
+    },
+    "long_term_consequences": [
+     "the_home_silence"
+    ],
+    "log": "The relays were kept open, calling into a silence that never answered. It is a kind of loyalty, and a kind of grief."
+   }
+  ]
+ },
+ {
+  "id": "the_schism_deepens",
+  "category": "generational_challenge",
+  "title": "The Long Schism",
+  "description": "The decks that keep different calendars now keep different laws. What began as a cultural drift has hardened into two peoples sharing one hull, and one of them is packing.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_cultural_drift": 0.6,
+  "outcomes": [
+   {
+    "id": "force_the_union",
+    "label": "Force the union",
+    "description": "One ship, one law — enforced.",
+    "population_delta": {
+     "unity": -0.02,
+     "stability": 0.04
+    },
+    "long_term_consequences": [
+     "forced_union"
+    ],
+    "log": "The council imposed a single law by force of the security decks. The union held. The resentment went underground and stayed there."
+   },
+   {
+    "id": "let_them_part",
+    "label": "Let the dissenters go",
+    "description": "Better a clean parting than a war in the corridors.",
+    "population_delta": {
+     "unity": 0.03
+    },
+    "faction_loss": "departed",
+    "log": "The dissenting faction took a lifeboat and the ship's blessing and struck out on their own heading. The hull is quieter, and smaller."
+   }
+  ]
+ },
+ {
+  "id": "starless_reach",
+  "category": "legacy_moment",
+  "title": "The Starless Reach",
+  "description": "For a long stretch the charts show nothing at all — no star near enough to name, no world to steer by. A generation is born and dies seeing only the ship.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "travel"
+  ],
+  "requires_charter_tag": [
+   "deep_space"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "turn_inward",
+    "label": "Turn the ship inward",
+    "description": "Make the voyage itself the world. Festivals, archives, invented seasons.",
+    "population_delta": {
+     "unity": 0.06,
+     "cultural_drift": 0.08,
+     "morale": 0.04
+    },
+    "log": "With no star to steer by, the ship became its own country — new holidays, new songs, a people who called the void home."
+   },
+   {
+    "id": "hold_the_mission",
+    "label": "Hold to the mission",
+    "description": "Drill the charter into them. The destination is the meaning.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "stability": 0.04,
+     "morale": -0.03
+    },
+    "log": "The elders held the charter up like a lantern through the starless reach. The people kept faith, and kept their eyes forward, and grew a little grim."
+   }
+  ]
+ },
+ {
+  "id": "flame_and_ascension",
+  "category": "legacy_moment",
+  "title": "Flame and Ascension",
+  "description": "The augmented and the traditionalists share too few corridors. The Ascension Circle and the Keepers of the First Flame petition, each, for a deck of their own — a soft partition of the ship.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "ascension_circle",
+   "first_flame"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "grant_the_decks",
+    "label": "Grant the separate decks",
+    "description": "Let each keep its own quarter. Peace by distance.",
+    "population_delta": {
+     "stability": 0.06,
+     "cultural_drift": 0.07,
+     "unity": -0.05
+    },
+    "log": "The ship drew a quiet border down its middle. The corridors grew calmer and the two halves grew stranger to each other."
+   },
+   {
+    "id": "force_the_mixing",
+    "label": "Refuse — one ship, shared decks",
+    "description": "No partitions. They will learn to live shoulder to shoulder.",
+    "population_delta": {
+     "unity": 0.06,
+     "morale": -0.05,
+     "adaptation": 0.04
+    },
+    "log": "The council refused the partition and mixed the berth rolls on purpose. The friction stayed, and so, stubbornly, did the sense of one crew."
+   }
+  ]
+ },
+ {
+  "id": "the_stationkeepers",
+  "category": "legacy_moment",
+  "title": "The Stationkeepers",
+  "description": "Parked at the worksite for lifetimes, a generation comes of age that has never seen the ship move. To them the mission is not a voyage but a place — this orbit, this labor, this sky that never changes.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "long_station"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "honor_the_work",
+    "label": "Make the work their identity",
+    "description": "Let them be stationkeepers, proud of the labor for its own sake.",
+    "population_delta": {
+     "stability": 0.06,
+     "cultural_drift": 0.06,
+     "morale": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The council blessed the stationkeepers' pride, and a people who had forgotten they were travelers worked the vein like a homeland. Home would be a strange word to them later."
+   },
+   {
+    "id": "remind_them_of_home",
+    "label": "Keep the voyage alive in them",
+    "description": "Drill the return into every child. This is a stop, not a home.",
+    "population_delta": {
+     "legacy_loyalty": 0.07,
+     "morale": -0.04,
+     "unity": 0.03
+    },
+    "log": "The elders held the return before the stationkeepers like a promise, and taught children born to the worksite to ache for a home none of them had seen."
+   }
+  ]
+ },
+ {
+  "id": "the_forge_and_the_hearth",
+  "category": "generational_challenge",
+  "title": "The Forge and the Hearth",
+  "description": "The Steel Covenant wants to strip the old founders' commons — a beloved, inefficient garden-lounge — and replace it with a fabrication bay. The Hearth Union would sooner give up a lung.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "steel_covenant",
+   "hearth_union"
+  ],
+  "outcomes": [
+   {
+    "id": "raise_the_bay",
+    "label": "Raise the fabrication bay",
+    "description": "Function wins. The commons becomes a workshop.",
+    "population_delta": {
+     "morale": -0.06,
+     "adaptation": 0.05,
+     "legacy_loyalty": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.08
+     }
+    ],
+    "log": "The founders' commons came down and a fabrication bay rose in its place. The ship made more and remembered less, and the Hearth Union mourned a garden as if it were a person."
+   },
+   {
+    "id": "keep_the_commons",
+    "label": "Keep the commons",
+    "description": "Some inefficiencies are load-bearing. The garden stays.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The council spared the founders' commons, and the Covenant built its bay in a cramped hold instead. The garden kept growing, useless and green and beloved."
+   }
+  ]
+ },
+ {
+  "id": "the_teachers_gap",
+  "category": "legacy_moment",
+  "title": "The Teachers' Gap",
+  "description": "The schools have been coasting — teaching the shape of knowledge without its substance, graduating cohorts who can recite but not reason. One generation more of this and the ship forgets how to teach itself anything.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "knowledge_below": [
+   {
+    "id": "education_culture",
+    "below": 0.25
+   }
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "refound_the_schools",
+    "label": "Refound the schools",
+    "description": "Pull the best minds from every deck to teach, at a cost to the work.",
+    "resource_delta": {
+     "credits": -400,
+     "influence": 20
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.35
+     }
+    ],
+    "log": "The council pulled its finest hands off the line and set them to teaching. Output dipped for a generation and the ship recovered its ability to make more of itself than it had been."
+   },
+   {
+    "id": "let_the_schools_coast",
+    "label": "Let the schools coast",
+    "description": "There is work to do. The children can learn the essentials on the job.",
+    "population_delta": {
+     "cultural_drift": 0.06,
+     "legacy_loyalty": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.08
+     }
+    ],
+    "log": "The schools kept coasting and the cohorts kept reciting. The ship lost, quietly, a little more of its capacity to understand itself — a debt that would come due in some later crisis."
+   }
+  ]
+ },
+ {
+  "id": "the_second_departure",
+  "category": "generational_challenge",
+  "title": "The Second Departure",
+  "description": "The first anomaly is surveyed and logged, and now the ship must do the hardest thing on a double charter — turn away from the direction of home and burn deeper out, toward a second objective a generation of the crew will not live to see completed.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "double_hop"
+  ],
+  "outcomes": [
+   {
+    "id": "hold_the_charter",
+    "label": "Hold to the full charter",
+    "description": "Both deeps, as contracted. Burn on toward the second.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "morale": -0.05,
+     "unity": 0.03
+    },
+    "log": "The ship turned its back on the direction of home and burned deeper out, honoring the whole charter. A generation swallowed its longing and flew on toward a horizon it would bequeath to its children."
+   },
+   {
+    "id": "cut_it_short",
+    "label": "Skip the second deep, turn home",
+    "description": "One survey banked is enough. Take the partial pay and go.",
+    "population_delta": {
+     "morale": 0.06,
+     "legacy_loyalty": -0.05
+    },
+    "force_return": true,
+    "log": "The council banked the first survey and turned for home rather than ask another lifetime of the crew. The pay would be partial; the relief in the corridors was total."
+   }
+  ]
+ },
+ {
+  "id": "the_ascension_exodus",
+  "category": "legacy_moment",
+  "title": "The Ascension Exodus",
+  "description": "Centuries of augmentation have carried the Ascension Circle somewhere the rest of the ship cannot follow. They no longer eat at the common tables, no longer speak the common tongue without effort. Now they ask, gently, to be given a hull of their own and let go.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "ascension_circle"
+  ],
+  "min_cultural_drift": 0.6,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "let_them_ascend",
+    "label": "Give them a lifeboat and let them go",
+    "description": "Part on good terms. They were always going to leave the human behind.",
+    "resource_delta": {
+     "minerals": -200
+    },
+    "population_delta": {
+     "cultural_drift": -0.05,
+     "unity": 0.05,
+     "morale": -0.03
+    },
+    "faction_loss": "departed",
+    "faction_loss_id": "ascension_circle",
+    "log": "The Ascension Circle took a lifeboat and their strange bright future and slipped away into the dark to become whatever they were becoming. The ship felt smaller, and a little more human, for their going."
+   },
+   {
+    "id": "hold_them_aboard",
+    "label": "Refuse — one ship, one people",
+    "description": "Insist the augmented remain part of the whole, however strained.",
+    "population_delta": {
+     "unity": -0.06,
+     "stability": 0.04,
+     "cultural_drift": 0.04
+    },
+    "log": "The council refused to let the Circle break away, and the augmented stayed — present, apart, and quietly counting the years until the question was asked again."
+   }
+  ]
+ },
+ {
+  "id": "the_flame_orthodoxy",
+  "category": "generational_challenge",
+  "title": "The Hardened Flame",
+  "description": "The Keepers of the First Flame have spent generations turning the mission into scripture, and now their faith has teeth — they demand the whole ship keep their rites, or they will keep them alone, apart, behind a sealed bulkhead.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "first_flame"
+  ],
+  "min_cultural_drift": 0.55,
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "accommodate_the_faith",
+    "label": "Bend the ship to their rites",
+    "description": "Adopt the Keepers' observances shipwide to keep them in the fold.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "cultural_drift": 0.05,
+     "adaptation": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship took up the First Flame's rites to keep the peace, and the mission became, by degrees, a religion the whole crew practiced whether they believed it or not."
+   },
+   {
+    "id": "let_the_flame_secede",
+    "label": "Let them keep to themselves",
+    "description": "Give the orthodox their sealed quarter and let the schism harden.",
+    "population_delta": {
+     "unity": -0.04,
+     "stability": 0.05,
+     "morale": -0.03
+    },
+    "faction_loss": "departed",
+    "faction_loss_id": "first_flame",
+    "log": "The Keepers sealed themselves behind their bulkhead and, over a generation, became a ship-within-the-ship that finally cut its own way loose. The First Flame took its scripture and its silence and left."
+   }
+  ]
+ },
+ {
+  "id": "the_verdant_secession",
+  "category": "legacy_moment",
+  "title": "The Verdant Secession",
+  "description": "The Verdant Kin have never loved the metal sky, and drift has only deepened their longing for real soil. When the route passes a habitable world, they ask — no, they announce — that they mean to go down and stay, and make a garden of it.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "verdant_kin"
+  ],
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "min_cultural_drift": 0.5,
+  "outcomes": [
+   {
+    "id": "bless_the_planting",
+    "label": "Bless the planting and let them stay",
+    "description": "Send them down with seed and tools and a benediction.",
+    "resource_delta": {
+     "food": 300
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "faction_loss": "settled",
+    "faction_loss_id": "verdant_kin",
+    "log": "The Verdant Kin went down to the green world with seed and song, and the ship sailed on lighter and quieter, having planted a garden it would never see grow."
+   },
+   {
+    "id": "deny_the_planting",
+    "label": "Deny them — the mission needs their hands",
+    "description": "The ship cannot spare a whole people. Order them to stay.",
+    "population_delta": {
+     "morale": -0.06,
+     "unity": -0.04,
+     "cultural_drift": 0.05
+    },
+    "log": "The council forbade the Kin their world, and they stayed — hands on the grow-decks, hearts on a planet dwindling astern. For a generation they tended the gardens like exiles."
+   }
+  ]
+ },
+ {
+  "id": "the_pact_remembered",
+  "category": "legacy_moment",
+  "title": "The Pact Remembered",
+  "description": "Generations after the lean years, the rationing pact has hardened into the ship's founding virtue — equal shares is not policy now but identity. A proposal to reward exceptional work with extra ration lands like heresy.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_consequence": [
+   "lean_pact_sworn"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "keep_the_pact_sacred",
+    "label": "Keep the pact sacred",
+    "description": "Equal shares forever. The pact is who we are.",
+    "population_delta": {
+     "unity": 0.06,
+     "legacy_loyalty": 0.06,
+     "adaptation": -0.04
+    },
+    "log": "The ship reaffirmed the old pact as gospel, and equal shares became a thing beyond questioning. It bound the people tight and left no room for the ambitious, which most of them counted a fair trade."
+   },
+   {
+    "id": "reward_the_exceptional",
+    "label": "Allow earned rewards",
+    "description": "Let merit buy a little more. Loosen the old oath.",
+    "resource_delta": {
+     "credits": 300
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.05,
+     "unity": -0.05
+    },
+    "log": "The council let merit earn a larger plate, and the lean pact cracked at last into something more ordinary and less holy. The productive prospered; an old unity quietly dissolved."
+   }
+  ]
+ },
+ {
+  "id": "the_endless_haul",
+  "category": "legacy_moment",
+  "title": "The Endless Haul",
+  "description": "A generation has been born, come of age, and taken the line who have known nothing but the tow — the dead ship always behind, home always a century ahead. They ask the elders what the haul is for. The answer will shape who they become.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "phases": [
+   "return"
+  ],
+  "requires_charter_tag": [
+   "long_return"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "honor_the_labor",
+    "label": "Make the haul sacred",
+    "description": "The tow is the ship's great work. Let hauling it be who they are.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.02,
+     "cultural_drift": 0.05
+    },
+    "log": "The haul became the ship's religion — the tow-line watch its priesthood, the dead ship behind them a relic they were chosen to bear home. They are one people now, bound to a labor their grandparents took up. What they will do when the haul finally ends, no one has thought to ask."
+   },
+   {
+    "id": "promise_them_home",
+    "label": "Point them at home",
+    "description": "Keep them dreaming of the planetfall none of them will live to see.",
+    "population_delta": {
+     "morale": 0.03,
+     "stability": 0.03,
+     "unity": -0.02
+    },
+    "log": "The elders taught the new watch to work for the harbor at the end — a green world in the archives none of them would reach. It kept them steady and it kept them restless, a generation always half-turned toward a home that stayed a century off."
+   }
+  ]
+ },
+ {
+  "id": "the_cold_table",
+  "category": "legacy_moment",
+  "title": "The Cold Table",
+  "description": "The Hearth Union's whole faith is the common table — that the ship eats as one people. But the Ascension Circle no longer eats, not as others do, and the Hearth has begun to wonder aloud what a table is for when a third of the ship will not sit at it.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "hearth_union",
+   "ascension_circle"
+  ],
+  "min_cultural_drift": 0.5,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "keep_one_table",
+    "label": "Set a place for those who cannot eat",
+    "description": "Spend the influence to keep the common table common — a seat kept even for the augmented who only sit, and do not eat.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "unity": 0.06,
+     "morale": 0.03
+    },
+    "log": "The Hearth kept its table whole, laying a place for the Circle who came, and sat, and did not eat, and were counted anyway. It cost the council to insist on it, and it held the ship together the way the table always had."
+   },
+   {
+    "id": "let_the_hearth_withdraw",
+    "label": "Let the Hearth keep its own table",
+    "description": "Let the Union take a hull where the old rite still means something and everyone at the table still eats.",
+    "population_delta": {
+     "morale": -0.06,
+     "unity": -0.03,
+     "stability": 0.02
+    },
+    "faction_loss": "settled",
+    "faction_loss_id": "hearth_union",
+    "log": "The Hearth Union settled a warm green world and kept its table there, among people who all still ate at it. The ship that sailed on was more efficient and colder for their going — no one now whose whole calling was to make the ship feel like a home."
+   }
+  ]
+ },
+ {
+  "id": "the_crumbling_archive",
+  "category": "legacy_moment",
+  "title": "The Crumbling Archive",
+  "description": "It is not that the teachers have forgotten — it is that the archive itself is dying. The data-looms fail, the record substrate flakes and greys, whole shelves of the founding library reading back as noise. The ship's memory is rotting on its racks.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "condition_below": [
+   {
+    "id": "education_culture",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "the_great_copying",
+    "label": "Mount the great copying",
+    "description": "Set a generation to hand-copying the failing archive onto fresh media before it is lost. A vast, patient labor.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.28,
+      "knowledge": 0.06
+     }
+    ],
+    "log": "A whole cohort gave its youth to the copying — reading the greying archive aloud and writing it fresh, shelf by failing shelf, before the noise took it. The library will outlive them now, in a hand not its own, and the ship kept its memory whole."
+   },
+   {
+    "id": "let_the_oldest_go",
+    "label": "Let the oldest records go",
+    "description": "Save what is used; let the deep archive — the parts no one has opened in lifetimes — fade.",
+    "population_delta": {
+     "cultural_drift": 0.06
+    },
+    "long_term_consequences": [
+     "the_lost_archive"
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.12,
+      "knowledge": -0.08
+     }
+    ],
+    "log": "The council saved the working records and let the deep archive go — the founding debates, the old star-charts, the names of worlds no one was steering for anymore. The ship reads lighter now, and remembers less of why it ever left."
+   }
+  ]
+ },
+ {
+  "id": "the_only_world",
+  "category": "legacy_moment",
+  "title": "The Only World",
+  "description": "A census officer brings the council a quiet finding: not one soul now aboard was alive at launch, and by the arithmetic of the voyage, not one now living expects to see the end. For everyone who breathes, the ship is not the way to the world. The ship is the world.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 6,
+  "max_generation": 13,
+  "outcomes": [
+   {
+    "id": "teach_the_passage",
+    "label": "Teach the voyage as a passage",
+    "description": "Hold the founding and the far harbor alive in every school. The ship is a corridor between two worlds, and these are the people of the crossing.",
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.03,
+     "morale": -0.02
+    },
+    "log": "The schools kept teaching the ship as a passage — a bridge thrown between a world left and a world promised, and every child a walker on it. It gave the voyage a spine and a sadness both: a people forever between, at home in neither dark they came from nor light they steer for."
+   },
+   {
+    "id": "teach_the_ship_as_home",
+    "label": "Teach the ship as home",
+    "description": "Let them have the ship as the whole and only world it has become for them. The mission can be an inheritance without being a homesickness.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "cultural_drift": 0.06
+    },
+    "log": "The council let the schools teach the ship as the world entire — not a corridor but a country, with its own weather of light-cycles and its own horizon of bulkheads. The people grew happy in it and strange to their charter, the far harbor fading into a story told at festivals, meaning less each time."
+   }
+  ]
+ },
+ {
+  "id": "the_far_horizon",
+  "category": "legacy_moment",
+  "title": "The Far Horizon",
+  "description": "A generation has done the arithmetic that the charter tried to keep gentle: the ship is still outbound, still burning toward a target none of them will ever see resolve, and the survey their grandparents promised belongs to grandchildren not yet born. They are the crossing generation — all cost, no arrival. They want to know what they are for.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_charter_tag": [
+   "outbound_push"
+  ],
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "keep_the_heading",
+    "label": "Hold the heading, honor the crossing",
+    "description": "Teach the crossing itself as the work — that carrying the ship one more generation toward the horizon is a life's worth of purpose, arrival or no.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.04,
+     "morale": -0.02
+    },
+    "log": "The ship taught its crossing generation to take pride in the burn itself — in being the hands that carried her another lifetime toward a horizon they would never reach. It held them to the heading, and it asked of them a patience that is close kin to faith."
+   },
+   {
+    "id": "let_the_crossing_be_home",
+    "label": "Let the crossing become the point",
+    "description": "Stop pretending the destination is theirs. Let this generation build a life for its own sake in the long burn, target or no target.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.03,
+     "cultural_drift": 0.05
+    },
+    "log": "The council stopped asking the crossing generation to live for a horizon and let them live for the ship they were on. They grew content and a little untethered from the writ, and the far target became a thing the ship was pointed at rather than a thing anyone still ached to reach."
+   }
+  ]
+ },
+ {
+  "id": "the_green_hearth",
+  "category": "legacy_moment",
+  "title": "The Green Hearth",
+  "description": "Generations of shared work have blurred the old line between the Hearth Union and the Verdant Kin — the ones who keep the table and the ones who keep the garden. Their children intermarry, their festivals have merged, their councils sit together more often than apart. Now the two peoples ask the ship to recognize what has already happened: they wish to become one.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "hearth_union",
+   "verdant_kin"
+  ],
+  "min_cultural_drift": 0.4,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "bless_the_union",
+    "label": "Bless the union",
+    "description": "Let the table and the garden become one people. Two founding names become one living tradition.",
+    "population_delta": {
+     "unity": 0.06,
+     "morale": 0.03,
+     "cultural_drift": 0.05
+    },
+    "faction_merge_id": "verdant_kin",
+    "log": "The Hearth and the Kin were joined by the ship's blessing, and where two peoples had kept the ship's warmth and the ship's green between them, now one people kept both. The founders' careful roster is one name shorter, and the ship is a warmer, less varied place for it."
+   },
+   {
+    "id": "keep_them_distinct",
+    "label": "Keep the two names",
+    "description": "The founders set these peoples apart for a reason. Honor the old distinction, whatever the young are doing.",
+    "population_delta": {
+     "stability": 0.04,
+     "legacy_loyalty": 0.03,
+     "unity": -0.02
+    },
+    "log": "The council held the two names apart as the founders drew them, and the Hearth and the Kin stayed, on the roster at least, two peoples. Their children went on marrying across the line and keeping one another's festivals, and calling the council's distinction a thing for the council."
+   }
+  ]
+ },
+ {
+  "id": "the_technocrats_compact",
+  "category": "legacy_moment",
+  "title": "The Technocrats' Compact",
+  "description": "The Meridian Accord runs the ship's courts and the Steel Covenant runs its workshops, and after enough generations of running the ship's institutions shoulder to shoulder, the two have proposed something the founders never drew: a single administration, courts and forges under one hand, the argument and the labor finally in the same room.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "requires_factions_aboard": [
+   "meridian_accord",
+   "steel_covenant"
+  ],
+  "min_cultural_drift": 0.4,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "form_the_compact",
+    "label": "Form the compact",
+    "description": "One administration, courts and forges together. Efficient, unified, and a concentration of power the founders spread on purpose.",
+    "population_delta": {
+     "stability": 0.05,
+     "cultural_drift": 0.04,
+     "unity": -0.02
+    },
+    "faction_merge_id": "steel_covenant",
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.06
+     }
+    ],
+    "log": "The Accord and the Covenant folded into a single administration, and the ship ran, for a while, with a smoothness it had not known — the courts and the workshops speaking at last with one voice. The founders had kept those voices separate on purpose, and no one now aboard remembered quite why."
+   },
+   {
+    "id": "keep_the_powers_split",
+    "label": "Keep the powers apart",
+    "description": "Courts that judge the makers and makers who build for the courts — the founders split these on purpose. Refuse the merger.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.03,
+     "stability": -0.02
+    },
+    "log": "The council refused the compact and kept the courts and the forges as separate powers, each a check on the other, the way the founding charter drew them. It was less efficient and more free, and the two institutions went on eyeing each other across a line the founders had meant them to keep."
+   }
+  ]
+ },
+ {
+  "id": "the_two_ships",
+  "category": "legacy_moment",
+  "title": "The Two Ships",
+  "description": "The ship has come apart without a single wall being built. The crew keep separate corridors now, separate mess halls, separate words for the same things; a child raised on one side of the divide can go a lifetime barely speaking to the other. It is one hull and, by every measure that matters, two peoples.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_cultural_drift": 0.5,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "force_reintegration",
+    "label": "Force them back together",
+    "description": "Spend the council's whole authority on knocking down the invisible walls — shared shifts, shared tables, shared schools, whether they like it or not.",
+    "resource_delta": {
+     "influence": -40
+    },
+    "population_delta": {
+     "unity": 0.08,
+     "morale": -0.04,
+     "cultural_drift": -0.03
+    },
+    "log": "The council forced the two ships back into one by main strength — mixing the shifts, the tables, the classrooms, over the sullen resistance of people who had grown comfortable apart. It held, barely, and it cost the council every favor it had, and the ship was one people again the way a set bone is one bone."
+   },
+   {
+    "id": "two_communities_one_charter",
+    "label": "Let them be two under one charter",
+    "description": "Stop pretending. Recognize the two communities formally, bind them only to the shared mission, and let each keep its own life.",
+    "population_delta": {
+     "stability": 0.05,
+     "cultural_drift": 0.05,
+     "unity": -0.02
+    },
+    "log": "The council wrote the division into the charter rather than fight it — two communities, one hull, one destination, and a careful peace between. The ship ran smoother for the honesty and sailed on as two peoples who had agreed on exactly one thing, which was where they were going."
+   }
+  ]
+ },
+ {
+  "id": "the_broken_council",
+  "category": "legacy_moment",
+  "title": "The Broken Council",
+  "description": "The council itself has fractured. The blocs will not sit in the same room; sessions collapse into walkouts; a decision that once took a week now takes a decade or never comes at all. The ship is drifting not because no one is steering but because the steering has come apart in too many hands.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_cultural_drift": 0.55,
+  "min_generation": 6,
+  "outcomes": [
+   {
+    "id": "consolidate_authority",
+    "label": "Consolidate under one hand",
+    "description": "Break the deadlock by breaking the council — vest authority in a single office that can actually decide. The ship will move again. It will move less like the founders meant.",
+    "population_delta": {
+     "stability": 0.06,
+     "unity": 0.02,
+     "legacy_loyalty": -0.05,
+     "cultural_drift": 0.03
+    },
+    "log": "The deadlock was broken by ending the thing that deadlocked: one office now, one hand on the helm, and the ship deciding again with a speed it had forgotten. The founders had built a council on purpose, against exactly this. No one who remembered why was still aboard to say so."
+   },
+   {
+    "id": "let_the_decks_self_rule",
+    "label": "Let the decks rule themselves",
+    "description": "If the center cannot hold, let it go. Devolve real power to the decks — local rule, local custom — and keep only the mission in common.",
+    "population_delta": {
+     "morale": 0.04,
+     "cultural_drift": 0.06,
+     "unity": -0.05,
+     "stability": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.04
+     }
+    ],
+    "log": "The council let the center dissolve and gave the decks their own rule, and the ship became a loose confederation of corridors that shared a hull and a heading and less and less else. People were happier close to home and stranger to one another, and the common archive thinned as each deck kept only its own."
+   }
+  ]
+ },
+ {
+  "id": "the_founders_day",
+  "category": "legacy_moment",
+  "title": "Founders' Day",
+  "description": "The anniversary of Launch comes round again, and the ship must decide, one more time, how to keep it. To the elders it is the most solemn day of the year — the day the whole enterprise began. To the young it is a day off from the rota with speeches attached.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_generation": 8,
+  "outcomes": [
+   {
+    "id": "keep_the_solemn_rite",
+    "label": "Keep the solemn rite",
+    "description": "The full observance — the founding log read aloud, the names of the first crew spoken, the charter renewed. A day to remember why.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.04,
+     "cultural_drift": -0.02
+    },
+    "log": "Founders' Day was kept in full — the log read out end to end, the first names spoken into the recyclers' hum, the charter renewed by a show of hands. The ship remembered, for one day, exactly what it was and why, and stood a little straighter for it into the year."
+   },
+   {
+    "id": "let_it_lighten",
+    "label": "Let it lighten",
+    "description": "The young want a festival, not a funeral for people they never met. Let Founders' Day become a celebration on its own terms.",
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "Founders' Day loosened into a proper festival — music the founders never heard, games they never played, and only a short reading no one much attended. The ship enjoyed itself thoroughly and remembered the founders the way one remembers a distant, well-meaning ancestor: fondly, and not in much detail."
+   }
+  ]
+ },
+ {
+  "id": "the_half_remembered_founding",
+  "category": "legacy_moment",
+  "title": "The Half-Remembered Founding",
+  "description": "The holiday is still kept — the ship has always kept it — but no one alive can quite say what it is for. The founding log is a thing the schools reference and no one reads; the first names on the roll are syllables in a song. It is a good festival. It has simply come loose from its reason.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 9,
+  "outcomes": [
+   {
+    "id": "restore_the_meaning",
+    "label": "Teach the founding again",
+    "description": "Mount an effort to reconnect the festival to its history — the log taught, the names learned, the reason spoken. Row against the drift of centuries.",
+    "resource_delta": {
+     "influence": -25
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.04,
+     "cultural_drift": -0.04,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The council spent its authority teaching the ship its own festival again — the log, the names, the reason — and for a while the holiday meant something once more, though the young kept the old songs mostly for the tunes. You can teach a people their history. You cannot make them ache for it."
+   },
+   {
+    "id": "let_the_holiday_be_its_own",
+    "label": "Let the holiday stand on its own",
+    "description": "It is a good festival and the ship loves it. Let it be what it has become — a thing the ship does because the ship has always done it, meaning whatever the living decide it means.",
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.03,
+     "cultural_drift": 0.04
+    },
+    "log": "The council let the holiday be what it had become — untethered from its founding, kept for its own warm sake, a tradition whose only remaining reason was that the ship had always kept it. Which is, in the end, the reason for most traditions, and the founders, whatever they were, had wanted the ship to go on."
+   }
+  ]
+ }
+]

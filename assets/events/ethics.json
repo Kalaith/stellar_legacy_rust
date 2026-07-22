@@ -1,0 +1,497 @@
+[
+ {
+  "id": "youth_unrest",
+  "category": "generational_challenge",
+  "title": "The Restless Generation",
+  "description": "A cohort born to the corridors has decided the mission is their grandparents' promise, not theirs.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "wanderers": 1.3,
+   "preservers": 0.8
+  },
+  "outcomes": [
+   {
+    "id": "seat_them",
+    "label": "Seat them on the council",
+    "description": "Fold the dissent into the institution. It changes both.",
+    "population_delta": {
+     "unity": 0.06,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The restless generation was given a seat and a stake. The council sounds younger now."
+   },
+   {
+    "id": "hold_the_line",
+    "label": "Hold the founders' line",
+    "description": "The charter is not up for renegotiation. Say so plainly.",
+    "population_delta": {
+     "unity": -0.05,
+     "legacy_loyalty": 0.06,
+     "morale": -0.03
+    },
+    "long_term_consequences": [
+     "banked_resentment"
+    ],
+    "log": "The council held the founders' line. The corridors went quiet in a way that keeps."
+   }
+  ],
+  "family": "ethics",
+  "complications": [
+   {
+    "id": "the_second_restless_generation",
+    "requires_consequence": [
+     "banked_resentment"
+    ],
+    "description_add": "And this is not the first time. A generation ago the council held the line and banked the resentment; the young know that story, and they have decided not to be quieted the way their parents were.",
+    "population_delta": {
+     "unity": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The unrest landed on a ship that had done this before and remembered being made to swallow it — and so it landed harder, an old grievance and a new one speaking with one voice the council could no longer simply outwait."
+   }
+  ]
+ },
+ {
+  "id": "schooling_crisis",
+  "category": "generational_challenge",
+  "title": "The Crowded Classroom",
+  "description": "The school decks were built for a smaller ship. The waiting lists are longer than the curriculum.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "expand_schooling",
+    "label": "Expand the schools",
+    "description": "Convert deck space and credits into classrooms.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "population_delta": {
+     "adaptation": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "log": "New classrooms opened on a converted cargo deck. A generation will be better taught for it."
+   }
+  ],
+  "family": "ethics"
+ },
+ {
+  "id": "first_death_in_space",
+  "category": "legacy_moment",
+  "title": "The First Rite",
+  "description": "A generation born entirely in transit must decide how to bury its dead — the founders' soil rites, impossible here, or something the ship invents for itself.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "preservers": 1.3
+  },
+  "outcomes": [
+   {
+    "id": "keep_the_soil_rite",
+    "label": "Keep the soil rite",
+    "description": "Use precious hydroponic loam for symbolic burial. Costly, and rooted.",
+    "resource_delta": {
+     "food": -150
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "cultural_drift": -0.04
+    },
+    "log": "The dead were laid in borrowed soil, as the founders would know. The farms felt the loss."
+   },
+   {
+    "id": "invent_a_rite",
+    "label": "Invent a ship rite",
+    "description": "Commit the dead to the void with new words. Cheaper, and untethered.",
+    "population_delta": {
+     "cultural_drift": 0.06,
+     "adaptation": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship spoke new words over its first spacers' dead. A tradition began that no founder wrote."
+   }
+  ],
+  "family": "ethics"
+ },
+ {
+  "id": "gene_ledger",
+  "category": "generational_challenge",
+  "title": "The Gene Ledger",
+  "description": "The medical council petitions to edit the line of the unborn — to trim the inherited frailties a closed gene-pool breeds. The Preservers call it a desecration.",
+  "requires_decision": true,
+  "family": "ethics",
+  "legacy_weight_modifiers": {
+   "adaptors": 1.4,
+   "preservers": 1.3
+  },
+  "outcomes": [
+   {
+    "id": "open_the_ledger",
+    "label": "Approve the edits",
+    "description": "Spare the children the old sicknesses.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ledger was opened. The next cohort will be healthier, and something old and unrepeatable was closed forever."
+   },
+   {
+    "id": "seal_the_ledger",
+    "label": "Forbid the edits",
+    "description": "The line is the line, flaws and all.",
+    "population_delta": {
+     "legacy_loyalty": 0.04,
+     "adaptation": -0.02
+    },
+    "log": "The ledger was sealed. The frailties will pass on, and so will the founders' shape of a human being."
+   }
+  ]
+ },
+ {
+  "id": "frozen_debt",
+  "category": "generational_challenge",
+  "title": "The Frozen Debt",
+  "description": "A prisoner condemned before departure still sleeps in cryo, sentence unserved, crime almost forgotten. The pod is failing, and a decision can no longer be deferred.",
+  "requires_decision": true,
+  "family": "ethics",
+  "outcomes": [
+   {
+    "id": "wake_and_pardon",
+    "label": "Wake and pardon",
+    "description": "The crime belongs to a dead world.",
+    "population_delta": {
+     "count": 1,
+     "morale": 0.02,
+     "stability": -0.02
+    },
+    "log": "The prisoner woke to a ship that had never known their name. The old sentence died with the world that passed it."
+   },
+   {
+    "id": "let_the_pod_fail",
+    "label": "Let the pod fail",
+    "description": "The sentence was lawful. Let it stand.",
+    "population_delta": {
+     "morale": -0.04
+    },
+    "long_term_consequences": [
+     "kept_the_frozen_sentence"
+    ],
+    "log": "The pod was left to its failure. The law of a lost world was kept, coldly, to the letter."
+   }
+  ]
+ },
+ {
+  "id": "triage_rule",
+  "category": "generational_challenge",
+  "title": "The Triage Rule",
+  "description": "Care is finite and the ship is not young. The council is asked to write down, once and for all, who the medics save first when they cannot save everyone.",
+  "requires_decision": true,
+  "family": "ethics",
+  "outcomes": [
+   {
+    "id": "save_the_young",
+    "label": "The young first",
+    "description": "The future outweighs the past.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.02
+    },
+    "log": "The rule was written: the young before the old. The elders signed it themselves, and said nothing."
+   },
+   {
+    "id": "save_the_skilled",
+    "label": "The needed first",
+    "description": "The ship keeps those it cannot run without.",
+    "population_delta": {
+     "unity": -0.03,
+     "adaptation": 0.02
+    },
+    "long_term_consequences": [
+     "cold_triage_rule"
+    ],
+    "log": "The rule named the skilled as first to be saved. It is efficient. No one is proud of it."
+   }
+  ]
+ },
+ {
+  "id": "the_stowaway",
+  "category": "generational_challenge",
+  "title": "The Stowaway",
+  "description": "A headcount turns up one person too many — a soul on no manifest, born in a maintenance crawlway to parents who hid a pregnancy from the census. By the ship's own law they were never meant to exist.",
+  "requires_decision": true,
+  "family": "ethics",
+  "outcomes": [
+   {
+    "id": "enroll_them",
+    "label": "Enroll them fully",
+    "description": "Tear up the census rule. A person is a person.",
+    "population_delta": {
+     "count": 1,
+     "morale": 0.05,
+     "legacy_loyalty": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The council struck the birth-quota from the code and enrolled the stowaway with a name and a berth. The old rule never recovered its authority."
+   },
+   {
+    "id": "uphold_the_quota",
+    "label": "Uphold the quota",
+    "description": "The rule exists for the ship's survival. Make an example.",
+    "population_delta": {
+     "count": 1,
+     "morale": -0.07,
+     "unity": -0.04,
+     "stability": 0.05
+    },
+    "log": "The quota held and the stowaway was raised a ward of the ship, unpersoned in the ledgers. The decks did not forget the coldness of it."
+   }
+  ]
+ },
+ {
+  "id": "the_mercy_dose",
+  "category": "immediate_crisis",
+  "title": "The Mercy Dose",
+  "description": "A wasting illness with no cure spreads among the eldest, and the physicians ask a question no one wants: should the dying be helped to go quickly, to spare both them and the stretched infirmary?",
+  "requires_decision": true,
+  "family": "ethics",
+  "knowledge_below": [
+   {
+    "id": "medical_bay",
+    "below": 0.5
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "permit_mercy",
+    "label": "Permit the mercy dose",
+    "description": "Let those who choose it end their suffering.",
+    "population_delta": {
+     "count": -30,
+     "morale": 0.03,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The council permitted the mercy dose to those who asked for it. The infirmary emptied and something in the ship's conscience shifted, quietly, for good."
+   },
+   {
+    "id": "forbid_mercy",
+    "label": "Forbid it — care to the last",
+    "description": "No hastened deaths. Bear the cost of caring for every one.",
+    "resource_delta": {
+     "credits": -400,
+     "food": -200
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "unity": 0.05,
+     "legacy_loyalty": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The council forbade the mercy dose and the wards ran full and grieving to the end. It cost the ship dearly and it kept a line the elders would not cross."
+   }
+  ]
+ },
+ {
+  "id": "the_archive_lie",
+  "category": "legacy_moment",
+  "title": "The Archive Lie",
+  "description": "An archivist discovers the founding logs were doctored generations ago — the mission's origin was uglier than the story every child is taught. She asks whether the truth should be restored, or the kind lie left to hold.",
+  "requires_decision": true,
+  "family": "ethics",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "restore_the_truth",
+    "label": "Restore the true record",
+    "description": "The people deserve their real history, however it lands.",
+    "population_delta": {
+     "legacy_loyalty": -0.08,
+     "cultural_drift": 0.07,
+     "unity": -0.04,
+     "adaptation": 0.05
+    },
+    "long_term_consequences": [
+     "truth_restored"
+    ],
+    "log": "The archivist published the true founding, and a comfortable myth died in an afternoon. The ship was more honest and less certain of itself ever after."
+   },
+   {
+    "id": "keep_the_myth",
+    "label": "Let the kind lie stand",
+    "description": "Some fictions hold a people together. Seal the record.",
+    "population_delta": {
+     "unity": 0.05,
+     "stability": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council resealed the doctored logs and let the founding myth stand. The archivist kept her silence, and the ship kept its comfortable story."
+   }
+  ]
+ },
+ {
+  "id": "the_mutineers_sentence",
+  "category": "immediate_crisis",
+  "title": "The Mutineers' Sentence",
+  "description": "A short, ugly mutiny is put down within a day. Now the ringleaders stand before the council, and the sentence set today will be remembered for generations.",
+  "requires_decision": true,
+  "family": "ethics",
+  "outcomes": [
+   {
+    "id": "exile_the_ringleaders",
+    "label": "Exile them in a lifeboat",
+    "description": "Give them a shuttle and a heading and let the void judge them.",
+    "population_delta": {
+     "count": -20,
+     "unity": 0.05,
+     "morale": -0.04,
+     "stability": 0.05
+    },
+    "faction_loss": "departed",
+    "long_term_consequences": [
+     "mutineers_exiled"
+    ],
+    "log": "The ringleaders were sealed into a lifeboat and cast off with a week of air and a prayer. The ship flew on, orderly and a little colder, and watched their light dwindle."
+   },
+   {
+    "id": "pardon_the_ringleaders",
+    "label": "Pardon them into service",
+    "description": "Bind them to the mission with mercy instead of fear.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The council pardoned the mutineers and set them to the hardest, humblest work aboard. Most were broken by gratitude; the ship gambled on mercy and mostly won."
+   }
+  ]
+ },
+ {
+  "id": "the_exiles_return",
+  "category": "legacy_moment",
+  "title": "The Exiles' Return",
+  "description": "Long after the mutiny that history half-forgot, sensors catch a battered craft matching the old lifeboat's transponder — and aboard it, the descendants of the exiled, who never forgot which ship left their forebears to die.",
+  "requires_decision": true,
+  "family": "ethics",
+  "requires_consequence": [
+   "mutineers_exiled"
+  ],
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "take_them_in",
+    "label": "Take them aboard",
+    "description": "Answer the old wrong with an open lock.",
+    "population_delta": {
+     "count": 60,
+     "legacy_loyalty": -0.05,
+     "cultural_drift": 0.08,
+     "unity": -0.04
+    },
+    "log": "The descendants of the exiled came aboard wary and armed with a century of grievance. The ship absorbed its own old sin, and grew stranger and larger for it."
+   },
+   {
+    "id": "turn_them_away",
+    "label": "Turn them away again",
+    "description": "The lifeboat was a sentence. Let it stand.",
+    "population_delta": {
+     "morale": -0.08,
+     "stability": 0.04,
+     "legacy_loyalty": 0.04
+    },
+    "long_term_consequences": [
+     "exiles_twice_wronged"
+    ],
+    "log": "The council refused the exiles a second time, and the battered craft fell away astern. Some aboard called it justice; more of them could not meet each other's eyes."
+   }
+  ]
+ },
+ {
+  "id": "the_rule_comes_due",
+  "category": "immediate_crisis",
+  "title": "The Rule Comes Due",
+  "description": "A deck fire has filled the wards past what the medics can treat, and the cold rule the council wrote generations ago — the skilled saved first, the needed before the loved — is no longer a line in the archive. It is a list, and the medics are standing over it, waiting to be told whether the ship still means what it wrote.",
+  "requires_decision": true,
+  "family": "ethics",
+  "min_generation": 3,
+  "requires_consequence": [
+   "cold_triage_rule"
+  ],
+  "outcomes": [
+   {
+    "id": "apply_the_rule",
+    "label": "Apply the rule as written",
+    "description": "The ship decided this in cold blood generations ago so it would not have to decide it now. Honor the law. Save the needed.",
+    "population_delta": {
+     "stability": 0.04,
+     "morale": -0.06,
+     "adaptation": 0.03,
+     "unity": -0.03
+    },
+    "log": "The medics worked the list as written, saving the skilled and the needed and passing by the rest, and the ship became, in one smoke-filled shift, exactly the machine its ancestors had coldly designed it to be. It survived intact and efficient, and something in it that had argued the rule was cruel stopped arguing."
+   },
+   {
+    "id": "break_the_rule",
+    "label": "Break your own law",
+    "description": "Save whoever is nearest, skilled or not, needed or not. A law that can do this does not deserve to be kept.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "stability": -0.05,
+     "legacy_loyalty": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The medics threw the list away and saved whoever their hands reached first, and the ship broke its own oldest law in the smoke and did not regret it. It lost some it could not afford to lose and strained the wards to breaking, and learned that a rule written to be obeyed once can, once, be refused."
+   }
+  ]
+ },
+ {
+  "id": "the_turnback_petition",
+  "category": "immediate_crisis",
+  "title": "The Turnback Petition",
+  "description": "Deep in the outbound push, with the target still a century off, a movement has gathered signatures the council cannot ignore: turn the ship around now, they say, and go home with nothing rather than spend three more generations reaching a structure that may be dust by the time anyone arrives. The charter, or the descendants. Choose.",
+  "requires_decision": true,
+  "family": "ethics",
+  "requires_charter_tag": [
+   "outbound_push"
+  ],
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "press_on",
+    "label": "Press on — the charter stands",
+    "description": "The ship was cast off to reach the far target and it will reach it. Deny the petition and hold the burn.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "morale": -0.05,
+     "unity": -0.04,
+     "stability": 0.03
+    },
+    "log": "The council denied the petition and held the outbound burn, and the ship pressed on toward a horizon a hundred years off over the quiet fury of the ones who wanted to go home. The charter stood. So did the grudge, banked for the generations still owed to the crossing."
+   },
+   {
+    "id": "turn_back_now",
+    "label": "Turn back now, with nothing",
+    "description": "Spare the descendants the rest of the crossing. Abandon the far target, lay in a course for home, and carry back only the ship and the people.",
+    "force_return": true,
+    "population_delta": {
+     "morale": 0.06,
+     "unity": 0.05,
+     "legacy_loyalty": -0.06
+    },
+    "log": "The ship came about in the deep dark, a hundred years short of a target no living eye had ever seen, and laid in the long course for home with empty holds and lighter hearts. The charter was forfeit and the writ would pay nothing, and for the first time in three generations the crew was sailing toward a place someone aboard might actually live to reach."
+   }
+  ]
+ }
+]

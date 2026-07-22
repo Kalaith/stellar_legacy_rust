@@ -1,0 +1,414 @@
+[
+ {
+  "id": "idle_generation",
+  "category": "generational_challenge",
+  "title": "The Idle Hands",
+  "description": "Automation has outrun the population. A generation has grown up with too little to do and too much time to wonder why they are here.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "make_work",
+    "label": "Fund make-work projects",
+    "description": "Spend credits on purpose, even invented purpose.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "stability": 0.03
+    },
+    "log": "The council funded a hundred small projects. Idle hands found rails to paint and songs to write."
+   },
+   {
+    "id": "let_them_wonder",
+    "label": "Let them find their own purpose",
+    "description": "Trust boredom to breed either art or trouble.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.04,
+     "unity": -0.03
+    },
+    "log": "Left to themselves, the idle generation invented new things to be, some of them useful."
+   }
+  ],
+  "family": "comedy"
+ },
+ {
+  "id": "apprentice_glut",
+  "category": "generational_challenge",
+  "title": "Too Many Hands",
+  "description": "This cohort trained hard for posts that are already filled. The waiting list for real work is longer than a career.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "rotate_posts",
+    "label": "Rotate the posts",
+    "description": "Share the work thin so everyone gets some.",
+    "population_delta": {
+     "unity": 0.04,
+     "stability": 0.02
+    },
+    "log": "The posts were rotated so the trained could stay sharp. Nobody is idle; nobody is expert."
+   }
+  ],
+  "family": "comedy"
+ },
+ {
+  "id": "lobites",
+  "category": "legacy_moment",
+  "title": "The Lobites",
+  "description": "A hold-stowed pair of lobites — soft, round, endlessly agreeable, and endlessly breeding — has become a hold-filling thousand. They eat little and purr, but there are so very many.",
+  "requires_decision": true,
+  "family": "comedy",
+  "outcomes": [
+   {
+    "id": "cull_the_lobites",
+    "label": "Cull the warren",
+    "description": "Thin them back to a manageable few.",
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.03
+    },
+    "log": "The lobites were culled to a sensible number. The children cried; the quartermaster did not."
+   },
+   {
+    "id": "keep_the_lobites",
+    "label": "Keep them all",
+    "description": "Morale is worth a little spilled grain.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "log": "The ship kept its lobites. The corridors are louder, warmer, and slightly stickier for it."
+   }
+  ]
+ },
+ {
+  "id": "bureaucrat_inspection",
+  "category": "mission_milestone",
+  "title": "The Inspection",
+  "description": "A charter clerk, aboard since departure and forgotten by everyone, has emerged to conduct the mandated mid-voyage audit. He has a clipboard. He is very serious.",
+  "requires_decision": true,
+  "family": "comedy",
+  "outcomes": [
+   {
+    "id": "humor_the_clerk",
+    "label": "Humor the audit",
+    "description": "Give him his forms and his afternoon.",
+    "resource_delta": {
+     "influence": 20
+    },
+    "population_delta": {
+     "stability": 0.02
+    },
+    "log": "The clerk filed a forty-page report no one will read. He seemed, at last, content."
+   },
+   {
+    "id": "lose_the_paperwork",
+    "label": "Lose the paperwork",
+    "description": "Regretfully, the archive ate his forms.",
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "The audit was tragically lost to a filing error. The ship ran on, unaudited and unbothered."
+   }
+  ]
+ },
+ {
+  "id": "translation_mishap",
+  "category": "mission_milestone",
+  "title": "Lost in Translation",
+  "description": "An automated relay greeting, kept running for centuries, has been quietly mistranslating the ship's name as something deeply unflattering to everyone who hears it.",
+  "requires_decision": false,
+  "family": "comedy",
+  "outcomes": [
+   {
+    "id": "fix_the_greeting",
+    "label": "Rewrite the greeting",
+    "description": "Restore a little dignity.",
+    "population_delta": {
+     "stability": 0.02
+    },
+    "log": "The greeting was corrected. Somewhere, a relay operator stopped laughing at last."
+   }
+  ]
+ },
+ {
+  "id": "the_mascot",
+  "category": "legacy_moment",
+  "title": "The Ship's Cat",
+  "description": "A corridor animal — no one is certain what species — has adopted the bridge crew, the night shift, and, apparently, the entire ship. It answers to no name and every name.",
+  "requires_decision": false,
+  "family": "comedy",
+  "outcomes": [
+   {
+    "id": "adopt_it",
+    "label": "Make it official",
+    "description": "Enter it in the crew manifest.",
+    "population_delta": {
+     "morale": 0.04,
+     "unity": 0.02
+    },
+    "log": "The animal was entered on the manifest with the rank of Morale Officer. It has not reported for duty once, and morale has never been higher."
+   }
+  ]
+ },
+ {
+  "id": "the_understudy",
+  "category": "legacy_moment",
+  "title": "The Understudy",
+  "description": "The ship's ceremonial First Voice has died, and the only trained understudy is a nine-year-old who has memorized every word and refuses to be replaced.",
+  "requires_decision": true,
+  "family": "comedy",
+  "outcomes": [
+   {
+    "id": "let_child_serve",
+    "label": "Let the child serve",
+    "description": "A child First Voice. The elders will cope.",
+    "population_delta": {
+     "morale": 0.06,
+     "cultural_drift": 0.04,
+     "unity": 0.02
+    },
+    "log": "A nine-year-old read the founding words in a piping voice, and half the ship wept and the other half grinned. The role was never quite solemn again."
+   },
+   {
+    "id": "appoint_elder",
+    "label": "Appoint a proper elder",
+    "description": "Dignity restored, the child heartbroken.",
+    "population_delta": {
+     "stability": 0.04,
+     "morale": -0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "A grave elder took the First Voice, and a small understudy was told to wait forty years for a turn."
+   }
+  ]
+ },
+ {
+  "id": "the_long_table",
+  "category": "legacy_moment",
+  "title": "The Long Table",
+  "description": "The Hearth Union petitions to make the shared evening meal sacrosanct — every soul at the long table, every night, no shift or duty excepted. Community over output, the remembered name over the quota.",
+  "requires_decision": true,
+  "family": "comedy",
+  "requires_dominant_faction": "hearth_union",
+  "outcomes": [
+   {
+    "id": "set_the_table",
+    "label": "Set the long table",
+    "description": "Down tools each evening. The ship eats as one.",
+    "resource_delta": {
+     "food": -300,
+     "credits": -200
+    },
+    "population_delta": {
+     "morale": 0.08,
+     "unity": 0.06,
+     "legacy_loyalty": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.06
+     }
+    ],
+    "log": "The long table was set every night, and duty bent around supper. The ship lost some hours of labor and gained a century of belonging; the names were remembered at the table."
+   },
+   {
+    "id": "keep_the_shifts",
+    "label": "Keep the shifts running",
+    "description": "The work does not stop for supper. Eat in rotation.",
+    "population_delta": {
+     "morale": -0.05,
+     "unity": -0.03,
+     "stability": 0.03
+    },
+    "log": "The council kept the shifts turning through the dinner hour. The quotas held and the Hearth Union set a smaller table, and set it a little colder."
+   }
+  ]
+ },
+ {
+  "id": "the_great_bake_off",
+  "category": "legacy_moment",
+  "title": "The Great Bake-Off",
+  "description": "A friendly rivalry between two galley decks over the ship's best ration-loaf has escalated into a full-blown culinary schism, complete with partisans, sabotage, and a contested trophy. The council is asked, with total seriousness, to adjudicate.",
+  "requires_decision": true,
+  "family": "comedy",
+  "outcomes": [
+   {
+    "id": "crown_a_winner",
+    "label": "Judge the contest",
+    "description": "Taste, deliberate, and crown a champion loaf.",
+    "resource_delta": {
+     "food": -100
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "unity": 0.03
+    },
+    "log": "The council convened a solemn tasting and crowned a champion loaf to citywide acclaim and one deck's lasting grievance. Morale soared on a tide of bread."
+   },
+   {
+    "id": "declare_a_tie",
+    "label": "Declare it a tie",
+    "description": "Diplomatically insist both loaves are equally supreme.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.02,
+     "stability": 0.02
+    },
+    "log": "The council declared the bake-off a perfect tie, and both galley decks united in shared disappointment at the cowardice of it. Peace, of a grumbling sort, was kept."
+   }
+  ]
+ },
+ {
+  "id": "the_festival_war",
+  "category": "legacy_moment",
+  "title": "The Festival War",
+  "description": "Two decks' harvest festivals, drifted apart over generations, have landed in the same week, and each insists the other moved. The galley cannot cater both, and neither will yield the date.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "let_them_compete",
+    "label": "Let them compete",
+    "description": "Rival festivals, one week, may the best deck win.",
+    "resource_delta": {
+     "food": -120
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "unity": -0.03
+    },
+    "log": "Both festivals ran, louder than ever out of pure spite, and the whole ship ate twice. Morale soared; the decks are not speaking, but they are not speaking very cheerfully."
+   },
+   {
+    "id": "merge_the_festivals",
+    "label": "Fuse them into one",
+    "description": "One holiday, ship-wide, that nobody's grandparents ever kept.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.02,
+     "cultural_drift": 0.04
+    },
+    "log": "The council fused the two festivals into a single ship-wide holiday with a new name and older-sounding songs written last month. Within a generation no one will remember it was ever two — which is how all traditions start."
+   }
+  ]
+ },
+ {
+  "id": "the_reconstructed_feast",
+  "category": "generational_challenge",
+  "title": "The Reconstructed Feast",
+  "description": "The key spice for the founders' feast-day dish ran out lifetimes ago. A cook unveils a faithful reconstruction from ship stores. It tastes nothing like the archived recipe, and the mess deck has never been happier.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 6,
+  "outcomes": [
+   {
+    "id": "canonize_the_new_dish",
+    "label": "Call it the real thing",
+    "description": "It is delicious. Let it be the feast.",
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.03
+    },
+    "log": "The reconstruction was declared the true feast-day dish by acclamation, the archive quietly overruled by the nose. The founders would not recognize a bite of it, and would, after one bite, forgive the ship entirely."
+   },
+   {
+    "id": "restore_the_authentic_recipe",
+    "label": "Honor the archive",
+    "description": "Ration a substitute closer to what the founders ate.",
+    "population_delta": {
+     "unity": 0.03,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The archivists were consulted, the nearest substitute rationed out, and the feast served as the founders meant it — drier, greyer, correct. The old families were satisfied. Everyone else ate quietly and remembered last year's."
+   }
+  ]
+ },
+ {
+  "id": "the_office_of_lost_things",
+  "category": "generational_challenge",
+  "title": "The Office of Lost Things",
+  "description": "Without anyone ordering it, a generation has grown an elaborate bureau for cataloguing and returning lost tools and socks. It has forms now, a filing berth, and a proud staff of eleven.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "fund_the_bureau",
+    "label": "Make it real infrastructure",
+    "description": "Give the Office a budget and a mandate. Tools that stop vanishing are tools that stop being remade.",
+    "ship_delta": {
+     "spare_parts": 40
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.03
+     }
+    ],
+    "log": "The Office of Lost Things got a berth, a seal, and a line in the manifest. To general surprise it works — the shops stop bleeding tools, the fabricators run a shift lighter, and eleven people who were doing this anyway now do it on the record."
+   },
+   {
+    "id": "disband_the_bureau",
+    "label": "Reassign the eleven",
+    "description": "Send the staff to real posts. The ship can find its own socks.",
+    "population_delta": {
+     "unity": 0.02,
+     "stability": 0.02,
+     "morale": -0.03
+    },
+    "log": "The Office was thanked and disbanded, its eleven reassigned to posts that were genuinely short-handed. The filing berth is a store room again. People still turn up at the old hatch with lost spanners, and stand a moment, and go."
+   }
+  ]
+ },
+ {
+  "id": "the_false_noon",
+  "category": "legacy_moment",
+  "title": "The False Noon",
+  "description": "The navigators announce the ship has passed the exact mathematical midpoint of the crossing — a moment that changes nothing, that no one can see, in a voyage with no days. A committee of the bored has proposed making a holiday of it. The council must rule on the calendar.",
+  "requires_decision": true,
+  "family": "comedy",
+  "min_generation": 6,
+  "max_generation": 13,
+  "outcomes": [
+   {
+    "id": "throw_the_great_midpoint",
+    "label": "Declare the Great Midpoint",
+    "description": "A blowout for the halfway mark — the biggest feast the ship has thrown since launch nobody remembers.",
+    "resource_delta": {
+     "food": -250
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "cultural_drift": 0.03
+    },
+    "log": "The Great Midpoint was declared, and the ship threw itself a party for arriving at a mathematical point in the void that looked exactly like every other point. It was glorious. Within two generations children will believe it was always a holiday, which is the truest kind of tradition."
+   },
+   {
+    "id": "a_working_toast",
+    "label": "A working toast and back to shift",
+    "description": "Mark it in the log, raise one cup on the mess deck, and keep the watch. Halfway is halfway.",
+    "population_delta": {
+     "morale": 0.02,
+     "stability": 0.03
+    },
+    "log": "The midpoint got a line in the log and a single raised cup on each mess deck, and then the watch went back on. It was the sort of restraint the founders would have approved of, and the sort the party faction has not entirely forgiven."
+   }
+  ]
+ }
+]

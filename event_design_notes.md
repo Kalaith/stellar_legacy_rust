@@ -3,8 +3,11 @@
 *Living content-authoring reference (W6). Distilled from `plan.md` and the raw
 brainstorm in `event_notes.md`. `event_notes.md` remains the unstructured idea
 catalogue; **this** file is the working map from those ideas onto the shipped
-`family × phase × gate` system. All event content lives in `assets/events.json`;
-only the phase-pool table (mechanics) lives in code.*
+`family × phase × gate` system. All event content lives under `assets/events/`,
+**one file per family** (`assets/events/<family>.json`, e.g. `comedy.json`),
+merged into one registry at load with a duplicate-id guard; add a new event to
+its family's file (add a new family = a new file + one line in `EVENT_FILES` in
+`src/data.rs`). Only the phase-pool table (mechanics) lives in code.*
 
 ## Principle: generate scenarios from **families × complications × outcomes**, not one-offs
 

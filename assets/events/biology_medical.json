@@ -1,0 +1,763 @@
+[
+ {
+  "id": "contagion",
+  "category": "immediate_crisis",
+  "title": "Recycled Air",
+  "description": "Something is moving through the ventilation the way rumors move through the decks. The medics want the decks sealed; the foremen want them working.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "adaptors": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "quarantine",
+    "label": "Seal the decks",
+    "description": "Lose the labor, keep the lungs.",
+    "resource_delta": {
+     "credits": -200
+    },
+    "population_delta": {
+     "count": -5,
+     "stability": 0.03
+    },
+    "log": "The decks were sealed and the outbreak starved of hosts. Production limped; the ward filled slowly."
+   },
+   {
+    "id": "work_through_it",
+    "label": "Work through it",
+    "description": "Keep the ship moving. The strong will carry the weak, or not.",
+    "population_delta": {
+     "count": -25,
+     "morale": -0.07
+    },
+    "log": "The ship worked through the sickness. The memorial wall did the accounting."
+   }
+  ],
+  "family": "biology_medical"
+ },
+ {
+  "id": "birth_dearth",
+  "category": "generational_challenge",
+  "title": "The Thin Cohort",
+  "description": "This generation came small. The nurseries have empty cribs and the actuaries have furrowed brows.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "incentivize",
+    "label": "Incentivize births",
+    "description": "Spend influence and rations to fill the cribs.",
+    "resource_delta": {
+     "food": -200,
+     "influence": -20
+    },
+    "population_delta": {
+     "count": 40,
+     "morale": 0.03
+    },
+    "log": "The council's incentives filled the nurseries. The next census will thank them."
+   },
+   {
+    "id": "accept_it",
+    "label": "Accept a lean generation",
+    "description": "A smaller crew eats less and argues less. It also builds less.",
+    "population_delta": {
+     "count": 10,
+     "stability": 0.04,
+     "unity": 0.02
+    },
+    "log": "The lean cohort grew up close-knit and few. The ship ran quieter, and shorter-handed."
+   }
+  ],
+  "family": "biology_medical"
+ },
+ {
+  "id": "scrubber_failure",
+  "category": "immediate_crisis",
+  "title": "The Thickening Air",
+  "description": "Two CO2 scrubbers failed in the same week. The air is going stale deck by deck and the spares are a generation old.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "cannibalize_spares",
+    "label": "Cannibalize for parts",
+    "description": "Strip other systems to rebuild the scrubbers.",
+    "resource_delta": {
+     "minerals": -150
+    },
+    "ship_delta": {
+     "life_support": 0.06
+    },
+    "log": "The scrubbers breathe again, assembled from the corpses of lesser machines."
+   },
+   {
+    "id": "ration_the_air",
+    "label": "Ration activity",
+    "description": "Slow the ship to slow the breathing.",
+    "population_delta": {
+     "morale": -0.06,
+     "stability": 0.02
+    },
+    "log": "The ship moved at half-effort until the air cleared. Everyone learned to sit very still."
+   }
+  ],
+  "family": "biology_medical"
+ },
+ {
+  "id": "water_bloom",
+  "category": "immediate_crisis",
+  "title": "The Bloom",
+  "description": "Something is growing in the water reclamation tanks that the ship's biology was not designed to host. It is spreading faster than the filters can name it.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "sterilize_hard",
+    "label": "Sterilize the tanks",
+    "description": "Flush and burn the system clean. Wasteful, and thorough.",
+    "resource_delta": {
+     "energy": -150,
+     "food": -100
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The reclamation tanks were sterilized to bare metal. The bloom is gone, and so is a season's margin of water and food."
+   },
+   {
+    "id": "quarantine_wait",
+    "label": "Quarantine and study",
+    "description": "Isolate it and hope the filters catch up. Cheaper, and a gamble.",
+    "population_delta": {
+     "morale": -0.04,
+     "stability": -0.03
+    },
+    "long_term_consequences": [
+     "tank_bloom"
+    ],
+    "log": "The bloom was quarantined and studied rather than burned out. It is contained, for now, and the crew drink boiled water and worry."
+   }
+  ],
+  "family": "biology_medical"
+ },
+ {
+  "id": "long_sleep",
+  "category": "immediate_crisis",
+  "title": "The Long Sleep",
+  "description": "A somnolence is spreading deck by deck — the afflicted sleep sixteen hours, then twenty, then do not fully wake. The medics have no name for it yet.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "outcomes": [
+   {
+    "id": "quarantine_the_sleepers",
+    "label": "Quarantine the afflicted",
+    "description": "Seal them off and study the sickness cold.",
+    "resource_delta": {
+     "credits": -200
+    },
+    "population_delta": {
+     "count": -20,
+     "morale": -0.03
+    },
+    "log": "The sleepers were sealed away and studied. The spread slowed; the ship grew quieter, ward by ward."
+   },
+   {
+    "id": "stimulant_regime",
+    "label": "Push through on stimulants",
+    "description": "Keep the ship awake by force.",
+    "population_delta": {
+     "morale": -0.04,
+     "stability": -0.02
+    },
+    "long_term_consequences": [
+     "stimulant_debt"
+    ],
+    "log": "The crew was driven awake with drugs and discipline. The work continued, hollow-eyed, on borrowed alertness."
+   }
+  ]
+ },
+ {
+  "id": "quiet_fever",
+  "category": "immediate_crisis",
+  "title": "The Quiet Fever",
+  "description": "A slow fever runs the corridors — never fatal, never quite gone, sapping the strength of a generation raised on recycled everything.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "outcomes": [
+   {
+    "id": "reseed_the_biome",
+    "label": "Reseed the ship's biome",
+    "description": "Rebuild the gut-flora from the vault.",
+    "resource_delta": {
+     "food": -300,
+     "credits": -150
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The living stores of the ship were reseeded from the founders' vault. The fever broke, slowly, and colour returned to the decks."
+   },
+   {
+    "id": "wait_it_out",
+    "label": "Wait it out",
+    "description": "The body will learn the ship, given time.",
+    "population_delta": {
+     "count": -15,
+     "adaptation": 0.03
+    },
+    "log": "The council chose patience. The fever lingered a generation, and the survivors carried its mark."
+   }
+  ]
+ },
+ {
+  "id": "sealed_ward",
+  "category": "immediate_crisis",
+  "title": "The Sealed Ward",
+  "description": "A wasting sickness takes hold in the aft medical deck. Contain it behind a bulkhead, or treat it in the open and gamble the rest of the ship.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "min_generation": 1,
+  "outcomes": [
+   {
+    "id": "seal_it",
+    "label": "Seal the ward",
+    "description": "Weld the bulkhead. Those inside are on their own.",
+    "population_delta": {
+     "count": -40,
+     "morale": -0.08,
+     "unity": -0.04,
+     "legacy_loyalty": -0.03
+    },
+    "long_term_consequences": [
+     "sealed_ward"
+    ],
+    "log": "The aft ward went dark behind a welded door. The sickness died with those it had reached, and the ship remembered the sound of the welding torch."
+   },
+   {
+    "id": "treat_open",
+    "label": "Treat it in the open",
+    "description": "No walls. The physicians work the wards and hope.",
+    "resource_delta": {
+     "credits": -400,
+     "food": -200
+    },
+    "population_delta": {
+     "count": -90,
+     "morale": 0.04,
+     "unity": 0.05
+    },
+    "log": "The physicians refused to seal anyone away. More died — but no deck was ever haunted by a locked door."
+   }
+  ]
+ },
+ {
+  "id": "the_ward_reopens",
+  "category": "legacy_moment",
+  "title": "The Ward Reopens",
+  "description": "Generations on, a maintenance crew cuts into a long-welded aft bulkhead and finds the sealed ward exactly as it was left — and the ship must decide what that door means now.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_consequence": [
+   "sealed_ward"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "consecrate",
+    "label": "Make it a memorial",
+    "description": "Leave the ward as a shrine to the ancestors who were given up.",
+    "population_delta": {
+     "legacy_loyalty": 0.1,
+     "unity": 0.06,
+     "cultural_drift": 0.05
+    },
+    "log": "The old ward became a place of pilgrimage. The descendants forgave the door by naming it holy."
+   },
+   {
+    "id": "strip_it",
+    "label": "Strip it for the living",
+    "description": "The dead do not need the space or the salvage. The living do.",
+    "resource_delta": {
+     "minerals": 300
+    },
+    "ship_delta": {
+     "spare_parts": 8
+    },
+    "population_delta": {
+     "morale": -0.06,
+     "legacy_loyalty": -0.08,
+     "adaptation": 0.05
+    },
+    "log": "The ward was gutted for parts. The ship gained a workshop and lost a grave, and not everyone agreed which mattered more."
+   }
+  ]
+ },
+ {
+  "id": "the_rewriting",
+  "category": "generational_challenge",
+  "title": "The Rewriting",
+  "description": "With the Ascension Circle ascendant, a proposal reaches the council: open the augmentation clinics to every child at birth, not merely the willing adult.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_dominant_faction": "ascension_circle",
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "open_the_clinics",
+    "label": "Open the clinics",
+    "description": "Let the next generation be rewritten from the first breath.",
+    "population_delta": {
+     "adaptation": 0.1,
+     "cultural_drift": 0.09,
+     "unity": -0.05
+    },
+    "log": "The clinics opened to the cradle. A generation grew up already something more than human, and already something other than their grandparents."
+   },
+   {
+    "id": "consent_only",
+    "label": "Adults by consent only",
+    "description": "Hold the line at the age of choosing.",
+    "population_delta": {
+     "stability": 0.05,
+     "morale": -0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council held augmentation to the age of consent. The Circle called it timidity; the elders called it a boundary worth keeping."
+   }
+  ]
+ },
+ {
+  "id": "the_forgotten_medicine",
+  "category": "generational_challenge",
+  "title": "The Forgotten Medicine",
+  "description": "A physician opens the old pharmacopoeia and finds she can no longer read half of it — the training that made sense of it lapsed generations back. A fever season is coming.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "knowledge_below": [
+   {
+    "id": "medical_bay",
+    "below": 0.35
+   }
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "relearn_from_the_texts",
+    "label": "Rebuild the training",
+    "description": "Convene the physicians and relearn the lost art from first principles.",
+    "resource_delta": {
+     "credits": -350,
+     "influence": 20
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "knowledge": 0.3
+     }
+    ],
+    "population_delta": {
+     "stability": 0.04
+    },
+    "log": "The physicians spent a year relearning what their grandparents knew by heart. The pharmacopoeia opened again, and the fever season, when it came, was survivable."
+   },
+   {
+    "id": "trust_the_machines",
+    "label": "Trust the auto-clinics",
+    "description": "Let the automated systems prescribe blind. No one need understand why.",
+    "population_delta": {
+     "count": -30,
+     "adaptation": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "knowledge": -0.1
+     }
+    ],
+    "log": "The auto-clinics dosed by rote through the fever season and buried those they guessed wrong on. The understanding slipped a notch further out of living memory."
+   }
+  ]
+ },
+ {
+  "id": "the_measured_ascent",
+  "category": "generational_challenge",
+  "title": "The Measured Ascent",
+  "description": "The Ascension Circle pushes a sweeping new augmentation program; the Meridian Accord, wary of anything sweeping, demands it be throttled to a cautious trickle. Both factions look to the council to hold the pace.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_factions_aboard": [
+   "ascension_circle",
+   "meridian_accord"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "throttle_it",
+    "label": "Throttle it to a trickle",
+    "description": "The Accord's caution wins; augment slowly, review often.",
+    "population_delta": {
+     "stability": 0.05,
+     "adaptation": 0.03,
+     "cultural_drift": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The council throttled the augmentation program to the Accord's cautious pace. The Circle chafed; the physicians, given time, actually understood what they were doing."
+   },
+   {
+    "id": "let_it_run",
+    "label": "Let the program run",
+    "description": "The Circle's ambition wins; augment broadly and fast.",
+    "population_delta": {
+     "adaptation": 0.09,
+     "cultural_drift": 0.07,
+     "unity": -0.05
+    },
+    "log": "The council let the Ascension Circle run its program at full tilt. A generation changed fast and unevenly, and the Accord filed its objections in triplicate, unread."
+   }
+  ]
+ },
+ {
+  "id": "the_hungry_wards",
+  "category": "immediate_crisis",
+  "title": "The Hungry Wards",
+  "description": "A run of poor harvests has left the ship not starving but malnourished, and the toll is landing in the infirmary: weakened immune systems, slow-healing injuries, a fragile population filling beds the medics cannot empty.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "food_below": 3000,
+  "outcomes": [
+   {
+    "id": "divert_to_nutrition",
+    "label": "Divert everything to nutrition",
+    "description": "Pour resources into food quality and let other work slide.",
+    "resource_delta": {
+     "credits": -500,
+     "food": 400
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.06
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The ship threw everything at the harvests and the ration quality climbed. The wards slowly emptied as the population regained its strength, and the deferred work waited its turn."
+   },
+   {
+    "id": "medicate_through_it",
+    "label": "Medicate through the shortage",
+    "description": "Prop up the sick with the infirmary's reserves and ride it out.",
+    "population_delta": {
+     "count": -30,
+     "morale": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.1
+     }
+    ],
+    "log": "The infirmary spent its reserves holding a malnourished ship together. The medics kept most of them alive, and the medical bay came out of the lean years worn thin and short on supply."
+   }
+  ]
+ },
+ {
+  "id": "the_shipborn_body",
+  "category": "generational_challenge",
+  "title": "The Shipborn Body",
+  "description": "The physicians confirm what the tailors already knew: the generations born aboard are subtly, measurably different — longer-limbed in the low-spin decks, sharper-eyed in the dim, their bodies quietly reshaping to a world of metal and recycled air. The founders would not entirely recognize their descendants.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "embrace_the_change",
+    "label": "Design the ship for who they are becoming",
+    "description": "Rebuild the decks around the shipborn body, not the founders'.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "adaptation": 0.06,
+     "morale": 0.05,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship remade its handrails and doorways and gravity for the people it actually carried. The descendants moved through it like water; the old founder-proportions became a museum curiosity."
+   },
+   {
+    "id": "hold_the_old_form",
+    "label": "Hold the founders' standard",
+    "description": "Keep the medical baselines the founders set. Resist the drift of the flesh.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "adaptation": -0.03,
+     "morale": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The medics fought the drift of the flesh with exercise regimes and gravity therapy, holding the descendants to the founders' shape at real cost. The old form endured, a little, by force of will."
+   }
+  ]
+ },
+ {
+  "id": "the_recycled_palate",
+  "category": "legacy_moment",
+  "title": "The Recycled Palate",
+  "description": "A generation has grown up whose bodies thrive on the ship's closed-loop diet in ways the founders' never could — and who find the 'real food' preserved in the founders' recipes faintly nauseating. The ancestral cuisine is becoming, to them, inedible history.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "let_the_menu_evolve",
+    "label": "Let the menu evolve",
+    "description": "Retire the founders' recipes. Feed the palate the ship actually has.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.05,
+     "morale": 0.03
+    },
+    "log": "The galleys retired the ancestral cookbook and cooked for the tongues aboard. The descendants ate happily; a few elders mourned flavors their grandchildren would never want."
+   },
+   {
+    "id": "preserve_the_cuisine",
+    "label": "Preserve the ancestral cuisine",
+    "description": "Keep cooking the founders' food as heritage, whether they like it or not.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "morale": -0.02
+    },
+    "log": "The ship kept the founders' feasts on the calendar like sacraments, and the descendants dutifully choked down heritage once a year. The recipes survived; the appetite for them did not."
+   }
+  ]
+ },
+ {
+  "id": "the_quiet_lungs",
+  "category": "immediate_crisis",
+  "title": "The Quiet Lungs",
+  "description": "Deep adaptation has a hidden cost: the shipborn have grown so suited to the thin, still, perfectly regulated air that a sudden system fault leaves them gasping where the founders would merely have coughed. The very fitness for the ship has made the people fragile to its failures.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "toughen_them",
+    "label": "Reintroduce hard conditions",
+    "description": "Deliberately vary the air and gravity to keep the people resilient.",
+    "population_delta": {
+     "count": -20,
+     "adaptation": -0.04,
+     "stability": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship began deliberately roughening its own perfect air, training resilience back into a people who had lost it to comfort. A few could not take the harder conditions; the rest grew hardy again."
+   },
+   {
+    "id": "perfect_the_systems",
+    "label": "Make the systems failsafe instead",
+    "description": "Accept the fragility; engineer the ship to never, ever falter.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -150
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "adaptation": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.1
+     }
+    ],
+    "log": "Rather than toughen the people, the ship perfected the machines that kept them soft, layering failsafe on failsafe. The lungs stayed quiet and the whole survival of the line came to rest on the air plant never, ever stopping."
+   }
+  ]
+ },
+ {
+  "id": "the_failing_ward",
+  "category": "immediate_crisis",
+  "title": "The Failing Ward",
+  "description": "The medical bay has decayed past patching — the sterile fields flicker, the surgical suite can no longer be trusted to hold clean, the old diagnostic beds read false. It is becoming a place people go to and do not come back from.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "condition_below": [
+   {
+    "id": "medical_bay",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_theatre",
+    "label": "Strip the ship to rebuild the theatre",
+    "description": "Tear clean plate and working parts from wherever you can and make the ward whole again.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -250
+    },
+    "ship_delta": {
+     "spare_parts": -14
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": 0.32
+     }
+    ],
+    "log": "They cannibalized three decks for clean plate and sound seals and rebuilt the surgical suite from the hull in. The ward holds sterile again, and the ship that gave up its spares to do it will feel the lack elsewhere for a generation."
+   },
+   {
+    "id": "triage_only",
+    "label": "Fall back to triage medicine",
+    "description": "Do what can be done with clean hands and boiled water. Let the rest go.",
+    "population_delta": {
+     "count": -50,
+     "morale": -0.06
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": 0.08
+     }
+    ],
+    "log": "Medicine fell back to what a steady hand and boiled water could manage, and the ship relearned which illnesses it could no longer treat. The ward kept working, after a fashion, and the burial detail kept working too."
+   }
+  ]
+ },
+ {
+  "id": "the_radiation_years",
+  "category": "generational_challenge",
+  "title": "The Radiation Years",
+  "description": "It is not the flares that wear the ship down but the steady bath — years in the star's reach, a dose no shield fully stops, settling into the crews who work the sunward decks. The medics are counting cancers the ship has not seen in generations.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_charter_tag": [
+   "stellar_hazard"
+  ],
+  "phases": [
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "rotate_the_crews",
+    "label": "Rotate the crews through the shielded core",
+    "description": "Spread the exposure thin — short shifts sunward, long rest behind the shielding. The work crawls; the people last.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": 0.02
+     }
+    ],
+    "log": "The ship put its crews on short sunward shifts and long shielded rest, and the survey slowed to a crawl for it, and the wards stopped filling. It cost the schedule dearly and it kept the people whole, which is a trade a generation ship learns to make."
+   },
+   {
+    "id": "push_the_work",
+    "label": "Push the work, bear the doses",
+    "description": "Keep the crews sunward and the survey on pace. The bill comes due in the wards, and in the children born after.",
+    "population_delta": {
+     "count": -25,
+     "adaptation": 0.04,
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The ship kept its crews in the star's reach and its survey on schedule, and paid in the wards — and then, stranger, in the nurseries, where the children of the radiation years came out subtly changed, hardier to the dose their parents had soaked in, and the ship had adapted a little to a place no one was meant to live."
+   }
+  ]
+ },
+ {
+  "id": "the_radiation_bloom",
+  "category": "immediate_crisis",
+  "title": "The Radiation Bloom",
+  "description": "The bill for the hot-run reactor has come due, a generation late and in the worst currency: a bloom of cancers and stillbirths on the decks nearest the annex, where the shielding the founders' descendants declined to reline has been leaking all along. The medics traced it back and found the council minutes that chose the schedule over the shielding.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "requires_consequence": [
+   "reactor_run_hot"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "treat_the_bloom",
+    "label": "Throw the wards at it",
+    "description": "Every resource the medical bay has, turned on the bloom — and the reline the ship should have paid for a generation ago, paid now at a premium.",
+    "resource_delta": {
+     "credits": -400,
+     "minerals": -250
+    },
+    "ship_delta": {
+     "spare_parts": -15
+    },
+    "population_delta": {
+     "count": -30,
+     "morale": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.1
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The ship relined the shielding at last and turned its whole medical bay on the bloom, and still buried thirty before it broke — the interest on a debt a dead council ran up to keep a schedule no one now remembers. The annex reads clean again. The nursery records do not."
+   },
+   {
+    "id": "evacuate_the_hot_decks",
+    "label": "Seal and abandon the hot decks",
+    "description": "Don't fight the leak — wall it off. Seal the irradiated sections, lose the space and the people who worked it, and let the annex go.",
+    "population_delta": {
+     "count": -45,
+     "stability": 0.03,
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The council sealed the hot decks rather than heal them — the annex, the shops beside it, the quarters of the ones who had lived too close, all walled off and written out of the deck plan. The bloom stopped at the bulkhead. The ship was smaller and sounder and short the people and the workshops it left behind the seal."
+   }
+  ]
+ }
+]

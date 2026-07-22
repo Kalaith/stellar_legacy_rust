@@ -1,0 +1,436 @@
+[
+ {
+  "id": "slingshot",
+  "category": "mission_milestone",
+  "title": "The Slingshot",
+  "description": "A massive body sits just off the course. A gravity assist could bank years of fuel — if the approach is flawless.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "thread_it",
+    "label": "Thread the slingshot",
+    "description": "Fly close, gain speed, risk the tides.",
+    "ship_delta": {
+     "fuel": 0.1,
+     "hull_integrity": -0.02
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "log": "The ship whipped past the giant and came out faster and lighter on fuel. The tides only rattled the crockery."
+   },
+   {
+    "id": "skip_it",
+    "label": "Skip the maneuver",
+    "description": "Burn the fuel, keep the plating.",
+    "resource_delta": {
+     "energy": -400
+    },
+    "log": "The council skipped the slingshot and paid in fuel for the peace of mind."
+   }
+  ],
+  "family": "science_anomaly"
+ },
+ {
+  "id": "the_prodigy",
+  "category": "generational_challenge",
+  "title": "The Prodigy",
+  "description": "A child in the new cohort reads the ship's systems the way others read faces. The council can fast-track them, or let them grow up ordinary.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "adaptors": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "fast_track",
+    "label": "Fast-track the prodigy",
+    "description": "Give them every system and every hour.",
+    "resource_delta": {
+     "credits": -200
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "stability": 0.03
+    },
+    "log": "The prodigy was given the run of the ship's systems. In a decade the ship will be glad; the cohort is less sure now."
+   },
+   {
+    "id": "let_them_be",
+    "label": "Let them be a child",
+    "description": "No cohort should carry the ship on one set of shoulders.",
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.03
+    },
+    "log": "The council let the prodigy grow up ordinary. The ship kept its gift in reserve, and its childhood intact."
+   }
+  ],
+  "family": "science_anomaly"
+ },
+ {
+  "id": "ion_reef",
+  "category": "mission_milestone",
+  "title": "The Ion Reef",
+  "description": "A shoal of charged plasma glitters across the bow, beautiful and unmapped. The instruments want a closer look; the pilots want a wide berth.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "chart_the_reef",
+    "label": "Chart it close",
+    "description": "Thread the shoal for the data.",
+    "resource_delta": {
+     "energy": 400,
+     "influence": 40
+    },
+    "ship_delta": {
+     "hull_integrity": -0.02
+    },
+    "log": "A week in the glow, and the survey banks a reef no chart has ever held."
+   },
+   {
+    "id": "skirt_the_reef",
+    "label": "Skirt it wide",
+    "description": "Log it and keep the distance.",
+    "population_delta": {
+     "stability": 0.02
+    },
+    "log": "The reef fell astern, unentered. The pilots slept easier for it."
+   }
+  ]
+ },
+ {
+  "id": "clock_disagreement",
+  "category": "legacy_moment",
+  "title": "The Clock Disagreement",
+  "description": "Two chronometers, once synchronized on the founding day, no longer agree. The dark has been bending time by fractions no one felt passing.",
+  "requires_decision": false,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "recalibrate",
+    "label": "Recalibrate to the beacon",
+    "description": "Trust the outside clock.",
+    "population_delta": {
+     "stability": 0.03,
+     "cultural_drift": 0.02
+    },
+    "log": "The ship reset its calendar against the last known beacon. A handful of days simply vanished from the record."
+   },
+   {
+    "id": "keep_ship_time",
+    "label": "Keep ship-time",
+    "description": "The ship's own year is the true one now.",
+    "population_delta": {
+     "legacy_loyalty": -0.03,
+     "adaptation": 0.03
+    },
+    "log": "The council ruled that ship-time is the only time that matters out here. The old calendar became a story."
+   }
+  ]
+ },
+ {
+  "id": "dark_body",
+  "category": "mission_milestone",
+  "title": "The Dark Body",
+  "description": "Something crosses the star-field ahead — a mass that gives back no light, only a shadow where the stars should be.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "range_it",
+    "label": "Range it with active scan",
+    "description": "Paint it and learn what it is.",
+    "resource_delta": {
+     "influence": 60
+    },
+    "long_term_consequences": [
+     "the_dark_body"
+    ],
+    "log": "The pulse came back strange and slow. Whatever it is, it is old, and it is not natural."
+   },
+   {
+    "id": "run_dark",
+    "label": "Run dark past it",
+    "description": "Give it nothing to look back at.",
+    "population_delta": {
+     "unity": 0.02
+    },
+    "log": "The ship ran silent until the shadow was well astern. Some questions keep."
+   }
+  ]
+ },
+ {
+  "id": "singularity_whisper",
+  "category": "legacy_moment",
+  "title": "The Whisper",
+  "description": "A faint, patient tug on the ship's mass — a gravity that has no visible source. The astronomers argue in the corridors; the priests have already decided.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "min_cultural_drift": 0.3,
+  "outcomes": [
+   {
+    "id": "study_the_whisper",
+    "label": "Study the whisper",
+    "description": "Turn every instrument on it.",
+    "resource_delta": {
+     "influence": 80
+    },
+    "population_delta": {
+     "cultural_drift": 0.03
+    },
+    "log": "Months of data, and only deeper questions. The whisper stayed a whisper — but the ship's scholars will chase it for generations."
+   },
+   {
+    "id": "look_away",
+    "label": "Look away",
+    "description": "Some things are not for us to weigh.",
+    "population_delta": {
+     "legacy_loyalty": 0.03
+    },
+    "log": "The instruments were turned elsewhere. The whisper went on tugging, unmeasured."
+   }
+  ]
+ },
+ {
+  "id": "relativity_pocket",
+  "category": "legacy_moment",
+  "title": "The Slow Pocket",
+  "description": "Sensors find a fold of deep-slowed time across the course. Cut through it to save fuel, or route the long way around at cost.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "cut_through",
+    "label": "Cut through the fold",
+    "description": "Save the fuel. Let the years outside run strange.",
+    "ship_delta": {
+     "fuel": 200
+    },
+    "population_delta": {
+     "cultural_drift": 0.08,
+     "adaptation": 0.05
+    },
+    "log": "The ship slid through the slow pocket. To the crew it was a week; the star-charts outside had aged a decade, and the people came out subtly changed."
+   },
+   {
+    "id": "route_around",
+    "label": "Route around it",
+    "description": "Burn the extra fuel for a clean, ordinary passage.",
+    "ship_delta": {
+     "fuel": -180
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The navigators gave the fold a wide berth. The fuel gauges dropped and the calendar stayed honest."
+   }
+  ]
+ },
+ {
+  "id": "the_second_star",
+  "category": "mission_milestone",
+  "title": "The Second Star",
+  "description": "A star that is not on any chart brightens dead ahead — young, wrong, and radiating on frequencies that make the physicists argue and the navigators nervous.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "study_the_star",
+    "label": "Hold and study it",
+    "description": "Spend the time. A thing like this may never be seen again.",
+    "resource_delta": {
+     "influence": 60,
+     "energy": 200
+    },
+    "population_delta": {
+     "cultural_drift": 0.05,
+     "morale": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "log": "The ship held station and drank the strange star in through every instrument. The data would feed the archives for centuries; the schedule never quite recovered the lost years."
+   },
+   {
+    "id": "give_it_wide_berth",
+    "label": "Give it a wide berth",
+    "description": "Whatever it is, it is not the mission. Steer clear.",
+    "ship_delta": {
+     "fuel": -80
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The navigators bent the course well around the wrong young star and its restless light. The physicists filed complaints; the captain filed them away."
+   }
+  ]
+ },
+ {
+  "id": "the_wandering_comet",
+  "category": "mission_milestone",
+  "title": "The Wandering Comet",
+  "description": "A comet on a wild hyperbolic path will cross the ship's course exactly once, trailing volatiles and stranger compounds no survey has catalogued. It will not pass this way again in a hundred lifetimes.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "chase_the_comet",
+    "label": "Match course and sample it",
+    "description": "Burn fuel to ride alongside and harvest what it carries.",
+    "ship_delta": {
+     "fuel": -0.1
+    },
+    "resource_delta": {
+     "minerals": 300,
+     "energy": 200,
+     "influence": 30
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "log": "The ship chased the wandering comet down and rode its tail for a season, harvesting ice and rarer things. The tanks ran lower and the holds ran richer, and the comet fled on into the dark forever."
+   },
+   {
+    "id": "let_it_pass",
+    "label": "Let it pass",
+    "description": "Log its path and keep the fuel for the mission.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The astronomers tracked the comet's once-in-a-hundred-lifetimes pass and let it go untouched. Its data filled a page; its ices filled no hold."
+   }
+  ]
+ },
+ {
+  "id": "the_far_deep",
+  "category": "mission_milestone",
+  "title": "The Far Deep",
+  "description": "The second anomaly is stranger than the first — and stranger than the charter promised. The survey teams argue whether what they are reading is a natural wonder or something that was made.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "double_hop"
+  ],
+  "outcomes": [
+   {
+    "id": "deep_survey",
+    "label": "Survey it to the bottom",
+    "description": "Spend the crew and the time to read the far deep entire.",
+    "resource_delta": {
+     "influence": 70,
+     "energy": 200
+    },
+    "population_delta": {
+     "count": -12,
+     "cultural_drift": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.07
+     }
+    ],
+    "log": "The teams read the far deep down to its strange foundations and lost a few of their number to its stranger depths. What they brought back would occupy the archives for centuries."
+   },
+   {
+    "id": "log_and_bank",
+    "label": "Log the essentials and bank it",
+    "description": "Take the contracted readings and no more risk.",
+    "resource_delta": {
+     "influence": 30
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The survey took its contracted readings of the far deep and asked no further questions of it. The charter was satisfied; the mystery was left, mostly, alone."
+   }
+  ]
+ },
+ {
+  "id": "the_dark_body_returns",
+  "category": "legacy_moment",
+  "title": "The Answer",
+  "description": "Generations ago the ship painted an ancient dark mass with an active pulse — a thing old and not natural, left well astern. Now the long array wakes the watch: a signal has arrived on the exact frequency of that pulse, from dead ahead, weaker and slower and changed, as though the ship's own question has been all this time coming back an answer.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "min_generation": 4,
+  "requires_consequence": [
+   "the_dark_body"
+  ],
+  "outcomes": [
+   {
+    "id": "answer_the_answer",
+    "label": "Answer it",
+    "description": "The ship asked, once. Something answered. Reply, and learn what asks back across the dark.",
+    "resource_delta": {
+     "influence": 90
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "cultural_drift": 0.04
+    },
+    "log": "The ship replied to the thing that had replied to it, and spent a generation listening to the slow exchange sharpen — question, answer, question — with something that did not think in years. What was learned was worth a fortune to the archives and cost the crew their sleep, and the dark body passed into the ship's oldest ghost stories, verified."
+   },
+   {
+    "id": "silence_the_frequency",
+    "label": "Never on that frequency again",
+    "description": "The founders should never have pinged it. Strike the frequency from the arrays, seal the old scan, and let the answer go unanswered forever.",
+    "population_delta": {
+     "unity": 0.04,
+     "stability": 0.03
+    },
+    "log": "The council forbade the frequency, sealed the founders' scan under the oldest lock the archive had, and let the slow answer arrive to a ship that would not hear it. Whatever had been reaching back reached into silence, and the watch that made the choice slept better for a thing it chose not to know."
+   }
+  ]
+ },
+ {
+  "id": "the_mirror",
+  "category": "mission_milestone",
+  "title": "The Mirror",
+  "description": "The forward array returns something impossible: a perfect echo of the ship itself, dead ahead and closing — same mass, same drive-signature, same running lights, as if an identical vessel were bearing down on a head-on course. The navigators are fairly sure it is the ship's own emissions, folded back by something massive between here and there. Fairly sure.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "hail_the_mirror",
+    "label": "Hail it",
+    "description": "Whatever is folding the ship's light back is worth understanding. Open a channel to the thing wearing the ship's face.",
+    "resource_delta": {
+     "energy": -200,
+     "influence": 50
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The ship hailed its own reflection and mapped the lens that made it — a knot of bent space the charts had missed, worth every watt to have measured. For a week the crew watched their own hail come back a heartbeat late, mouthing their own words, and were glad when the lens fell astern."
+   },
+   {
+    "id": "log_the_lensing",
+    "label": "Log it and pass",
+    "description": "It is a lensing artifact and nothing more. Note the phenomenon, hold the course, and do not stare at it.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The navigators logged the mirror as a gravitational artifact, held their heading straight through the ghost of their own ship, and did not dwell on how, for the span of the crossing, something ahead had matched them turn for turn."
+   }
+  ]
+ }
+]

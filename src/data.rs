@@ -27,7 +27,37 @@ use subsystems::{SubsystemDef, SubsystemsConfig};
 const GAME_CONFIG_JSON: &str = include_str!("../assets/data/game_config.json");
 const TEXTURE_MANIFEST_JSON: &str = include_str!("../assets/data/texture_manifest.json");
 const SHIP_COMPONENTS_JSON: &str = include_str!("../assets/ship_components.json");
-const EVENTS_JSON: &str = include_str!("../assets/events.json");
+/// Event templates, split per `family` (content-depth): one file per family
+/// under `assets/events/` so no single content file grows unwieldy. Embedded via
+/// `include_str!` (WASM-safe, same as before); merged into one registry at load
+/// with a hard duplicate-id guard. Adding a new family = add one line here.
+const EVENT_FILES: &[(&str, &str)] = &[
+    (
+        "biology_medical",
+        include_str!("../assets/events/biology_medical.json"),
+    ),
+    ("comedy", include_str!("../assets/events/comedy.json")),
+    ("diplomacy", include_str!("../assets/events/diplomacy.json")),
+    (
+        "engineering",
+        include_str!("../assets/events/engineering.json"),
+    ),
+    ("ethics", include_str!("../assets/events/ethics.json")),
+    (
+        "exploration_first_contact",
+        include_str!("../assets/events/exploration_first_contact.json"),
+    ),
+    (
+        "legacy_drift",
+        include_str!("../assets/events/legacy_drift.json"),
+    ),
+    ("mystery", include_str!("../assets/events/mystery.json")),
+    (
+        "science_anomaly",
+        include_str!("../assets/events/science_anomaly.json"),
+    ),
+    ("survival", include_str!("../assets/events/survival.json")),
+];
 const LEGACIES_JSON: &str = include_str!("../assets/legacies.json");
 const CONTRACTS_JSON: &str = include_str!("../assets/contracts.json");
 const FACTIONS_JSON: &str = include_str!("../assets/factions.json");
@@ -524,7 +554,7 @@ impl GameData {
         Ok(Self {
             config: load_embedded_json_labeled("game_config", GAME_CONFIG_JSON)?,
             ship_components: load_embedded_json_labeled("ship_components", SHIP_COMPONENTS_JSON)?,
-            events: DataRegistry::from_embedded_json(EVENTS_JSON, "id")?,
+            events: Self::load_events()?,
             legacies: DataRegistry::from_embedded_json(LEGACIES_JSON, "id")?,
             contracts: DataRegistry::from_embedded_json(CONTRACTS_JSON, "id")?,
             factions: DataRegistry::from_embedded_json(FACTIONS_JSON, "id")?,
@@ -533,6 +563,26 @@ impl GameData {
             crew_archetypes: load_embedded_json_labeled("crew_archetypes", CREW_ARCHETYPES_JSON)?,
             texture_manifest: load_embedded_json(TEXTURE_MANIFEST_JSON)?,
         })
+    }
+
+    /// Merge the per-family event files into one registry. Fails loudly on a
+    /// duplicate id *across* files — a single file makes a collision obvious, but
+    /// two files can each define the same id and `merge` would silently drop one.
+    fn load_events() -> Result<DataRegistry<EventTemplate>, String> {
+        let mut merged: DataRegistry<EventTemplate> = DataRegistry::new();
+        for (family, json) in EVENT_FILES {
+            let part = DataRegistry::<EventTemplate>::from_embedded_json(json, "id")
+                .map_err(|e| format!("events/{family}.json: {e}"))?;
+            for id in part.ids() {
+                if merged.contains(id) {
+                    return Err(format!(
+                        "duplicate event id '{id}' across event files (redefined in events/{family}.json)"
+                    ));
+                }
+            }
+            merged.merge(part);
+        }
+        Ok(merged)
     }
 
     /// Registry ids sorted for deterministic iteration (`DataRegistry` is

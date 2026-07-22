@@ -1,0 +1,441 @@
+[
+ {
+  "id": "arrival_at_target",
+  "category": "mission_milestone",
+  "title": "Arrival Burn",
+  "description": "The destination system resolves from a bright dot into a place. Final approach requires a heavy deceleration burn.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "textbook_burn",
+    "label": "Textbook burn",
+    "description": "By the book, on the fuel budget.",
+    "resource_delta": {
+     "energy": -600
+    },
+    "population_delta": {
+     "morale": 0.1
+    },
+    "log": "The arrival burn went by the book. The observation decks were crowded for a week."
+   }
+  ],
+  "family": "exploration_first_contact"
+ },
+ {
+  "id": "halfway_beacon",
+  "category": "mission_milestone",
+  "title": "The Halfway Beacon",
+  "description": "The ship passes the midpoint marker its founders laid in the plan. Half the voyage is behind; no one living chose the far half.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "mark_the_crossing",
+    "label": "Mark the crossing",
+    "description": "A day of ceremony and rest. Morale answers.",
+    "resource_delta": {
+     "influence": 20
+    },
+    "population_delta": {
+     "morale": 0.08,
+     "legacy_loyalty": 0.04
+    },
+    "log": "The ship marked the halfway crossing. For a day, the corridors felt like a procession — and the founders had left more than a marker: a ramscoop module, cached at the beacon, now folded into the salvage hold.",
+    "grant_component": "ramscoop_array"
+   }
+  ],
+  "family": "exploration_first_contact"
+ },
+ {
+  "id": "course_correction",
+  "category": "mission_milestone",
+  "title": "The Fork in the Dark",
+  "description": "Two viable courses to the destination diverge here: a fast lane through a debris shelf, or a slow safe arc. The nav computer wants a decision it cannot make.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "wanderers": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "fast_lane",
+    "label": "Take the fast lane",
+    "description": "Shave years off the crossing. Bet the hull on good sensors.",
+    "ship_delta": {
+     "hull_integrity": -0.04,
+     "fuel": -0.05
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "log": "The ship threaded the debris shelf and gained a decade. The hull wears the toll."
+   },
+   {
+    "id": "safe_arc",
+    "label": "Take the safe arc",
+    "description": "Add years, keep the plating.",
+    "population_delta": {
+     "stability": 0.04,
+     "legacy_loyalty": 0.02
+    },
+    "log": "The ship took the long safe arc. The schedule slipped; nothing else did."
+   }
+  ],
+  "family": "exploration_first_contact"
+ },
+ {
+  "id": "the_named_star",
+  "category": "mission_milestone",
+  "title": "First Light",
+  "description": "For the first time, the destination star can be picked out with the naked eye from the observation deck — a specific point of light, not a coordinate.",
+  "requires_decision": false,
+  "outcomes": [
+   {
+    "id": "gather_and_look",
+    "label": "Gather and look",
+    "description": "Call the ship to the windows.",
+    "population_delta": {
+     "morale": 0.1,
+     "legacy_loyalty": 0.03,
+     "stability": 0.02
+    },
+    "log": "The ship crowded the observation decks to see its destination as a star. Some had waited their whole lives to look."
+   }
+  ],
+  "family": "exploration_first_contact"
+ },
+ {
+  "id": "course_ratification",
+  "category": "mission_milestone",
+  "title": "The Final Approach",
+  "description": "The founders wrote a final-approach plan for a ship they never saw finished. The council can ratify it as written or amend it with everything the voyage has learned.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "preservers": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "ratify_as_written",
+    "label": "Ratify as written",
+    "description": "Trust the plan the founders sealed.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "cultural_drift": -0.03
+    },
+    "log": "The founders' approach plan was ratified unchanged. The ship will arrive exactly as it was told to."
+   },
+   {
+    "id": "amend_the_plan",
+    "label": "Amend with what we know",
+    "description": "The voyage taught things the founders could not know.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The approach plan was amended with a lifetime of hard-won data. The founders would not recognize it; it is better."
+   }
+  ],
+  "family": "exploration_first_contact"
+ },
+ {
+  "id": "scout_returns",
+  "category": "mission_milestone",
+  "title": "The Scout Returns",
+  "description": "A probe the founders flung ahead a lifetime ago has finally answered — a thin stream of data about the place the ship is aimed at. Some of it does not match the charts the voyage was planned around.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "adaptors": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "trust_the_scout",
+    "label": "Trust the new data",
+    "description": "Revise the plan around what the probe actually found.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "cultural_drift": 0.03,
+     "stability": 0.02
+    },
+    "log": "The probe's data was trusted over the founders' charts, and the approach was quietly rebuilt around a world no one had promised."
+   },
+   {
+    "id": "keep_the_charts",
+    "label": "Keep the founders' charts",
+    "description": "One probe is one probe. Trust the plan that got you here.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "cultural_drift": -0.03
+    },
+    "log": "The council kept faith with the founders' charts. The probe's warnings were filed, and the ship held the course it was given."
+   }
+  ],
+  "family": "exploration_first_contact"
+ },
+ {
+  "id": "the_lodestar",
+  "category": "mission_milestone",
+  "title": "The Lodestar",
+  "description": "The scouts find it on the outbound leg: a derelict archive-ship, holds heavy with charts and cold-stored fortune, drifting exactly where no chart said to look.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "log_and_press_on",
+    "label": "Log it and press on",
+    "description": "The charter comes first; mark it for the ships that follow.",
+    "resource_delta": {
+     "credits": 500,
+     "influence": 60
+    },
+    "log": "The lodestar was logged, sampled, and left for the ships that would come after. The charter still called, and the ship answered."
+   },
+   {
+    "id": "claim_the_lodestar",
+    "label": "Claim it and turn home",
+    "description": "A find this rich is a mission of its own.",
+    "resource_delta": {
+     "credits": 4000,
+     "minerals": 800,
+     "influence": 100
+    },
+    "population_delta": {
+     "morale": 0.05
+    },
+    "force_return": true,
+    "log": "The lodestar's holds gave up a fortune in charts and metal. With wealth like this aboard, the council saw no reason to sail farther — the ship came about for home, heavy and triumphant."
+   }
+  ]
+ },
+ {
+  "id": "the_wayfarers",
+  "category": "legacy_moment",
+  "title": "The Wayfarers",
+  "description": "Another ship hails across the dark — a generation vessel like our own, centuries into its own long errand, its people as strange and as familiar as a reflection. They propose an exchange of charts, craft, and stories.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "open_the_exchange",
+    "label": "Open the exchange",
+    "description": "Trade knowledge freely with a fellow wanderer.",
+    "resource_delta": {
+     "influence": 60,
+     "credits": 400
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "cultural_drift": 0.05,
+     "adaptation": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.06
+     }
+    ],
+    "log": "For a month the two ships flew as one, trading charts and songs and the hard-won tricks of the long dark. Both sailed on richer, and a little changed by the meeting."
+   },
+   {
+    "id": "keep_our_distance",
+    "label": "Keep our distance",
+    "description": "Exchange pleasantries and nothing more. Trust is a luxury.",
+    "population_delta": {
+     "unity": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The two ships exchanged careful greetings and careful silences, and parted with charts unshared. The elders called it prudence; the young called it a door left shut."
+   }
+  ]
+ },
+ {
+  "id": "the_wary_frontier",
+  "category": "generational_challenge",
+  "title": "The Wary Frontier",
+  "description": "The ship enters the claimed space of a civilization that has clearly been burned before — their hails are demands, their escorts are armed, their welcome is a warning. They want to know exactly what this vessel is and why it is here.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "full_transparency",
+    "label": "Answer with full honesty",
+    "description": "Open the logs. Let them see the mission entire.",
+    "resource_delta": {
+     "influence": 40
+    },
+    "population_delta": {
+     "stability": 0.04
+    },
+    "log": "The council opened the ship's records to the wary locals, mission and all. The escorts stood down by degrees, and safe passage was granted to a vessel that had nothing to hide."
+   },
+   {
+    "id": "guarded_answers",
+    "label": "Give guarded answers",
+    "description": "Reveal only what safety requires. Keep the rest close.",
+    "population_delta": {
+     "unity": 0.04,
+     "morale": -0.02
+    },
+    "long_term_consequences": [
+     "frontier_suspicion"
+    ],
+    "log": "The ship gave the frontier only what it had to and slipped through under a cloud of suspicion. The locals logged this hull as one that keeps secrets, and passed the word ahead."
+   },
+   {
+    "id": "detour_around",
+    "label": "Detour around their reach",
+    "description": "Answer nothing. A people burned before will not be reassured by words; give them the one thing they actually want, which is your absence. Burn wide around their claimed space and leave them their peace.",
+    "ship_delta": {
+     "fuel": -0.1
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.03
+    },
+    "log": "The voyage gave the wary frontier the only gift it trusted — distance. The ship burned wide around their reach, spending fuel it would rather have kept, and left no wake in their space and no story in their logs. Some aboard chafed at the caution; more slept easier knowing no gun had tracked them that night."
+   }
+  ]
+ },
+ {
+  "id": "the_young_world",
+  "category": "legacy_moment",
+  "title": "The Young World",
+  "description": "The route passes a world of people who have not yet left their atmosphere — pre-industrial, unaware, gazing up at a new star that is really our drive-flare. To reveal ourselves would change their history forever; to hide is its own kind of choice.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "make_contact",
+    "label": "Reveal ourselves",
+    "description": "Descend, and become gods or teachers in their sky.",
+    "resource_delta": {
+     "influence": 80
+    },
+    "population_delta": {
+     "cultural_drift": 0.08,
+     "legacy_loyalty": -0.05,
+     "morale": 0.03
+    },
+    "long_term_consequences": [
+     "touched_a_young_world"
+    ],
+    "log": "The ship revealed itself to the young world and watched its own arrival become the founding myth of another people. Whether gift or wound, it could never be taken back."
+   },
+   {
+    "id": "pass_unseen",
+    "label": "Pass unseen",
+    "description": "Douse the flare, run dark, leave their sky unchanged.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.05,
+     "stability": 0.03
+    },
+    "log": "The ship ran dark past the young world and let it keep its innocent sky. Some aboard grieved the hands they did not extend; the council called restraint its own kind of gift."
+   }
+  ]
+ },
+ {
+  "id": "the_silent_monuments",
+  "category": "mission_milestone",
+  "title": "The Silent Monuments",
+  "description": "Drifting in the deep are the works of a people long gone — vast, patient structures of unknown purpose, older than the ship's whole line of ancestors. They could hold knowledge, danger, or only echoes.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "study_the_ruins",
+    "label": "Send teams into the ruins",
+    "description": "Spend the time and the risk to learn what the builders left.",
+    "resource_delta": {
+     "influence": 50,
+     "minerals": 200
+    },
+    "population_delta": {
+     "count": -15,
+     "cultural_drift": 0.05
+    },
+    "grant_component": "mass_driver",
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.08
+     }
+    ],
+    "log": "The teams went into the silent monuments and came back awed, laden, and fewer. What they learned reshaped the ship's understanding of the dark; what took the lost, they never named."
+   },
+   {
+    "id": "record_and_leave",
+    "label": "Record them and move on",
+    "description": "Scan from range. Some tombs are best left sealed.",
+    "resource_delta": {
+     "influence": 20
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The ship mapped the monuments from a respectful distance and left them to their long silence. The archives gained a mystery and the crew kept its full number."
+   }
+  ]
+ },
+ {
+  "id": "the_last_broadcast",
+  "category": "mission_milestone",
+  "title": "The Last Broadcast",
+  "description": "A beacon drifts on the lane, still faithfully repeating a message in no known tongue after who knows how many centuries alone. Its makers are surely dust. The signal waits for an answer it was built to expect.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "phases": [
+   "travel",
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "answer_the_beacon",
+    "label": "Answer the beacon",
+    "description": "Send the reply it has waited eons for, wherever it goes.",
+    "resource_delta": {
+     "energy": -200,
+     "influence": 40
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.04
+    },
+    "log": "The ship broadcast an answer into the dark on the beacon's own frequency, completing a handshake begun before the founders were born. Nothing replied. It felt, somehow, like a kindness owed."
+   },
+   {
+    "id": "silence_the_beacon",
+    "label": "Take it and go silent",
+    "description": "Recover the beacon's tech; leave no trace of ourselves.",
+    "ship_delta": {
+     "spare_parts": 6
+    },
+    "resource_delta": {
+     "minerals": 150
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "adaptation": 0.03
+    },
+    "log": "The salvage crews took the beacon apart for its patient, ancient tech and left the lane silent behind them. The message it had carried for eons ended, unanswered, in a cargo hold."
+   }
+  ]
+ }
+]

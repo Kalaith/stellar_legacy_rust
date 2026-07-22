@@ -1,0 +1,1198 @@
+[
+ {
+  "id": "system_failure",
+  "category": "immediate_crisis",
+  "title": "System Failure",
+  "description": "A primary subsystem has failed mid-voyage. Engineering wants parts and power; the council wants a plan.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "adaptors": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "emergency_repair",
+    "label": "Emergency repair",
+    "description": "Spend minerals and credits to restore the system fully.",
+    "resource_delta": {
+     "minerals": -150,
+     "credits": -200
+    },
+    "ship_delta": {
+     "hull_integrity": 0.05
+    },
+    "log": "Engineering crews restored the failed system at material cost."
+   },
+   {
+    "id": "reroute_power",
+    "label": "Reroute power",
+    "description": "Bypass the failure. Cheap now, a debt for later.",
+    "resource_delta": {
+     "energy": -400
+    },
+    "ship_delta": {
+     "life_support": -0.05
+    },
+    "long_term_consequences": [
+     "deferred_maintenance"
+    ],
+    "log": "Power was rerouted around the failure. The bypass will outlive its welcome."
+   }
+  ],
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "bay_already_failing",
+    "condition_below": [
+     {
+      "id": "engineering_bay",
+      "below": 0.4
+     }
+    ],
+    "description_add": "Worse: the engineering bay is itself half-wrecked, and the hands who might fix the failure are already fighting to keep the bay's own lights on.",
+    "ship_delta": {
+     "hull_integrity": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "With the engineering bay already failing, the repair went harder than it should have and cost the worn bay a little more of what little it had left."
+   },
+   {
+    "id": "covenant_takes_it_in_hand",
+    "requires_dominant_faction": "steel_covenant",
+    "description_add": "The Steel Covenant take the failure as theirs to answer — no drama, no council, just the makers doing what the makers do, and doing it well.",
+    "population_delta": {
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.03
+     }
+    ],
+    "log": "The Covenant had the failure in hand before the council finished convening, and fixed it a shade better than it had been built, and logged the method for the next crew. Under the makers, a system failure is less a crisis than a Tuesday."
+   }
+  ]
+ },
+ {
+  "id": "micrometeoroid_storm",
+  "category": "immediate_crisis",
+  "title": "Micrometeoroid Storm",
+  "description": "A debris front the forward sensors caught too late. The hull is taking hits and the shelters are filling.",
+  "requires_decision": true,
+  "legacy_weight_modifiers": {
+   "wanderers": 1.2
+  },
+  "outcomes": [
+   {
+    "id": "brace_and_seal",
+    "label": "Brace and seal",
+    "description": "Shutter the outer decks and ride it out. Slow, safe, hard on nerves.",
+    "population_delta": {
+     "morale": -0.06,
+     "stability": 0.03
+    },
+    "ship_delta": {
+     "hull_integrity": -0.03
+    },
+    "log": "The ship shuttered its outer decks and rode the storm out, scarred but whole."
+   },
+   {
+    "id": "burn_around",
+    "label": "Burn around it",
+    "description": "Spend fuel to steer clear. The schedule slips; the hull survives.",
+    "resource_delta": {
+     "energy": -350
+    },
+    "ship_delta": {
+     "fuel": -0.08,
+     "hull_integrity": -0.01
+    },
+    "log": "A hard burn carried the ship clear of the debris front, at the cost of the fuel budget."
+   },
+   {
+    "id": "trust_the_deflectors",
+    "label": "Run the gauntlet at speed",
+    "description": "Neither brace nor go around. Hold course and speed and trust the engineering bay's deflectors to shrug the front aside — fast through it, betting the ship's own systems against the debris.",
+    "ship_delta": {
+     "hull_integrity": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.08
+     }
+    ],
+    "population_delta": {
+     "unity": 0.03,
+     "adaptation": 0.02
+    },
+    "log": "The ship held course and let the deflectors earn their keep, punching through the debris front at speed. The hull came through nearly clean — but the strain told on the engineering bay, its emitters scorched and pitted, a bill deferred to the next drydock. The crew, who had braced for worse, walked a little taller for a while."
+   }
+  ],
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "flame_reads_a_trial",
+    "requires_dominant_faction": "first_flame",
+    "description_add": "The Keepers of the First Flame have named the storm a trial — a fire sent to temper the faithful — and the decks go grim and unbroken into it, singing.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.03,
+     "morale": -0.02
+    },
+    "log": "Under the Keepers, the ship met the storm as scripture met fire — grimly, together, certain it meant something. The debris did not care, but the people came through it harder and more one thing than they went in."
+   }
+  ]
+ },
+ {
+  "id": "coolant_breach",
+  "category": "immediate_crisis",
+  "title": "Coolant Breach",
+  "description": "A coolant line has ruptured in the reactor annex. Every minute of delay is a degree the core will not forgive.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "vent_the_annex",
+    "label": "Vent the annex",
+    "description": "Blow the section to space. The core is saved; the annex crew are not all accounted for.",
+    "population_delta": {
+     "count": -20,
+     "morale": -0.1,
+     "unity": 0.02
+    },
+    "log": "The annex was vented to save the core. The memorial wall grew by a column."
+   },
+   {
+    "id": "manual_patch",
+    "label": "Order a manual patch",
+    "description": "Send engineers in with what they have. Expensive, and not without risk.",
+    "resource_delta": {
+     "minerals": -120,
+     "credits": -150
+    },
+    "ship_delta": {
+     "hull_integrity": 0.02
+    },
+    "long_term_consequences": [
+     "scarred_reactor"
+    ],
+    "log": "Engineers patched the breach by hand. The reactor runs, and runs hot."
+   }
+  ],
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "ascension_feels_no_dread",
+    "requires_dominant_faction": "ascension_circle",
+    "description_add": "The Ascension Circle work the breach without the fear that slows other hands — augmented reflexes, no panic, a cold competence that saves lives and unsettles the ones it saves.",
+    "population_delta": {
+     "morale": 0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The Circle handled the breach with a speed and a calm the unaugmented could not match and did not quite trust — fewer dead, and a quiet afterward in which the ship wondered, again, how much like the founders its saviors still were."
+   },
+   {
+    "id": "breach_in_a_worn_bay",
+    "condition_below": [
+     {
+      "id": "engineering_bay",
+      "below": 0.4
+     }
+    ],
+    "description_add": "And the reactor annex is already half-derelict — the tools worn, the diagnostics half-blind, every second of the response fought through a bay that can barely keep itself running.",
+    "population_delta": {
+     "count": -10,
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The breach hit a bay too worn to answer it cleanly, and the response was a shambles of borrowed tools and guesswork that cost more lives and more of the bay than a sound ship would ever have paid."
+   }
+  ]
+ },
+ {
+  "id": "hull_fracture",
+  "category": "immediate_crisis",
+  "title": "The Slow Crack",
+  "description": "A hairline fracture is walking its way across a spine frame. It is not urgent yet. 'Yet' is doing a great deal of work in that sentence.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "reinforce_now",
+    "label": "Reinforce it now",
+    "description": "Pull minerals and crews to brace the frame before it spreads.",
+    "resource_delta": {
+     "minerals": -200
+    },
+    "ship_delta": {
+     "hull_integrity": 0.06
+    },
+    "log": "The spine frame was braced before the crack could vote on the matter."
+   },
+   {
+    "id": "monitor_it",
+    "label": "Monitor and defer",
+    "description": "Sensor it, log it, spend nothing. A problem for a later council.",
+    "population_delta": {
+     "morale": 0.02
+    },
+    "long_term_consequences": [
+     "deferred_maintenance"
+    ],
+    "ship_delta": {
+     "hull_integrity": -0.02
+    },
+    "log": "The crack was catalogued and left to grow. It will keep its appointment."
+   }
+  ],
+  "family": "engineering"
+ },
+ {
+  "id": "reactor_scram",
+  "category": "immediate_crisis",
+  "title": "Reactor Scram",
+  "description": "The core dropped its rods on an automatic fault. The ship runs on batteries now, and everyone can hear the silence where the hum should be.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "cold_restart",
+    "label": "Cold restart by the book",
+    "description": "Slow, safe, hours in the dark.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.03
+    },
+    "log": "The core came back on a careful cold restart. The dark was long and the coffee ran out."
+   },
+   {
+    "id": "hot_override",
+    "label": "Override and hot-restart",
+    "description": "Fast, and the fault might still be there.",
+    "ship_delta": {
+     "hull_integrity": -0.02
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "long_term_consequences": [
+     "scarred_reactor"
+    ],
+    "log": "The engineers hot-restarted the core over its own objections. It runs; it grumbles."
+   },
+   {
+    "id": "limp_home",
+    "label": "Scram for good — turn back",
+    "description": "The core won't be trusted again. Cut the mission and limp home on what power remains.",
+    "resource_delta": {
+     "energy": -500
+    },
+    "population_delta": {
+     "morale": -0.06
+    },
+    "force_return": true,
+    "log": "The council will not gamble the ship on a scarred core. The mission is cut short — the long road home begins on battery and prayer."
+   }
+  ],
+  "family": "engineering"
+ },
+ {
+  "id": "debris_lattice",
+  "category": "immediate_crisis",
+  "title": "The Snare",
+  "description": "The ship has run into a lattice of old orbital debris — cables, panels, the bones of something that failed here. It is fouling the forward sensors and worse.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "cut_free",
+    "label": "Cut free",
+    "description": "Send crews out to clear it by hand. Slow, and exposed.",
+    "resource_delta": {
+     "energy": -150
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.03
+    },
+    "log": "The debris lattice was cut away over three shifts of dangerous work. The forward array sees again — and the crews dragged back a slab of reinforced prow-plate, too big to fit in the field but worth stowing for the next drydock.",
+    "grant_component": "armored_prow"
+   },
+   {
+    "id": "power_through",
+    "label": "Power through",
+    "description": "Push forward and let the hull take what it takes.",
+    "ship_delta": {
+     "hull_integrity": -0.05
+    },
+    "log": "The ship shouldered through the snare and came out the other side scored and free."
+   }
+  ],
+  "family": "engineering"
+ },
+ {
+  "id": "power_cascade",
+  "category": "immediate_crisis",
+  "title": "The Cascade",
+  "description": "One tripped breaker became ten. Half the ship is dark and the load-balancing computer is asking the council a question it was built to answer itself.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "shed_load",
+    "label": "Shed the load",
+    "description": "Cut non-essential decks to save the core grid.",
+    "population_delta": {
+     "morale": -0.04,
+     "stability": 0.04
+    },
+    "log": "Whole decks went dark to save the grid. People learned which of their comforts were negotiable."
+   },
+   {
+    "id": "rebalance",
+    "label": "Rebalance by hand",
+    "description": "Spend parts and hours coaxing the grid back whole.",
+    "resource_delta": {
+     "minerals": -100,
+     "energy": -200
+    },
+    "ship_delta": {
+     "life_support": 0.02
+    },
+    "log": "Engineers rebalanced the grid by hand, deck by deck, until the lights came back on together."
+   }
+  ],
+  "family": "engineering"
+ },
+ {
+  "id": "aging_infrastructure",
+  "category": "generational_challenge",
+  "title": "The Debt Comes Due",
+  "description": "The maintenance the founders deferred and the last three generations ignored has all come due in the same decade. Something must be chosen, and something let go.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "overhaul",
+    "label": "Fund a full overhaul",
+    "description": "Pay the whole debt at once. It hurts now or later.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -300
+    },
+    "ship_delta": {
+     "hull_integrity": 0.05,
+     "life_support": 0.03
+    },
+    "log": "The ship paid its inherited maintenance debt in full. The treasury is lighter; the ship will outlast the council that paid."
+   },
+   {
+    "id": "patch_and_pray",
+    "label": "Patch what fails",
+    "description": "Fix only what breaks. Cheaper, and a wager.",
+    "ship_delta": {
+     "life_support": -0.03
+    },
+    "long_term_consequences": [
+     "deferred_maintenance"
+    ],
+    "log": "The ship patched only what failed and left the rest to the next generation, as had every generation before."
+   }
+  ],
+  "family": "engineering"
+ },
+ {
+  "id": "coolant_freeze",
+  "category": "immediate_crisis",
+  "title": "The Freeze",
+  "description": "A coolant line froze and split where the ship runs coldest. If the crack spreads to the main loop, a whole section goes dark.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "bleed_the_line",
+    "label": "Bleed the line",
+    "description": "Purge and reroute before it spreads. Costs power and hours.",
+    "resource_delta": {
+     "energy": -180
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The frozen line was bled and rerouted before the crack could reach the main loop. Cold work, cleanly done."
+   },
+   {
+    "id": "seal_the_section",
+    "label": "Seal the section",
+    "description": "Close it off and lose the deck rather than risk the loop.",
+    "ship_delta": {
+     "life_support": -0.03
+    },
+    "population_delta": {
+     "morale": -0.04
+    },
+    "log": "The frozen section was sealed off and abandoned. The main loop is safe; the ship is one deck smaller."
+   }
+  ],
+  "family": "engineering"
+ },
+ {
+  "id": "the_tended_flame",
+  "category": "legacy_moment",
+  "title": "The Tended Flame",
+  "description": "The Keepers of the First Flame hold the ship's oldest reactor sacred. When it needs invasive repair, they ask that it be honored with ritual first — and the ritual takes time the fault may not allow.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_dominant_faction": "first_flame",
+  "outcomes": [
+   {
+    "id": "honor_the_rite",
+    "label": "Honor the rite first",
+    "description": "Let the Keepers tend the flame their way. The engineers wait.",
+    "ship_delta": {
+     "hull_integrity": -0.05
+    },
+    "population_delta": {
+     "unity": 0.07,
+     "legacy_loyalty": 0.06,
+     "morale": 0.03
+    },
+    "log": "The Keepers sang the reactor through its repair, and the work went slower and the ship held together in spirit if not in schedule."
+   },
+   {
+    "id": "engineers_first",
+    "label": "Send the engineers in now",
+    "description": "The fault won't wait for hymns.",
+    "ship_delta": {
+     "hull_integrity": 0.04,
+     "spare_parts": -3
+    },
+    "population_delta": {
+     "unity": -0.06,
+     "legacy_loyalty": -0.05,
+     "stability": 0.03
+    },
+    "log": "The engineers went in over the Keepers' objections. The reactor was saved and a sacrament was broken, and the First Flame did not forget."
+   }
+  ]
+ },
+ {
+  "id": "the_last_engineer",
+  "category": "immediate_crisis",
+  "title": "The Last Engineer",
+  "description": "The one aging specialist who truly understands the reactor is failing, and no one has been trained to take her place. What she knows will die with her unless the ship acts now.",
+  "requires_decision": true,
+  "family": "engineering",
+  "knowledge_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "apprentice_now",
+    "label": "Pull apprentices to her side",
+    "description": "Take hands off other work and sit them at her bench while there is time.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.35
+     }
+    ],
+    "log": "For her last months the old engineer taught without rest, and three apprentices carried her diagrams like scripture. The knowledge survived the funeral."
+   },
+   {
+    "id": "let_it_lapse",
+    "label": "Let the work go on without her",
+    "description": "There is no one to spare. Hope the machines hold and the manuals suffice.",
+    "population_delta": {
+     "morale": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": -0.15,
+      "condition": -0.05
+     }
+    ],
+    "log": "The last engineer died with her understanding intact and untransferred. The reactor still ran — for now — tended by people who no longer knew quite why it worked."
+   }
+  ]
+ },
+ {
+  "id": "coolant_loop_rupture",
+  "category": "immediate_crisis",
+  "title": "Coolant Loop Rupture",
+  "description": "A primary coolant loop lets go in the engineering bay, scalding two decks and warping the module's frame. It can be patched fast and dirty, or slow and right.",
+  "requires_decision": true,
+  "family": "engineering",
+  "phases": [
+   "travel",
+   "operation",
+   "return"
+  ],
+  "outcomes": [
+   {
+    "id": "fast_patch",
+    "label": "Patch it fast",
+    "description": "Seal it and move on. The bay will carry the scar.",
+    "ship_delta": {
+     "spare_parts": -3
+    },
+    "population_delta": {
+     "count": -8
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.12
+     }
+    ],
+    "log": "The rupture was sealed within the hour and the bay never quite ran true again, its frame subtly bent, its tolerances forever a little off."
+   },
+   {
+    "id": "proper_rebuild",
+    "label": "Rebuild it properly",
+    "description": "Strip the loop and do it right, at real cost.",
+    "resource_delta": {
+     "minerals": -200,
+     "credits": -400
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "count": -8,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.02
+     }
+    ],
+    "log": "The crew tore the coolant loop down to the frame and rebuilt it clean. It cost a fortune in parts and the bay came back nearly whole."
+   }
+  ]
+ },
+ {
+  "id": "the_empty_lockers",
+  "category": "generational_challenge",
+  "title": "The Empty Lockers",
+  "description": "The spare-parts lockers are bare and the ship still has centuries to run. The machinists want to set up a foundry to make their own — at a cost in metal and hands.",
+  "requires_decision": true,
+  "family": "engineering",
+  "spare_parts_below": 20,
+  "outcomes": [
+   {
+    "id": "build_the_foundry",
+    "label": "Build the foundry",
+    "description": "Turn a hold into a machine shop and mine the cargo for feedstock.",
+    "resource_delta": {
+     "minerals": -300,
+     "credits": -400
+    },
+    "ship_delta": {
+     "spare_parts": 40
+    },
+    "population_delta": {
+     "adaptation": 0.05,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.08
+     }
+    ],
+    "log": "A cargo hold became a foundry, and the ship learned to feed its own repairs. The lockers filled again with parts stamped in the machinists' own dies."
+   },
+   {
+    "id": "ration_the_parts",
+    "label": "Ration what's left",
+    "description": "Hoard the last parts for true emergencies and let the rest wear.",
+    "ship_delta": {
+     "hull_integrity": -0.06
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.08
+     }
+    ],
+    "log": "The last parts went under lock and key. Small faults went unfixed and compounded, and the ship carried a growing debt of deferred repair."
+   }
+  ]
+ },
+ {
+  "id": "the_idle_hull",
+  "category": "immediate_crisis",
+  "title": "The Idle Hull",
+  "description": "A ship parked for centuries suffers what a moving one never does — seals set, bearings seize, whole systems forget their purpose from disuse. The idle hull is quietly rotting at anchor.",
+  "requires_decision": true,
+  "family": "engineering",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "long_station"
+  ],
+  "outcomes": [
+   {
+    "id": "cycle_the_systems",
+    "label": "Run everything on a duty cycle",
+    "description": "Spend parts and hands keeping every system exercised.",
+    "resource_delta": {
+     "credits": -300
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.05
+     }
+    ],
+    "log": "The engineers put the whole idle ship on a duty cycle, waking each system in turn so nothing seized. It cost parts and vigilance and it kept the hull from rotting at anchor."
+   },
+   {
+    "id": "let_it_sleep",
+    "label": "Let the unused systems sleep",
+    "description": "Power down what the camp doesn't need and accept the rot.",
+    "ship_delta": {
+     "hull_integrity": -0.08
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.1
+     },
+     {
+      "id": "life_support_habitat",
+      "condition": -0.06
+     }
+    ],
+    "log": "The camp shut down every system it wasn't using, and the sleeping parts of the ship set and seized in the cold. Waking them later would be its own long ordeal."
+   }
+  ]
+ },
+ {
+  "id": "the_covenant_workshops",
+  "category": "generational_challenge",
+  "title": "The Covenant's Workshops",
+  "description": "With the Steel Covenant ascendant, the machinists want half the education decks turned over to workshops — more apprentices at the bench, fewer at the books. Build now, they say; philosophize later.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_dominant_faction": "steel_covenant",
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "give_them_the_decks",
+    "label": "Give them the decks",
+    "description": "Workshops over classrooms. Let the ship become a forge.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "cultural_drift": 0.04,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.15,
+      "condition": 0.06
+     },
+     {
+      "id": "education_culture",
+      "condition": -0.1
+     }
+    ],
+    "log": "The Covenant took the education decks and rang them with hammers. The engineering bays had never run better; the archives and the classrooms gathered a generation's dust."
+   },
+   {
+    "id": "keep_the_classrooms",
+    "label": "Keep the classrooms",
+    "description": "A ship is more than its machine shops. Hold the balance.",
+    "population_delta": {
+     "stability": 0.04,
+     "legacy_loyalty": 0.04,
+     "morale": -0.03
+    },
+    "log": "The council kept the classrooms open over the Covenant's grumbling. The apprentices split their days between bench and book, and nothing was built quite as fast."
+   }
+  ]
+ },
+ {
+  "id": "the_breath_keepers",
+  "category": "immediate_crisis",
+  "title": "The Breath Keepers",
+  "description": "The atmosphere plant runs on rote now — the last technicians who truly understood the scrubber chemistry are gone, and the current keepers follow checklists they cannot explain. A drift in the CO2 numbers has no one who knows why.",
+  "requires_decision": true,
+  "family": "engineering",
+  "knowledge_below": [
+   {
+    "id": "life_support_habitat",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "reverse_engineer_it",
+    "label": "Tear it down and relearn it",
+    "description": "Strip the plant to first principles and rebuild the understanding.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "ship_delta": {
+     "life_support": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "knowledge": 0.35
+     }
+    ],
+    "log": "The keepers pulled the whole atmosphere plant apart and learned it again from the metal up. The air thinned dangerously for a season, then came back cleaner than it had in generations."
+   },
+   {
+    "id": "follow_the_checklist",
+    "label": "Trust the checklists",
+    "description": "Don't touch what you don't understand. Follow the steps and hope.",
+    "population_delta": {
+     "count": -25,
+     "morale": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.08,
+      "knowledge": -0.05
+     }
+    ],
+    "log": "The keepers followed the old checklists by faith and buried the ones the bad air took. The plant kept running, a black box no living soul could open."
+   }
+  ]
+ },
+ {
+  "id": "the_dimming",
+  "category": "immediate_crisis",
+  "title": "The Dimming",
+  "description": "The reactor's output has sagged and the power budget no longer covers the whole ship. Something must be browned out — and the choice of what to starve of current says who the ship thinks it is.",
+  "requires_decision": true,
+  "family": "engineering",
+  "energy_below": 1200,
+  "outcomes": [
+   {
+    "id": "dim_the_habitats",
+    "label": "Brown out the habitats",
+    "description": "Keep the machines fed; let the living decks go dim and cold.",
+    "resource_delta": {
+     "energy": 400
+    },
+    "population_delta": {
+     "morale": -0.07,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.06
+     }
+    ],
+    "log": "The living decks went to half-light and the machine spaces stayed bright. The ship kept working and its people shivered through a long grey season."
+   },
+   {
+    "id": "dim_the_industry",
+    "label": "Brown out the workshops",
+    "description": "Keep the people warm; let production stall.",
+    "resource_delta": {
+     "energy": 300,
+     "credits": -400
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The workshops went dark to keep the habitats lit. The people stayed warm and fed and the quotas fell to nothing until the reactor could be coaxed back."
+   }
+  ]
+ },
+ {
+  "id": "the_failing_air",
+  "category": "immediate_crisis",
+  "title": "The Failing Air",
+  "description": "The habitat plant has been let go too long and now it is failing in earnest — scrubbers clogging, seals weeping, the air itself thinning deck by deck. This is the kind of neglect that empties a ship.",
+  "requires_decision": true,
+  "family": "engineering",
+  "condition_below": [
+   {
+    "id": "life_support_habitat",
+    "below": 0.35
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "all_hands_on_the_plant",
+    "label": "All hands to the plant",
+    "description": "Stop everything. Throw the whole ship at the repair.",
+    "resource_delta": {
+     "credits": -600,
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -12,
+     "life_support": 0.08
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "unity": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.3
+     }
+    ],
+    "log": "Every hand that could hold a wrench turned to the failing plant, and the work went on around the clock until the air came back. The ship stopped breathing shallow and remembered how close it had come."
+   },
+   {
+    "id": "seal_the_worst_decks",
+    "label": "Seal off the worst decks",
+    "description": "Abandon the failing sections; concentrate the good air.",
+    "population_delta": {
+     "count": -60,
+     "morale": -0.08,
+     "stability": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.12
+     }
+    ],
+    "log": "The council sealed the worst-hit decks and pulled everyone into the sound sections, tighter and grimmer than before. The air held for those who made the cut; the sealed corridors kept their silence."
+   }
+  ]
+ },
+ {
+  "id": "the_seized_works",
+  "category": "generational_challenge",
+  "title": "The Seized Works",
+  "description": "The engineering bay has worn down to the point where half its tooling is seized or broken, and the ship's whole capacity to make and mend is choking. Repairs elsewhere are backing up behind a workshop that can barely fix itself.",
+  "requires_decision": true,
+  "family": "engineering",
+  "condition_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_shop",
+    "label": "Rebuild the workshop first",
+    "description": "Fix the thing that fixes everything, whatever it costs.",
+    "resource_delta": {
+     "credits": -500,
+     "minerals": -250
+    },
+    "ship_delta": {
+     "spare_parts": -10
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.3
+     }
+    ],
+    "log": "The crew rebuilt the workshop before anything else, on the old principle that you mend the tools before the work. The backlog eased as the bay came back to life, and the ship could make things again."
+   },
+   {
+    "id": "improvise_repairs",
+    "label": "Improvise around it",
+    "description": "Limp on with hand-tools and ingenuity; save the resources.",
+    "ship_delta": {
+     "hull_integrity": -0.05
+    },
+    "population_delta": {
+     "adaptation": 0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The machinists made do with hand-tools and stubbornness, and the ship kept flying on improvised fixes that mostly held. The bay decayed a little further; the crew got very, very good at making do."
+   }
+  ]
+ },
+ {
+  "id": "the_towline",
+  "category": "immediate_crisis",
+  "title": "The Tow-Line",
+  "description": "Decades into the haul, the main grapple anchor is fatiguing where the dead ship's mass drags hardest. The rig will not last the return as it is. Re-anchor it, or shed some of the prize to save the line.",
+  "requires_decision": true,
+  "family": "engineering",
+  "phases": [
+   "return"
+  ],
+  "requires_charter_tag": [
+   "long_return"
+  ],
+  "outcomes": [
+   {
+    "id": "reanchor_the_tow",
+    "label": "Re-rig the anchor",
+    "description": "Spend the parts and the shift-hours. Keep every tonne on the line.",
+    "resource_delta": {
+     "energy": -250
+    },
+    "ship_delta": {
+     "spare_parts": -50
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.03
+     }
+    ],
+    "log": "The riggers cut a new anchor bed into the spine and walked the tow-line across under load — a month of work no one wants to describe twice. The dead ship rides steady again, and the whole prize is still on the line."
+   },
+   {
+    "id": "cut_partial_tow",
+    "label": "Shed part of the tow",
+    "description": "Cast off the outer holds. A lighter tow is a tow that gets home.",
+    "resource_delta": {
+     "minerals": -600
+    },
+    "ship_delta": {
+     "fuel": 0.05,
+     "hull_integrity": 0.03
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "They cut the derelict's outer holds loose and watched a fortune tumble away into the dark. The line runs easy now and the ship rides light — but the manifest they carry home is the poorer for it, and everyone did the arithmetic."
+   }
+  ]
+ },
+ {
+  "id": "the_forge_and_the_garden",
+  "category": "legacy_moment",
+  "title": "The Forge and the Garden",
+  "description": "The Steel Covenant wants a mid-ship deck stripped and re-plated for a heavy foundry. The Verdant Kin have spent four generations turning that same deck into a living arboretum. Neither will yield it, and the quarrel has stopped being about the deck.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_factions_aboard": [
+   "steel_covenant",
+   "verdant_kin"
+  ],
+  "min_cultural_drift": 0.45,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "partition_the_deck",
+    "label": "Partition the deck between them",
+    "description": "Spend the council's credit brokering a line down the middle. Half foundry, half garden, and a shared grievance.",
+    "resource_delta": {
+     "influence": -30
+    },
+    "population_delta": {
+     "unity": 0.05,
+     "cultural_drift": -0.03
+    },
+    "log": "The council ran a bulkhead down the contested deck — presses on one side, an arbor on the other, a sealed door between that both sides use and neither likes. The ship kept both its makers and its growers, and the credit it cost to keep them."
+   },
+   {
+    "id": "let_the_forge_go",
+    "label": "Let the Covenant found its foundry-world",
+    "description": "The machinists have long wanted a rock of their own to build on. Let them take a lifeboat and go.",
+    "population_delta": {
+     "stability": 0.03,
+     "morale": -0.03
+    },
+    "faction_loss": "settled",
+    "faction_loss_id": "steel_covenant",
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": -0.08,
+      "condition": -0.03
+     }
+    ],
+    "log": "The Steel Covenant took a lifeboat down to a bare metal world and stayed to build. The ship sailed on quieter and lighter — and found, a generation later, that the best of its machinists' craft had walked off the hull with them, and no one left aboard quite remembered how the hard repairs were done."
+   }
+  ]
+ },
+ {
+  "id": "the_recyclers_gambit",
+  "category": "immediate_crisis",
+  "title": "The Recycler's Gambit",
+  "description": "Spare stock has run out, and the reclamation crews have made a proposal the council does not like: there are decks aboard that are not load-bearing — the old chapel, the founders' museum, the memorial arboretum — and they are full of metal and mass the ship could melt down and use.",
+  "requires_decision": true,
+  "family": "engineering",
+  "spare_parts_below": 15,
+  "outcomes": [
+   {
+    "id": "melt_the_shrines",
+    "label": "Feed the shrines to the foundry",
+    "description": "Strip the chapel, the museum, the memorial deck. They are only metal, and metal is what the ship is short of.",
+    "ship_delta": {
+     "spare_parts": 55
+    },
+    "resource_delta": {
+     "minerals": 200
+    },
+    "population_delta": {
+     "morale": -0.06,
+     "cultural_drift": 0.04
+    },
+    "log": "The reclamation crews took the chapel first, then the museum, then the memorial arboretum where the founders' names were grown into the living wall. The ship ate its own shrines and made spars and fittings of them, and was sound of hull and poorer of soul, and did not entirely forgive the necessity."
+   },
+   {
+    "id": "spare_the_shrines",
+    "label": "Hold the line, stay short",
+    "description": "Some mass is not for melting. Make do with less, and keep the places that make the ship more than a machine.",
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.02
+    },
+    "log": "The council refused the foundry its shrines, and the ship stayed short of parts and whole of heart, patching with wire and patience what it could not cast new. The reclamation crews grumbled at the waste of good metal, and the memorial arboretum kept the founders' names another generation."
+   }
+  ]
+ },
+ {
+  "id": "the_aging_outbound",
+  "category": "generational_challenge",
+  "title": "The Aging Out",
+  "description": "Three centuries into a one-way burn, the ship is doing something no ordinary voyage asks of it: growing old with nowhere to refit. A normal charter renews its worn systems at the destination; this one must nurse every module the whole way there, on nothing but what it carried and what it can strip from itself.",
+  "requires_decision": true,
+  "family": "engineering",
+  "requires_charter_tag": [
+   "outbound_push"
+  ],
+  "phases": [
+   "travel"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "cannibalize_redundancy",
+    "label": "Strip redundancy to keep the core fresh",
+    "description": "Feed the ship's spare systems to its essential ones. Arrive with no margin, but arrive with the vitals sound.",
+    "ship_delta": {
+     "spare_parts": -40
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.05
+     },
+     {
+      "id": "life_support_habitat",
+      "condition": 0.04
+     }
+    ],
+    "log": "The crews stripped the ship's every redundancy to keep the engineering bay and the habitat plant sound — arriving, eventually, with the vitals strong and nothing whatsoever held back against the next failure. It was the right call for a ship that could not refit, and it left her with no second chances in the hold."
+   },
+   {
+    "id": "let_the_margins_fail",
+    "label": "Let the margins fail, arrive threadbare",
+    "description": "Keep the reserves; let the non-essential systems wear out and go dark. The ship will reach the target worn thin but with its stores intact.",
+    "ship_delta": {
+     "spare_parts": 10
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.05
+     },
+     {
+      "id": "security",
+      "condition": -0.04
+     }
+    ],
+    "log": "The council chose to hoard its reserves and let the ship wear where it could stand to — darkened workshops, a hollowed watch, systems left to fail one by one across the long burn. The stores stayed full and the ship arrived threadbare, aged and thin, having spent its own condition to keep its margins."
+   }
+  ]
+ },
+ {
+  "id": "the_reactor_creep",
+  "category": "generational_challenge",
+  "title": "The Reactor Creep",
+  "description": "The engineering bay has worn far enough that the reactor's radiation shielding is no longer what the founders certified. It is not failing — not yet — but the margins are gone, and the reactor techs have brought the council a choice they would rather not have made: reline the shielding now, at real cost, or run the core a little hot and defer the bill.",
+  "requires_decision": true,
+  "family": "engineering",
+  "condition_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.55
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "reline_the_shielding",
+    "label": "Reline the shielding now",
+    "description": "Spend the parts and the downtime to bring the shielding back to spec. Dull, expensive, and exactly what the founders would have done.",
+    "resource_delta": {
+     "credits": -350,
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -18
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.12
+     }
+    ],
+    "log": "The reactor techs relined the shielding to the founders' spec — a season of downtime and a fortune in parts, and the margins were back. No one will ever know what it prevented, which is the whole nature of the work."
+   },
+   {
+    "id": "run_it_hot",
+    "label": "Run the core hot, defer the bill",
+    "description": "Skip the reline, run the reactor a little harder to keep the ship on schedule, and let a later generation deal with the thin shielding.",
+    "resource_delta": {
+     "energy": 350
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "long_term_consequences": [
+     "reactor_run_hot"
+    ],
+    "log": "The council ran the core hot rather than pay for the reline, and the ship kept its schedule and its power budget and its good mood, and the thin shielding leaked a little more each year into decks no one was measuring, against an account that would come due in someone else's watch."
+   }
+  ]
+ }
+]
