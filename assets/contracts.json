@@ -1634,5 +1634,104 @@
     "at_year": 260
    }
   ]
+ },
+ {
+  "id": "the_seedbearers_writ",
+  "name": "The Seedbearers' Writ",
+  "objective": "colonization",
+  "description": "A seedworld consortium will entrust the greening of a barren candidate world to one hull only: the ship that carries the Verdant Kin, whose gardeners alone are trusted to coax a living biosphere out of dead rock across the generations it takes.",
+  "target_duration_years": 420,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 120
+   },
+   {
+    "kind": "operation",
+    "years": 210
+   },
+   {
+    "kind": "return",
+    "years": 90
+   }
+  ],
+  "objective_target": 40000,
+  "objective_unit": "hectares greened",
+  "milestones": [
+   {
+    "id": "arrival",
+    "name": "Candidate world reached",
+    "progress_threshold": 0.05
+   },
+   {
+    "id": "first_bloom",
+    "name": "First self-sustaining bloom",
+    "progress_threshold": 0.4,
+    "reward": {
+     "influence": 50
+    }
+   },
+   {
+    "id": "stable_biosphere",
+    "name": "Biosphere holding unaided",
+    "progress_threshold": 0.85
+   },
+   {
+    "id": "world_certified",
+    "name": "Living world certified",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.25,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.4,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "famine",
+   "succession_crisis",
+   "cultural_drift"
+  ],
+  "reward": {
+   "credits": 7200,
+   "influence": 180,
+   "food": 2000
+  },
+  "min_renown": 100,
+  "tags": [
+   "garden",
+   "long_station"
+  ],
+  "beat_families": [
+   "biology_medical"
+  ],
+  "requires_faction_aboard": [
+   "verdant_kin"
+  ]
  }
 ]

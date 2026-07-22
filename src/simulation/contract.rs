@@ -59,6 +59,18 @@ pub struct ContractProgress {
     pub completed: Option<(f32, SuccessLevel)>,
 }
 
+/// Whether a charter's in-world availability gate is met right now (content-depth
+/// charters round 12): every people it names is aboard. The charter-level parallel
+/// to the outcome gates — checked by both the writ board (to lock/label it) and the
+/// select action (so a locked writ can't be put under consideration). `min_renown`
+/// stays a separate, cross-campaign gate; this reads the living roster.
+pub fn meets_in_world_gate(sim: &SimState, template: &ContractTemplate) -> bool {
+    template
+        .requires_faction_aboard
+        .iter()
+        .all(|id| sim.is_faction_aboard(id))
+}
+
 /// Instantiate an active contract from a template at the current sim state.
 pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveContract {
     ActiveContract {
@@ -281,6 +293,44 @@ mod tests {
     use super::*;
     use crate::data::contracts::MetricKind;
     use crate::data::GameData;
+
+    #[test]
+    fn an_in_world_charter_is_offered_only_while_its_people_are_aboard() {
+        // Content-depth charters round 12: the in-world availability gate. The
+        // Seedbearers' Writ is offered only to a ship carrying the Verdant Kin —
+        // it appears when they are aboard and vanishes if they leave, distinct
+        // from the cross-campaign renown gate.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let template = data.contracts.get("the_seedbearers_writ").unwrap();
+        assert_eq!(template.requires_faction_aboard, vec!["verdant_kin"]);
+
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 47, &picks);
+
+        // A ship without the Verdant Kin is not offered the writ…
+        let fs = |id: &str| FactionState {
+            faction_id: id.to_string(),
+            members: 500,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        };
+        sim.factions = vec![fs("steel_covenant"), fs("hearth_union")];
+        assert!(
+            !meets_in_world_gate(&sim, template),
+            "a ship without the gardeners is not trusted with the greening"
+        );
+        // …but a ship that carries them is.
+        sim.factions.push(fs("verdant_kin"));
+        assert!(
+            meets_in_world_gate(&sim, template),
+            "carrying the Verdant Kin unlocks the seedworld writ"
+        );
+        // A charter with no in-world gate is always offered.
+        let ungated = data.contracts.get("founding_colony").unwrap();
+        assert!(meets_in_world_gate(&sim, ungated));
+    }
 
     #[test]
     fn a_double_hop_reads_a_different_line_on_its_second_departure() {

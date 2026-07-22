@@ -329,7 +329,28 @@ pub(crate) fn draw_charter_cards(
         let Some(template) = ctx.data.contracts.get(&id) else {
             continue;
         };
-        let locked = template.min_renown > renown;
+        // A charter locks on either the cross-campaign renown gate or the in-world
+        // gate (content-depth charters round 12: the peoples the writ needs aboard).
+        // The label names whichever bars it, so the board reads honestly.
+        let renown_locked = template.min_renown > renown;
+        let in_world_ok = crate::simulation::contract::meets_in_world_gate(ctx.sim, template);
+        let locked = renown_locked || !in_world_ok;
+        let lock_label = if renown_locked {
+            format!("LOCKED · RENOWN {}", template.min_renown)
+        } else {
+            let needed: Vec<&str> = template
+                .requires_faction_aboard
+                .iter()
+                .map(|fid| {
+                    ctx.data
+                        .factions
+                        .get(fid)
+                        .map(|f| f.name.as_str())
+                        .unwrap_or(fid.as_str())
+                })
+                .collect();
+            format!("LOCKED · NEEDS {}", needed.join(", ").to_uppercase())
+        };
         let selected = ctx.sim.selected_charter.as_deref() == Some(id.as_str());
         let col = (i % 2) as f32;
         let row = (i / 2) as f32;
@@ -388,10 +409,7 @@ pub(crate) fn draw_charter_cards(
                 TextStyle::new(11.0, term::dim()).params(),
             );
             let (status, status_color) = if locked {
-                (
-                    format!("LOCKED · RENOWN {}", template.min_renown),
-                    term::faint(),
-                )
+                (lock_label.clone(), term::faint())
             } else if selected {
                 ("[ SELECTED ]".to_owned(), term::accent())
             } else {
@@ -433,12 +451,7 @@ pub(crate) fn draw_charter_cards(
         );
         let btn = Rect::new(card.right() - 170.0, card.y + 24.0, 156.0, 30.0);
         if locked {
-            term_button(
-                btn,
-                &format!("LOCKED · RENOWN {}", template.min_renown),
-                false,
-                mouse,
-            );
+            term_button(btn, &lock_label, false, mouse);
         } else {
             let label = if selected { "SELECTED" } else { "SELECT" };
             if term_button(btn, label, true, mouse) {

@@ -150,6 +150,14 @@ pub struct ContractTemplate {
     /// its reward). 0 = an ordinary route.
     #[serde(default)]
     pub hazard: f32,
+    /// In-world availability gate (content-depth charters round 12): a writ offered
+    /// only while these founding peoples are aboard *right now* — the charter-level
+    /// parallel to the outcome gates, and the in-world twin of `min_renown`'s
+    /// cross-campaign fame. So a mission a people is uniquely trusted with or called
+    /// to appears only on a ship that carries them, and vanishes if they leave.
+    /// Empty = offered to any ship (subject to renown).
+    #[serde(default)]
+    pub requires_faction_aboard: Vec<String>,
 }
 
 /// One scripted, time-fixed beat of a charter (content-depth charters round 9):

@@ -236,7 +236,13 @@ impl Game {
                     (&mut self.state, self.data.contracts.get(&id))
                 {
                     let sim = &mut gameplay.sim;
-                    if sim.contract.is_none() && renown >= template.min_renown {
+                    // Renown (cross-campaign) *and* the in-world gate (content-depth
+                    // charters round 12: the peoples the writ needs aboard) must
+                    // both clear before a charter can be put under consideration.
+                    if sim.contract.is_none()
+                        && renown >= template.min_renown
+                        && crate::simulation::contract::meets_in_world_gate(sim, template)
+                    {
                         sim.selected_charter = Some(id.clone());
                         sim.push_log(format!("Charter under consideration: {}", template.name));
                     }

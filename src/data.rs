@@ -1328,7 +1328,23 @@ mod tests {
                 "charter '{id}' hazard {} out of range [0, 1]",
                 c.hazard
             );
+            // Content-depth charters round 12: an in-world availability gate must
+            // name real founding peoples, or the writ could never be offered.
+            for fid in &c.requires_faction_aboard {
+                assert!(
+                    data.factions.get(fid).is_some(),
+                    "charter '{id}' requires unknown faction '{fid}' aboard"
+                );
+            }
         }
+        // Content-depth charters round 12: at least one charter should key on an
+        // in-world gate, so the mechanic is exercised.
+        assert!(
+            data.contracts
+                .iter()
+                .any(|(_, c)| !c.requires_faction_aboard.is_empty()),
+            "some charter should gate on a people being aboard"
+        );
         // Content-depth round 5: the dead-air backstop needs a pool to draw from
         // when it is switched on, or a forced beat has nothing to force.
         if sk.dead_air_years > 0 {
