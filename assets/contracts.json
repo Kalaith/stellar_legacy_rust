@@ -90,7 +90,16 @@
    "colony",
    "long_haul"
   ],
-  "objective_subsystem": "agriculture"
+  "objective_subsystem": "agriculture",
+  "completion_reward": {
+   "subsystem_deltas": [
+    {
+     "id": "agriculture",
+     "knowledge": 0.08
+    }
+   ],
+   "log": "Feeding a colony into being taught the ship's gardeners lessons a mere voyage never could, and the agriculture decks are the wiser for it."
+  }
  },
  {
   "id": "deep_vein_survey",
@@ -178,7 +187,16 @@
    "deep_space"
   ],
   "completion_consequence": "karst_veins_proven",
-  "objective_subsystem": "engineering_bay"
+  "objective_subsystem": "engineering_bay",
+  "completion_reward": {
+   "subsystem_deltas": [
+    {
+     "id": "engineering_bay",
+     "knowledge": 0.05
+    }
+   ],
+   "log": "Three centuries of threading veins and reading rock left the survey crews sharper than they began — a working knowledge of extraction the engineering bay keeps."
+  }
  },
  {
   "id": "veiled_expanse_survey",
@@ -1546,7 +1564,16 @@
     "at_year": 180
    }
   ],
-  "objective_subsystem": "education_culture"
+  "objective_subsystem": "education_culture",
+  "completion_reward": {
+   "subsystem_deltas": [
+    {
+     "id": "education_culture",
+     "knowledge": 0.1
+    }
+   ],
+   "log": "The ship dived into a dying star and came out with a hold of data no archive in the reachable dark could match — the education and culture stores enriched beyond price by what the crossing saw."
+  }
  },
  {
   "id": "the_sunset_relief",
@@ -1754,7 +1781,17 @@
   "requires_faction_aboard": [
    "verdant_kin"
   ],
-  "objective_subsystem": "agriculture"
+  "objective_subsystem": "agriculture",
+  "completion_reward": {
+   "subsystem_deltas": [
+    {
+     "id": "agriculture",
+     "knowledge": 0.1,
+     "condition": 0.05
+    }
+   ],
+   "log": "The Verdant Kin coaxed a living world out of dead rock, and came away having learned things about growing that no ship's garden ever teaches — a depth of green craft the agriculture decks will carry forever."
+  }
  },
  {
   "id": "the_karst_works",
@@ -1855,6 +1892,16 @@
   "forbidden_consequence": [
    "broke_a_bargain"
   ],
-  "objective_subsystem": "engineering_bay"
+  "objective_subsystem": "engineering_bay",
+  "completion_reward": {
+   "subsystem_deltas": [
+    {
+     "id": "engineering_bay",
+     "knowledge": 0.12,
+     "condition": 0.05
+    }
+   ],
+   "log": "The great works at the Karst Belt were raised, run, and certified, and the crews that built them came home masters of a craft the founders had only sketched — large-scale extraction learned in the doing, a competence now written into the engineering bay for good."
+  }
  }
 ]

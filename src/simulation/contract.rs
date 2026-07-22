@@ -82,6 +82,31 @@ pub fn meets_in_world_gate(sim: &SimState, template: &ContractTemplate) -> bool 
             .any(|tag| sim.consequences.contains(tag))
 }
 
+/// Grant a charter's completion reward (content-depth charters round 15): the
+/// lasting capability a mission leaves the ship — chiefly subsystem boons kept
+/// across voyages — applied once when the charter is seen through to full term.
+/// Returns the narration line (empty if the reward is empty). No-op for an ordinary
+/// charter.
+pub fn apply_completion_reward(sim: &mut SimState, template: &ContractTemplate) -> Option<String> {
+    let reward = &template.completion_reward;
+    if reward.is_none() {
+        return None;
+    }
+    sim.resources.apply(&reward.resource);
+    sim.population.apply(&reward.population);
+    for delta in &reward.subsystem_deltas {
+        if let Some(state) = sim.subsystems.get_mut(&delta.id) {
+            state.condition = (state.condition + delta.condition).clamp(0.0, 1.0);
+            state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
+        }
+    }
+    Some(if reward.log.is_empty() {
+        format!("The lessons of {} stay with the ship.", template.name)
+    } else {
+        reward.log.clone()
+    })
+}
+
 /// Instantiate an active contract from a template at the current sim state.
 pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveContract {
     ActiveContract {
@@ -415,6 +440,42 @@ mod tests {
             "the star's reach wears morale and hull faster than a quiet survey \
              (tap {tapped_morale}/{tapped_hull} vs survey {survey_morale}/{survey_hull})"
         );
+    }
+
+    #[test]
+    fn a_completed_charter_leaves_a_lasting_capability() {
+        // Content-depth charters round 15: a mission seen through leaves the ship a
+        // skill it keeps, beyond the pay. The Karst Works masters extraction (an
+        // engineering boon); an ordinary charter leaves nothing.
+        let data = GameData::load().unwrap();
+        let works = data.contracts.get("the_karst_works").unwrap();
+        assert!(
+            !works.completion_reward.is_none(),
+            "the works leave a legacy"
+        );
+
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 77, &picks);
+        // Room to grow (a fresh bay is already near full; start it low to see the lift).
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.5;
+        let before = sim.subsystems["engineering_bay"].knowledge;
+        let line = apply_completion_reward(&mut sim, works);
+        assert!(line.is_some(), "the boon narrates itself");
+        assert!(
+            sim.subsystems["engineering_bay"].knowledge > before,
+            "building the great works masters extraction for good"
+        );
+
+        // A charter with no completion reward changes nothing and says nothing.
+        let ordinary = data
+            .contracts
+            .iter()
+            .map(|(_, c)| c)
+            .find(|c| c.completion_reward.is_none())
+            .expect("some charter leaves no legacy");
+        let k0 = sim.subsystems["engineering_bay"].knowledge;
+        assert!(apply_completion_reward(&mut sim, ordinary).is_none());
+        assert_eq!(sim.subsystems["engineering_bay"].knowledge, k0);
     }
 
     #[test]

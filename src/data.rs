@@ -1473,6 +1473,15 @@ mod tests {
                 "charter '{id}' objective_subsystem names unknown module '{}'",
                 c.objective_subsystem
             );
+            // Content-depth charters round 15: a completion reward's subsystem boons
+            // must name real modules, or the legacy could never land.
+            for delta in &c.completion_reward.subsystem_deltas {
+                assert!(
+                    data.subsystems.get(&delta.id).is_some(),
+                    "charter '{id}' completion_reward names unknown module '{}'",
+                    delta.id
+                );
+            }
         }
         // Content-depth charters round 13: at least one charter should carry a
         // standing route toll, so the mechanic is exercised.

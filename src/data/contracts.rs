@@ -192,6 +192,39 @@ pub struct ContractTemplate {
     /// voyage exists for. Empty = the objective is indifferent to any module's state.
     #[serde(default)]
     pub objective_subsystem: String,
+    /// A lasting boon granted when this charter is seen through to full term
+    /// (content-depth charters round 15): the mission's *legacy*, distinct from its
+    /// pro-rated pay. Building a great extraction works makes the ship's engineers
+    /// permanently better; greening a world deepens its gardeners' craft. Applied in
+    /// the conclude path once, alongside the completion mark. Default (empty) = the
+    /// charter leaves nothing but its pay.
+    #[serde(default)]
+    pub completion_reward: CompletionReward,
+}
+
+/// The lasting capability a charter grants on completion (content-depth charters
+/// round 15): chiefly subsystem boons — a skill the ship keeps across voyages —
+/// with optional resource/population lifts and the line that narrates it.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct CompletionReward {
+    #[serde(default)]
+    pub subsystem_deltas: Vec<crate::data::events::SubsystemDelta>,
+    #[serde(default)]
+    pub resource: ResourceDelta,
+    #[serde(default)]
+    pub population: PopulationDelta,
+    /// Line narrating the boon; empty = a generic line.
+    #[serde(default)]
+    pub log: String,
+}
+
+impl CompletionReward {
+    /// True when the reward grants nothing (an ordinary charter with no legacy).
+    pub fn is_none(&self) -> bool {
+        self.subsystem_deltas.is_empty()
+            && self.resource == ResourceDelta::default()
+            && self.population == PopulationDelta::default()
+    }
 }
 
 /// A charter's standing per-year toll (content-depth charters round 13). Each delta
