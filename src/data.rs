@@ -373,6 +373,17 @@ pub struct FlavorConfig {
     /// rather than empty. Dated by the log itself, indexed by year (no RNG).
     #[serde(default)]
     pub ambient: Vec<String>,
+    /// Ambient lines for a *far-drifted* ship (content-depth voice round 10): once
+    /// cultural drift crosses `ambient_drift_threshold`, the quiet stretches draw
+    /// from this pool instead — the same lived-in texture gone alien, so the log
+    /// itself reflects how far the people have come from the founders. Empty =
+    /// always use `ambient`.
+    #[serde(default)]
+    pub ambient_drifted: Vec<String>,
+    /// Cultural-drift level at or past which quiet stretches read from
+    /// `ambient_drifted`. 0 with a non-empty drifted pool means always drifted.
+    #[serde(default)]
+    pub ambient_drift_threshold: f32,
     /// Years of event-less quiet between ambient lines (0 = ambient off).
     #[serde(default)]
     pub ambient_gap_years: u32,

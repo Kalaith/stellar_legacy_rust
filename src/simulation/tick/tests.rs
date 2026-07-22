@@ -187,6 +187,58 @@ fn a_well_kept_culture_archive_slows_the_cultural_drift_but_not_adaptation() {
 }
 
 #[test]
+fn a_far_drifted_ships_quiet_reads_alien() {
+    // Content-depth voice round 10: the ambient dead-air lines reflect the ship's
+    // identity. Past the drift threshold, a quiet stretch draws from the drifted
+    // pool — the same lived-in texture gone strange — where an early ship's quiet
+    // still reads familiar.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    let gap = data.config.flavor.ambient_gap_years;
+    let threshold = data.config.flavor.ambient_drift_threshold;
+    assert!(
+        gap > 0 && threshold > 0.0 && data.config.flavor.ambient_drifted.len() >= 4,
+        "this test needs the drift-aware ambient pool enabled"
+    );
+
+    let run = |drift: f32| -> Vec<String> {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            6,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.population.cultural_drift = drift;
+        for _ in 0..gap {
+            advance_year(&mut sim, &data);
+        }
+        sim.log.iter().map(|l| l.text.clone()).collect()
+    };
+    let drifted = run(threshold + 0.1);
+    let early = run(0.0);
+    let ambient = &data.config.flavor.ambient;
+    let ambient_drifted = &data.config.flavor.ambient_drifted;
+
+    assert!(
+        drifted.iter().any(|t| ambient_drifted.contains(t)),
+        "a far-drifted ship's quiet reads alien"
+    );
+    assert!(
+        early.iter().any(|t| ambient.contains(t)),
+        "an early ship's quiet reads familiar"
+    );
+    assert!(
+        !early.iter().any(|t| ambient_drifted.contains(t)),
+        "an early ship's quiet is not yet alien"
+    );
+}
+
+#[test]
 fn voyage_drift_scales_by_legacy() {
     let data = GameData::load().unwrap();
     let mut adaptors = SimState::new_campaign(

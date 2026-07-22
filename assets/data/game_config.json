@@ -278,6 +278,16 @@
       "The stars outside have rearranged by degrees no living eye can catch. The ship notes it and flies on.",
       "A quiet year. The ledgers balance, the air holds, and the voyage simply continues, as it has and will."
     ],
+    "ambient_drifted": [
+      "A child asks what a planet felt like underfoot, and no one aboard can answer from memory — only from the archive, which is not the same thing.",
+      "The founders are spoken of the way old worlds speak of gods: real once, certainly, and no longer quite believed in.",
+      "A festival runs its full solemn course. No one living knows what it first commemorated, and no one thinks the worse of it for that.",
+      "The founding log is read aloud on the appointed day in a tongue the founders would need a translator to follow.",
+      "Two keepers argue, gently and for the hundredth time, over which of the old rites were carried from home and which the ship invented and forgot inventing.",
+      "The corridors are quiet. Somewhere a child is taught the names of stars in words the star-namers never used.",
+      "A hand three generations dead left instructions the ship still follows, for reasons the ship no longer remembers and has stopped needing to."
+    ],
+    "ambient_drift_threshold": 0.5,
     "phase_lines": {
       "travel": [
         "Departure burn complete — the ship is underway.",

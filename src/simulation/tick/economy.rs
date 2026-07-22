@@ -208,11 +208,24 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // Deterministic — fires once per `ambient_gap_years` of quiet, indexed by
     // year, no RNG, and never resets the event ramp.
     let fl = &config.flavor;
-    if fl.ambient_gap_years > 0 && !fl.ambient.is_empty() {
+    if fl.ambient_gap_years > 0 {
         let years_since = sim.month_clock.saturating_sub(sim.last_event_month_clock) / 12;
         if years_since > 0 && years_since.is_multiple_of(fl.ambient_gap_years) {
-            let idx = (sim.year() / fl.ambient_gap_years) as usize % fl.ambient.len();
-            sim.push_log(fl.ambient[idx].clone());
+            // A far-drifted ship's quiet reads alien (content-depth voice round 10):
+            // once cultural drift has crossed the threshold, the same lived-in
+            // texture is drawn from the drifted pool — the log reflecting how far
+            // the people have come from the founders.
+            let pool = if !fl.ambient_drifted.is_empty()
+                && sim.population.cultural_drift >= fl.ambient_drift_threshold
+            {
+                &fl.ambient_drifted
+            } else {
+                &fl.ambient
+            };
+            if !pool.is_empty() {
+                let idx = (sim.year() / fl.ambient_gap_years) as usize % pool.len();
+                sim.push_log(pool[idx].clone());
+            }
         }
     }
 
