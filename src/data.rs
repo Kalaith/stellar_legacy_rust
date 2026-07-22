@@ -268,6 +268,17 @@ pub struct FlavorConfig {
     pub succession: Vec<String>,
     /// A new cohort comes of age. Placeholders: `{generation}`, `{births}`.
     pub coming_of_age: Vec<String>,
+    /// A crew member stands down from their post at a generation turnover
+    /// (content-depth voice round 5). Fires once per retiring holder — several a
+    /// generation — so it needs pool variety or it is a repetition tell.
+    /// Placeholder: `{name}`. Empty falls back to the built-in line.
+    #[serde(default)]
+    pub retirement: Vec<String>,
+    /// The dynasty ends with no heir (content-depth voice round 5): the tragic
+    /// counterpart to `homecoming`, indexed by generation. Empty falls back to
+    /// the built-in line so the ending is never blank.
+    #[serde(default)]
+    pub extinction: Vec<String>,
     /// Atmospheric "life aboard" lines surfaced during long event-less stretches
     /// (content-depth voice round 2), so the passing centuries read as lived-in
     /// rather than empty. Dated by the log itself, indexed by year (no RNG).
@@ -521,6 +532,31 @@ mod tests {
         let b = flavor.homecoming_line("complete", 0, 300, 10);
         assert_eq!(a, b, "same index replays the same line");
         assert!(flavor.homecoming_line("triumphant", 0, 300, 10).is_none());
+    }
+
+    #[test]
+    fn generational_turnover_voice_is_authored_and_varies() {
+        // Content-depth voice round 5: the crew-retirement line fires several
+        // times a generation, so its pool must have real variety (not a
+        // repetition tell); the extinction ending must have authored prose too.
+        let data = GameData::load().unwrap();
+        let flavor = &data.config.flavor;
+        assert!(
+            flavor.retirement.len() >= 4,
+            "the retirement pool needs variety — it fires several times a generation"
+        );
+        assert!(
+            !flavor.extinction.is_empty(),
+            "the line-ends ending needs prose"
+        );
+        // Consecutive retirements (the same generation) draw different lines.
+        let a = FlavorConfig::line_with_name(&flavor.retirement, 0, "Vale").unwrap();
+        let b = FlavorConfig::line_with_name(&flavor.retirement, 1, "Vale").unwrap();
+        assert_ne!(
+            a, b,
+            "two stand-downs in one generation must read differently"
+        );
+        assert!(a.contains("Vale"), "the retiring holder's name is woven in");
     }
 
     #[test]

@@ -175,6 +175,19 @@
       "{births} new hands joined the work as Generation {generation} came into its own.",
       "Generation {generation} numbered {births} strong, a cohort who would never see the world that sent them."
     ],
+    "retirement": [
+      "{name} stood down from their post, the work passed to a steadier pair of hands.",
+      "{name} kept the post a lifetime and gave it up gracefully to the young.",
+      "{name} handed over the watch and went to the quiet decks to rest.",
+      "{name}'s post found a new holder; the old one had long since earned the ease.",
+      "{name} stepped off the duty roster, one more founder's craft handed down the line.",
+      "{name} left the post to a former apprentice and did not once look back."
+    ],
+    "extinction": [
+      "The dynasty found no heir. The founders' line ends here, in the dark between stars, its long charter unfinished.",
+      "The last of the line was laid to rest with no one to follow. What the founders began ends, quietly, aboard the ship they launched.",
+      "No heir came. The name that cast the ship off is the name that ends with it, somewhere the charts do not reach."
+    ],
     "ambient_gap_years": 8,
     "ambient": [
       "A generation that has never seen a planet paints one, wrong and beautiful, across a cargo-bay wall.",

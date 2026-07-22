@@ -103,8 +103,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // Generational tick (GDD §5.3).
     sim.dynasty.years_since_generation += 1;
     if sim.dynasty.years_since_generation >= config.generation_interval_years {
-        for name in crew::process_generation(sim, data) {
-            sim.push_log(format!("{name} stood down from their post."));
+        let base_index = sim.dynasty.generation as usize;
+        for (i, name) in crew::process_generation(sim, data).into_iter().enumerate() {
+            // Data-driven so several retirements a generation don't reprint one
+            // line (content-depth voice round 5); index by holder so they vary.
+            let line =
+                FlavorConfig::line_with_name(&data.config.flavor.retirement, base_index + i, &name)
+                    .unwrap_or_else(|| format!("{name} stood down from their post."));
+            sim.push_log(line);
         }
         let generation = succession::process_generation(sim, data);
         let gen_index = sim.dynasty.generation as usize;
@@ -130,7 +136,9 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
             }
         }
         if generation.extinct {
-            sim.push_log("The dynasty has no heirs. The line ends here.");
+            let line = FlavorConfig::line_with_name(&flavor.extinction, gen_index, "")
+                .unwrap_or_else(|| "The dynasty has no heirs. The line ends here.".to_owned());
+            sim.push_log(line);
             report.dynasty_extinct = true;
         }
 
