@@ -84,4 +84,12 @@ pub struct SubsystemsConfig {
     /// crew recovery ceiling. 0 = no bay-level recovery.
     #[serde(default)]
     pub security_unity_recovery_per_condition: f32,
+    /// How much the habitat's state moves the ship's morale each year (content-depth
+    /// subsystems round 11): the life-support/habitat is where the people *live*, so
+    /// a home kept above the midpoint lifts spirits and one let to fail (cramped,
+    /// cold, patched) depresses them. Applied as `swing * (condition - 0.5)`, the
+    /// only maintenance-driven positive lever morale has against the voyage's strain.
+    /// 0 = the habitat's state does not touch morale.
+    #[serde(default)]
+    pub habitat_morale_swing: f32,
 }

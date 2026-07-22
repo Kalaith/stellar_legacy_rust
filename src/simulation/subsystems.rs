@@ -356,6 +356,22 @@ pub fn security_unity_recovery(sim: &SimState, data: &GameData) -> f32 {
     condition * data.config.subsystems.security_unity_recovery_per_condition
 }
 
+/// Signed yearly morale shift from the state of the habitat (content-depth
+/// subsystems round 11): the life-support/habitat is where the people live, so a
+/// home kept above the midpoint lifts spirits and one let to fail depresses them —
+/// `swing * (condition - 0.5)`. 0 when the module is gone (neutral, no home to
+/// lift or lose).
+pub fn habitat_morale_effect(sim: &SimState, data: &GameData) -> f32 {
+    let swing = data.config.subsystems.habitat_morale_swing;
+    if swing == 0.0 {
+        return 0.0;
+    }
+    match sim.subsystems.get("life_support_habitat") {
+        Some(s) => swing * (s.condition - 0.5),
+        None => 0.0,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -366,6 +382,45 @@ mod tests {
         let picks = founding_faction_ids(&data);
         let sim = SimState::new_campaign(&data, "preservers", seed, &picks);
         (data, sim)
+    }
+
+    #[test]
+    fn a_sound_habitat_lifts_morale_and_a_failing_one_drags_it() {
+        // Content-depth subsystems round 11: the habitat is where the people live,
+        // so its condition moves morale — a home above the midpoint lifts spirits,
+        // one below it depresses them, and a neutral one does neither.
+        let (data, mut sim) = campaign(12);
+        let swing = data.config.subsystems.habitat_morale_swing;
+        assert!(
+            swing > 0.0,
+            "this test needs the habitat morale coupling enabled"
+        );
+
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 1.0;
+        assert!(
+            habitat_morale_effect(&sim, &data) > 0.0,
+            "a home kept sound lifts the ship's spirits"
+        );
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 0.1;
+        assert!(
+            habitat_morale_effect(&sim, &data) < 0.0,
+            "a failing home drags the ship's spirits down"
+        );
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 0.5;
+        assert_eq!(
+            habitat_morale_effect(&sim, &data),
+            0.0,
+            "a middling home neither lifts nor drags"
+        );
     }
 
     #[test]

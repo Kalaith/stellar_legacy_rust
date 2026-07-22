@@ -329,6 +329,7 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
@@ -763,6 +764,7 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
@@ -836,6 +838,7 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;

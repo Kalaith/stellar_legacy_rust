@@ -72,6 +72,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.unity = (sim.population.unity + recovery).min(1.0);
     }
 
+    // The habitat is where the people live (content-depth subsystems round 11): a
+    // home kept sound lifts the ship's morale year over year, a failing one drags
+    // it — the one maintenance-driven counterweight morale has to the voyage strain.
+    let habitat = subsystems::habitat_morale_effect(sim, data);
+    if habitat != 0.0 {
+        sim.population.morale = (sim.population.morale + habitat).clamp(0.0, 1.0);
+    }
+
     // Ship wear, eased while spare parts remain for upkeep (PLAN M4.2). Once
     // the stores run dry the ship wears at full rate — the "held together on
     // hope and prayers" end of a long, unresupplied voyage. Field repair
