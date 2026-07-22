@@ -103,14 +103,21 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
             card,
             &SurfaceStyle::new(Color::new(0.08, 0.065, 0.015, 1.0)).with_border(1.0, term::faint()),
         );
-        let odds =
-            crate::simulation::legacy::dilemma_odds(ctx.sim, ctx.data, option.success_chance);
-        let combat_bonus = odds - option.success_chance;
-        let odds_text = if combat_bonus > 0.001 {
+        let odds = crate::simulation::legacy::dilemma_odds(ctx.sim, ctx.data, option);
+        // The shown odds are honest (Pillar 3): a combat-backed Wanderer gamble or
+        // a faction-backed one reads higher, a faction-hindered one lower.
+        let modifier = odds - option.success_chance;
+        let odds_text = if modifier > 0.001 {
             format!(
-                "Success odds: {:.0}%  (combat +{:.0}%)",
+                "Success odds: {:.0}%  (+{:.0}%)",
                 odds * 100.0,
-                combat_bonus * 100.0
+                modifier * 100.0
+            )
+        } else if modifier < -0.001 {
+            format!(
+                "Success odds: {:.0}%  ({:.0}%)",
+                odds * 100.0,
+                modifier * 100.0
             )
         } else {
             format!("Success odds: {:.0}%", odds * 100.0)

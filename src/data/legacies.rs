@@ -27,6 +27,15 @@ pub struct DilemmaOption {
     pub success_chance: f32,
     pub success: DilemmaEffect,
     pub failure: DilemmaEffect,
+    /// Faction-specific odds (content-depth factions round 10): who runs the ship
+    /// backs or hinders a defining gamble. While `dominant_faction` is the largest
+    /// aboard, `dominant_faction_odds` is added to this option's success chance
+    /// (positive = the ruling people's craft backs it, negative = they resist it).
+    /// Empty = no faction effect.
+    #[serde(default)]
+    pub dominant_faction: String,
+    #[serde(default)]
+    pub dominant_faction_odds: f32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -5,7 +5,7 @@
 //! tracked counters on `LegacyTrack`, which in turn feed the failure-risk
 //! score surfaced on the Crew & Dynasty screen.
 
-use crate::data::legacies::{DilemmaDef, DilemmaEffect};
+use crate::data::legacies::{DilemmaDef, DilemmaEffect, DilemmaOption};
 use crate::data::{GameConfig, GameData};
 use crate::state::sim::{PendingDilemma, SimState};
 
@@ -42,14 +42,26 @@ pub fn pending_dilemma_def<'a>(sim: &SimState, data: &'a GameData) -> Option<&'a
 /// combat bonus on Wanderer dilemmas (firepower backs the confrontation —
 /// GDD combat → wanderer odds), capped by config. Shown honestly in the modal
 /// and used for the roll (Pillar 3).
-pub fn dilemma_odds(sim: &SimState, data: &GameData, base_chance: f32) -> f32 {
-    let bonus = if sim.legacy.legacy_id == "wanderers" {
+pub fn dilemma_odds(sim: &SimState, data: &GameData, option: &DilemmaOption) -> f32 {
+    let combat_bonus = if sim.legacy.legacy_id == "wanderers" {
         let combat = crate::simulation::ship::loadout_stats(sim, data).combat;
         combat as f32 * data.config.ship.combat_dilemma_odds_per_point
     } else {
         0.0
     };
-    (base_chance + bonus).clamp(0.0, data.config.ship.dilemma_odds_cap)
+    // Who runs the ship can back or hinder a defining gamble (content-depth
+    // factions round 10): while the named faction is dominant, its craft (or its
+    // resistance) shifts the option's odds — the augmented back an augmentation,
+    // the makers a risky repair, the arbiters drag on summary justice.
+    let faction_bonus = if !option.dominant_faction.is_empty()
+        && sim.dominant_faction_id() == Some(option.dominant_faction.as_str())
+    {
+        option.dominant_faction_odds
+    } else {
+        0.0
+    };
+    (option.success_chance + combat_bonus + faction_bonus)
+        .clamp(0.0, data.config.ship.dilemma_odds_cap)
 }
 
 /// Resolve the pending dilemma with the chosen option: roll the option's
@@ -60,7 +72,7 @@ pub fn resolve_dilemma(sim: &mut SimState, data: &GameData, option_index: usize)
     let dilemma = pending_dilemma_def(sim, data)?.clone();
     let option = dilemma.options.get(option_index)?;
 
-    let chance = dilemma_odds(sim, data, option.success_chance);
+    let chance = dilemma_odds(sim, data, option);
     let succeeded = sim.rng.chance(chance);
     let effect = if succeeded {
         option.success.clone()
@@ -193,6 +205,18 @@ mod tests {
         assert_eq!(risky.total, data.config.failure_risk.piracy_points);
     }
 
+    fn plain_option(chance: f32) -> DilemmaOption {
+        DilemmaOption {
+            id: "opt".into(),
+            label: "opt".into(),
+            success_chance: chance,
+            success: DilemmaEffect::default(),
+            failure: DilemmaEffect::default(),
+            dominant_faction: String::new(),
+            dominant_faction_odds: 0.0,
+        }
+    }
+
     #[test]
     fn combat_lifts_wanderer_dilemma_odds_only() {
         let data = GameData::load().unwrap();
@@ -204,7 +228,7 @@ mod tests {
             &crate::state::sim::founding_faction_ids(&data),
         );
         wanderer.ship.weapon = Some("mass_driver".to_owned()); // combat 5
-        let lifted = dilemma_odds(&wanderer, &data, 0.65);
+        let lifted = dilemma_odds(&wanderer, &data, &plain_option(0.65));
         assert!(lifted > 0.65, "combat should raise Wanderer odds: {lifted}");
         assert!(lifted <= data.config.ship.dilemma_odds_cap);
 
@@ -216,7 +240,43 @@ mod tests {
             &crate::state::sim::founding_faction_ids(&data),
         );
         preserver.ship.weapon = Some("mass_driver".to_owned());
-        assert_eq!(dilemma_odds(&preserver, &data, 0.65), 0.65);
+        assert_eq!(dilemma_odds(&preserver, &data, &plain_option(0.65)), 0.65);
+    }
+
+    #[test]
+    fn the_dominant_faction_backs_or_hinders_a_dilemma_gamble() {
+        // Content-depth factions round 10: who runs the ship shifts the odds of a
+        // defining gamble. A backed option reads higher only while its faction is
+        // dominant; a hindered one reads lower.
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "adaptors",
+            4,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let mut backed = plain_option(0.6);
+        backed.dominant_faction = "ascension_circle".into();
+        backed.dominant_faction_odds = 0.15;
+
+        // Make the Ascension the sole (hence dominant) people: odds lift.
+        sim.factions = vec![crate::state::sim::factions::FactionState {
+            faction_id: "ascension_circle".into(),
+            members: 1000,
+            status: crate::state::sim::factions::FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        }];
+        let with = dilemma_odds(&sim, &data, &backed);
+        assert!(with > 0.6, "the augmented back the augmentation: {with}");
+
+        // A different dominant people: no lift.
+        sim.factions[0].faction_id = "first_flame".into();
+        assert_eq!(
+            dilemma_odds(&sim, &data, &backed),
+            0.6,
+            "another people neither backs nor hinders it"
+        );
     }
 
     #[test]

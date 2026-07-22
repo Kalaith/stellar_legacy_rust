@@ -249,6 +249,8 @@
         "options": [
           {
             "id": "keep_the_relic",
+            "dominant_faction": "steel_covenant",
+            "dominant_faction_odds": 0.12,
             "label": "Keep the relic turning",
             "success_chance": 0.75,
             "success": {
@@ -324,6 +326,8 @@
           },
           {
             "id": "cut_it_open",
+            "dominant_faction": "steel_covenant",
+            "dominant_faction_odds": 0.15,
             "label": "Cut it open",
             "success_chance": 0.75,
             "success": {
@@ -372,6 +376,8 @@
           },
           {
             "id": "strip_their_standing",
+            "dominant_faction": "meridian_accord",
+            "dominant_faction_odds": -0.15,
             "label": "Strip their standing",
             "success_chance": 0.65,
             "success": {
@@ -408,6 +414,8 @@
         "options": [
           {
             "id": "approve_edit",
+            "dominant_faction": "ascension_circle",
+            "dominant_faction_odds": 0.15,
             "label": "Approve the edit",
             "success_chance": 0.7,
             "success": {
@@ -549,6 +557,8 @@
         "options": [
           {
             "id": "weave_the_lace",
+            "dominant_faction": "ascension_circle",
+            "dominant_faction_odds": 0.15,
             "label": "Weave the lace",
             "success_chance": 0.65,
             "success": {

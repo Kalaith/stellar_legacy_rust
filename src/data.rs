@@ -1118,11 +1118,26 @@ mod tests {
             assert!(traits.len() >= 10, "{legacy_id} traits: {}", traits.len());
             // Each legacy carries its defining dilemmas (§8 target 6; the
             // pool has since been deepened past it).
-            let dilemmas = data.legacies.get(legacy_id).unwrap().dilemmas.len();
+            let legacy = data.legacies.get(legacy_id).unwrap();
             assert!(
-                dilemmas >= 8,
-                "{legacy_id} should have >= 8 dilemmas, has {dilemmas}"
+                legacy.dilemmas.len() >= 8,
+                "{legacy_id} should have >= 8 dilemmas, has {}",
+                legacy.dilemmas.len()
             );
+            // Content-depth factions round 10: a dilemma option's faction-odds
+            // modifier must name a real faction.
+            for dil in &legacy.dilemmas {
+                for opt in &dil.options {
+                    assert!(
+                        opt.dominant_faction.is_empty()
+                            || data.factions.get(&opt.dominant_faction).is_some(),
+                        "dilemma '{}' option '{}' names unknown faction '{}'",
+                        dil.id,
+                        opt.id,
+                        opt.dominant_faction
+                    );
+                }
+            }
         }
     }
 
