@@ -17,6 +17,22 @@ use super::TickReport;
 pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
     let config = &data.config;
 
+    // Route toll (content-depth charters round 13): a charter whose *nature* wears
+    // at a ship exacts a steady per-year drain for the whole voyage — hazard's
+    // deterministic companion. Read from the template (the contract carries its id),
+    // applied before production so the route's standing cost is the year's first fact.
+    if let Some(toll) = sim
+        .contract
+        .as_ref()
+        .and_then(|c| data.contracts.get(&c.template_id))
+        .map(|t| t.annual_toll.clone())
+        .filter(|t| !t.is_none())
+    {
+        sim.resources.apply(&toll.resource);
+        sim.ship.apply(&toll.ship);
+        sim.population.apply(&toll.population);
+    }
+
     // Production (GDD §5.1: floor(rate * years), one year per tick),
     // multiplied by the serving crew's skills (PLAN item 2). The agriculture
     // subsystem lifts food yield per tier (W5).

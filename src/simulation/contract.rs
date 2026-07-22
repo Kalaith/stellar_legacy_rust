@@ -295,6 +295,59 @@ mod tests {
     use crate::data::GameData;
 
     #[test]
+    fn a_route_toll_wears_the_ship_every_year_of_its_voyage() {
+        // Content-depth charters round 13: a charter whose nature wears at a ship
+        // exacts a steady per-year drain — hazard's deterministic companion. The
+        // coronal tap's radiation-and-heat toll drops morale and hull each year;
+        // an ordinary survey exacts nothing.
+        use crate::simulation::tick::advance_year;
+        let mut data = GameData::load().unwrap();
+        // Isolate the toll: no reactive rolls, no threshold beats. Voyage drift
+        // still wears both ships, but it wears them identically, so the *difference*
+        // is the route's own standing toll.
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        data.config.campaign_skeleton.drift_beats.clear();
+        data.config.campaign_skeleton.adaptation_beats.clear();
+        data.config.campaign_skeleton.crisis_beats.clear();
+        data.config.campaign_skeleton.flourish_beats.clear();
+        data.config.campaign_skeleton.objective_beats.clear();
+        data.config.campaign_skeleton.depopulation_beats.clear();
+        let toll = &data.contracts.get("coronal_tap").unwrap().annual_toll;
+        assert!(!toll.is_none(), "the coronal tap is a punishing route");
+        assert!(
+            data.contracts
+                .get("deep_vein_survey")
+                .unwrap()
+                .annual_toll
+                .is_none(),
+            "an ordinary survey exacts no standing toll"
+        );
+
+        let fly = |charter: &str| -> (f32, f32) {
+            let picks = crate::state::sim::founding_faction_ids(&data);
+            let mut sim = SimState::new_campaign(&data, "preservers", 61, &picks);
+            sim.resources.food = 1_000_000; // isolate the toll from famine
+            let template = data.contracts.get(charter).unwrap().clone();
+            sim.contract = Some(start_contract(&template, &sim));
+            sim.contract.as_mut().unwrap().beats.clear();
+            let (m0, h0) = (sim.population.morale, sim.ship.hull_integrity);
+            for _ in 0..10 {
+                advance_year(&mut sim, &data);
+            }
+            (m0 - sim.population.morale, h0 - sim.ship.hull_integrity)
+        };
+        let (tapped_morale, tapped_hull) = fly("coronal_tap");
+        let (survey_morale, survey_hull) = fly("deep_vein_survey");
+        assert!(
+            tapped_morale > survey_morale && tapped_hull > survey_hull,
+            "the star's reach wears morale and hull faster than a quiet survey \
+             (tap {tapped_morale}/{tapped_hull} vs survey {survey_morale}/{survey_hull})"
+        );
+    }
+
+    #[test]
     fn an_in_world_charter_is_offered_only_while_its_people_are_aboard() {
         // Content-depth charters round 12: the in-world availability gate. The
         // Seedbearers' Writ is offered only to a ship carrying the Verdant Kin —

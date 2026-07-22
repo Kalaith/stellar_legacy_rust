@@ -1,6 +1,6 @@
 //! Contract (mission) objective templates (GDD §5.2, §6).
 
-use crate::data::ResourceDelta;
+use crate::data::{PopulationDelta, ResourceDelta, ShipDelta};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -158,6 +158,35 @@ pub struct ContractTemplate {
     /// Empty = offered to any ship (subject to renown).
     #[serde(default)]
     pub requires_faction_aboard: Vec<String>,
+    /// Per-year toll the route exacts for its whole duration (content-depth charters
+    /// round 13): hazard's deterministic companion. Where `hazard` breeds more
+    /// crises (a stochastic danger), this is a steady drain applied every year of
+    /// the voyage, so a route whose *nature* wears at a ship — a star's radiation
+    /// bath, the grim haunt of a ship of the dead — feels that way continuously
+    /// rather than only in the crises it throws. Default (all-zero) = no toll.
+    #[serde(default)]
+    pub annual_toll: AnnualToll,
+}
+
+/// A charter's standing per-year toll (content-depth charters round 13). Each delta
+/// is applied once per voyage-year while the contract is under way.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct AnnualToll {
+    #[serde(default)]
+    pub resource: ResourceDelta,
+    #[serde(default)]
+    pub ship: ShipDelta,
+    #[serde(default)]
+    pub population: PopulationDelta,
+}
+
+impl AnnualToll {
+    /// True when the toll is entirely zero (an ordinary route with no standing cost).
+    pub fn is_none(&self) -> bool {
+        self.resource == ResourceDelta::default()
+            && self.ship == ShipDelta::default()
+            && self.population == PopulationDelta::default()
+    }
 }
 
 /// One scripted, time-fixed beat of a charter (content-depth charters round 9):

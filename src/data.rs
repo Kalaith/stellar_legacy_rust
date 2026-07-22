@@ -67,7 +67,7 @@ const CREW_ARCHETYPES_JSON: &str = include_str!("../assets/crew_archetypes.json"
 
 /// Signed per-resource change used by event outcomes, costs, and rewards.
 /// Also doubles as an absolute amount set (e.g. starting resources).
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ResourceDelta {
     pub credits: i64,
@@ -91,7 +91,7 @@ pub struct ProductionRates {
 }
 
 /// Signed change to ship-condition stats.
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ShipDelta {
     pub hull_integrity: f32,
@@ -101,7 +101,7 @@ pub struct ShipDelta {
 }
 
 /// Signed change to colony-scale population stats.
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct PopulationDelta {
     pub count: i32,
@@ -1362,7 +1362,21 @@ mod tests {
                     "charter '{id}' requires unknown faction '{fid}' aboard"
                 );
             }
+            // Content-depth charters round 13: a route toll must be a gentle,
+            // survivable headwind — a per-year crew drain that could empty a
+            // generational voyage is a bug, not a hazard.
+            assert!(
+                c.annual_toll.population.count.abs() <= 3,
+                "charter '{id}' annual_toll drains {} crew/yr — too steep for a voyage",
+                c.annual_toll.population.count
+            );
         }
+        // Content-depth charters round 13: at least one charter should carry a
+        // standing route toll, so the mechanic is exercised.
+        assert!(
+            data.contracts.iter().any(|(_, c)| !c.annual_toll.is_none()),
+            "some charter should exact a per-year route toll"
+        );
         // Content-depth charters round 12: at least one charter should key on an
         // in-world gate, so the mechanic is exercised.
         assert!(

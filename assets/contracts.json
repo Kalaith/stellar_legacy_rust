@@ -451,7 +451,15 @@
    "mining",
    "stellar_hazard"
   ],
-  "hazard": 0.2
+  "hazard": 0.2,
+  "annual_toll": {
+   "population": {
+    "morale": -0.004
+   },
+   "ship": {
+    "hull_integrity": -0.002
+   }
+  }
  },
  {
   "id": "seedfall",
@@ -735,7 +743,13 @@
    "mystery",
    "ethics"
   ],
-  "hazard": 0.28
+  "hazard": 0.28,
+  "annual_toll": {
+   "population": {
+    "morale": -0.005,
+    "unity": -0.002
+   }
+  }
  },
  {
   "id": "warden_patrol",
