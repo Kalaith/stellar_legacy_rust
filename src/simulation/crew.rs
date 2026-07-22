@@ -5,7 +5,7 @@
 //! modifiers declared on `crew_archetypes.json` — production multipliers,
 //! famine mitigation (medic), and unity recovery (security chief).
 
-use crate::data::{GameData, ProductionRates, ResourceDelta};
+use crate::data::{FlavorConfig, GameData, ProductionRates, ResourceDelta};
 use crate::state::sim::{generate_crew_member, SimState};
 
 /// The officer currently holding an archetype's post, if any.
@@ -46,7 +46,22 @@ pub fn recruit(sim: &mut SimState, data: &GameData, archetype_id: &str) -> Resul
 
     sim.resources.apply(&cost);
     let name = member.name.clone();
-    sim.push_log(format!("{name} took the {archetype_id} post."));
+    // Name the post the way the ship would, not by its raw id, and vary the
+    // line so re-crewing a roster over the centuries never reads as a form
+    // letter (content-depth voice round 7). Indexed by the officer's id.
+    let post = data
+        .crew_archetypes
+        .iter()
+        .find(|a| a.id == archetype_id)
+        .map_or(archetype_id, |a| a.name.as_str());
+    let line = FlavorConfig::line_with_name_post(
+        &data.config.flavor.appointment,
+        member.id as usize,
+        &name,
+        post,
+    )
+    .unwrap_or_else(|| format!("{name} took up the post of {post}."));
+    sim.push_log(line);
     sim.crew.push(member);
     Ok(name)
 }
@@ -80,9 +95,20 @@ pub fn train(sim: &mut SimState, data: &GameData, archetype_id: &str) -> Result<
     member.skill = (member.skill + gain).min(archetype.skill_max);
     let name = member.name.clone();
     let skill = member.skill;
-    sim.push_log(format!(
-        "{name} completed advanced training (skill {skill})."
-    ));
+    let line = FlavorConfig::line_with_name_post(
+        &data.config.flavor.training,
+        skill as usize,
+        &name,
+        &archetype.name,
+    )
+    .map(|l| l.replace("{skill}", &skill.to_string()))
+    .unwrap_or_else(|| {
+        format!(
+            "{name} completed advanced training as {} (skill {skill}).",
+            archetype.name
+        )
+    });
+    sim.push_log(line);
     Ok(name)
 }
 

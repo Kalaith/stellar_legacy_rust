@@ -288,6 +288,19 @@ pub struct FlavorConfig {
     /// fires once per stalled year. Indexed by year; empty falls back.
     #[serde(default)]
     pub fuel_stall: Vec<String>,
+    /// A crew officer takes up a post (content-depth voice round 7): the positive
+    /// twin of `retirement`, fired whenever a vacancy is filled — repeatedly
+    /// across a voyage as posts turn over — so it needs variety and the post's
+    /// human name, not the raw archetype id. Placeholders `{name}`, `{post}`.
+    /// Indexed by crew id (deterministic). Empty falls back to the built-in line.
+    #[serde(default)]
+    pub appointment: Vec<String>,
+    /// An officer completes a training program (content-depth voice round 7): a
+    /// repeatable drydock verb, so it needs variety over the flat bracketed
+    /// skill number. Placeholders `{name}`, `{post}`, `{skill}`. Indexed by the
+    /// new skill; empty falls back to the built-in line.
+    #[serde(default)]
+    pub training: Vec<String>,
     /// Atmospheric "life aboard" lines surfaced during long event-less stretches
     /// (content-depth voice round 2), so the passing centuries read as lived-in
     /// rather than empty. Dated by the log itself, indexed by year (no RNG).
@@ -318,6 +331,22 @@ impl FlavorConfig {
     /// substituted. Returns `None` only when the pool is empty.
     pub fn line_with_name(pool: &[String], n: usize, name: &str) -> Option<String> {
         (!pool.is_empty()).then(|| pool[n % pool.len()].replace("{name}", name))
+    }
+
+    /// Like `line_with_name`, additionally substituting `{post}` (the officer's
+    /// human post name) — for crew-turnover lines that name both the person and
+    /// the post they take or leave. `None` only when the pool is empty.
+    pub fn line_with_name_post(
+        pool: &[String],
+        n: usize,
+        name: &str,
+        post: &str,
+    ) -> Option<String> {
+        (!pool.is_empty()).then(|| {
+            pool[n % pool.len()]
+                .replace("{name}", name)
+                .replace("{post}", post)
+        })
     }
 
     /// Homecoming line for a mission that ended at `level_key` (the success
@@ -585,6 +614,40 @@ mod tests {
             "two stand-downs in one generation must read differently"
         );
         assert!(a.contains("Vale"), "the retiring holder's name is woven in");
+    }
+
+    #[test]
+    fn crew_appointment_and_training_voice_is_authored_and_varies() {
+        // Content-depth voice round 7: the appointment line (the positive twin of
+        // retirement) and the training line both fire repeatedly as a roster is
+        // re-crewed over the centuries, so both need pool variety and must weave
+        // in the officer's name and human post — not the raw archetype id.
+        let data = GameData::load().unwrap();
+        let flavor = &data.config.flavor;
+        assert!(
+            flavor.appointment.len() >= 4,
+            "the appointment pool needs variety — posts turn over all voyage"
+        );
+        assert!(
+            flavor.training.len() >= 3,
+            "the training pool needs variety — training is a repeatable verb"
+        );
+        // Two appointments in one drydock draw different lines, and both weave in
+        // the officer's name and the human post name.
+        let a = FlavorConfig::line_with_name_post(&flavor.appointment, 0, "Vale", "Chief Engineer")
+            .unwrap();
+        let b = FlavorConfig::line_with_name_post(&flavor.appointment, 1, "Vale", "Chief Engineer")
+            .unwrap();
+        assert_ne!(a, b, "two appointments must read differently");
+        assert!(
+            a.contains("Vale") && a.contains("Chief Engineer"),
+            "the appointee's name and human post are woven in"
+        );
+        // The training pool carries the skill placeholder.
+        assert!(
+            flavor.training.iter().any(|s| s.contains("{skill}")),
+            "training lines surface the new skill"
+        );
     }
 
     #[test]
