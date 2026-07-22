@@ -39,6 +39,9 @@ pub fn active_complication<'a>(
                 .copied()
                 .unwrap_or(0)
                 >= c.min_prior_occurrences
+            // Lived-state gates (content-depth round 15): a thinned crew, a long hunger.
+            && (c.max_population == 0 || sim.population.count <= c.max_population)
+            && sim.lean_food_years >= c.min_lean_food_years
     })
 }
 
@@ -1593,6 +1596,55 @@ mod tests {
         assert!(
             available_outcome_indices(&sim, fracture).contains(&repair),
             "the banked reserve unlocks the proper repair years later"
+        );
+    }
+
+    #[test]
+    fn a_complication_reads_the_ships_thinned_and_hungry_state() {
+        // Content-depth event families round 15: complications now read the new
+        // lived-state dimensions. The failing air's twist rides only on a thinned
+        // crew; the ration triage's rides only on a ship worn by years of hunger.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+
+        // A thinned-crew twist on the failing air.
+        let air = data.events.get("the_failing_air").unwrap();
+        let thin = air
+            .complications
+            .iter()
+            .find(|c| c.max_population > 0)
+            .expect("the failing air carries a thinned-crew complication");
+        let mut sim = SimState::new_campaign(&data, "preservers", 75, &picks);
+        sim.population.count = thin.max_population + 100;
+        assert!(
+            active_complication(&sim, air).is_none(),
+            "a full crew answers the failing air on every deck"
+        );
+        sim.population.count = thin.max_population;
+        assert!(
+            active_complication(&sim, air).is_some_and(|c| c.id == thin.id),
+            "a skeleton crew cannot, and the twist rides"
+        );
+
+        // A chronic-hunger twist on the ration triage.
+        let table = data.events.get("the_thin_table").unwrap();
+        let worn = table
+            .complications
+            .iter()
+            .find(|c| c.min_lean_food_years > 0)
+            .expect("the thin table carries a chronic-hunger complication");
+        let mut sim = SimState::new_campaign(&data, "preservers", 76, &picks);
+        // Meet the event's own food gate so the complication is what we isolate.
+        sim.resources.food = table.food_below.unwrap() - 1;
+        sim.lean_food_years = worn.min_lean_food_years - 1;
+        assert!(
+            active_complication(&sim, table).is_none(),
+            "a ship only lately hungry still has fat to cut"
+        );
+        sim.lean_food_years = worn.min_lean_food_years;
+        assert!(
+            active_complication(&sim, table).is_some_and(|c| c.id == worn.id),
+            "a ship worn by years of want has nothing left, and the twist rides"
         );
     }
 

@@ -1346,6 +1346,18 @@
     "faction_approval_smallest": -0.2,
     "log": "The council spared the ship by cutting its smallest deck, and the essential work went on unbroken through the thin year while one people learned, precisely, where it stood on this ship's ledger when the food ran short. The ship stayed working. Whether it stayed whole was a question the smallest people would answer later, in their own time and their own way."
    }
+  ],
+  "complications": [
+   {
+    "id": "nothing_left_to_cut",
+    "min_lean_food_years": 12,
+    "description_add": "And this ship has been lean for a generation already — there is no comfortable slack left to trim, no fat on the ration to shave, no reserve to fall back on. Every plate cut now is cut from a body that had long since stopped having anything to spare.",
+    "population_delta": {
+     "count": -10,
+     "morale": -0.04
+    },
+    "log": "The triage fell on a ship with nothing left to give — the reserves long emptied, the people long thinned by the lean years — so the cut a well-fed ship would have shrugged off went straight to the bone here, and the bone was already showing."
+   }
   ]
  },
  {

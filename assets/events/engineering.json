@@ -962,6 +962,18 @@
     ],
     "log": "The council sealed the worst-hit decks and pulled everyone into the sound sections, tighter and grimmer than before. The air held for those who made the cut; the sealed corridors kept their silence."
    }
+  ],
+  "complications": [
+   {
+    "id": "too_few_hands",
+    "max_population": 400,
+    "description_add": "And there are too few hands left aboard to do both jobs at once — work the failing plant and hold the dying decks — so a skeleton crew must let one part of the ship go cold to keep another breathing.",
+    "population_delta": {
+     "count": -8,
+     "morale": -0.03
+    },
+    "log": "The failing air fell on a crew too thin to answer it on every deck at once, and the compartments it could not reach in time paid, quietly, for the ones it could. A fuller ship would have held them all; this one had to choose."
+   }
   ]
  },
  {

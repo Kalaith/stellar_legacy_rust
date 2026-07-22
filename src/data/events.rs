@@ -232,6 +232,16 @@ pub struct Complication {
     /// 0 = no recurrence requirement.
     #[serde(default)]
     pub min_prior_occurrences: u32,
+    /// Lived-state gates (content-depth event families round 15): the complication
+    /// rides only while the crew has thinned to or below `max_population` and/or the
+    /// shortage has ground on for at least `min_lean_food_years` years — so a crisis
+    /// reads and bites differently on a skeleton crew or a ship worn thin by decades
+    /// of want, not just by who runs it or how far it has drifted. 0 = that gate
+    /// ignored.
+    #[serde(default)]
+    pub max_population: u32,
+    #[serde(default)]
+    pub min_lean_food_years: u32,
     /// Choice targeting (content-depth event families round 14): when non-empty,
     /// the complication's extra toll and log land *only* if the chosen outcome's id
     /// is listed here — so a twist can punish a *specific* decision (an unstable
