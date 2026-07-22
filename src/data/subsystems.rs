@@ -102,4 +102,14 @@ pub struct SubsystemsConfig {
     /// still. 0 = a faction's mood does not touch upkeep.
     #[serde(default)]
     pub tender_approval_decay_scale: f32,
+    /// How much a *degraded* agriculture bay cuts food production (content-depth
+    /// subsystems round 12): the food module's missing condition→output coupling,
+    /// the parallel to the medical/security condition effects. The yield factor is
+    /// `1 - agriculture_condition_food_penalty·(1 - condition)`, so a pristine farm
+    /// (condition 1.0) yields exactly as before while a rotting one feeds fewer —
+    /// upkeep on the hydroponics paying back continuously, not only at breakdown.
+    /// Penalty-below-full (not swing-around-half) so the launch baseline is
+    /// untouched. 0 = a farm's condition does not touch its yield.
+    #[serde(default)]
+    pub agriculture_condition_food_penalty: f32,
 }

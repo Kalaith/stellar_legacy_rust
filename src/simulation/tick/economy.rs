@@ -22,11 +22,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // subsystem lifts food yield per tier (W5).
     let crew_mult = crew::production_multipliers(sim, data);
     let agri_bonus = subsystems::agriculture_food_bonus(sim, data);
+    // A degraded farm feeds fewer (content-depth subsystems round 12): the food
+    // module's condition→output coupling, so upkeep on the hydroponics pays back.
+    let agri_condition = subsystems::agriculture_condition_food_factor(sim, data);
     let produced = ResourceDelta {
         credits: (sim.production.credits * crew_mult.credits).floor() as i64,
         energy: (sim.production.energy * crew_mult.energy).floor() as i64,
         minerals: (sim.production.minerals * crew_mult.minerals).floor() as i64,
-        food: (sim.production.food * crew_mult.food * (1.0 + agri_bonus)).floor() as i64,
+        food: (sim.production.food * crew_mult.food * (1.0 + agri_bonus) * agri_condition).floor()
+            as i64,
         influence: (sim.production.influence * crew_mult.influence).floor() as i64,
     };
     sim.resources.apply(&produced);

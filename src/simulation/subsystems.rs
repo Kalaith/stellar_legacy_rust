@@ -330,6 +330,23 @@ pub fn agriculture_food_bonus(sim: &SimState, data: &GameData) -> f32 {
     tier as f32 * data.config.subsystems.agriculture_food_bonus_per_tier
 }
 
+/// Food-yield multiplier from the agriculture bay's *condition* (content-depth
+/// subsystems round 12): `1 - penalty·(1 - condition)`, clamped ≥ 0. A pristine
+/// farm (condition 1.0) yields 1.0 — the untouched baseline — while a degraded one
+/// feeds proportionally fewer, so keeping the hydroponics in repair pays back every
+/// year rather than only staving off a breakdown. A missing bay counts as neutral.
+pub fn agriculture_condition_food_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.agriculture_condition_food_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("agriculture")
+        .map_or(1.0, |s| s.condition);
+    (1.0 - penalty * (1.0 - condition)).max(0.0)
+}
+
 /// Fraction by which the life-support/habitat subsystem slows life-support
 /// decay (W5): its current tier's `severity_reduction × condition`.
 pub fn life_support_decay_reduction(sim: &SimState, data: &GameData) -> f32 {
@@ -504,6 +521,34 @@ mod tests {
             .config
             .subsystems
             .engineering_decay_swing
+    }
+
+    #[test]
+    fn a_rotting_farm_feeds_fewer_than_a_pristine_one() {
+        // Content-depth subsystems round 12: the food module's condition→output
+        // coupling. A pristine farm yields the untouched baseline (factor 1.0),
+        // and a degraded one yields proportionally less, so upkeep on the
+        // hydroponics pays back every year — not only at the breakdown cliff.
+        let (data, mut sim) = campaign(9);
+        assert!(
+            data.config.subsystems.agriculture_condition_food_penalty > 0.0,
+            "this test needs the agriculture condition coupling enabled"
+        );
+
+        sim.subsystems.get_mut("agriculture").unwrap().condition = 1.0;
+        let pristine = agriculture_condition_food_factor(&sim, &data);
+        assert_eq!(pristine, 1.0, "a farm in full repair yields the baseline");
+
+        sim.subsystems.get_mut("agriculture").unwrap().condition = 0.4;
+        let neglected = agriculture_condition_food_factor(&sim, &data);
+        assert!(
+            neglected < pristine,
+            "a rotting farm feeds fewer than a pristine one \
+             (neglected {neglected} vs pristine {pristine})"
+        );
+        // The factor never turns food production negative, even at total collapse.
+        sim.subsystems.get_mut("agriculture").unwrap().condition = 0.0;
+        assert!((0.0..=1.0).contains(&agriculture_condition_food_factor(&sim, &data)));
     }
 
     #[test]
