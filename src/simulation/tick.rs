@@ -76,6 +76,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_adaptation_beat(sim, data, &mut report)
             && !fire_crisis_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
+            && !fire_objective_beat(sim, data, &mut report)
             && !fire_anniversary_beat(sim, data, &mut report)
             && !fire_dead_air_beat(sim, data, &mut report)
         {
@@ -279,6 +280,27 @@ fn fire_flourish_beat(sim: &mut SimState, data: &GameData, report: &mut TickRepo
         contract.flourish_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.flourish_beat_family, report);
+    true
+}
+
+/// Fire an objective-progress beat (content-depth round 9): the first pacing
+/// keyed to the mission itself. As the active charter's objective crosses each
+/// authored fraction (low→high) a beat is forced — the crew marking a purpose
+/// most of them will not live to see completed. Fires at most one threshold per
+/// month; returns whether it replaced the reactive roll.
+fn fire_objective_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.objective_beats_fired as usize) < cfg.objective_beats.len()
+            && c.objective_fraction() >= cfg.objective_beats[c.objective_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.objective_beats_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.objective_beat_family, report);
     true
 }
 

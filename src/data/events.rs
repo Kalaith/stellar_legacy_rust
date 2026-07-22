@@ -225,6 +225,13 @@ pub struct EventTemplate {
     /// 0.0 = ungated.
     #[serde(default)]
     pub min_morale: f32,
+    /// Mission-progress gate (content-depth campaign-skeleton round 9): the event
+    /// only enters the pool while an active charter's objective is at or past this
+    /// fraction — the honest gate for milestone content, so "the work is half
+    /// done" cannot surface before it is. 0.0 = ungated (requires a contract when
+    /// > 0).
+    #[serde(default)]
+    pub min_objective_fraction: f32,
     /// Scheduled-only (content-depth event families round 9): the event never
     /// enters a random or beat roll — it fires solely as the timed payoff of a
     /// `schedule_followup`. Keeps a determined-clock reckoning out of the reactive

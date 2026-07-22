@@ -228,6 +228,7 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -660,6 +661,7 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -797,6 +799,53 @@ fn a_scheduled_followup_fires_on_its_determined_year_not_before() {
     assert!(
         sim.log.iter().any(|l| l.text.contains("capsule")),
         "the opening is narrated"
+    );
+}
+
+#[test]
+fn an_objective_beat_fires_as_the_mission_crosses_its_milestone() {
+    // Content-depth campaign-skeleton round 9: the first pacing keyed to the
+    // mission itself. With reactive rolls and the other threshold beats off, the
+    // only thing that can fire is the objective beat — and it must, once the
+    // charter's objective crosses the first authored fraction.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    let first = data.config.campaign_skeleton.objective_beats[0];
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Objective untouched: no milestone beat.
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().objective_beats_fired,
+        0,
+        "a mission with no progress has no milestone to mark"
+    );
+
+    // Bank the objective past the first fraction — the beat must fire.
+    {
+        let c = sim.contract.as_mut().unwrap();
+        c.objective_progress = c.objective_target * (first + 0.01);
+    }
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().objective_beats_fired,
+        1,
+        "crossing the first objective fraction forces exactly one milestone beat"
     );
 }
 

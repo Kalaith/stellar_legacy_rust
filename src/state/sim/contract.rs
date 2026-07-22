@@ -114,6 +114,11 @@ pub struct ActiveContract {
     /// fires once as a thriving ship climbs into its golden years.
     #[serde(default)]
     pub flourish_beats_fired: u32,
+    /// How many objective-progress beats have fired (content-depth round 9):
+    /// mission-fraction milestones ascend, so this is the index of the next one
+    /// to watch — each fires once as the work crosses its mark.
+    #[serde(default)]
+    pub objective_beats_fired: u32,
     /// This charter's scripted timed beats (content-depth charters round 9),
     /// copied from the template at launch; `at_year` is years since this voyage's
     /// launch. Ascending, fired in order.

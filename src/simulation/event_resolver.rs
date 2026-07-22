@@ -183,6 +183,14 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     if template.max_generation != 0 && sim.dynasty.generation > template.max_generation {
         return false;
     }
+    if template.min_objective_fraction > 0.0
+        && sim
+            .contract
+            .as_ref()
+            .is_none_or(|c| c.objective_fraction() < template.min_objective_fraction)
+    {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift

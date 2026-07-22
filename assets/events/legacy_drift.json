@@ -1585,5 +1585,74 @@
     "log": "The ship heard its founders out across the gap of fifty years, thanked them with full honours, and then did what the living do: decided for itself. The capsule went into the archive as history rather than law, one more voice the ship could weigh and need not obey — which was, the record noted, most likely what the wiser founders had hoped a free people would do with them."
    }
   ]
+ },
+ {
+  "id": "the_work_half_done",
+  "category": "generational_challenge",
+  "title": "The Work Half Done",
+  "description": "A quiet arithmetic reaches the council: the charter's tally has passed its midpoint. Half the cores are cut, half the systems charted, half the accord kept — and no one aboard who began the work will be aboard to finish it. A generation that inherited a purpose it did not choose has carried it to the halfway mark, and pauses, for a breath, to ask what it is carrying.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_objective_fraction": 0.5,
+  "outcomes": [
+   {
+    "id": "rededicate",
+    "label": "Rededicate to the founders' charter",
+    "description": "The purpose is the point; the ship exists to keep it. Read the founding charter aloud at the midpoint, renew the vow, and carry the work the rest of the way in the founders' name.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "stability": 0.04,
+     "unity": 0.03
+    },
+    "log": "The ship marked the halfway tally by reading the founders' charter aloud and renewing the vow, and a generation that had never chosen the work chose it, freely, at the midpoint. The purpose held, and steadied everything around it — a people is rarely stronger than when it decides that the thing it was handed is a thing it wants."
+   },
+   {
+    "id": "question_the_purpose",
+    "label": "Ask whether the purpose is still theirs",
+    "description": "Honour the work, but say the quiet thing plainly: this is the founders' mission, not this generation's, and a people has the right to weigh a purpose it did not set before spending the rest of its life on it. Let the question be asked in the open.",
+    "population_delta": {
+     "morale": 0.03,
+     "adaptation": 0.04,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The ship let the quiet question be asked in daylight at the halfway mark — whether a purpose handed down is a purpose owed — and something shifted that would not shift back. The work went on, but carried now by a people who had admitted, aloud, that it was theirs to weigh and not only to obey. The founders would have called it drift. The living called it growing up."
+   }
+  ]
+ },
+ {
+  "id": "the_charter_fulfilled",
+  "category": "legacy_moment",
+  "title": "The Charter Fulfilled",
+  "description": "The tally is complete. The holds are full, the survey closed, the accord signed — whatever the founders sent this ship three centuries to do is, as of this watch, done. And the ship is not home. The long return still lies ahead, years or generations of it, and for the first time the voyage faces the strange question of what a ship is for once its reason for being is behind it.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_objective_fraction": 1.0,
+  "outcomes": [
+   {
+    "id": "the_founders_triumph",
+    "label": "Mark it as the founders' triumph",
+    "description": "This is the moment the whole voyage was launched to reach. Strike it into the record as the founders' victory, teach the children that the ship kept a promise older than any of them, and let the completed charter be the ship's proudest fact all the way home.",
+    "population_delta": {
+     "legacy_loyalty": 0.08,
+     "unity": 0.06,
+     "morale": 0.04,
+     "cultural_drift": -0.03
+    },
+    "log": "The ship marked the charter's completion as the founders' triumph, struck it into the record, and taught it to the children as the proudest fact of the voyage: that a promise three centuries old had been kept by hands that never met the ones who made it. The long way home would be flown by a people who knew, past any doubt, that they had done the thing they were for."
+   },
+   {
+    "id": "now_what_are_we",
+    "label": "Face the ship with no more purpose",
+    "description": "The charter is done and the truth is plain: the mission that defined every soul aboard is now behind them, and the years of return ahead have no purpose written into them at all. Let the ship sit with that — a people that must, for the first time, decide for itself what it is for.",
+    "population_delta": {
+     "morale": -0.02,
+     "adaptation": 0.05,
+     "cultural_drift": 0.06,
+     "stability": -0.03
+    },
+    "log": "The ship finished its charter and let itself feel the strange hollow after — the mission that had shaped every life aboard now behind them, the long return ahead an open page. Some drifted; some invented new reasons; all of them understood, for the first time, that a purpose fulfilled is a purpose that no longer holds you, and that what a people does with its freedom is a harder question than what it does with its orders."
+   }
+  ]
  }
 ]
