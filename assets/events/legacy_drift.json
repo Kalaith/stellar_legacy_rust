@@ -1799,5 +1799,42 @@
     "log": "The council reworked the inherited ship for the people who lived in it now — the founder decks re-laid, the old shrines kept or quietly closed by whether anyone still prayed at them, the founding assumptions weighed on their merits rather than their pedigree. What came out the far side was less a monument and more a home, honest about its living majority and a further step from its founders, which the young officers who had felt the strangeness counted exactly right."
    }
   ]
+ },
+ {
+  "id": "the_founders_vindicated",
+  "category": "legacy_moment",
+  "title": "The Founders Vindicated",
+  "description": "Generations on, a council sits with the whole founding record open before it and weighs the choices the ship has argued over for centuries — the ones that looked, from close up, like cruelty or folly. With the long view and the evidence entire, the verdict comes back the other way: the founders were right, and provably so, and the ship owes them an apology it can no longer deliver. It is a vindication earned by proof, not asked on faith.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 5,
+  "forbidden_consequence": [
+   "buried_second_log",
+   "the_lost_archive"
+  ],
+  "outcomes": [
+   {
+    "id": "renew_the_founding_bond",
+    "label": "Let the vindication renew the bond",
+    "description": "Carry the verdict to every deck. A people that has just proven its founders wise on the evidence has been handed something rare — a reason, not a rule, to hold the founding close — and a ship should not waste a loyalty that has been earned rather than merely inherited.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "unity": 0.05,
+     "stability": 0.03
+    },
+    "log": "The council carried the vindication to every deck, and a founding that had been an inheritance became, for a generation, a conviction — the founders held close not from duty but because the record had proven them right. It was the rare loyalty that argument strengthens rather than strains, and the ship sailed on the surer for having questioned and been answered."
+   },
+   {
+    "id": "note_it_and_keep_our_counsel",
+    "label": "Note it, but keep the ship's own counsel",
+    "description": "The founders were right this time, and the record says so, and that is worth knowing — but a living ship steers by its own judgment, not by the posthumous scores of the dead. Honor the verdict, file it, and keep the habit of deciding for yourselves.",
+    "population_delta": {
+     "adaptation": 0.04,
+     "stability": 0.04,
+     "legacy_loyalty": -0.01
+    },
+    "log": "The council noted the founders' vindication, honored it, and filed it — and went on steering by its own lights, unwilling to let even a proven-wise founding become a hand on the helm from beyond the grave. It was a cooler gratitude, and a mature one, the living crediting the dead without kneeling to them."
+   }
+  ]
  }
 ]

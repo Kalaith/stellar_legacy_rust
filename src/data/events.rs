@@ -315,6 +315,14 @@ pub struct EventTemplate {
     /// Empty = ungated.
     #[serde(default)]
     pub requires_consequence: Vec<String>,
+    /// Consequence *bar* (content-depth event families round 13): the negative twin
+    /// of `requires_consequence` — the event stays out of the pool if *any* tag
+    /// listed here is on record. So a choice can permanently *close a door*: a
+    /// windfall of trust never offered to a ship known to have broken its word, a
+    /// founding reverence impossible for a ship that buried its founding truth.
+    /// Empty = nothing bars it.
+    #[serde(default)]
+    pub forbidden_consequence: Vec<String>,
     /// Charter-tag gate (content-depth iteration): the event only enters the
     /// pool while an active contract carries every tag listed here (see
     /// `ContractTemplate::tags`). This lets a destination color its own event

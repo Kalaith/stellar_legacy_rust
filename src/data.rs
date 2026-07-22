@@ -1070,6 +1070,8 @@ mod tests {
                         .iter()
                         .flat_map(|o| o.requires.requires_consequence.iter()),
                 )
+                // Content-depth round 13: the negative gate names consequences too.
+                .chain(e.forbidden_consequence.iter())
             {
                 assert!(
                     produced.contains(tag),

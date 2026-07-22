@@ -169,6 +169,15 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Consequence bar (content-depth round 13): a disqualifying history closes the
+    // door — any forbidden tag on record keeps the event out of the pool.
+    if template
+        .forbidden_consequence
+        .iter()
+        .any(|tag| sim.consequences.contains(tag))
+    {
+        return false;
+    }
     if !template.requires_charter_tag.is_empty() {
         match sim.contract.as_ref() {
             Some(contract)
@@ -1913,6 +1922,51 @@ mod tests {
         assert!(
             passes_gate(&sim, event),
             "hunger and cold together bring it"
+        );
+    }
+
+    #[test]
+    fn a_forbidden_consequence_closes_a_door_a_choice_slammed() {
+        // Content-depth event families round 13: the negative gate. A generally
+        // available opportunity is barred once a disqualifying history is on record
+        // — trust never extended to a ship known to have broken its word — and a
+        // multi-tag bar closes on *either* tag.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 57, &picks);
+
+        // The stranger's trust is offered to a ship with a clean name…
+        let trust = data.events.get("the_strangers_trust").unwrap();
+        assert_eq!(
+            trust.forbidden_consequence,
+            vec!["broke_a_bargain".to_string()]
+        );
+        assert!(
+            passes_gate(&sim, trust),
+            "an unspoiled name is extended the stranger's trust"
+        );
+        // …and never again once the ship has broken a bargain.
+        sim.consequences.push("broke_a_bargain".to_string());
+        assert!(
+            !passes_gate(&sim, trust),
+            "a known oathbreaker is offered no trust"
+        );
+
+        // A multi-tag bar: the founders' vindication is closed by either a buried
+        // record or a lost archive — you cannot revere a founding truth you hid or
+        // forgot.
+        let vindication = data.events.get("the_founders_vindicated").unwrap();
+        assert!(vindication.forbidden_consequence.len() >= 2);
+        let mut clean = SimState::new_campaign(&data, "preservers", 58, &picks);
+        clean.dynasty.generation = 6;
+        assert!(
+            passes_gate(&clean, vindication),
+            "an intact founding record can be vindicated"
+        );
+        clean.consequences.push("the_lost_archive".to_string());
+        assert!(
+            !passes_gate(&clean, vindication),
+            "a ship that let its archive die cannot vindicate a founding it forgot"
         );
     }
 

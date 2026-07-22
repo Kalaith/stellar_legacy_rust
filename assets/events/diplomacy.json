@@ -934,5 +934,46 @@
     "log": "The council spent the fat treasury on the ship itself — the habitat decks refit, long-deferred comforts restored, the people's own hands opened — and for a while the voyage felt less like an endurance and more like a life. The coffers came down hard, and the ship that spent them learned, a little, to expect plenty."
    }
   ]
+ },
+ {
+  "id": "the_strangers_trust",
+  "category": "generational_challenge",
+  "title": "The Stranger's Trust",
+  "description": "A passing hauler, met by chance in the deep between waystations, offers the ship generous terms on nothing but its word — no collateral held, no escrow, no lien, only the old spacer's faith that a hull that says it will pay, pays. It is the kind of trust that is worth more than the goods, and it is extended only to those whose name has not yet been spoiled in the trade-dark.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "forbidden_consequence": [
+   "broke_a_bargain"
+  ],
+  "outcomes": [
+   {
+    "id": "accept_on_trust",
+    "label": "Accept on trust, and mean it",
+    "description": "Take the generous terms and hold to them absolutely — deliver what was promised, on time, in full — because a name good enough to buy on trust is an asset no treasury can replace, and the surest way to keep it is to deserve it.",
+    "resource_delta": {
+     "food": 900,
+     "minerals": 300,
+     "influence": 40
+    },
+    "population_delta": {
+     "unity": 0.03,
+     "legacy_loyalty": 0.02
+    },
+    "log": "The ship took the stranger's terms on nothing but its word, and made very sure the word was kept — the goods flowing generous and the debt paid to the last credit on the promised day. It cost nothing but honesty, and it bought the one thing a hull cannot mint for itself: the trust of strangers, worth more in the long dark than any hold of ore."
+   },
+   {
+    "id": "insist_on_formal_terms",
+    "label": "Insist on formal terms",
+    "description": "Trust is a fine thing and a fragile one; better a smaller deal on paper than a large one on a handshake that a future council might not honor. Decline the generosity, sign a plain contract, and keep the ledger clean of obligations no one alive agreed to.",
+    "resource_delta": {
+     "credits": 600,
+     "food": 300
+    },
+    "population_delta": {
+     "stability": 0.04
+    },
+    "log": "The council declined the open hand and signed a plain, smaller contract instead, keeping the ledger clean of trust it might not be able to repay. The hauler shrugged and dealt fair, a little cooler for the refusal — a safe choice, and one that left on the table something the ship had not quite learned how to accept."
+   }
+  ]
  }
 ]
