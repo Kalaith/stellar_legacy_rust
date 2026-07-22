@@ -112,4 +112,16 @@ pub struct SubsystemsConfig {
     /// untouched. 0 = a farm's condition does not touch its yield.
     #[serde(default)]
     pub agriculture_condition_food_penalty: f32,
+    /// How much a *degraded* education/culture archive weakens generational
+    /// knowledge transmission (content-depth subsystems round 13): the last module's
+    /// missing condition→output coupling, and education's counterpart to the
+    /// engineering keystone — where engineering's condition scales every module's
+    /// *decay*, education's condition scales every module's *knowledge transfer*
+    /// forward. The transmission factor is `1 - education_transmission_condition_penalty
+    /// ·(1 - condition)`, so a vivid archive (condition 1.0) transmits fully — the
+    /// untouched baseline — while a crumbling one loses more of the founding craft
+    /// each generation. Penalty-below-full so the launch baseline is untouched.
+    /// 0 = the archive's physical state does not touch what the next generation keeps.
+    #[serde(default)]
+    pub education_transmission_condition_penalty: f32,
 }

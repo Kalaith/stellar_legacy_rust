@@ -305,13 +305,16 @@ pub fn decay_subsystems(sim: &mut SimState, data: &GameData, wear: f32) {
 /// forward (`education_tier × education_transmission_per_tier`). Clamped 0-1.
 pub fn transmit_knowledge(sim: &mut SimState, data: &GameData) {
     let cfg = &data.config.subsystems;
-    let education_tier = sim
-        .subsystems
-        .get("education_culture")
-        .map(|s| s.tier)
-        .unwrap_or(0);
+    let education = sim.subsystems.get("education_culture");
+    let education_tier = education.map(|s| s.tier).unwrap_or(0);
+    // Education is the knowledge keystone (content-depth subsystems round 13): a
+    // well-kept archive transmits the founding craft forward in full, a crumbling
+    // one loses more of it each generation. Penalty-below-full keeps the baseline.
+    let education_condition = education.map_or(1.0, |s| s.condition);
+    let transmission_factor =
+        (1.0 - cfg.education_transmission_condition_penalty * (1.0 - education_condition)).max(0.0);
     let delta = -cfg.knowledge_decay_per_generation
-        + education_tier as f32 * cfg.education_transmission_per_tier;
+        + education_tier as f32 * cfg.education_transmission_per_tier * transmission_factor;
     for id in GameData::sorted_ids(&data.subsystems) {
         if let Some(state) = sim.subsystems.get_mut(&id) {
             state.knowledge = (state.knowledge + delta).clamp(0.0, 1.0);
@@ -616,6 +619,44 @@ mod tests {
         assert!(
             sim.subsystems["medical_bay"].knowledge > k1,
             "a schooled generation carries knowledge forward"
+        );
+    }
+
+    #[test]
+    fn a_crumbling_archive_passes_less_of_the_founding_craft_forward() {
+        // Content-depth subsystems round 13: education is the knowledge keystone —
+        // its condition scales how well every module's knowledge transmits to the
+        // next generation. At the same schooling tier, a vivid archive carries the
+        // craft forward better than a crumbling one, and a pristine archive matches
+        // the untouched baseline.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config
+                .subsystems
+                .education_transmission_condition_penalty
+                > 0.0,
+            "this test needs the education-condition coupling enabled"
+        );
+
+        let transmit_at = |edu_condition: f32| -> f32 {
+            let (_, mut sim) = campaign(4);
+            // A high schooling tier so transmission dominates, at a set archive state.
+            let edu = sim.subsystems.get_mut("education_culture").unwrap();
+            edu.tier = 3;
+            edu.condition = edu_condition;
+            // A module whose knowledge starts mid-range, so the generational change
+            // is visible either way.
+            sim.subsystems.get_mut("medical_bay").unwrap().knowledge = 0.5;
+            transmit_knowledge(&mut sim, &data);
+            sim.subsystems["medical_bay"].knowledge
+        };
+
+        let vivid = transmit_at(1.0);
+        let crumbling = transmit_at(0.2);
+        assert!(
+            vivid > crumbling,
+            "a vivid archive carries the craft forward better than a crumbling one \
+             (vivid {vivid} vs crumbling {crumbling})"
         );
     }
 
