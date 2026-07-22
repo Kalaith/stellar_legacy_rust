@@ -84,6 +84,16 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.push_log(line);
     }
 
+    // Track how long scarcity has ground on (content-depth provisioning round 13):
+    // now that the year's food is settled, a store still below the lean line adds a
+    // year to the streak; a recovered larder resets it. This is what lets content
+    // tell a chronic hunger from one bad winter.
+    if config.lean_food_threshold > 0 && sim.resources.food < config.lean_food_threshold {
+        sim.lean_food_years = sim.lean_food_years.saturating_add(1);
+    } else {
+        sim.lean_food_years = 0;
+    }
+
     // A skilled security chief and a well-kept security corps both slowly steady
     // a fractious ship (content-depth subsystems round 9): crew skill + module
     // condition stack.

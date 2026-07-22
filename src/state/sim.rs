@@ -388,6 +388,12 @@ pub struct SimState {
     /// a stage it already passed. 0 at launch.
     #[serde(default)]
     pub depopulation_beats_fired: u32,
+    /// Consecutive years the food store has sat below the *lean* line (content-depth
+    /// provisioning round 13): a rolling count of how long scarcity has ground on,
+    /// reset the moment the larder recovers. It's what lets content tell a chronic
+    /// hunger — a lean *generation* — apart from one hungry winter. 0 at launch.
+    #[serde(default)]
+    pub lean_food_years: u32,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -477,6 +483,7 @@ impl SimState {
             last_dominant_faction: String::new(),
             morale_band: 0,
             depopulation_beats_fired: 0,
+            lean_food_years: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),
             log: Vec::new(),

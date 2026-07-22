@@ -264,6 +264,11 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     if template.max_population > 0 && sim.population.count > template.max_population {
         return false;
     }
+    // Chronic-scarcity gate (content-depth round 13): long-hunger content waits
+    // until the shortage has ground on for years, not just this season.
+    if sim.lean_food_years < template.min_lean_food_years {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -1968,6 +1973,42 @@ mod tests {
         assert!(
             !passes_gate(&clean, vindication),
             "a ship that let its archive die cannot vindicate a founding it forgot"
+        );
+    }
+
+    #[test]
+    fn a_chronic_scarcity_gate_waits_for_a_lean_generation() {
+        // Content-depth provisioning round 13: the persistence gate. `the_long_hunger`
+        // tells a chronic hunger from one bad winter — it needs both a currently lean
+        // larder *and* a shortage that has ground on for years, so a ship one season
+        // into a famine does not yet face the long-hunger reckoning.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 63, &picks);
+        let event = data.events.get("the_long_hunger").unwrap();
+        let famine = event.food_below.expect("gates on a lean larder");
+        let years = event.min_lean_food_years;
+        assert!(years > 0, "the long hunger gates on a sustained shortage");
+
+        // Lean today, but only just: no long-hunger reckoning yet.
+        sim.resources.food = famine - 1;
+        sim.lean_food_years = years - 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "one season of hunger is not yet a lean generation"
+        );
+        // A shortage that has ground on for years, still lean: it surfaces.
+        sim.lean_food_years = years;
+        assert!(
+            passes_gate(&sim, event),
+            "years of grinding scarcity bring the long hunger"
+        );
+        // A ship that has recovered its stores does not face it, however long the
+        // past lean lasted (the streak resets on recovery in the tick).
+        sim.resources.food = famine + 5000;
+        assert!(
+            !passes_gate(&sim, event),
+            "a recovered larder ends the long hunger"
         );
     }
 

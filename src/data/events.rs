@@ -300,6 +300,14 @@ pub struct EventTemplate {
     /// 0 = ungated.
     #[serde(default)]
     pub max_population: u32,
+    /// Chronic-scarcity gate (content-depth provisioning round 13): the event only
+    /// enters the pool once the food store has sat below the lean line for at least
+    /// this many consecutive years (`sim.lean_food_years`) — the honest gate for
+    /// *long-hunger* content, so a beat about a lean generation cannot surface on a
+    /// ship one bad winter into a shortage. Pair with `food_below` for a currently
+    /// lean ship. 0 = ungated.
+    #[serde(default)]
+    pub min_lean_food_years: u32,
     /// Scheduled-only (content-depth event families round 9): the event never
     /// enters a random or beat roll — it fires solely as the timed payoff of a
     /// `schedule_followup`. Keeps a determined-clock reckoning out of the reactive

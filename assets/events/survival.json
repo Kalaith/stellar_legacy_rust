@@ -1725,5 +1725,48 @@
     "log": "The council spent nearly the last of the fuel in one hard burn and clawed the ship back into a living current before the dead reach could close around it for good. It left the tank a whisper from empty and the hull the worse for the strain, and it kept the voyage a voyage rather than a well-fed tomb drifting fat and purposeless in the deep."
    }
   ]
+ },
+ {
+  "id": "the_long_hunger",
+  "category": "generational_challenge",
+  "title": "The Long Hunger",
+  "description": "This is no famine year. The stores have run thin for fifteen years and more — a whole cohort raised to adulthood having never once seen a full granary, hunger settled from crisis into climate, the ordinary background condition of a life aboard. The children of the lean years do not fear the hunger the way their elders did; they simply do not know anything else. A ship that has been hungry for a generation must decide whether that is a thing to end or a thing to become.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 4000,
+  "min_lean_food_years": 15,
+  "outcomes": [
+   {
+    "id": "break_the_hunger",
+    "label": "Break it, whatever it costs",
+    "description": "Refuse to let hunger become the ship's nature. Throw every idle hand at the grow-decks, retool whole compartments to hydroponics, spend the reserves on the biggest resupply push the ship can mount — end the long lean by main force, and teach the lean generation that scarcity is a problem to be solved and not a fate to be borne.",
+    "resource_delta": {
+     "credits": -3000,
+     "minerals": -400,
+     "food": 9000
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "unity": 0.04
+    },
+    "log": "The council refused to let the hunger become the ship, and broke the long lean by sheer effort — decks retooled to grow-beds, reserves poured into one great resupply push, every idle hand bent to the fields until the granaries answered at last. It cost the treasury and the stores dear, and it taught the lean generation the thing their elders feared they would forget: that hunger is an enemy to be beaten, not a weather to be endured."
+   },
+   {
+    "id": "make_peace_with_scarcity",
+    "label": "Make the ship a people of the lean",
+    "description": "A ship cannot always outfight the dark. Stop spending the treasury against the hunger and instead adapt to it — ration as a way of life, breed thrift into every rite and every recipe, make a virtue and an identity of going without. A people shaped by scarcity is a hardy people, even if it is a hungry one.",
+    "population_delta": {
+     "adaptation": 0.06,
+     "stability": 0.05,
+     "cultural_drift": 0.04,
+     "morale": -0.05,
+     "legacy_loyalty": -0.02
+    },
+    "long_term_consequences": [
+     "bred_to_thrift"
+    ],
+    "log": "The council stopped fighting the hunger and began, instead, to belong to it — ration woven into rite, thrift bred into the young until going without was less a hardship than a heritage. The ship that came out of the long lean was a hardier and a hungrier thing than the founders launched, a people who had made scarcity into character, and who would look on any future plenty with the deep suspicion of those who have learned not to trust a full plate."
+   }
+  ]
  }
 ]

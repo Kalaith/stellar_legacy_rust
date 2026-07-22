@@ -126,6 +126,12 @@ pub struct GameConfig {
     pub food_per_person_per_year: f32,
     pub low_food_threshold: i64,
     pub low_energy_threshold: i64,
+    /// Food store below which a year counts as *lean* (content-depth provisioning
+    /// round 13): distinct from the near-famine `low_food_threshold`, this is the
+    /// "not comfortably stocked" line whose sustained crossing drives `lean_food_years`
+    /// — the state that separates a bad year from a bad generation. 0 = disabled.
+    #[serde(default)]
+    pub lean_food_threshold: i64,
     pub hull_warning_threshold: f32,
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,
