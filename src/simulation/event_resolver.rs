@@ -26,6 +26,11 @@ pub fn active_complication<'a>(
                 .iter()
                 .all(|tag| sim.consequences.contains(tag))
             && c.food_below.is_none_or(|t| sim.resources.food <= t)
+            && (c.requires_dominant_faction.is_empty()
+                || sim.dominant_faction_id() == Some(c.requires_dominant_faction.as_str()))
+            && c.requires_factions_aboard
+                .iter()
+                .all(|id| sim.is_faction_aboard(id))
     })
 }
 
@@ -711,6 +716,52 @@ mod tests {
             sim.subsystems["engineering_bay"].knowledge < before,
             "the machinists' craft leaves with them"
         );
+    }
+
+    #[test]
+    fn a_faction_colored_complication_rides_only_under_its_faction() {
+        // Content-depth factions round 6: the same crisis reads differently
+        // depending on who runs the ship. micrometeoroid_storm gains a First
+        // Flame reaction (a trial of faith) only while the Keepers are dominant.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 88, &picks);
+        let template = data.events.get("micrometeoroid_storm").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| c.requires_dominant_faction == "first_flame")
+            .expect("the storm carries a First Flame reaction");
+        assert!(
+            sim.is_faction_aboard("first_flame"),
+            "seed campaign holds the Flame"
+        );
+
+        // Someone else dominant: the faction reaction stays out.
+        for f in &mut sim.factions {
+            f.members = if f.faction_id == "first_flame" {
+                50
+            } else {
+                900
+            };
+        }
+        assert_ne!(sim.dominant_faction_id(), Some("first_flame"));
+        assert!(active_complication(&sim, template).is_none());
+
+        // The Keepers running the ship: the reaction rides and shows.
+        for f in &mut sim.factions {
+            f.members = if f.faction_id == "first_flame" {
+                900
+            } else {
+                50
+            };
+        }
+        assert_eq!(sim.dominant_faction_id(), Some("first_flame"));
+        assert_eq!(
+            active_complication(&sim, template).map(|c| &c.id),
+            Some(&comp.id)
+        );
+        assert!(shown_description(&sim, template).contains("Keepers"));
     }
 
     #[test]

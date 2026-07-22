@@ -222,7 +222,20 @@
     "log": "A hard burn carried the ship clear of the debris front, at the cost of the fuel budget."
    }
   ],
-  "family": "engineering"
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "flame_reads_a_trial",
+    "requires_dominant_faction": "first_flame",
+    "description_add": "The Keepers of the First Flame have named the storm a trial — a fire sent to temper the faithful — and the decks go grim and unbroken into it, singing.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.03,
+     "morale": -0.02
+    },
+    "log": "Under the Keepers, the ship met the storm as scripture met fire — grimly, together, certain it meant something. The debris did not care, but the people came through it harder and more one thing than they went in."
+   }
+  ]
  },
  {
   "id": "coolant_breach",
@@ -259,7 +272,19 @@
     "log": "Engineers patched the breach by hand. The reactor runs, and runs hot."
    }
   ],
-  "family": "engineering"
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "ascension_feels_no_dread",
+    "requires_dominant_faction": "ascension_circle",
+    "description_add": "The Ascension Circle work the breach without the fear that slows other hands — augmented reflexes, no panic, a cold competence that saves lives and unsettles the ones it saves.",
+    "population_delta": {
+     "morale": 0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The Circle handled the breach with a speed and a calm the unaugmented could not match and did not quite trust — fewer dead, and a quiet afterward in which the ship wondered, again, how much like the founders its saviors still were."
+   }
+  ]
  },
  {
   "id": "skills_drought",
@@ -298,7 +323,25 @@
     "log": "The crews leaned on the archives. Something in the doing, not the knowing, was lost."
    }
   ],
-  "family": "legacy_drift"
+  "family": "legacy_drift",
+  "complications": [
+   {
+    "id": "hearth_passes_it_at_the_table",
+    "requires_dominant_faction": "hearth_union",
+    "description_add": "Under the Hearth Union the drought is softened by the table itself — craft passes hand to hand at the common meal the way it always has among them, elders and apprentices seated together, and less is lost than the archivists feared.",
+    "population_delta": {
+     "unity": 0.03,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.04
+     }
+    ],
+    "log": "The Hearth kept the drought from becoming a rout the way it kept everything — at the table, elder beside apprentice, the doing handed over with the bread. What the archives could not carry, the meal did."
+   }
+  ]
  },
  {
   "id": "youth_unrest",

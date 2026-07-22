@@ -659,6 +659,18 @@ mod tests {
                         .iter()
                         .filter_map(|o| o.faction_merge_id.as_ref()),
                 )
+                // Content-depth round 6: complication faction gates too.
+                .chain(
+                    e.complications
+                        .iter()
+                        .map(|c| &c.requires_dominant_faction)
+                        .filter(|f| !f.is_empty()),
+                )
+                .chain(
+                    e.complications
+                        .iter()
+                        .flat_map(|c| c.requires_factions_aboard.iter()),
+                )
             {
                 assert!(
                     data.factions.get(fid).is_some(),

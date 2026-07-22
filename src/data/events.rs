@@ -126,6 +126,15 @@ pub struct Complication {
     pub requires_consequence: Vec<String>,
     #[serde(default)]
     pub food_below: Option<i64>,
+    /// Faction gates (content-depth factions round 6: faction-colored event
+    /// reactions). The complication rides only while this faction runs the ship
+    /// (largest aboard) and/or every listed faction is still aboard — so the same
+    /// crisis reads and plays differently depending on who is in charge. Empty =
+    /// that gate ignored.
+    #[serde(default)]
+    pub requires_dominant_faction: String,
+    #[serde(default)]
+    pub requires_factions_aboard: Vec<String>,
     /// Sentence appended to the event's description when the complication rides.
     pub description_add: String,
     /// Extra consequences applied on top of the chosen outcome, and the line that
