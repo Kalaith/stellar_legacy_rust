@@ -76,6 +76,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_adaptation_beat(sim, data, &mut report)
             && !fire_crisis_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
+            && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
             && !fire_homecoming_beat(sim, data, &mut report)
             && !fire_power_transition_beat(sim, data, &mut report)
@@ -282,6 +283,30 @@ fn fire_flourish_beat(sim: &mut SimState, data: &GameData, report: &mut TickRepo
         contract.flourish_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.flourish_beat_family, report);
+    true
+}
+
+/// Fire a depopulation beat (content-depth round 12): the crew's *headcount* — the
+/// one major state dimension no beat watched. As the population falls to or below
+/// each authored fraction of its founding size (high→low), a beat is forced — the
+/// sealed ship's slow tragedy of a crew that only ever thins, marked at its stages.
+/// Campaign-scoped (the counter persists across contracts, so a recruited-up ship
+/// never re-marks a passed stage) but fires only during an active voyage. At most
+/// one threshold per month.
+fn fire_depopulation_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let fired = sim.depopulation_beats_fired as usize;
+    if fired >= cfg.depopulation_beats.len() || sim.contract.is_none() {
+        return false;
+    }
+    let founding = data.config.starting_population as f32;
+    let threshold = (cfg.depopulation_beats[fired] * founding).ceil() as i64;
+    if (sim.population.count as i64) > threshold {
+        return false;
+    }
+    sim.depopulation_beats_fired += 1;
+    let family = cfg.depopulation_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
     true
 }
 

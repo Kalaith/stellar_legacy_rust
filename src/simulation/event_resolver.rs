@@ -250,6 +250,11 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Depopulation gate (content-depth round 12): crew-thinning content stays out
+    // of the pool until the crew has fallen to or below its headcount ceiling.
+    if template.max_population > 0 && sim.population.count > template.max_population {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -1908,6 +1913,31 @@ mod tests {
         assert!(
             passes_gate(&sim, event),
             "hunger and cold together bring it"
+        );
+    }
+
+    #[test]
+    fn a_depopulation_gate_waits_for_a_thinned_crew() {
+        // Content-depth campaign-skeleton round 12: the honest gate for crew-thinning
+        // content, the descending mirror of min_morale. `the_thinning_decks` stays
+        // out of the pool on a full ship and surfaces only once the crew has fallen
+        // to or below its headcount ceiling.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 51, &picks);
+        let event = data.events.get("the_thinning_decks").unwrap();
+        let ceiling = event.max_population;
+        assert!(ceiling > 0, "the thinning content gates on a headcount");
+
+        sim.population.count = ceiling + 1;
+        assert!(
+            !passes_gate(&sim, event),
+            "a full ship does not reckon with empty decks"
+        );
+        sim.population.count = ceiling;
+        assert!(
+            passes_gate(&sim, event),
+            "a crew fallen to the ceiling surfaces the thinning"
         );
     }
 

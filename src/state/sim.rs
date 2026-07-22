@@ -381,6 +381,13 @@ pub struct SimState {
     /// launch; settling back to steady is silent but remembered.
     #[serde(default)]
     pub morale_band: i8,
+    /// How many depopulation thresholds the skeleton has already marked
+    /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
+    /// once per authored fraction of the founding size across the whole campaign
+    /// (not per contract), so a recruited-up ship between voyages does not re-mark
+    /// a stage it already passed. 0 at launch.
+    #[serde(default)]
+    pub depopulation_beats_fired: u32,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -469,6 +476,7 @@ impl SimState {
             event_fire_counts: HashMap::new(),
             last_dominant_faction: String::new(),
             morale_band: 0,
+            depopulation_beats_fired: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),
             log: Vec::new(),

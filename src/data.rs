@@ -537,6 +537,18 @@ pub struct CampaignSkeletonConfig {
     /// The family a golden-age flourish beat draws from.
     #[serde(default)]
     pub flourish_beat_family: String,
+    /// Depopulation thresholds (content-depth round 12): the crew's *headcount*
+    /// finally gets a beat — the one major state dimension none watched. As the
+    /// population falls to or below each fraction of its *founding* size (authored
+    /// high→low, e.g. 0.6/0.4/0.25 of the launch thousands), a beat is forced — the
+    /// sealed ship's defining slow tragedy, the decks thinning across the centuries,
+    /// marked at its stages. Campaign-scoped (fires once per fraction a voyage, not
+    /// per contract). Empty = no depopulation beats.
+    #[serde(default)]
+    pub depopulation_beats: Vec<f32>,
+    /// The family a crew-thinning depopulation beat draws from.
+    #[serde(default)]
+    pub depopulation_beat_family: String,
     /// Objective-progress thresholds (content-depth round 9): the first pacing
     /// keyed to *the mission itself* rather than time or an identity stat. As the
     /// active charter's `objective_fraction` crosses each (authored low→high) a
@@ -1414,6 +1426,26 @@ mod tests {
             assert!(
                 sk.flourish_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton flourish_beats must be within [0, 1]"
+            );
+        }
+        // Content-depth round 12: depopulation beats — founding-fraction thresholds
+        // the crew falls past in turn, so strictly descending and in range, family
+        // with events.
+        if !sk.depopulation_beats.is_empty() {
+            assert!(
+                families.contains(&sk.depopulation_beat_family),
+                "campaign_skeleton depopulation_beat_family '{}' has no events",
+                sk.depopulation_beat_family
+            );
+            assert!(
+                sk.depopulation_beats.windows(2).all(|w| w[0] > w[1]),
+                "campaign_skeleton depopulation_beats must be strictly descending"
+            );
+            assert!(
+                sk.depopulation_beats
+                    .iter()
+                    .all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton depopulation_beats must be within (0, 1]"
             );
         }
         // Content-depth round 9: objective-progress beats — mission-fraction

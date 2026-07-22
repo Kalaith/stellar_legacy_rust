@@ -1241,6 +1241,66 @@ fn a_flourish_beat_fires_as_the_ship_reaches_its_golden_age() {
 }
 
 #[test]
+fn a_depopulation_beat_fires_as_the_crew_thins() {
+    // Content-depth campaign-skeleton round 12: the crew's headcount — the one
+    // major state dimension no beat watched. With reactive rolls and the other
+    // threshold beats off, the only thing that can fire is the depopulation beat —
+    // and it must, once the crew falls past the first founding-fraction, while a
+    // full ship stays silent. The beat surfaces the honest max_population content.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    let first = data.config.campaign_skeleton.depopulation_beats[0];
+    let founding = data.config.starting_population;
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // A full crew marks no thinning.
+    sim.population.count = founding;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.depopulation_beats_fired, 0,
+        "a full ship has no thinning to mark"
+    );
+
+    // Thin the crew past the first founding-fraction: the beat fires, once, and
+    // forces a survival beat (the content pool, gated by max_population).
+    sim.population.count = (first * founding as f32) as u32 - 1;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.depopulation_beats_fired, 1,
+        "crossing the first fraction marks the thinning"
+    );
+
+    // Resolve whatever it surfaced; still at the same stage, no re-mark
+    // (campaign-scoped counter).
+    if let Some(p) = sim.pending_event.clone() {
+        let t = data.events.get(&p.template_id).cloned().unwrap();
+        crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+    }
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.depopulation_beats_fired, 1,
+        "staying at one stage does not re-mark it"
+    );
+}
+
+#[test]
 fn dead_air_forces_a_beat_after_too_long_a_silence() {
     // Everything that could fire an event is off: no reactive rolls, no drift or
     // adaptation beats, no scheduled beats. The only thing left that can break

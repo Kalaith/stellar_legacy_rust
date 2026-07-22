@@ -285,6 +285,14 @@ pub struct EventTemplate {
     /// > 0).
     #[serde(default)]
     pub min_objective_fraction: f32,
+    /// Depopulation gate (content-depth campaign-skeleton round 12): the event only
+    /// enters the pool while the crew has fallen to or below this *headcount* — the
+    /// honest gate for crew-thinning content (the descending mirror of `min_morale`),
+    /// so "the decks stand half empty" cannot surface on a full ship, whether forced
+    /// by a depopulation beat or rolled. An absolute count (founding is ~1000).
+    /// 0 = ungated.
+    #[serde(default)]
+    pub max_population: u32,
     /// Scheduled-only (content-depth event families round 9): the event never
     /// enters a random or beat roll — it fires solely as the timed payoff of a
     /// `schedule_followup`. Keeps a determined-clock reckoning out of the reactive

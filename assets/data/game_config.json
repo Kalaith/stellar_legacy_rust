@@ -168,6 +168,12 @@
       0.92
     ],
     "flourish_beat_family": "comedy",
+    "depopulation_beats": [
+      0.6,
+      0.4,
+      0.25
+    ],
+    "depopulation_beat_family": "survival",
     "objective_beats": [
       0.5,
       1.0

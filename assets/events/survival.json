@@ -1535,5 +1535,114 @@
     "log": "The ship let itself live well in the fat years — the plates fuller, the feast-days longer, a whole generation raised to know plenty as the natural order rather than a windfall to be feared. They were happy years, and honestly earned, and they quietly unlearned the one skill the founders had drilled deepest: how to go without."
    }
   ]
+ },
+ {
+  "id": "the_thinning_decks",
+  "category": "generational_challenge",
+  "title": "The Thinning Decks",
+  "description": "The muster confirms what the quiet corridors already told everyone: the founders cast off with a thousand souls and more, and the ship now barely fills six hundred berths. Whole decks stand dark and sealed for want of people to walk them. A crew that only ever shrinks must decide how to carry a hull built for a fuller ship.",
+  "requires_decision": true,
+  "family": "survival",
+  "max_population": 600,
+  "outcomes": [
+   {
+    "id": "consolidate_to_the_living_decks",
+    "label": "Consolidate to the living decks",
+    "description": "Seal the empty quarters, draw the crew inward, and run the ship the smaller thing it has become. It is an admission, and it is also sense — warmth and hands and light spent only where people still are.",
+    "population_delta": {
+     "stability": 0.05,
+     "unity": 0.04,
+     "legacy_loyalty": -0.03,
+     "morale": -0.02
+    },
+    "log": "The council sealed the dark decks and drew the dwindled crew into the ship's warm heart, running the hull as the smaller thing it had become. It was efficient and a little mournful, a people admitting its own thinning by the doors it chose to close — but the ones who remained lived closer, and warmer, for it."
+   },
+   {
+    "id": "keep_the_whole_ship_lit",
+    "label": "Keep the whole ship lit and crewed",
+    "description": "The founders built this ship entire and meant it walked entire. Keep every deck lit and staffed, however thin the watch — a smaller people refusing to live smaller, holding the founders' ship whole against the day the numbers climb again.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "morale": 0.03,
+     "stability": -0.03
+    },
+    "log": "The council kept the whole ship lit and walked, the watches stretched gossamer-thin across decks built for a fuller crew — an act of stubborn faith that the founders' ship should stay the founders' ship, whatever the muster said. It cost the living rest and reach, and it kept something the sealed-off ship would have quietly surrendered."
+   }
+  ]
+ },
+ {
+  "id": "the_hollow_muster",
+  "category": "generational_challenge",
+  "title": "The Hollow Muster",
+  "description": "Fewer than half the founding number answer the muster now. The work a thousand hands once shared falls to four hundred, and the arithmetic has stopped being kind: either the ship's ambitions shrink to fit the crew, or the crew is worked past what a life should bear to keep the ship's ambitions whole.",
+  "requires_decision": true,
+  "family": "survival",
+  "max_population": 400,
+  "outcomes": [
+   {
+    "id": "mothball_what_cannot_be_tended",
+    "label": "Mothball what the crew can't tend",
+    "description": "Let machines and darkness hold the parts of the ship the crew can no longer reach. Automate the routine, seal the rest, and accept a hull that is a little more mechanism and a little less community than the founders drew.",
+    "population_delta": {
+     "stability": 0.05,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": -0.03
+     }
+    ],
+    "log": "The council handed the ship's unreachable reaches to automation and the dark, a hull kept running more by machine than by crew. It freed the thinned muster from work it could not have done, and it moved the ship a step further from the crewed, living thing the founders launched toward something that merely functioned."
+   },
+   {
+    "id": "drive_the_crew_harder",
+    "label": "Drive the remaining crew harder",
+    "description": "Keep it all human, all crewed, all tended by hands — and ask those hands for more. Longer watches, fewer idle days, a people carrying a thousand's work on four hundred backs because it will not let the ship become a machine.",
+    "population_delta": {
+     "unity": 0.05,
+     "legacy_loyalty": 0.04,
+     "morale": -0.06
+    },
+    "log": "The council asked the four hundred to carry the thousand's work, and they did — longer watches, shorter rest, a ship kept wholly human on the backs of a crew that would not let it be otherwise. It held the founders' ship as a crewed and living thing, and it wore the living thin to do it."
+   }
+  ]
+ },
+ {
+  "id": "the_last_quarter",
+  "category": "generational_challenge",
+  "title": "The Last Quarter",
+  "description": "The crew has fallen to a quarter of the founders' number — a line the old survival manuals ruled in red, below which a generation ship's gene pool and its working hands both turn perilous. The question on the council floor is no longer how the voyage thrives. It is whether the voyage can still be crewed at all.",
+  "requires_decision": true,
+  "family": "survival",
+  "max_population": 250,
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "concentrate_on_the_core",
+    "label": "Pool everything into a viable core",
+    "description": "Abandon the margins — the culture, the comforts, the redundancies — and pour every remaining soul and store into keeping the core of the ship, and the core of a breeding population, alive to arrive. Survive first; be a people later.",
+    "population_delta": {
+     "stability": 0.06,
+     "morale": -0.06,
+     "cultural_drift": -0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The council stripped the voyage to its viable core — the arts let go, the comforts closed, every hand and calorie bent to the one task of arriving crewed at all. It was a huddle where a society had been, and it kept the ember of the crossing alive past a threshold the founders' manuals had marked as the end of hope."
+   },
+   {
+    "id": "hold_the_founders_way",
+    "label": "Hold the founders' way of life even now",
+    "description": "A crew that saves itself by ceasing to be itself has not really saved anything. Keep the festivals, the schools, the dignities — live as people to the end of the odds rather than survive as cargo — and trust that a whole people is worth more, even now, than a larger frightened one.",
+    "population_delta": {
+     "morale": 0.06,
+     "legacy_loyalty": 0.05,
+     "unity": 0.03,
+     "stability": -0.04
+    },
+    "log": "The council refused to trade the ship's soul for its odds, keeping the festivals and the schools and the ordinary dignities even as the muster fell into the manuals' red. It was a gamble with arithmetic the founders would have called reckless, and it meant that whoever arrived, or didn't, did so as people rather than as frightened cargo."
+   }
+  ]
  }
 ]
