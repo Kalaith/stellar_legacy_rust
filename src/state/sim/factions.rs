@@ -1,9 +1,10 @@
 //! Founding factions (W7): population segments carried within one campaign.
 //!
 //! Factions are groups of people *aboard* — orthogonal to the campaign-level
-//! legacy (preservers/adaptors/wanderers), which is unchanged. v1 is structure
-//! only: segments, loss/recruit, and log/event coloring. No approval meters or
-//! stat modifiers yet — those layer on later.
+//! legacy (preservers/adaptors/wanderers), which is unchanged. Structure plus
+//! roster change (loss/merger/recruit), log/event coloring, and a one-time
+//! recruitment dowry per people (content-depth round 7). No *ongoing* approval
+//! meters yet — those layer on later.
 
 use serde::{Deserialize, Serialize};
 
@@ -412,9 +413,26 @@ impl SimState {
         });
         self.population.count += cfg.recruit_group_size;
         let name = log_name(&data.factions, faction_id);
-        self.push_log(format!(
-            "{name} came aboard in drydock — new blood for the long voyage."
-        ));
+        // A recruited people brings its signature dowry (content-depth round 7):
+        // the makers a sharper engineering bay, the gardeners a greener one, and
+        // so on — so which people you take on matters beyond the head count.
+        if let Some(def) = data.factions.get(faction_id) {
+            let boon = &def.recruit_boon;
+            self.population.apply(&boon.population_delta);
+            for delta in &boon.subsystem_deltas {
+                if let Some(state) = self.subsystems.get_mut(&delta.id) {
+                    state.condition = (state.condition + delta.condition).clamp(0.0, 1.0);
+                    state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
+                }
+            }
+            if boon.flavor.is_empty() {
+                self.push_log(format!(
+                    "{name} came aboard in drydock — new blood for the long voyage."
+                ));
+            } else {
+                self.push_log(boon.flavor.clone());
+            }
+        }
         Ok(())
     }
 }
@@ -635,5 +653,37 @@ mod tests {
             .factions
             .iter()
             .any(|f| f.faction_id == newcomer && f.is_aboard()));
+    }
+
+    #[test]
+    fn a_recruited_people_brings_its_signature_dowry() {
+        // Content-depth factions round 7: recruiting a people is no longer a bare
+        // head count — the Steel Covenant walk into the engineering bay and leave
+        // it sharper. Which people you take on matters.
+        let (data, mut sim, _picks) = armed(9);
+        sim.resources.credits = 100_000;
+        // Free a slot, then recruit the makers specifically.
+        sim.apply_faction_loss(&data, FactionLossKind::Departed);
+        assert!(
+            !sim.is_faction_aboard("steel_covenant"),
+            "the makers are recruitable in this campaign"
+        );
+        let boon = &data.factions.get("steel_covenant").unwrap().recruit_boon;
+        assert!(boon
+            .subsystem_deltas
+            .iter()
+            .any(|d| d.id == "engineering_bay"));
+
+        let before = sim.subsystems["engineering_bay"].knowledge;
+        sim.recruit_faction_group(&data, "steel_covenant").unwrap();
+        assert!(
+            sim.subsystems["engineering_bay"].knowledge > before,
+            "the Covenant's craft lifts the engineering bay on arrival"
+        );
+        // The dowry's own line was logged (not the generic recruit line).
+        assert!(
+            sim.log.iter().any(|e| e.text.contains("engineering bay")),
+            "the recruit logs the people's signature arrival"
+        );
     }
 }

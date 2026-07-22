@@ -762,6 +762,21 @@ mod tests {
                     .any(|(_, e)| e.requires_dominant_faction == *id),
                 "faction '{id}' has no signature (requires_dominant_faction) event"
             );
+            // Content-depth round 7: every people brings a distinct recruitment
+            // dowry — a personality, not a bare head count — and any subsystem it
+            // lifts must be real.
+            let boon = &faction.recruit_boon;
+            assert!(
+                !boon.flavor.trim().is_empty(),
+                "faction '{id}' has no recruit_boon flavor"
+            );
+            for delta in &boon.subsystem_deltas {
+                assert!(
+                    data.subsystems.get(&delta.id).is_some(),
+                    "faction '{id}' recruit_boon names unknown subsystem '{}'",
+                    delta.id
+                );
+            }
         }
 
         // W5: six subsystems load; each non-empty buffered family is one of the

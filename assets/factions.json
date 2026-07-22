@@ -4,41 +4,96 @@
     "name": "The Ascension Circle",
     "ideology": 0.9,
     "description": "Transhumanist zealots who read the voyage as a chrysalis — flesh is a first draft, to be rewritten in transit. They welcome every augmentation the ship can bear.",
-    "log_name": "the Ascension Circle"
+    "log_name": "the Ascension Circle",
+    "recruit_boon": {
+      "subsystem_deltas": [
+        {
+          "id": "medical_bay",
+          "knowledge": 0.1
+        }
+      ],
+      "flavor": "The Ascension Circle came aboard, and with them a body of knowledge the ship's medics had only read about — augmentation, gene-work, the long study of remaking the flesh for the dark."
+    }
   },
   {
     "id": "steel_covenant",
     "name": "The Steel Covenant",
     "ideology": 0.5,
     "description": "Machinists and engineers who trust tools over doctrine. If a thing can be built, maintained, and improved, the Covenant will build it — and argue the theology later.",
-    "log_name": "the Steel Covenant"
+    "log_name": "the Steel Covenant",
+    "recruit_boon": {
+      "subsystem_deltas": [
+        {
+          "id": "engineering_bay",
+          "knowledge": 0.1,
+          "condition": 0.05
+        }
+      ],
+      "flavor": "The Steel Covenant came aboard and walked straight into the engineering bay, and by the end of the shift it ran a shade truer than it had in a generation. The makers brought their craft with them."
+    }
   },
   {
     "id": "meridian_accord",
     "name": "The Meridian Accord",
     "ideology": 0.0,
     "description": "Pragmatic administrators who hold the middle line, weighing each innovation against each tradition and committing wholly to neither.",
-    "log_name": "the Meridian Accord"
+    "log_name": "the Meridian Accord",
+    "recruit_boon": {
+      "subsystem_deltas": [
+        {
+          "id": "security",
+          "knowledge": 0.08
+        }
+      ],
+      "population_delta": {
+        "stability": 0.03
+      },
+      "flavor": "The Meridian Accord came aboard and set up their courts before their quarters, and the ship's uneasy peace acquired, overnight, a body of law and the patient hands to keep it."
+    }
   },
   {
     "id": "hearth_union",
     "name": "The Hearth Union",
     "ideology": -0.3,
     "description": "Keepers of home and hearth who prize continuity — the shared meal, the remembered name — over the cold promise of the new.",
-    "log_name": "the Hearth Union"
+    "log_name": "the Hearth Union",
+    "recruit_boon": {
+      "population_delta": {
+        "morale": 0.04,
+        "unity": 0.03
+      },
+      "flavor": "The Hearth Union came aboard and, within a week, there was a common table on every deck that had gone without one. The ship felt, for the first time in a long while, like somewhere people lived rather than travelled."
+    }
   },
   {
     "id": "verdant_kin",
     "name": "The Verdant Kin",
     "ideology": -0.6,
     "description": "Soil-tenders who measure worth in living things. They distrust the sealed machine and keep the ship's green heart beating against the dark.",
-    "log_name": "the Verdant Kin"
+    "log_name": "the Verdant Kin",
+    "recruit_boon": {
+      "subsystem_deltas": [
+        {
+          "id": "agriculture",
+          "knowledge": 0.1,
+          "condition": 0.05
+        }
+      ],
+      "flavor": "The Verdant Kin came aboard and were in the grow-decks before their bags were stowed, and the tired hydroponics answered their hands as if remembering something. The ship would eat greener for their coming."
+    }
   },
   {
     "id": "first_flame",
     "name": "Keepers of the First Flame",
     "ideology": -0.9,
     "description": "Austere traditionalists who guard the founders' first covenant against every revision. To the Keepers, change is only a slower kind of forgetting.",
-    "log_name": "the Keepers of the First Flame"
+    "log_name": "the Keepers of the First Flame",
+    "recruit_boon": {
+      "population_delta": {
+        "legacy_loyalty": 0.04,
+        "unity": 0.02
+      },
+      "flavor": "The Keepers of the First Flame came aboard and lit their shrine-burn off the reactor before the first watch turned, and gave the ship a thing it had been missing: a fixed point, a fire that would not go out, a reason spoken aloud."
+    }
   }
 ]

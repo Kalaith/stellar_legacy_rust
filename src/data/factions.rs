@@ -4,6 +4,25 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::data::events::SubsystemDelta;
+use crate::data::PopulationDelta;
+
+/// What a people brings aboard when recruited in drydock (content-depth factions
+/// round 7: recruitable pool personalities). A one-time signature boon so *which*
+/// faction you take on matters beyond a head count — the makers bring their
+/// craft, the gardeners their green thumb. All effects are data; empty = a bare
+/// recruit.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct RecruitBoon {
+    /// Signature subsystem lift (condition/knowledge) their expertise grants.
+    pub subsystem_deltas: Vec<SubsystemDelta>,
+    /// Signature population lift (morale/unity/etc.) their arrival brings.
+    pub population_delta: PopulationDelta,
+    /// The line narrating what they bring; empty falls back to the generic one.
+    pub flavor: String,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FactionDef {
     pub id: String,
@@ -14,6 +33,9 @@ pub struct FactionDef {
     pub description: String,
     /// Short phrase used in logs, e.g. "the Verdant Kin".
     pub log_name: String,
+    /// The dowry this people brings when recruited (content-depth round 7).
+    #[serde(default)]
+    pub recruit_boon: RecruitBoon,
 }
 
 /// How a faction left the ship when an event drives it off (W7). WipedOut and
