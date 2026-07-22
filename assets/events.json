@@ -59,6 +59,21 @@
      }
     ],
     "log": "With the engineering bay already failing, the repair went harder than it should have and cost the worn bay a little more of what little it had left."
+   },
+   {
+    "id": "covenant_takes_it_in_hand",
+    "requires_dominant_faction": "steel_covenant",
+    "description_add": "The Steel Covenant take the failure as theirs to answer — no drama, no council, just the makers doing what the makers do, and doing it well.",
+    "population_delta": {
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.03
+     }
+    ],
+    "log": "The Covenant had the failure in hand before the council finished convening, and fixed it a shade better than it had been built, and logged the method for the next crew. Under the makers, a system failure is less a crisis than a Tuesday."
    }
   ]
  },
@@ -283,6 +298,27 @@
      "cultural_drift": 0.03
     },
     "log": "The Circle handled the breach with a speed and a calm the unaugmented could not match and did not quite trust — fewer dead, and a quiet afterward in which the ship wondered, again, how much like the founders its saviors still were."
+   },
+   {
+    "id": "breach_in_a_worn_bay",
+    "condition_below": [
+     {
+      "id": "engineering_bay",
+      "below": 0.4
+     }
+    ],
+    "description_add": "And the reactor annex is already half-derelict — the tools worn, the diagnostics half-blind, every second of the response fought through a bay that can barely keep itself running.",
+    "population_delta": {
+     "count": -10,
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The breach hit a bay too worn to answer it cleanly, and the response was a shambles of borrowed tools and guesswork that cost more lives and more of the bay than a sound ship would ever have paid."
    }
   ]
  },
@@ -380,7 +416,21 @@
     "log": "The council held the founders' line. The corridors went quiet in a way that keeps."
    }
   ],
-  "family": "ethics"
+  "family": "ethics",
+  "complications": [
+   {
+    "id": "the_second_restless_generation",
+    "requires_consequence": [
+     "banked_resentment"
+    ],
+    "description_add": "And this is not the first time. A generation ago the council held the line and banked the resentment; the young know that story, and they have decided not to be quieted the way their parents were.",
+    "population_delta": {
+     "unity": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The unrest landed on a ship that had done this before and remembered being made to swallow it — and so it landed harder, an old grievance and a new one speaking with one voice the council could no longer simply outwait."
+   }
+  ]
  },
  {
   "id": "halfway_beacon",
@@ -2223,6 +2273,18 @@
      "stability": 0.03
     },
     "log": "The channel was shut and welded. Whatever was calling, the ship stopped listening."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_drifted_hear_an_omen",
+    "min_cultural_drift": 0.6,
+    "description_add": "On a ship this far from its founders, the crew no longer hear a signal — they hear an omen. The watch that caught it has already named it, and the naming is spreading faster than any explanation the engineers can offer.",
+    "population_delta": {
+     "morale": -0.03,
+     "cultural_drift": 0.03
+    },
+    "log": "The ghost signal fell on a crew that had drifted past explanations into signs and portents, and it became, within a season, a thing the ship believed rather than a thing the ship investigated — one more article of a faith the founders never wrote."
    }
   ]
  },

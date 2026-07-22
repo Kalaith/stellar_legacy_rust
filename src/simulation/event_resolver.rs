@@ -765,6 +765,55 @@ mod tests {
     }
 
     #[test]
+    fn an_event_with_two_complications_rides_the_first_that_matches() {
+        // Content-depth event families round 7: the doc's "2-3 complications is
+        // worth three flat events." system_failure now carries two — a failing
+        // engineering bay (first) and a Steel Covenant reaction (second). The
+        // first whose gates hold rides, so a worn bay wins even when the Covenant
+        // is in charge, and the Covenant's is what shows on a sound ship.
+        let data = GameData::load().unwrap();
+        let picks = vec![
+            "steel_covenant".to_string(),
+            "hearth_union".to_string(),
+            "meridian_accord".to_string(),
+        ];
+        let template = data.events.get("system_failure").unwrap();
+        assert_eq!(template.complications.len(), 2);
+
+        // Steel Covenant running a sound ship: their reaction rides.
+        let mut covenant = SimState::new_campaign(&data, "adaptors", 71, &picks);
+        for f in &mut covenant.factions {
+            f.members = if f.faction_id == "steel_covenant" {
+                900
+            } else {
+                50
+            };
+        }
+        covenant
+            .subsystems
+            .get_mut("engineering_bay")
+            .unwrap()
+            .condition = 0.9;
+        assert_eq!(
+            active_complication(&covenant, template).map(|c| c.id.as_str()),
+            Some("covenant_takes_it_in_hand")
+        );
+
+        // Same ship, but the bay is failing: the earlier complication wins.
+        let mut failing = covenant.clone();
+        failing
+            .subsystems
+            .get_mut("engineering_bay")
+            .unwrap()
+            .condition = 0.2;
+        assert_eq!(
+            active_complication(&failing, template).map(|c| c.id.as_str()),
+            Some("bay_already_failing"),
+            "the first matching complication takes precedence"
+        );
+    }
+
+    #[test]
     fn a_complication_rides_only_when_its_state_gate_holds_and_lands_extra_toll() {
         // Content-depth event families round 6: system_failure carries a
         // complication that rides only while the engineering bay is itself
