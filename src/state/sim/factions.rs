@@ -8,6 +8,7 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::data::events::FactionApprovalDelta;
 use crate::data::factions::{FactionDef, FactionLossKind};
 use crate::data::{FlavorConfig, GameData, ResourceDelta};
 use crate::state::sim::SimState;
@@ -367,6 +368,48 @@ impl SimState {
         }
     }
 
+    /// Sour the aboard rivals of any people an event just favored (content-depth
+    /// factions round 14): each positive approval gain spills a fraction of its
+    /// resentment onto the favored people's aboard rivals, so favoring one people
+    /// costs you with those it quarrels with — the friction pairs made a lasting
+    /// relationship. A slight (a negative delta) does not lift rivals; the mechanic
+    /// is the *cost of favoritism*, not schadenfreude. Deterministic, no RNG.
+    pub fn apply_rival_approval_spillover(
+        &mut self,
+        data: &GameData,
+        deltas: &[FactionApprovalDelta],
+    ) {
+        let spill = data.config.factions.rival_approval_spillover;
+        if spill <= 0.0 {
+            return;
+        }
+        // Gather (rival, penalty) from the immutable catalog first, then apply — so
+        // the read of `data.factions.rivals` and the mutation of `self.factions`
+        // don't overlap.
+        let mut penalties: Vec<(String, f32)> = Vec::new();
+        for delta in deltas {
+            if delta.delta <= 0.0 || !self.is_faction_aboard(&delta.id) {
+                continue;
+            }
+            if let Some(def) = data.factions.get(&delta.id) {
+                for rival in &def.rivals {
+                    if self.is_faction_aboard(rival) {
+                        penalties.push((rival.clone(), -spill * delta.delta));
+                    }
+                }
+            }
+        }
+        for (rival_id, penalty) in penalties {
+            if let Some(state) = self
+                .factions
+                .iter_mut()
+                .find(|f| f.faction_id == rival_id && f.is_aboard())
+            {
+                state.adjust_approval(penalty);
+            }
+        }
+    }
+
     /// The approval of the aboard people that tends `subsystem_id` (content-depth
     /// factions round 12), or `None` if no aboard faction tends it. The upkeep
     /// half of the tended-subsystem coupling: `apply_subsystem_neglect_sentiment`
@@ -704,6 +747,78 @@ mod tests {
             sim.dominant_faction_id(),
             Some("hearth_union"),
             "a fecund launch-minority has become the majority"
+        );
+    }
+
+    #[test]
+    fn favoring_a_people_sours_its_aboard_rivals() {
+        // Content-depth factions round 14: the friction pairs made a lasting cost.
+        // Lifting one people's approval spills resentment onto its aboard rivals, so
+        // the meter cannot be maxed for everyone; a rival not aboard is untouched,
+        // and slighting a people does not lift its rivals.
+        use crate::data::events::FactionApprovalDelta;
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.rival_approval_spillover > 0.0,
+            "this test needs the rivalry spillover enabled"
+        );
+        // Steel Covenant and Verdant Kin are authored rivals; the Hearth is neither.
+        let def = data.factions.get("steel_covenant").unwrap();
+        assert!(def.rivals.contains(&"verdant_kin".to_string()));
+
+        let fs = |id: &str| FactionState {
+            faction_id: id.to_string(),
+            members: 400,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        };
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            9,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.factions = vec![fs("steel_covenant"), fs("verdant_kin"), fs("hearth_union")];
+
+        // Favor the Covenant: its rival the Kin sours, the unrelated Hearth does not.
+        sim.apply_rival_approval_spillover(
+            &data,
+            &[FactionApprovalDelta {
+                id: "steel_covenant".to_string(),
+                delta: 0.2,
+            }],
+        );
+        let approval = |sim: &SimState, id: &str| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .unwrap()
+                .approval
+        };
+        assert!(
+            approval(&sim, "verdant_kin") < 0.5,
+            "the Covenant's rival resents the favoritism"
+        );
+        assert_eq!(
+            approval(&sim, "hearth_union"),
+            0.5,
+            "a people that is no rival is untouched"
+        );
+
+        // Slighting the Covenant does not lift its rival (the cost is of favoritism).
+        let kin_before = approval(&sim, "verdant_kin");
+        sim.apply_rival_approval_spillover(
+            &data,
+            &[FactionApprovalDelta {
+                id: "steel_covenant".to_string(),
+                delta: -0.2,
+            }],
+        );
+        assert_eq!(
+            approval(&sim, "verdant_kin"),
+            kin_before,
+            "a slight to a people is not a gift to its rivals"
         );
     }
 

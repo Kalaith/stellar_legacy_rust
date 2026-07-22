@@ -15,7 +15,8 @@
       ],
       "flavor": "The Ascension Circle came aboard, and with them a body of knowledge the ship's medics had only read about — augmentation, gene-work, the long study of remaking the flesh for the dark."
     },
-    "tended_subsystem": "medical_bay"
+    "tended_subsystem": "medical_bay",
+    "rivals": ["first_flame", "hearth_union"]
   },
   {
     "id": "steel_covenant",
@@ -33,7 +34,8 @@
       ],
       "flavor": "The Steel Covenant came aboard and walked straight into the engineering bay, and by the end of the shift it ran a shade truer than it had in a generation. The makers brought their craft with them."
     },
-    "tended_subsystem": "engineering_bay"
+    "tended_subsystem": "engineering_bay",
+    "rivals": ["verdant_kin"]
   },
   {
     "id": "meridian_accord",
@@ -53,7 +55,8 @@
       },
       "flavor": "The Meridian Accord came aboard and set up their courts before their quarters, and the ship's uneasy peace acquired, overnight, a body of law and the patient hands to keep it."
     },
-    "tended_subsystem": "security"
+    "tended_subsystem": "security",
+    "rivals": ["first_flame"]
   },
   {
     "id": "hearth_union",
@@ -69,7 +72,8 @@
       },
       "flavor": "The Hearth Union came aboard and, within a week, there was a common table on every deck that had gone without one. The ship felt, for the first time in a long while, like somewhere people lived rather than travelled."
     },
-    "tended_subsystem": "life_support_habitat"
+    "tended_subsystem": "life_support_habitat",
+    "rivals": ["ascension_circle"]
   },
   {
     "id": "verdant_kin",
@@ -88,7 +92,8 @@
       ],
       "flavor": "The Verdant Kin came aboard and were in the grow-decks before their bags were stowed, and the tired hydroponics answered their hands as if remembering something. The ship would eat greener for their coming."
     },
-    "tended_subsystem": "agriculture"
+    "tended_subsystem": "agriculture",
+    "rivals": ["steel_covenant"]
   },
   {
     "id": "first_flame",
@@ -104,6 +109,7 @@
       },
       "flavor": "The Keepers of the First Flame came aboard and lit their shrine-burn off the reactor before the first watch turned, and gave the ship a thing it had been missing: a fixed point, a fire that would not go out, a reason spoken aloud."
     },
-    "tended_subsystem": "education_culture"
+    "tended_subsystem": "education_culture",
+    "rivals": ["meridian_accord", "ascension_circle"]
   }
 ]

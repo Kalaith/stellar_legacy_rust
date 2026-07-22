@@ -53,6 +53,15 @@ pub struct FactionDef {
     /// mid-voyage. 0 = a stable people.
     #[serde(default)]
     pub growth_bias: f32,
+    /// Peoples this one is at odds with (content-depth factions round 14): the
+    /// friction pairs made a *persistent relationship*. When an event favors this
+    /// people — lifting its approval — each aboard rival resents the favoritism and
+    /// loses a fraction of it (`FactionConfig::rival_approval_spillover`), so the
+    /// approval meter is a balancing act: you cannot please a people without a cost
+    /// to those it quarrels with. Authored symmetric (if A names B, B names A).
+    /// Empty = a people with no standing rivals.
+    #[serde(default)]
+    pub rivals: Vec<String>,
 }
 
 /// How a faction left the ship when an event drives it off (W7). WipedOut and
@@ -94,4 +103,10 @@ pub struct FactionConfig {
     /// leaves but whether it grows or fades. 0 = approval does not touch growth.
     #[serde(default)]
     pub approval_growth_factor: f32,
+    /// Fraction of a positive approval gain that a favored people's aboard *rivals*
+    /// lose to resentment (content-depth factions round 14). Favoring one people
+    /// sours those it quarrels with, so the approval meter cannot be maximized for
+    /// everyone at once. 0 = rivalries do not spill over.
+    #[serde(default)]
+    pub rival_approval_spillover: f32,
 }

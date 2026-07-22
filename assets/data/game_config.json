@@ -46,7 +46,8 @@
     "recruit_group_size": 300,
     "neglect_condition_threshold": 0.4,
     "neglect_approval_penalty": 0.02,
-    "approval_growth_factor": 0.04
+    "approval_growth_factor": 0.04,
+    "rival_approval_spillover": 0.3
   },
   "provisioning": {
     "fuel_burn_per_travel_month": 0.0035,

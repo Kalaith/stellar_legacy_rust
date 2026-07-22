@@ -479,6 +479,10 @@ pub fn apply_outcome(
             state.adjust_approval(delta.delta);
         }
     }
+    // …and favoring a people costs you with its rivals (content-depth factions
+    // round 14): each approval *gain* spills a fraction of resentment onto the
+    // favored people's aboard rivals, so the meter cannot be maxed for everyone.
+    sim.apply_rival_approval_spillover(data, &outcome.faction_approval_deltas);
     // …or let the shortage fall on the smallest deck (content-depth provisioning
     // round 8): a rationing triage that spares the many by cutting the fewest
     // sours the people who bore it, resolved dynamically without naming them.

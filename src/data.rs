@@ -1205,7 +1205,27 @@ mod tests {
                 "faction '{id}' growth_bias {} out of the gentle range [-0.2, 0.2]",
                 faction.growth_bias
             );
+            // Content-depth factions round 14: a rival must be a real, other people,
+            // and rivalries must be authored *symmetric* (if A names B, B names A) —
+            // a one-sided grudge is an authoring slip.
+            for rival in &faction.rivals {
+                assert_ne!(rival, id, "faction '{id}' lists itself as a rival");
+                let other = data
+                    .factions
+                    .get(rival)
+                    .unwrap_or_else(|| panic!("faction '{id}' names unknown rival '{rival}'"));
+                assert!(
+                    other.rivals.contains(id),
+                    "rivalry '{id}' <-> '{rival}' is not symmetric"
+                );
+            }
         }
+        // Content-depth factions round 14: at least one people should carry a rival,
+        // so the spillover mechanic is exercised.
+        assert!(
+            data.factions.iter().any(|(_, f)| !f.rivals.is_empty()),
+            "some faction should have a standing rival"
+        );
 
         // W5: six subsystems load; each non-empty buffered family is one of the
         // canonical W6 family strings; tiers are well-formed (3, positive cost).
