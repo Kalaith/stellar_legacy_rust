@@ -362,6 +362,13 @@ pub struct SimState {
     /// RNG to surface it. Deterministic; fired and removed by `fire_scheduled_beat`.
     #[serde(default)]
     pub scheduled_events: Vec<ScheduledEvent>,
+    /// How many times each event template has fired this campaign (content-depth
+    /// event families round 11): lets a recurring crisis *escalate* instead of
+    /// merely repeating — a complication can gate on prior occurrences, so the
+    /// third outbreak of the same plague reads as the ship's patience wearing
+    /// through. Incremented as each event resolves.
+    #[serde(default)]
+    pub event_fire_counts: HashMap<String, u32>,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -447,6 +454,7 @@ impl SimState {
             pending_dilemma: None,
             consequences: Vec::new(),
             scheduled_events: Vec::new(),
+            event_fire_counts: HashMap::new(),
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),
             log: Vec::new(),

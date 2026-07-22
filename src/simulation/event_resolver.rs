@@ -31,6 +31,14 @@ pub fn active_complication<'a>(
             && c.requires_factions_aboard
                 .iter()
                 .all(|id| sim.is_faction_aboard(id))
+            // Recurrence escalation (content-depth round 11): rides only once this
+            // same event has already fired at least this many times.
+            && sim
+                .event_fire_counts
+                .get(&template.id)
+                .copied()
+                .unwrap_or(0)
+                >= c.min_prior_occurrences
     })
 }
 
@@ -433,6 +441,12 @@ pub fn apply_outcome(
             sim.push_log(c.log.clone());
         }
     }
+    // Record this occurrence (content-depth round 11) *after* the complication
+    // has read the prior count, so a recurrence complication rides on the Nth
+    // time and not the (N+1)th.
+    *sim.event_fire_counts
+        .entry(template.id.clone())
+        .or_default() += 1;
     sim.pending_event = None;
 }
 
@@ -1349,6 +1363,49 @@ mod tests {
             active_complication(&failing, template).map(|c| c.id.as_str()),
             Some("bay_already_failing"),
             "the first matching complication takes precedence"
+        );
+    }
+
+    #[test]
+    fn a_recurring_crisis_escalates_only_after_prior_occurrences() {
+        // Content-depth event families round 11: a recurring crisis escalates
+        // instead of merely repeating. Contagion's weariness complication rides
+        // only once the same plague has already walked the decks twice before —
+        // and resolving the event records each occurrence.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 37, &picks);
+        let contagion = data.events.get("contagion").unwrap();
+        let comp = contagion
+            .complications
+            .iter()
+            .find(|c| c.min_prior_occurrences >= 2)
+            .expect("contagion carries a recurrence complication");
+
+        // First and second time: no escalation yet.
+        assert!(
+            active_complication(&sim, contagion).is_none(),
+            "the first outbreak is just an outbreak"
+        );
+        apply_outcome(&mut sim, &data, contagion, 0);
+        assert_eq!(sim.event_fire_counts["contagion"], 1);
+        assert!(
+            active_complication(&sim, contagion).is_none(),
+            "the second is still not the weariness"
+        );
+        apply_outcome(&mut sim, &data, contagion, 0);
+        assert_eq!(sim.event_fire_counts["contagion"], 2);
+
+        // Third time (two prior): the weariness complication rides.
+        assert!(
+            active_complication(&sim, contagion).is_some_and(|c| c.id == comp.id),
+            "by the third outbreak the ship's patience has worn through"
+        );
+        // And it shows in the description the player sees.
+        assert_ne!(
+            shown_description(&sim, contagion),
+            contagion.description,
+            "the escalation is visible before the choice"
         );
     }
 

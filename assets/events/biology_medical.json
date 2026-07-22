@@ -33,7 +33,25 @@
     "log": "The ship worked through the sickness. The memorial wall did the accounting."
    }
   ],
-  "family": "biology_medical"
+  "family": "biology_medical",
+  "complications": [
+   {
+    "id": "the_third_outbreak",
+    "min_prior_occurrences": 2,
+    "description_add": "And it is not the first time, nor the second — the decks know this fever now, know the drill and the dread of it, and a weariness thicker than any quarantine settles over a ship that cannot seem to stay well.",
+    "population_delta": {
+     "morale": -0.05,
+     "unity": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "It was the third time the fever had walked the ventilation in living memory, and the third time wore worse than the first two put together — not for the sickness, which the medics knew cold by now, but for the grinding sense of a ship that could not seem to stay well, a people tired in a way rest does not reach. The wards, run ragged over the years, showed the strain."
+   }
+  ]
  },
  {
   "id": "birth_dearth",

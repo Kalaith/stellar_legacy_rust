@@ -186,6 +186,12 @@ pub struct Complication {
     pub requires_dominant_faction: String,
     #[serde(default)]
     pub requires_factions_aboard: Vec<String>,
+    /// Recurrence gate (content-depth event families round 11): the complication
+    /// rides only once this same event has already fired at least this many times
+    /// this campaign — a recurring crisis that escalates instead of repeating.
+    /// 0 = no recurrence requirement.
+    #[serde(default)]
+    pub min_prior_occurrences: u32,
     /// Sentence appended to the event's description when the complication rides.
     pub description_add: String,
     /// Extra consequences applied on top of the chosen outcome, and the line that
