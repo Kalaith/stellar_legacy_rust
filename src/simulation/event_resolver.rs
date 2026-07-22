@@ -610,6 +610,7 @@ mod tests {
                 members: 300,
                 status: FactionStatus::Aboard,
                 approval: crate::state::sim::factions::default_approval(),
+                mood_band: 0,
             });
             sim.population.count += 300;
         }

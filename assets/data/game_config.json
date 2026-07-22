@@ -230,6 +230,20 @@
       "{name} put in the long hours and rose to skill {skill} at the {post}'s post.",
       "Advanced training closed for {name}; the {post}'s hand is steadier now, skill {skill}."
     ],
+    "faction_souring": [
+      "A coldness has settled over {name}; they keep their own counsel now, and their grievances to themselves, which is worse.",
+      "Word runs the decks that {name} have grown restless — a people that no longer troubles to petition, having learned what petitioning is worth.",
+      "{name} have stopped arguing in council. Those who know the ship's moods find that quiet more worrying than any shouting.",
+      "There is a hardness in {name} that was not there a generation ago; they do their work and share no more of themselves than the work requires.",
+      "The old warmth between the ship and {name} has gone thin. They stay because they are aboard, not because they are held."
+    ],
+    "faction_warming": [
+      "{name} have taken to speaking of the ship as theirs again — a small word, and a telling one.",
+      "There is an ease in {name} of late; they give more than the work asks, the way a people does when it feels itself valued.",
+      "Word runs the decks that {name} count themselves well-used by this ship, and a people that feels seen is a steadier people to sail with.",
+      "{name} have begun keeping the ship's festivals as if they were their own, which, increasingly, they are.",
+      "Something has warmed between the ship and {name}; they answer a hard year now the way kin do, without being asked twice."
+    ],
     "ambient_gap_years": 8,
     "ambient": [
       "A generation that has never seen a planet paints one, wrong and beautiful, across a cargo-bay wall.",

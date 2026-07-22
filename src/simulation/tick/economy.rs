@@ -113,6 +113,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // tended subsystem erodes its approval, feeding the round-8 withdrawal.
     sim.apply_subsystem_neglect_sentiment(data);
 
+    // …and give the approval meter a voice (content-depth voice round 8): a people
+    // crossing into restlessness or contentment says so in the log, once, so the
+    // player feels the mood turn well before a withdrawal beat fires.
+    sim.announce_faction_moods(data);
+
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,
     // and the strain wears at morale and unity. Deterministic; the founders'

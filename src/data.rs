@@ -331,6 +331,16 @@ pub struct FlavorConfig {
     /// new skill; empty falls back to the built-in line.
     #[serde(default)]
     pub training: Vec<String>,
+    /// A people crossing *into* restlessness (content-depth voice round 8): the
+    /// otherwise-silent approval meter finally speaks, so the player feels a
+    /// faction souring toward its withdrawal. Placeholder `{name}` (the people's
+    /// log name). Indexed by year; empty falls back to silence.
+    #[serde(default)]
+    pub faction_souring: Vec<String>,
+    /// A people crossing *into* contentment (content-depth voice round 8): the
+    /// positive twin, when goodwill has climbed high. Placeholder `{name}`.
+    #[serde(default)]
+    pub faction_warming: Vec<String>,
     /// Atmospheric "life aboard" lines surfaced during long event-less stretches
     /// (content-depth voice round 2), so the passing centuries read as lived-in
     /// rather than empty. Dated by the log itself, indexed by year (no RNG).
@@ -708,6 +718,32 @@ mod tests {
             flavor.training.iter().any(|s| s.contains("{skill}")),
             "training lines surface the new skill"
         );
+    }
+
+    #[test]
+    fn faction_mood_voice_is_authored_and_names_the_people() {
+        // Content-depth voice round 8: the approval meter's voice. A people
+        // crossing into restlessness or contentment gets a pooled line, so both
+        // pools need variety and must weave in the people's name.
+        let data = GameData::load().unwrap();
+        let flavor = &data.config.flavor;
+        for (pool, label) in [
+            (&flavor.faction_souring, "souring"),
+            (&flavor.faction_warming, "warming"),
+        ] {
+            assert!(pool.len() >= 3, "the faction {label} pool needs variety");
+            assert!(
+                pool.iter().all(|s| s.contains("{name}")),
+                "every faction {label} line must name the people"
+            );
+            let a = FlavorConfig::line_with_name(pool, 0, "the Keepers").unwrap();
+            let b = FlavorConfig::line_with_name(pool, 1, "the Keepers").unwrap();
+            assert_ne!(a, b, "consecutive {label} lines must differ");
+            assert!(
+                a.contains("the Keepers"),
+                "the {label} line names the people"
+            );
+        }
     }
 
     #[test]

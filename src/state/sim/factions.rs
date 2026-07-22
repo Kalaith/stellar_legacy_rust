@@ -9,7 +9,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::data::factions::{FactionDef, FactionLossKind};
-use crate::data::{GameData, ResourceDelta};
+use crate::data::{FlavorConfig, GameData, ResourceDelta};
 use crate::state::sim::SimState;
 use macroquad_toolkit::data_loader::DataRegistry;
 
@@ -49,11 +49,29 @@ pub struct FactionState {
     /// the neutral midpoint.
     #[serde(default = "default_approval")]
     pub approval: f32,
+    /// The sentiment band last announced to the log (content-depth voice round 8):
+    /// -1 restless, 0 neutral, +1 devoted. Lets the yearly mood check surface a
+    /// people crossing *into* restlessness or contentment exactly once, rather
+    /// than reprinting every year it stays there. 0 (neutral) at launch.
+    #[serde(default)]
+    pub mood_band: i8,
 }
 
 /// Launch/neutral approval — a people that neither loves nor resents the ship yet.
 pub fn default_approval() -> f32 {
     0.5
+}
+
+/// The sentiment band for an approval value (content-depth voice round 8):
+/// restless at/below the withdrawal-danger line, devoted up high, neutral between.
+pub fn mood_band_for(approval: f32) -> i8 {
+    if approval <= 0.3 {
+        -1
+    } else if approval >= 0.7 {
+        1
+    } else {
+        0
+    }
 }
 
 impl FactionState {
@@ -92,6 +110,7 @@ pub fn build_founding_factions(faction_ids: &[String], total: u32) -> Vec<Factio
             members: base + if (i as u32) < remainder { 1 } else { 0 },
             status: FactionStatus::Aboard,
             approval: default_approval(),
+            mood_band: 0,
         })
         .collect()
 }
@@ -348,6 +367,44 @@ impl SimState {
         }
     }
 
+    /// Yearly (content-depth voice round 8): give the otherwise-silent approval
+    /// meter a voice. When an aboard people crosses *into* restlessness or
+    /// contentment — not every year it stays there — surface one pooled line, so
+    /// the player feels a faction souring long before its withdrawal beat fires.
+    /// Deterministic (indexed by year), no RNG; neutral crossings are silent.
+    pub fn announce_faction_moods(&mut self, data: &GameData) {
+        let year = self.year();
+        let mut lines: Vec<String> = Vec::new();
+        for fstate in &mut self.factions {
+            if !fstate.is_aboard() {
+                continue;
+            }
+            let band = mood_band_for(fstate.approval);
+            if band == fstate.mood_band {
+                continue;
+            }
+            let pool = match band {
+                -1 => &data.config.flavor.faction_souring,
+                1 => &data.config.flavor.faction_warming,
+                // Settling back to neutral is silent, but still remembered so a
+                // later re-souring announces afresh.
+                _ => {
+                    fstate.mood_band = band;
+                    continue;
+                }
+            };
+            let name = log_name(&data.factions, &fstate.faction_id);
+            let idx = year as usize + fstate.faction_id.len();
+            if let Some(line) = FlavorConfig::line_with_name(pool, idx, &name) {
+                lines.push(line);
+            }
+            fstate.mood_band = band;
+        }
+        for line in lines {
+            self.push_log(line);
+        }
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -484,6 +541,7 @@ impl SimState {
             members: cfg.recruit_group_size,
             status: FactionStatus::Aboard,
             approval: default_approval(),
+            mood_band: 0,
         });
         self.population.count += cfg.recruit_group_size;
         let name = log_name(&data.factions, faction_id);
@@ -524,6 +582,7 @@ mod tests {
             members,
             status: FactionStatus::Aboard,
             approval: default_approval(),
+            mood_band: 0,
         }
     }
 
@@ -532,6 +591,55 @@ mod tests {
         let picks = founding_faction_ids(&data);
         let sim = SimState::new_campaign(&data, "preservers", seed, &picks);
         (data, sim, picks)
+    }
+
+    #[test]
+    fn a_souring_people_says_so_once_not_every_year() {
+        // Content-depth voice round 8: the approval meter's voice. A people
+        // crossing into restlessness surfaces one pooled line, then stays quiet
+        // while it remains there — no yearly reprint — and a recovery to
+        // contentment gets its own, opposite line.
+        let (data, mut sim, _picks) = armed(14);
+        let target = sim.factions.iter().find(|f| f.is_aboard()).unwrap();
+        let id = target.faction_id.clone();
+        let name = log_name(&data.factions, &id);
+        let restless = |sim: &SimState| {
+            sim.log
+                .iter()
+                .filter(|l| l.text.contains(&name) && l.text.contains("restless"))
+                .count()
+        };
+
+        // A neutral people says nothing.
+        sim.announce_faction_moods(&data);
+        assert_eq!(restless(&sim), 0, "a content people is silent");
+
+        // Sour them past the restless line — one announcement.
+        sim.factions
+            .iter_mut()
+            .find(|f| f.faction_id == id)
+            .unwrap()
+            .approval = 0.2;
+        sim.announce_faction_moods(&data);
+        let after_first = restless(&sim);
+        assert_eq!(after_first, 1, "crossing into restlessness says so once");
+
+        // Still restless the next year — no reprint.
+        sim.announce_faction_moods(&data);
+        assert_eq!(restless(&sim), 1, "staying restless is not re-announced");
+
+        // Win them all the way back — a warming line, distinct from the souring.
+        sim.factions
+            .iter_mut()
+            .find(|f| f.faction_id == id)
+            .unwrap()
+            .approval = 0.85;
+        let log_before = sim.log.len();
+        sim.announce_faction_moods(&data);
+        assert!(
+            sim.log.len() > log_before,
+            "a people won back to contentment says so"
+        );
     }
 
     #[test]
