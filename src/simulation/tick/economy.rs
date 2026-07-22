@@ -174,6 +174,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
             report.dynasty_extinct = true;
         }
 
+        // Each people's numbers wax or wane over the generations (content-depth
+        // factions round 11): the balance of power shifts, so which people runs
+        // the ship can change mid-voyage. Applied before assimilation, so a people
+        // that dwindles far enough can then be folded into a larger one.
+        if !generation.extinct {
+            sim.apply_faction_demographic_drift(data);
+        }
+
         // A generation of drift can quietly fold a dwindling faction into a
         // larger one (W7 soft assimilation).
         if !generation.extinct {

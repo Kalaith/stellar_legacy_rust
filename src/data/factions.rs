@@ -44,6 +44,15 @@ pub struct FactionDef {
     /// this people answers for.
     #[serde(default)]
     pub tended_subsystem: String,
+    /// Per-generation demographic drift (content-depth factions round 11): this
+    /// people's share of the ship waxes or wanes each generation by this fraction,
+    /// so the balance of power is not fixed at launch — a fecund people (the
+    /// Hearth) grows toward the majority over centuries while a people that does
+    /// not reproduce naturally (the augmented Ascension) dwindles, and *who runs
+    /// the ship* — the lever behind drift, dilemmas, and event gates — can change
+    /// mid-voyage. 0 = a stable people.
+    #[serde(default)]
+    pub growth_bias: f32,
 }
 
 /// How a faction left the ship when an event drives it off (W7). WipedOut and

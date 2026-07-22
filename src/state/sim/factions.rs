@@ -367,6 +367,30 @@ impl SimState {
         }
     }
 
+    /// Per-generation (content-depth factions round 11): each aboard people's
+    /// numbers wax or wane by its `growth_bias`, so the balance of power shifts
+    /// over the centuries — a fecund people grows toward the majority, a people
+    /// that does not reproduce naturally dwindles, and the dominant faction (the
+    /// lever behind drift, dilemmas, and gates) can change mid-voyage. The
+    /// following `rebalance_factions` renormalizes the shifted members back to the
+    /// head count. Never drifts a people below one soul — that is the schism's and
+    /// the assimilation's job, not attrition's. Deterministic, no RNG.
+    pub fn apply_faction_demographic_drift(&mut self, data: &GameData) {
+        for fstate in &mut self.factions {
+            if !fstate.is_aboard() {
+                continue;
+            }
+            let bias = data
+                .factions
+                .get(&fstate.faction_id)
+                .map_or(0.0, |d| d.growth_bias);
+            if bias != 0.0 {
+                let grown = (fstate.members as f32 * (1.0 + bias)).round();
+                fstate.members = grown.max(1.0) as u32;
+            }
+        }
+    }
+
     /// Yearly (content-depth voice round 8): give the otherwise-silent approval
     /// meter a voice. When an aboard people crosses *into* restlessness or
     /// contentment — not every year it stays there — surface one pooled line, so
@@ -584,6 +608,58 @@ mod tests {
             approval: default_approval(),
             mood_band: 0,
         }
+    }
+
+    #[test]
+    fn demographic_drift_shifts_the_balance_of_power_over_generations() {
+        // Content-depth factions round 11: which people runs the ship is not fixed
+        // at launch. A fecund people (the Hearth) grows its share over the
+        // generations while a people that does not reproduce naturally (the
+        // augmented Ascension) dwindles — so a launch minority can become the
+        // majority and the dominant faction can flip mid-voyage.
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        // Start the two peoples level, Ascension a shade ahead.
+        sim.factions = vec![fs("ascension_circle", 520), fs("hearth_union", 480)];
+        sim.population.count = 1000;
+        let share = |sim: &SimState, id: &str| {
+            let total: u32 = sim
+                .factions
+                .iter()
+                .filter(|f| f.is_aboard())
+                .map(|f| f.members)
+                .sum();
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .map_or(0.0, |f| f.members as f32 / total as f32)
+        };
+        assert_eq!(
+            sim.dominant_faction_id(),
+            Some("ascension_circle"),
+            "the augmented lead at launch"
+        );
+        let asc0 = share(&sim, "ascension_circle");
+
+        // Twelve generations of demographic drift (rebalancing to the head count).
+        for _ in 0..12 {
+            sim.apply_faction_demographic_drift(&data);
+            sim.rebalance_factions();
+        }
+        assert!(
+            share(&sim, "ascension_circle") < asc0,
+            "the augmented dwindle over the centuries"
+        );
+        assert_eq!(
+            sim.dominant_faction_id(),
+            Some("hearth_union"),
+            "a fecund launch-minority has become the majority"
+        );
     }
 
     fn armed(seed: u64) -> (GameData, SimState, Vec<String>) {

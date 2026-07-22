@@ -1,6 +1,7 @@
 [
   {
     "id": "ascension_circle",
+    "growth_bias": -0.04,
     "name": "The Ascension Circle",
     "ideology": 0.9,
     "description": "Transhumanist zealots who read the voyage as a chrysalis — flesh is a first draft, to be rewritten in transit. They welcome every augmentation the ship can bear.",
@@ -56,6 +57,7 @@
   },
   {
     "id": "hearth_union",
+    "growth_bias": 0.03,
     "name": "The Hearth Union",
     "ideology": -0.3,
     "description": "Keepers of home and hearth who prize continuity — the shared meal, the remembered name — over the cold promise of the new.",
@@ -71,6 +73,7 @@
   },
   {
     "id": "verdant_kin",
+    "growth_bias": 0.02,
     "name": "The Verdant Kin",
     "ideology": -0.6,
     "description": "Soil-tenders who measure worth in living things. They distrust the sealed machine and keep the ship's green heart beating against the dark.",
@@ -89,6 +92,7 @@
   },
   {
     "id": "first_flame",
+    "growth_bias": 0.01,
     "name": "Keepers of the First Flame",
     "ideology": -0.9,
     "description": "Austere traditionalists who guard the founders' first covenant against every revision. To the Keepers, change is only a slower kind of forgetting.",

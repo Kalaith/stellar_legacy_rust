@@ -1061,6 +1061,13 @@ mod tests {
                 "faction '{id}' tends unknown subsystem '{}'",
                 faction.tended_subsystem
             );
+            // Content-depth factions round 11: demographic drift is a gentle
+            // per-generation share shift, not a population weapon.
+            assert!(
+                (-0.2..=0.2).contains(&faction.growth_bias),
+                "faction '{id}' growth_bias {} out of the gentle range [-0.2, 0.2]",
+                faction.growth_bias
+            );
         }
 
         // W5: six subsystems load; each non-empty buffered family is one of the
