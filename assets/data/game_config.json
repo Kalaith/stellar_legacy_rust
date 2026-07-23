@@ -236,7 +236,15 @@
       "{name} was given to the recyclers with full honors; nothing aboard is ever truly lost.",
       "The bells rang once for {name}, who had never known a sky.",
       "{name} passed in their sleep, older than anyone left who remembered the launch.",
-      "They committed {name} to the void through the aft lock, wrapped in the mission colors."
+      "They committed {name} to the void through the aft lock, wrapped in the mission colors.",
+      "{name} slipped away between one watch and the next; the ship did not slow for it, and would not have known how.",
+      "They read {name}'s name into the log with the others, and the corridor lights dimmed a quarter for the length of a breath.",
+      "{name} was gone by the morning count. A generation ship keeps no graves — only the register, and the register grew by one.",
+      "{name} died as most aboard do now: quietly, of years, far from any ground.",
+      "The ship recycled {name} as it recycles everything, and somewhere a grow-deck was greener for it. That was the only marker.",
+      "{name} outlived the last hand who could describe a horizon, and took the memory with them.",
+      "{name}'s watch was struck from the rota and the bunk reassigned by evening. The dark does not pause for the dead.",
+      "They sang {name} down through the aft lock — the old song, the one no one remembers learning."
     ],
     "succession": [
       "{name} assumed leadership of the dynasty.",
@@ -244,14 +252,27 @@
       "The council confirmed {name} as head of the line, hand on the old ship's log.",
       "{name} inherited the name, the duty, and the long dark ahead.",
       "By quiet consent the dynasty turned to {name} to lead it onward.",
-      "{name} stepped into the first chair, younger than the post deserved."
+      "{name} stepped into the first chair, younger than the post deserved.",
+      "{name} took the first chair with the deck still cold from the last to hold it.",
+      "The succession was quiet, as they always are now: {name} sat, the council nodded, and the watch went on.",
+      "{name} inherited a ship mid-crossing and a charter older than any living memory of why it was signed.",
+      "They gave {name} the old log and the harder gift beneath it — the deciding, from now on, would be theirs.",
+      "{name} rose to lead a people who had never met the founders, only their names.",
+      "The line turned to {name} without a vote worth the name; there was no one else, and the ship could not steer itself.",
+      "{name} took command a whole generation early, the loss folded into a single hard week.",
+      "By the time {name} was confirmed, half the decks were already calling them the leader. The ship prefers its transitions bloodless."
     ],
     "coming_of_age": [
       "Generation {generation} came of age: {births} new dynasty member(s).",
       "Generation {generation} took their places on the decks — {births} of them, born to the voyage.",
       "The nurseries emptied into the corridors: {births} children of Generation {generation} grown.",
       "{births} new hands joined the work as Generation {generation} came into its own.",
-      "Generation {generation} numbered {births} strong, a cohort who would never see the world that sent them."
+      "Generation {generation} numbered {births} strong, a cohort who would never see the world that sent them.",
+      "Generation {generation} stepped onto the rota {births} strong, and the old hands watched them the way the founders once must have.",
+      "{births} of Generation {generation} came of age — raised entirely inside the hull, and calling it, without irony, home.",
+      "The decks made room for {births} new adults of Generation {generation}, each one a small argument that the voyage would go on.",
+      "Generation {generation} numbered {births} at its majority, fewer than the founders hoped and more than the lean years feared.",
+      "{births} children of Generation {generation} took their first watches, having never once looked up at a sky and wondered."
     ],
     "retirement": [
       "{name} stood down from their post, the work passed to a steadier pair of hands.",
@@ -283,7 +304,12 @@
       "{name}, the ship's {post}, died at their post; the roster is one name shorter tonight.",
       "Age caught up with {name}; the {post}'s watch falls to whoever the ship can spare.",
       "The {post} {name} was carried from the bridge for the last time — a life spent, and a post gone cold.",
-      "{name} did not wake for the morning watch. The {post}'s duties wait now on a successor."
+      "{name} did not wake for the morning watch. The {post}'s duties wait now on a successor.",
+      "{name} finished their last shift as the ship's {post} and did not report for the next. The post stands empty; the work does not.",
+      "The ship lost {name}, its {post}, to the years — a lifetime of a craft the founders sketched and this hand mastered, gone with them.",
+      "{name} died in harness as the {post}, the way the good ones tend to. The rota will be poorer a long while.",
+      "They left the {post}'s chair a day empty for {name}, out of respect, then filled it — the ship cannot afford reverence for long.",
+      "The {post} {name} is gone, and with them a little of the ship's hard-won competence; a successor starts from less."
     ],
     "fuel_gain": [
       "Scanners flagged a drifting ice fragment on the approach; the reclaimers rendered it down to reaction mass. (+{amount} fuel)",
