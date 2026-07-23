@@ -950,7 +950,13 @@
      "morale": 0.04,
      "unity": -0.02
     },
-    "log": "The locks opened and the castaways came aboard, gaunt and grateful, and the ship was suddenly larger and hungrier and a little more crowded in every corridor. The galley redid its arithmetic for the rest of the crossing, and no one aboard regretted the choice, exactly, though everyone felt it at the table."
+    "log": "The locks opened and the castaways came aboard, gaunt and grateful, and the ship was suddenly larger and hungrier and a little more crowded in every corridor. The galley redid its arithmetic for the rest of the crossing, and no one aboard regretted the choice, exactly, though everyone felt it at the table.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.08
+     }
+    ]
    },
    {
     "id": "take_the_stores_only",
@@ -964,7 +970,13 @@
      "morale": -0.05,
      "stability": 0.03
     },
-    "log": "The ship took the castaways' stores at a fair rate and left them their boat and their heading, and pulled away from the beacon before it stopped transmitting. The larder was fuller for it. The crew that made the trade did not talk about it much, then or after."
+    "log": "The ship took the castaways' stores at a fair rate and left them their boat and their heading, and pulled away from the beacon before it stopped transmitting. The larder was fuller for it. The crew that made the trade did not talk about it much, then or after.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.06
+     }
+    ]
    }
   ]
  },
@@ -1332,7 +1344,13 @@
      "morale": -0.04,
      "legacy_loyalty": 0.03
     },
-    "log": "The council cut every ration the same, top to bottom, and the whole ship went a little hungry together through to the harvest. It was the harder arithmetic and the leaner year for it — but no people learned that it was the one the ship would spend first, and that knowledge, unspent, was worth more than the food it cost."
+    "log": "The council cut every ration the same, top to bottom, and the whole ship went a little hungry together through to the harvest. It was the harder arithmetic and the leaner year for it — but no people learned that it was the one the ship would spend first, and that knowledge, unspent, was worth more than the food it cost.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.06
+     }
+    ]
    },
    {
     "id": "cut_the_smallest",
@@ -1344,7 +1362,13 @@
      "legacy_loyalty": -0.03
     },
     "faction_approval_smallest": -0.2,
-    "log": "The council spared the ship by cutting its smallest deck, and the essential work went on unbroken through the thin year while one people learned, precisely, where it stood on this ship's ledger when the food ran short. The ship stayed working. Whether it stayed whole was a question the smallest people would answer later, in their own time and their own way."
+    "log": "The council spared the ship by cutting its smallest deck, and the essential work went on unbroken through the thin year while one people learned, precisely, where it stood on this ship's ledger when the food ran short. The ship stayed working. Whether it stayed whole was a question the smallest people would answer later, in their own time and their own way.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.08
+     }
+    ]
    }
   ],
   "complications": [

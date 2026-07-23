@@ -89,6 +89,24 @@ impl OutcomeRequirement {
     }
 }
 
+/// A nudge to a named reputation trait (content-depth event families round 16): how
+/// an outcome moves the ship's cumulative character — a merciful choice lifting
+/// `mercy`, a cold one lowering it. Small by design; a tendency is built from many.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReputationDelta {
+    pub id: String,
+    pub delta: f32,
+}
+
+/// A gate on a named reputation trait (content-depth event families round 16): the
+/// event surfaces only while the trait meets the `threshold` — used as a floor
+/// (`min_reputation`) or a ceiling (`max_reputation`). Unset traits read 0.5.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ReputationGate {
+    pub id: String,
+    pub threshold: f32,
+}
+
 /// A signed shift to a named faction's approval (content-depth factions round 8):
 /// the coupling that lets an event choice earn or spend a people's goodwill.
 /// Clamped to [0, 1] on apply; a no-op if that faction is not aboard.
@@ -140,6 +158,12 @@ pub struct EventOutcome {
     /// in auto-resolve outcome scoring (GDD §5.4).
     #[serde(default)]
     pub long_term_consequences: Vec<String>,
+    /// Nudges to the ship's graded reputation traits (content-depth event families
+    /// round 16): where `long_term_consequences` records a discrete deed, these move
+    /// a *tendency* — so a hundred small choices add up to the character the ship
+    /// carries. Applied clamped to [0, 1].
+    #[serde(default)]
+    pub reputation_deltas: Vec<ReputationDelta>,
     /// A ship component id this outcome drops into the salvage hold (PLAN M4.4).
     #[serde(default)]
     pub grant_component: Option<String>,
@@ -318,6 +342,15 @@ pub struct EventTemplate {
     /// stability beat or rolled. 0.0 = ungated.
     #[serde(default)]
     pub max_stability: f32,
+    /// Reputation gates (content-depth event families round 16): the event only
+    /// surfaces while every named trait is at or above (`min_reputation`) / at or
+    /// below (`max_reputation`) its threshold — so content can key on the ship's
+    /// cumulative character, a scenario a *merciful* ship's name opens and a *feared*
+    /// ship's name forecloses. Empty = ungated by reputation.
+    #[serde(default)]
+    pub min_reputation: Vec<ReputationGate>,
+    #[serde(default)]
+    pub max_reputation: Vec<ReputationGate>,
     /// Mission-progress gate (content-depth campaign-skeleton round 9): the event
     /// only enters the pool while an active charter's objective is at or past this
     /// fraction — the honest gate for milestone content, so "the work is half

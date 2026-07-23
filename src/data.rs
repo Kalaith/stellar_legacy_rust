@@ -1159,6 +1159,24 @@ mod tests {
                 );
             }
         }
+        // Content-depth round 16: a reputation gate must name a trait some outcome
+        // actually nudges, or the ship could never build past its neutral 0.5 to
+        // meet it (typo guard).
+        let rep_produced: std::collections::HashSet<&String> = data
+            .events
+            .iter()
+            .flat_map(|(_, e)| e.outcomes.iter())
+            .flat_map(|o| o.reputation_deltas.iter().map(|r| &r.id))
+            .collect();
+        for (id, e) in data.events.iter() {
+            for gate in e.min_reputation.iter().chain(e.max_reputation.iter()) {
+                assert!(
+                    rep_produced.contains(&gate.id),
+                    "event '{id}' gates on reputation '{}' no outcome nudges",
+                    gate.id
+                );
+            }
+        }
         // Content-depth round 14: a complication that targets specific choices must
         // name real outcomes of its own event (typo guard), or the toll could never
         // land.

@@ -975,5 +975,119 @@
     "log": "The council declined the open hand and signed a plain, smaller contract instead, keeping the ledger clean of trust it might not be able to repay. The hauler shrugged and dealt fair, a little cooler for the refusal — a safe choice, and one that left on the table something the ship had not quite learned how to accept."
    }
   ]
+ },
+ {
+  "id": "the_reputation_precedes_us",
+  "category": "generational_challenge",
+  "title": "The Reputation Precedes Us",
+  "description": "A ship in genuine distress hails on the open band, and it does something unusual before it states its need: it says it knows who you are. Word of this hull travels the trade-dark faster than the hull does, and what the word says is that here is a ship that helps — that took in castaways when it might have taken only their stores, that shared a thin table rather than cull the weakest deck. The stranger is not asking a favor of an unknown quantity. It is asking mercy of a ship famous for it, and offering, in the asking, a trust it would extend to no one else.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "min_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.7
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "live_up_to_the_name",
+    "label": "Be the ship they believe you are",
+    "description": "A reputation for mercy is a debt to the version of yourself that others believe in. Answer the distress fully and freely, help without counting the cost, and let the ship's name go on meaning what it has come to mean — because a mercy that holds only when convenient was never mercy, just a habit that had not yet been tested.",
+    "resource_delta": {
+     "food": -800,
+     "influence": 80
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.03,
+     "morale": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship answered the distress as freely as its name had promised, spending its own stores on strangers and asking nothing back, and the trade-dark noted, as it always does, that the reputation had held under test. A name for mercy is a slow thing to build and a fast thing to spend, and the ship, this day, chose to keep meaning what it had come to mean — and found, as merciful ships do, that a name for helping is worth more in the long dark than the stores it costs to keep."
+   },
+   {
+    "id": "spend_the_reputation",
+    "label": "Trade on the trust instead",
+    "description": "They came because they trust you; that trust is itself an asset, and an asset can be realized. Help, but on terms — extract a hard bargain from a party that came expecting charity, and convert a name for mercy into something more immediately spendable. It works once. Reputations, unlike stores, do not refill.",
+    "resource_delta": {
+     "credits": 1400,
+     "food": -300
+    },
+    "population_delta": {
+     "legacy_loyalty": -0.03,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.1
+     }
+    ],
+    "log": "The ship helped the strangers, and charged them for it — realizing, in hard credit, the trust its name had earned. It was a shrewd trade and a corrosive one, a party that came expecting charity leaving having bought it, and the story that spread afterward was subtly different from the one that brought them: that this ship, it turned out, would help you, for a price. A reputation spent is not a reputation earned twice."
+   }
+  ]
+ },
+ {
+  "id": "the_feared_name",
+  "category": "generational_challenge",
+  "title": "The Feared Name",
+  "description": "A waystation the ship badly needs to dock at goes quiet as it approaches, and the quiet is not welcome. Word of this hull has traveled the trade-dark too, and the word is colder: that here is a ship that took the stores and left the castaways to the void, that culled its weakest deck to spare the rest, that does the hard thing without flinching and perhaps a little too readily. The station is not refusing the ship — one does not refuse a ship like this lightly — but it deals with it the way one deals with something dangerous: carefully, minimally, and with the exits kept clear.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "max_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.3
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "lean_into_the_fear",
+    "label": "Use the fear you've earned",
+    "description": "A name that opens no friendly doors still opens frightened ones. Deal from the reputation you have — let the station's fear do the negotiating, take the docking and the terms a gentler ship would have to ask nicely for, and accept that a hull feared is a hull that gets what it wants, if not what it might once have hoped to be.",
+    "resource_delta": {
+     "minerals": 600,
+     "credits": 800
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": -0.03,
+     "morale": -0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.05
+     }
+    ],
+    "log": "The ship dealt from the fear it had earned, and the frightened station gave it what it wanted on terms a gentler hull would have had to plead for. It was efficient and it was lonely — a people getting its way by being the thing others kept the exits clear of — and the ship banked the ore and the credits and the small cold knowledge that this was who it had become, one hard choice at a time, without ever quite deciding to."
+   },
+   {
+    "id": "try_to_soften_the_name",
+    "label": "Begin, slowly, to earn a different name",
+    "description": "A reputation is not a sentence; it is only the sum of what you have done so far, and it can be added to. Deal with the wary station openly and gently, take less than the fear would have handed you, and start — knowing it will take a hundred such choices and years of them — the slow work of being known for something other than the hard thing done readily.",
+    "resource_delta": {
+     "minerals": 200,
+     "influence": 40
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.08
+     }
+    ],
+    "log": "The ship dealt gently with the wary station and took less than its fearsome name would have handed it, spending the immediate advantage to begin buying, at a steep and slow price, a different reputation. One kind dealing does not unmake a hard name — the station stayed wary to the last — but it was a first entry against a long ledger, the ship choosing, deliberately this time, to start becoming something other than what its choices had made it."
+   }
+  ]
  }
 ]

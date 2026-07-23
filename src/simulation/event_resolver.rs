@@ -289,6 +289,20 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     if template.max_stability > 0.0 && sim.population.stability > template.max_stability {
         return false;
     }
+    // Reputation gates (content-depth round 16): content keyed to the ship's
+    // cumulative character — a floor a merciful name must clear, a ceiling a feared
+    // name must sit under.
+    if template
+        .min_reputation
+        .iter()
+        .any(|g| sim.reputation(&g.id) < g.threshold)
+        || template
+            .max_reputation
+            .iter()
+            .any(|g| sim.reputation(&g.id) > g.threshold)
+    {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -438,6 +452,11 @@ pub fn apply_outcome(
     sim.population.apply(&population_delta);
     sim.consequences
         .extend(outcome.long_term_consequences.iter().cloned());
+    // …and nudge the ship's cumulative character (content-depth round 16): many
+    // small reputation moves across a campaign build a lasting tendency.
+    for delta in &outcome.reputation_deltas {
+        sim.adjust_reputation(&delta.id, delta.delta);
+    }
     // …and a promised follow-up joins the clock (content-depth round 9): unlike a
     // consequence tag, this re-fires the named event at a *determined* year, so an
     // authored arc pays off when promised rather than when the RNG obliges.
@@ -2063,6 +2082,66 @@ mod tests {
         assert!(
             passes_gate(&sim, event),
             "hunger and cold together bring it"
+        );
+    }
+
+    #[test]
+    fn a_reputation_builds_across_choices_and_opens_or_closes_doors() {
+        // Content-depth event families round 16: graded reputation. Merciful choices
+        // lift the ship's `mercy` trait, and a scenario that a merciful name opens
+        // (the reputation precedes us) stays out of reach until enough of them add
+        // up — while a feared one's scenario opens the opposite door.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 81, &picks);
+
+        // A fresh ship reads neutral, and neither reputation door is open.
+        assert_eq!(
+            sim.reputation("mercy"),
+            0.5,
+            "an untouched trait is neutral"
+        );
+        let kind = data.events.get("the_reputation_precedes_us").unwrap();
+        let feared = data.events.get("the_feared_name").unwrap();
+        assert!(!passes_gate(&sim, kind), "no name yet, no merciful door");
+        assert!(!passes_gate(&sim, feared), "and no feared door either");
+
+        // Take castaways aboard, share the thin table: mercy builds.
+        let castaways = data.events.get("the_castaways").unwrap();
+        let aboard = castaways
+            .outcomes
+            .iter()
+            .position(|o| o.id == "take_them_aboard")
+            .unwrap();
+        for _ in 0..3 {
+            apply_outcome(&mut sim, &data, castaways, aboard);
+        }
+        assert!(
+            sim.reputation("mercy") > 0.5,
+            "merciful choices build a merciful name"
+        );
+        assert!(
+            passes_gate(&sim, kind),
+            "a name for mercy opens the door only trust extends"
+        );
+
+        // A ship that instead built ruthlessness opens the other door.
+        let mut cold = SimState::new_campaign(&data, "preservers", 82, &picks);
+        let stores = castaways
+            .outcomes
+            .iter()
+            .position(|o| o.id == "take_the_stores_only")
+            .unwrap();
+        for _ in 0..5 {
+            apply_outcome(&mut cold, &data, castaways, stores);
+        }
+        assert!(
+            cold.reputation("mercy") < 0.3,
+            "cold choices earn a cold name"
+        );
+        assert!(
+            passes_gate(&cold, feared) && !passes_gate(&cold, kind),
+            "a feared name opens the wary door and closes the merciful one"
         );
     }
 

@@ -230,7 +230,13 @@
      "legacy_loyalty": -0.03,
      "cultural_drift": 0.03
     },
-    "log": "The council struck the birth-quota from the code and enrolled the stowaway with a name and a berth. The old rule never recovered its authority."
+    "log": "The council struck the birth-quota from the code and enrolled the stowaway with a name and a berth. The old rule never recovered its authority.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.08
+     }
+    ]
    },
    {
     "id": "uphold_the_quota",
@@ -242,7 +248,13 @@
      "unity": -0.04,
      "stability": 0.05
     },
-    "log": "The quota held and the stowaway was raised a ward of the ship, unpersoned in the ledgers. The decks did not forget the coldness of it."
+    "log": "The quota held and the stowaway was raised a ward of the ship, unpersoned in the ledgers. The decks did not forget the coldness of it.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.06
+     }
+    ]
    }
   ]
  },
@@ -270,7 +282,13 @@
      "cultural_drift": 0.05,
      "legacy_loyalty": -0.04
     },
-    "log": "The council permitted the mercy dose to those who asked for it. The infirmary emptied and something in the ship's conscience shifted, quietly, for good."
+    "log": "The council permitted the mercy dose to those who asked for it. The infirmary emptied and something in the ship's conscience shifted, quietly, for good.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.08
+     }
+    ]
    },
    {
     "id": "forbid_mercy",
@@ -291,7 +309,13 @@
       "condition": -0.05
      }
     ],
-    "log": "The council forbade the mercy dose and the wards ran full and grieving to the end. It cost the ship dearly and it kept a line the elders would not cross."
+    "log": "The council forbade the mercy dose and the wards ran full and grieving to the end. It cost the ship dearly and it kept a line the elders would not cross.",
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.06
+     }
+    ]
    }
   ]
  },

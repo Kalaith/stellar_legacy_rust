@@ -356,6 +356,13 @@ pub struct SimState {
     /// Accumulated named consequences from past outcomes (Pillar 2). Read by
     /// future event weighting; append-only from outcome application.
     pub consequences: Vec<String>,
+    /// Graded reputation traits (content-depth event families round 16): the ship's
+    /// cumulative *character*, where `consequences` records discrete deeds. A named
+    /// 0-1 scalar (0.5 neutral) nudged a little by many separate outcomes, so a
+    /// tendency — mercy, ruthlessness — builds across a campaign and later events can
+    /// read who the ship has *become*. Unset traits read neutral via `reputation`.
+    #[serde(default)]
+    pub reputation: HashMap<String, f32>,
     /// Follow-ups promised to fire at a *determined* year (content-depth event
     /// families round 9): an outcome can schedule a specific event to re-fire in
     /// N years, so an authored arc pays off on a clock rather than waiting for the
@@ -490,6 +497,7 @@ impl SimState {
             pending_event: None,
             pending_dilemma: None,
             consequences: Vec::new(),
+            reputation: HashMap::new(),
             scheduled_events: Vec::new(),
             event_fire_counts: HashMap::new(),
             last_dominant_faction: String::new(),
@@ -558,6 +566,19 @@ impl SimState {
             month: self.month(),
             text: text.into(),
         });
+    }
+
+    /// The ship's current value on a reputation trait (content-depth event families
+    /// round 16), 0.5 (neutral) for any trait no outcome has yet touched.
+    pub fn reputation(&self, id: &str) -> f32 {
+        self.reputation.get(id).copied().unwrap_or(0.5)
+    }
+
+    /// Nudge a reputation trait by `delta`, clamped to [0, 1] (content-depth event
+    /// families round 16). Many small nudges across a campaign build a tendency.
+    pub fn adjust_reputation(&mut self, id: &str, delta: f32) {
+        let entry = self.reputation.entry(id.to_owned()).or_insert(0.5);
+        *entry = (*entry + delta).clamp(0.0, 1.0);
     }
 
     pub fn trim_log(&mut self, limit: usize) {
