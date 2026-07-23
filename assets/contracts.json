@@ -1790,6 +1790,12 @@
      "condition": 0.05
     }
    ],
+   "faction_approval_deltas": [
+    {
+     "id": "verdant_kin",
+     "delta": 0.12
+    }
+   ],
    "log": "The Verdant Kin coaxed a living world out of dead rock, and came away having learned things about growing that no ship's garden ever teaches — a depth of green craft the agriculture decks will carry forever."
   }
  },
@@ -1899,6 +1905,12 @@
      "id": "engineering_bay",
      "knowledge": 0.12,
      "condition": 0.05
+    }
+   ],
+   "faction_approval_deltas": [
+    {
+     "id": "steel_covenant",
+     "delta": 0.12
     }
    ],
    "log": "The great works at the Karst Belt were raised, run, and certified, and the crews that built them came home masters of a craft the founders had only sketched — large-scale extraction learned in the doing, a competence now written into the engineering bay for good."
@@ -2013,6 +2025,12 @@
     {
      "id": "mercy",
      "delta": 0.06
+    }
+   ],
+   "faction_approval_deltas": [
+    {
+     "id": "hearth_union",
+     "delta": 0.12
     }
    ]
   },

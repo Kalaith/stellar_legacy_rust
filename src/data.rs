@@ -1750,6 +1750,15 @@ mod tests {
                     "charter '{id}' requires unknown faction '{fid}' aboard"
                 );
             }
+            // Content-depth charters round 19: a completion goodwill reward must name
+            // a real people, or the goodwill would land nowhere.
+            for d in &c.completion_reward.faction_approval_deltas {
+                assert!(
+                    data.factions.get(&d.id).is_some(),
+                    "charter '{id}' completion_reward names unknown faction '{}'",
+                    d.id
+                );
+            }
             // Content-depth charters round 13: a route toll must be a gentle,
             // survivable headwind — a per-year crew drain that could empty a
             // generational voyage is a bug, not a hazard.

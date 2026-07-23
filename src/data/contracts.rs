@@ -259,6 +259,15 @@ pub struct CompletionReward {
     /// self-reinforcing spiral through the mission cycle. Applied on full completion.
     #[serde(default)]
     pub reputation_deltas: Vec<crate::data::events::ReputationDelta>,
+    /// How seeing this charter through earns the goodwill of the peoples it served
+    /// (content-depth charters round 19): a greening the Verdant Kin longed for, a
+    /// homeworld run the traditionalists blessed — completing the mission lifts the
+    /// named aboard factions' approval. So a mission the ship took *because* a people
+    /// was aboard (it112 `requires_faction_aboard`) can leave that people delighted,
+    /// which then unlocks the round-19 `faction_approval_above` gift beats: the
+    /// charter cycle feeding the faction-goodwill well. Aboard factions only.
+    #[serde(default)]
+    pub faction_approval_deltas: Vec<crate::data::events::FactionApprovalDelta>,
     /// Line narrating the boon; empty = a generic line.
     #[serde(default)]
     pub log: String,
@@ -269,6 +278,7 @@ impl CompletionReward {
     pub fn is_none(&self) -> bool {
         self.subsystem_deltas.is_empty()
             && self.reputation_deltas.is_empty()
+            && self.faction_approval_deltas.is_empty()
             && self.resource == ResourceDelta::default()
             && self.population == PopulationDelta::default()
     }

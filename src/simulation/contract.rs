@@ -116,6 +116,18 @@ pub fn apply_completion_reward(sim: &mut SimState, template: &ContractTemplate) 
     for delta in &reward.reputation_deltas {
         sim.adjust_reputation(&delta.id, delta.delta);
     }
+    // …and earns the goodwill of the peoples it served (content-depth charters round
+    // 19): a completed mission can leave the named aboard factions delighted, feeding
+    // the round-19 gift beats. Factions not aboard are ignored.
+    for delta in &reward.faction_approval_deltas {
+        if let Some(state) = sim
+            .factions
+            .iter_mut()
+            .find(|f| f.faction_id == delta.id && f.is_aboard())
+        {
+            state.adjust_approval(delta.delta);
+        }
+    }
     Some(if reward.log.is_empty() {
         format!("The lessons of {} stay with the ship.", template.name)
     } else {
@@ -512,6 +524,43 @@ mod tests {
         assert!(
             cold.reputation("mercy") < c0,
             "a voyage of cold enforcement hardens it"
+        );
+    }
+
+    #[test]
+    fn a_completed_mission_earns_its_peoples_goodwill() {
+        // Content-depth charters round 19: a mission the ship flew for a people can
+        // leave that people delighted — the completion goodwill that feeds the
+        // round-19 gift beats. Only lands on a faction actually aboard.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 1, &picks);
+        // The sanctuary run rewards the Hearth, who ride in the founding set.
+        let run = data.contracts.get("the_sanctuary_run").unwrap();
+        assert!(
+            run.completion_reward
+                .faction_approval_deltas
+                .iter()
+                .any(|d| d.id == "hearth_union"),
+            "the sanctuary run earns the Hearth's goodwill"
+        );
+        assert!(sim.is_faction_aboard("hearth_union"));
+        let before = sim
+            .factions
+            .iter()
+            .find(|f| f.faction_id == "hearth_union")
+            .unwrap()
+            .approval;
+        apply_completion_reward(&mut sim, run);
+        let after = sim
+            .factions
+            .iter()
+            .find(|f| f.faction_id == "hearth_union")
+            .unwrap()
+            .approval;
+        assert!(
+            after > before,
+            "carrying the frightened home leaves the Hearth glad it came"
         );
     }
 
