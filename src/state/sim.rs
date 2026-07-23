@@ -216,6 +216,14 @@ pub struct MarketEntry {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MarketState {
     pub entries: Vec<MarketEntry>,
+    /// How much a bulk trade moves the local price against the ship (content-depth
+    /// provisioning round 22): a lone generation ship trading at a small waypoint is a
+    /// whale in a thin pool — buying up a good drives its price up, dumping a surplus
+    /// floods the market and drives it down. Set from `market_impact_per_unit` at
+    /// campaign start; the yearly drift then walks the price back toward base over the
+    /// voyage. 0 = a bottomless market that a single ship's trades never move.
+    #[serde(default)]
+    pub impact_per_unit: f32,
 }
 
 /// Per-category advisor delegation (GDD §5.4): a delegated category's events
@@ -535,6 +543,7 @@ impl SimState {
                     trend: 0.0,
                 })
                 .collect(),
+            impact_per_unit: config.market_impact_per_unit,
         };
 
         let mut sim = Self {

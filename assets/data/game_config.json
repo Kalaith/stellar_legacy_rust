@@ -33,6 +33,7 @@
   "fabrication_minerals_cost": 40,
   "fabrication_parts_yield": 4,
   "low_energy_threshold": 1000,
+  "market_impact_per_unit": 0.0003,
   "hull_warning_threshold": 0.7,
   "life_support_warning_threshold": 0.8,
   "hull_decay_per_year": 0.0035,

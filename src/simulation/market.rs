@@ -45,6 +45,9 @@ pub fn buy(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<(
         return Err(format!("Need {cost} credits"));
     }
     sim.resources.apply(&delta);
+    // The ship's own demand moves the thin local market (content-depth provisioning
+    // round 22): buying up a good drives its price up against the next lot.
+    shift_price(sim, resource, amount);
     Ok(())
 }
 
@@ -55,7 +58,32 @@ pub fn sell(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<
         return Err(format!("Not enough {} to sell", resource.label()));
     }
     sim.resources.apply(&delta);
+    // …and dumping a surplus floods the market and drives its price down (round 22).
+    shift_price(sim, resource, -amount);
     Ok(())
+}
+
+/// Move a resource's local price by the ship's own trade (content-depth provisioning
+/// round 22): a positive `signed_amount` (a buy) pushes it up, a negative one (a sell)
+/// down, scaled by the resource's base price and `market.impact_per_unit`, clamped to
+/// the same 0.5x-3x band the yearly drift honours. The drift then walks it back toward
+/// base over the following years, so a bulk trade's mark on the market is real but
+/// temporary. Inert when `impact_per_unit` is 0.
+fn shift_price(sim: &mut SimState, resource: TradeResource, signed_amount: i64) {
+    let k = sim.market.impact_per_unit;
+    if k == 0.0 {
+        return;
+    }
+    let base = base_price(resource);
+    let shift = base * k * signed_amount as f32;
+    if let Some(entry) = sim
+        .market
+        .entries
+        .iter_mut()
+        .find(|e| e.resource == resource)
+    {
+        entry.price = (entry.price + shift).clamp(base * 0.5, base * 3.0);
+    }
 }
 
 #[cfg(test)]
@@ -95,6 +123,51 @@ mod tests {
         );
         sim.resources.influence = 5;
         assert!(sell(&mut sim, TradeResource::Influence, 50).is_err());
+    }
+
+    #[test]
+    fn the_ships_own_trades_move_the_thin_local_market() {
+        // Content-depth provisioning round 22: a lone ship is a whale in a waypoint
+        // market — stocking up drives a price up, dumping a surplus drives it down, both
+        // clamped to the drift's band.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.market_impact_per_unit > 0.0,
+            "this test needs the market-impact coupling enabled"
+        );
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.resources.credits = 1_000_000;
+        sim.resources.minerals = 100_000;
+
+        // Buying up minerals drives their price up against the next lot.
+        let before = price_of(&sim, TradeResource::Minerals);
+        buy(&mut sim, TradeResource::Minerals, 1_000).unwrap();
+        let after_buy = price_of(&sim, TradeResource::Minerals);
+        assert!(
+            after_buy > before,
+            "buying a bulk lot drives the price up: {before} -> {after_buy}"
+        );
+
+        // Dumping a surplus floods the market and drives the price back down.
+        sell(&mut sim, TradeResource::Minerals, 3_000).unwrap();
+        let after_sell = price_of(&sim, TradeResource::Minerals);
+        assert!(
+            after_sell < after_buy,
+            "dumping a surplus drives the price down: {after_buy} -> {after_sell}"
+        );
+
+        // The impact never breaks the drift's 0.5x-3x bounds.
+        let base = base_price(TradeResource::Minerals);
+        buy(&mut sim, TradeResource::Minerals, 100_000).unwrap();
+        assert!(
+            price_of(&sim, TradeResource::Minerals) <= base * 3.0,
+            "even a whale trade stays inside the price band"
+        );
     }
 
     #[test]

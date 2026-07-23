@@ -126,6 +126,15 @@ pub struct GameConfig {
     pub food_per_person_per_year: f32,
     pub low_food_threshold: i64,
     pub low_energy_threshold: i64,
+    /// How much a unit of a bulk trade moves the local price against the ship
+    /// (content-depth provisioning round 22): the market's first responsiveness to the
+    /// ship's own actions — a lone generation ship is a whale in a thin waypoint market,
+    /// so stocking up drives a price up and dumping a surplus drives it down, scaled by
+    /// this per-unit fraction of the resource's base price and clamped to the drift's
+    /// 0.5x-3x band. 0 = a bottomless market a single ship never moves. Copied onto the
+    /// `MarketState` at campaign start.
+    #[serde(default)]
+    pub market_impact_per_unit: f32,
     /// Food store below which a year counts as *lean* (content-depth provisioning
     /// round 13): distinct from the near-famine `low_food_threshold`, this is the
     /// "not comfortably stocked" line whose sustained crossing drives `lean_food_years`
@@ -2355,6 +2364,14 @@ mod tests {
                 "the fabrication mechanic is on but its costs/yield are not all positive"
             );
         }
+        // Content-depth provisioning round 22: the market impact is a gentle per-unit
+        // nudge — a bulk trade moves a thin market, but a single unit barely stirs it,
+        // and the clamp plus the yearly drift keep even a whale ship from breaking it.
+        assert!(
+            (0.0..=0.01).contains(&data.config.market_impact_per_unit),
+            "market_impact_per_unit {} out of the gentle range [0, 0.01]",
+            data.config.market_impact_per_unit
+        );
         // Content-depth charters round 22: the crew-morale accrual swing is gentle —
         // a devoted crew works meaningfully but not miraculously faster, and even a
         // broken one is floored above a stall at runtime.
