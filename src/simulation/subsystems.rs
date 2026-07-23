@@ -376,7 +376,17 @@ pub fn life_support_mortality_loss(sim: &SimState, data: &GameData) -> u32 {
     } else {
         (sim.resources.energy as f32 / cfg.life_support_energy_critical as f32).clamp(0.0, 1.0)
     };
-    let condition = plant.min(power_avail);
+    // The green decks are the ship's lungs (content-depth subsystems round 17): a
+    // living agriculture biosphere scrubs air the mechanical plant would otherwise
+    // carry alone, so a well-kept farm supplements the plant's effective condition —
+    // real slack against a failing plant, though (capped below the threshold) never a
+    // wholesale replacement for it.
+    let bio = cfg.agriculture_life_support_contribution
+        * sim
+            .subsystems
+            .get("agriculture")
+            .map_or(1.0, |s| s.condition);
+    let condition = (plant.min(power_avail) + bio).min(1.0);
     if condition >= threshold {
         return 0;
     }
@@ -631,6 +641,9 @@ mod tests {
                 .get_mut("life_support_habitat")
                 .unwrap()
                 .condition = condition;
+            // Isolate the plant: a dead garden contributes no bio life-support
+            // (round 17), so this measures the mechanical plant alone.
+            sim.subsystems.get_mut("agriculture").unwrap().condition = 0.0;
             life_support_mortality_loss(&sim, &data)
         };
 
@@ -648,6 +661,54 @@ mod tests {
             fully_failed > half_failed,
             "a fully collapsed plant thins the crew faster than a half-failed one \
              ({fully_failed} vs {half_failed})"
+        );
+    }
+
+    #[test]
+    fn a_green_garden_helps_the_air_plant_sustain_the_crew() {
+        // Content-depth subsystems round 17: the green decks are the ship's lungs. A
+        // living agriculture biosphere supplements the failing plant's effective
+        // condition, so the same collapsed plant kills far fewer with a thriving
+        // garden than with a dead one — real redundancy, but (capped below the
+        // threshold) never a wholesale replacement for the plant.
+        let data = GameData::load().unwrap();
+        let cfg = &data.config.subsystems;
+        assert!(
+            cfg.agriculture_life_support_contribution > 0.0,
+            "this test needs the bio life-support coupling enabled"
+        );
+        // Capped below the threshold: even a pristine garden cannot alone sustain air.
+        assert!(
+            cfg.agriculture_life_support_contribution < cfg.life_support_failure_threshold,
+            "the garden softens a dead plant, it does not replace it"
+        );
+
+        let loss_with_garden = |garden: f32| -> u32 {
+            let (_, mut sim) = campaign(17);
+            sim.population.count = 1000;
+            // A badly collapsed plant, on full power — only the garden differs.
+            sim.subsystems
+                .get_mut("life_support_habitat")
+                .unwrap()
+                .condition = 0.0;
+            sim.subsystems.get_mut("agriculture").unwrap().condition = garden;
+            life_support_mortality_loss(&sim, &data)
+        };
+
+        let dead_garden = loss_with_garden(0.0);
+        let green_garden = loss_with_garden(1.0);
+        assert!(
+            dead_garden > 0,
+            "a dead plant with no garden thins the crew"
+        );
+        assert!(
+            green_garden < dead_garden,
+            "a thriving garden helps the plant sustain more of the crew \
+             (green {green_garden} vs dead-garden {dead_garden})"
+        );
+        assert!(
+            green_garden > 0,
+            "but a garden alone cannot wholly replace a dead plant"
         );
     }
 
@@ -672,6 +733,9 @@ mod tests {
                 .get_mut("life_support_habitat")
                 .unwrap()
                 .condition = 1.0;
+            // Isolate power: a dead garden contributes no bio life-support (round 17),
+            // so only the grid moves the effective condition here.
+            sim.subsystems.get_mut("agriculture").unwrap().condition = 0.0;
             sim.resources.energy = energy;
             life_support_mortality_loss(&sim, &data)
         };

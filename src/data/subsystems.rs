@@ -167,4 +167,16 @@ pub struct SubsystemsConfig {
     /// starvation is deadlier than a mere dimming. 0 = power does not touch mortality.
     #[serde(default)]
     pub life_support_energy_critical: i64,
+    /// How much a living agriculture biosphere supplements the ship's effective
+    /// life-support condition against the mortality check (content-depth subsystems
+    /// round 17): the green decks are the ship's *lungs* — a healthy garden scrubs
+    /// air the mechanical scrubbers would otherwise carry alone, so its condition,
+    /// times this, is added to the plant's effective condition before the mortality
+    /// test. A generation ship's closed biosphere is real redundancy: keep the farm
+    /// green and a failing plant kills far fewer. Kept below the failure threshold so
+    /// even a pristine garden only *softens* a dead plant, never wholly replaces it
+    /// (the plant still holds pressure, heat, water, waste). 0 = the garden does not
+    /// touch life support.
+    #[serde(default)]
+    pub agriculture_life_support_contribution: f32,
 }

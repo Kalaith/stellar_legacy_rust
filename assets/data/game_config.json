@@ -109,7 +109,8 @@
     "objective_condition_penalty": 0.4,
     "life_support_failure_threshold": 0.2,
     "life_support_failure_mortality": 0.006,
-    "life_support_energy_critical": 800
+    "life_support_energy_critical": 800,
+    "agriculture_life_support_contribution": 0.15
   },
   "campaign_skeleton": {
     "months_per_window": 240,
