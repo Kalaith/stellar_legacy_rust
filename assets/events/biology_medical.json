@@ -861,5 +861,53 @@
     "log": "The council kept the ship whole and let the ward keep only the comfortable. The elders went sooner than a better infirmary would have allowed, and every soul aboard did the quiet arithmetic on their own remaining years."
    }
   ]
+ },
+ {
+  "id": "the_cold_nurseries",
+  "category": "generational_challenge",
+  "family": "biology_medical",
+  "title": "The Cold Nurseries",
+  "description": "The habitat decks are failing — heat that comes and goes, air a shade too thin, quarters patched and re-patched until no one recalls the original walls. The old bear it. But it is the nurseries that tell the true story: fewer cribs filled each year, more of the young lost early or never quite thriving. A ship that cannot keep its home warm cannot keep raising a next generation.",
+  "requires_decision": true,
+  "min_generation": 2,
+  "condition_below": [
+   {
+    "id": "life_support_habitat",
+    "below": 0.4
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_home",
+    "label": "Rebuild the living decks",
+    "description": "Divert the ship's stores and labor into the habitat before the ship stops raising children at all.",
+    "resource_delta": {
+     "minerals": -250,
+     "energy": -200
+    },
+    "ship_delta": {
+     "spare_parts": -20
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.4
+     }
+    ],
+    "log": "The ship poured what it could spare into the living decks — heat restored, quarters made whole, the nurseries warm again. The next cohort came up fuller than the last, the first time in a generation that could be said."
+   },
+   {
+    "id": "endure_the_cold",
+    "label": "Endure it",
+    "description": "The stores are needed elsewhere. The home will hold, after a fashion, and the young will come as they come.",
+    "population_delta": {
+     "morale": -0.04
+    },
+    "long_term_consequences": [
+     "the_cold_years"
+    ],
+    "log": "The council let the habitat go on failing and kept the stores for the ship's other hungers. The living decks stayed cold, the nurseries stayed thin, and the ship grew a little older every year for it."
+   }
+  ]
  }
 ]

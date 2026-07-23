@@ -482,6 +482,24 @@ pub fn habitat_morale_effect(sim: &SimState, data: &GameData) -> f32 {
     }
 }
 
+/// Multiplier on the dynasty's yearly renewal from the habitat's condition
+/// (content-depth subsystems round 19): a home kept sound raises the young on
+/// schedule (factor 1.0), a failing one sees fewer come of age
+/// (`1 - habitat_renewal_penalty·(1 - condition)`). Penalty-below-full, so a
+/// pristine habitat is the baseline; 1.0 when the coupling is off or the module is
+/// gone (renewal unchanged).
+pub fn habitat_renewal_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.habitat_renewal_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("life_support_habitat")
+        .map_or(1.0, |s| s.condition);
+    (1.0 - penalty * (1.0 - condition)).clamp(0.0, 1.0)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -569,6 +587,38 @@ mod tests {
             0.0,
             "a steady ship needs no steadying"
         );
+    }
+
+    #[test]
+    fn a_failing_habitat_slows_the_dynastys_renewal() {
+        // Content-depth subsystems round 19: the home the young are raised in scales
+        // the yearly birth chance — a sound one keeps the baseline, a failing one
+        // raises fewer children (but never none).
+        let (data, mut sim) = campaign(19);
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 1.0;
+        assert_eq!(
+            habitat_renewal_factor(&sim, &data),
+            1.0,
+            "a sound home keeps the baseline renewal"
+        );
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 0.0;
+        let failed = habitat_renewal_factor(&sim, &data);
+        assert!(
+            (0.0..1.0).contains(&failed) && failed > 0.0,
+            "a failed home raises fewer children, but not none"
+        );
+        sim.subsystems
+            .get_mut("life_support_habitat")
+            .unwrap()
+            .condition = 0.5;
+        let mid = habitat_renewal_factor(&sim, &data);
+        assert!(mid > failed && mid < 1.0, "a middling home falls between");
     }
 
     #[test]

@@ -114,6 +114,17 @@ pub struct SubsystemsConfig {
     /// 0 = the habitat's state does not touch morale.
     #[serde(default)]
     pub habitat_morale_swing: f32,
+    /// How much a *degraded* habitat slows the dynasty's yearly renewal (content-depth
+    /// subsystems round 19 — the habitat's coupling to the real-time-loop birth model):
+    /// the life-support/habitat is where families are raised, so a home kept sound
+    /// brings the young up on schedule while a failing one (cramped, cold, patched)
+    /// sees fewer come of age. The yearly birth chance is scaled by
+    /// `1 - habitat_renewal_penalty·(1 - condition)`, penalty-below-full so a pristine
+    /// habitat keeps the baseline renewal. Closes a neglect spiral with the morale
+    /// swing above: let the home rot and the ship loses both its spirits and its
+    /// children. 0 = the habitat's state does not touch renewal.
+    #[serde(default)]
+    pub habitat_renewal_penalty: f32,
     /// How much a module's tending-faction approval modulates its yearly decay
     /// (content-depth factions round 12): the reverse of the neglect-to-sentiment
     /// loop. A devoted people keeps its own domain sharp while a resentful one lets

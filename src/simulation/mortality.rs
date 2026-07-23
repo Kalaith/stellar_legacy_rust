@@ -79,12 +79,15 @@ pub fn annual_aging(sim: &mut SimState, data: &GameData) {
     let cfg = &data.config.mortality;
     let count = sim.dynasty.members.len() as u32;
     if count >= 2 && count < cfg.dynasty_target_size {
+        // A failing home raises fewer children (content-depth subsystems round 19):
+        // the habitat's condition scales the yearly birth chance.
+        let birth_chance = cfg.annual_birth_chance * subsystems::habitat_renewal_factor(sim, data);
         let legacy_id = sim.legacy.legacy_id.clone();
         let mut rng = sim.rng;
         let slots = cfg.dynasty_target_size - count;
         let mut born = 0u32;
         for _ in 0..slots {
-            if rng.chance(cfg.annual_birth_chance) {
+            if rng.chance(birth_chance) {
                 let age = 16 + rng.below(10) as u32;
                 let member = generate_member(
                     data,
