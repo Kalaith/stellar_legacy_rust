@@ -133,4 +133,17 @@ pub struct SubsystemsConfig {
     /// not touch the work.
     #[serde(default)]
     pub objective_condition_penalty: f32,
+    /// Condition below which a failing life-support/habitat plant begins to cost
+    /// lives (content-depth subsystems round 15): the module's most fundamental
+    /// effect, long missing — a plant that literally sustains the crew, when it
+    /// fails badly, cannot sustain everyone. Above this the plant holds; below it,
+    /// a yearly attrition scaled by how far it has failed. 0 = no mortality effect.
+    #[serde(default)]
+    pub life_support_failure_threshold: f32,
+    /// Peak yearly fraction of the crew lost to a *fully collapsed* (condition 0)
+    /// life-support plant (content-depth subsystems round 15), scaled linearly from
+    /// 0 at the failure threshold to this at zero condition. Gentle — a slow
+    /// thinning, the pressure to keep the plant alive, not a massacre.
+    #[serde(default)]
+    pub life_support_failure_mortality: f32,
 }

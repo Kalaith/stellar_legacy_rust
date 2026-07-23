@@ -102,6 +102,17 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.fat_food_years = 0;
     }
 
+    // A life-support plant that has failed badly cannot sustain everyone (content-depth
+    // subsystems round 15): the module's most fundamental effect. Below the failure
+    // threshold the ship thins each year, scaled by how far the plant has collapsed.
+    let ls_loss = subsystems::life_support_mortality_loss(sim, data);
+    if ls_loss > 0 {
+        sim.population.count = sim.population.count.saturating_sub(ls_loss);
+        sim.push_log(format!(
+            "The failing life-support could not hold the whole ship in breathable air; {ls_loss} were lost to the thinning decks."
+        ));
+    }
+
     // A skilled security chief and a well-kept security corps both slowly steady
     // a fractious ship (content-depth subsystems round 9): crew skill + module
     // condition stack.

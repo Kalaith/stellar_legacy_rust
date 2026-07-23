@@ -102,7 +102,9 @@
     "tender_approval_decay_scale": 0.3,
     "agriculture_condition_food_penalty": 0.3,
     "education_transmission_condition_penalty": 0.5,
-    "objective_condition_penalty": 0.4
+    "objective_condition_penalty": 0.4,
+    "life_support_failure_threshold": 0.2,
+    "life_support_failure_mortality": 0.006
   },
   "campaign_skeleton": {
     "months_per_window": 240,

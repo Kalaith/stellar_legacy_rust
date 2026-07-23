@@ -350,6 +350,29 @@ pub fn agriculture_condition_food_factor(sim: &SimState, data: &GameData) -> f32
     (1.0 - penalty * (1.0 - condition)).max(0.0)
 }
 
+/// Crew lost this year to a critically-failing life-support/habitat plant
+/// (content-depth subsystems round 15): the module's most fundamental effect. Above
+/// the failure threshold the plant sustains everyone (0 loss); below it, a yearly
+/// attrition scaled linearly from 0 at the threshold to `mortality × population` at
+/// zero condition. Floored, so a barely-failing plant on a small crew may cost none.
+pub fn life_support_mortality_loss(sim: &SimState, data: &GameData) -> u32 {
+    let cfg = &data.config.subsystems;
+    let threshold = cfg.life_support_failure_threshold;
+    if threshold <= 0.0 || cfg.life_support_failure_mortality <= 0.0 {
+        return 0;
+    }
+    let condition = sim
+        .subsystems
+        .get("life_support_habitat")
+        .map_or(1.0, |s| s.condition);
+    if condition >= threshold {
+        return 0;
+    }
+    let severity = ((threshold - condition) / threshold).clamp(0.0, 1.0);
+    let fraction = cfg.life_support_failure_mortality * severity;
+    (sim.population.count as f32 * fraction) as u32
+}
+
 /// Fraction by which the life-support/habitat subsystem slows life-support
 /// decay (W5): its current tier's `severity_reduction × condition`.
 pub fn life_support_decay_reduction(sim: &SimState, data: &GameData) -> f32 {
@@ -524,6 +547,46 @@ mod tests {
             .config
             .subsystems
             .engineering_decay_swing
+    }
+
+    #[test]
+    fn a_failing_life_support_plant_thins_the_crew() {
+        // Content-depth subsystems round 15: the life-support plant's most
+        // fundamental effect. A plant above the failure threshold sustains everyone;
+        // one that has collapsed thins the crew each year, worse the further it has
+        // failed.
+        let data = GameData::load().unwrap();
+        let cfg = &data.config.subsystems;
+        assert!(
+            cfg.life_support_failure_threshold > 0.0 && cfg.life_support_failure_mortality > 0.0,
+            "this test needs the life-support mortality coupling enabled"
+        );
+
+        let loss_at = |condition: f32| -> u32 {
+            let (_, mut sim) = campaign(11);
+            sim.population.count = 1000;
+            sim.subsystems
+                .get_mut("life_support_habitat")
+                .unwrap()
+                .condition = condition;
+            life_support_mortality_loss(&sim, &data)
+        };
+
+        // A plant holding above the threshold costs nothing.
+        assert_eq!(
+            loss_at(cfg.life_support_failure_threshold + 0.1),
+            0,
+            "a sustaining plant loses no one"
+        );
+        // A collapsing plant thins the crew, and a worse collapse thins it more.
+        let half_failed = loss_at(cfg.life_support_failure_threshold / 2.0);
+        let fully_failed = loss_at(0.0);
+        assert!(half_failed > 0, "a failing plant costs lives");
+        assert!(
+            fully_failed > half_failed,
+            "a fully collapsed plant thins the crew faster than a half-failed one \
+             ({fully_failed} vs {half_failed})"
+        );
     }
 
     #[test]
