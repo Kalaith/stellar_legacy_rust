@@ -80,6 +80,17 @@ pub fn meets_in_world_gate(sim: &SimState, template: &ContractTemplate) -> bool 
             .forbidden_consequence
             .iter()
             .any(|tag| sim.consequences.contains(tag))
+        // Reputation gates (content-depth charters round 16): the writ board reflects
+        // the ship's cumulative character — a merciful name opens some work, a feared
+        // one others.
+        && template
+            .min_reputation
+            .iter()
+            .all(|g| sim.reputation(&g.id) >= g.threshold)
+        && template
+            .max_reputation
+            .iter()
+            .all(|g| sim.reputation(&g.id) <= g.threshold)
 }
 
 /// Grant a charter's completion reward (content-depth charters round 15): the
@@ -477,6 +488,50 @@ mod tests {
         let k0 = sim.subsystems["engineering_bay"].knowledge;
         assert!(apply_completion_reward(&mut sim, ordinary).is_none());
         assert_eq!(sim.subsystems["engineering_bay"].knowledge, k0);
+    }
+
+    #[test]
+    fn the_writ_board_reflects_the_ships_reputation() {
+        // Content-depth charters round 16: the board reads the ship's cumulative
+        // character. The sanctuary run opens only to a hull famous for mercy; the
+        // enforcement writ only to one known not to flinch — and neither is offered
+        // to a ship whose name is still neutral.
+        let data = GameData::load().unwrap();
+        let sanctuary = data.contracts.get("the_sanctuary_run").unwrap();
+        let hard = data.contracts.get("the_hard_contract").unwrap();
+        let mercy_floor = sanctuary.min_reputation[0].threshold;
+        let mercy_ceiling = hard.max_reputation[0].threshold;
+
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 83, &picks);
+
+        // A neutral name (0.5) opens neither door.
+        assert!(
+            !meets_in_world_gate(&sim, sanctuary) && !meets_in_world_gate(&sim, hard),
+            "a ship with no reputation yet is offered neither"
+        );
+
+        // A merciful name opens the sanctuary run and keeps the hard writ shut.
+        sim.reputation.insert("mercy".to_string(), mercy_floor);
+        assert!(
+            meets_in_world_gate(&sim, sanctuary),
+            "a famous mercy is trusted with the vulnerable"
+        );
+        assert!(
+            !meets_in_world_gate(&sim, hard),
+            "a merciful ship is not offered the cold work"
+        );
+
+        // A feared name opens the enforcement writ and shuts the sanctuary run.
+        sim.reputation.insert("mercy".to_string(), mercy_ceiling);
+        assert!(
+            meets_in_world_gate(&sim, hard),
+            "a ship known not to flinch is hired for the hard thing"
+        );
+        assert!(
+            !meets_in_world_gate(&sim, sanctuary),
+            "and is not trusted with a people's children"
+        );
     }
 
     #[test]

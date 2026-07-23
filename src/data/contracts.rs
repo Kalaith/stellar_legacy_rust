@@ -192,6 +192,15 @@ pub struct ContractTemplate {
     /// voyage exists for. Empty = the objective is indifferent to any module's state.
     #[serde(default)]
     pub objective_subsystem: String,
+    /// Reputation gates on the writ (content-depth charters round 16): the mission
+    /// is offered only while the ship's cumulative character meets every named trait
+    /// — at or above (`min_reputation`) or at or below (`max_reputation`) its
+    /// threshold. So a relief writ opens only to a hull famous for mercy, and cold
+    /// work only to one known not to flinch. Empty = ungated by reputation.
+    #[serde(default)]
+    pub min_reputation: Vec<crate::data::events::ReputationGate>,
+    #[serde(default)]
+    pub max_reputation: Vec<crate::data::events::ReputationGate>,
     /// A lasting boon granted when this charter is seen through to full term
     /// (content-depth charters round 15): the mission's *legacy*, distinct from its
     /// pro-rated pay. Building a great extraction works makes the ship's engineers

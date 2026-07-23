@@ -1177,6 +1177,16 @@ mod tests {
                 );
             }
         }
+        // Content-depth charters round 16: charter reputation gates name a real trait too.
+        for (id, c) in data.contracts.iter() {
+            for gate in c.min_reputation.iter().chain(c.max_reputation.iter()) {
+                assert!(
+                    rep_produced.contains(&gate.id),
+                    "charter '{id}' gates on reputation '{}' no outcome nudges",
+                    gate.id
+                );
+            }
+        }
         // Content-depth round 14: a complication that targets specific choices must
         // name real outcomes of its own event (typo guard), or the toll could never
         // land.

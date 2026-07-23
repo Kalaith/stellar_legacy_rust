@@ -1903,5 +1903,210 @@
    ],
    "log": "The great works at the Karst Belt were raised, run, and certified, and the crews that built them came home masters of a craft the founders had only sketched — large-scale extraction learned in the doing, a competence now written into the engineering bay for good."
   }
+ },
+ {
+  "id": "the_sanctuary_run",
+  "name": "Sanctuary Run: The Talleth Exodus",
+  "objective": "rescue",
+  "description": "A failing habitat-world needs its people carried to safety across four centuries of dark, and the consortium arranging it will not hand that trust to just any hull. They want a ship with a name — a reputation for treating the vulnerable as kin, for the sort of mercy that does not calculate — because a people entrusting its children to a passing stranger deserves a stranger already known to be kind.",
+  "target_duration_years": 400,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 110
+   },
+   {
+    "kind": "operation",
+    "years": 180
+   },
+   {
+    "kind": "return",
+    "years": 110
+   }
+  ],
+  "objective_target": 18000,
+  "objective_unit": "souls carried to sanctuary",
+  "milestones": [
+   {
+    "id": "arrival",
+    "name": "Talleth reached",
+    "progress_threshold": 0.05
+   },
+   {
+    "id": "first_lift",
+    "name": "First evacuees aboard",
+    "progress_threshold": 0.35,
+    "reward": {
+     "influence": 60
+    }
+   },
+   {
+    "id": "last_window",
+    "name": "Last evacuation window met",
+    "progress_threshold": 0.85
+   },
+   {
+    "id": "delivered",
+    "name": "The carried delivered to safety",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.3,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.35,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.15,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "famine",
+   "succession_crisis",
+   "cultural_drift"
+  ],
+  "reward": {
+   "credits": 5200,
+   "influence": 320
+  },
+  "min_renown": 100,
+  "tags": [
+   "inhabited",
+   "long_haul"
+  ],
+  "min_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.6
+   }
+  ],
+  "completion_reward": {
+   "subsystem_deltas": [
+    {
+     "id": "medical_bay",
+     "knowledge": 0.08
+    }
+   ],
+   "log": "Four centuries of carrying the frail and the frightened made the ship's medics the finest kind — practiced in keeping the vulnerable alive across a crossing, a depth of care the medical bay keeps."
+  }
+ },
+ {
+  "id": "the_hard_contract",
+  "name": "Enforcement Writ: The Vane Default",
+  "objective": "salvage",
+  "description": "A colony consortium has defaulted, and its distant backers want their assets recovered from a settlement that will not give them up willingly — a cold, unlovely job of stripping a place that people still call home. No hull with a soft reputation would take it, and the backers would not trust a soft hull to finish it; they want a ship known for doing the hard thing without flinching, and they pay accordingly.",
+  "target_duration_years": 360,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 120
+   },
+   {
+    "kind": "operation",
+    "years": 140
+   },
+   {
+    "kind": "return",
+    "years": 100
+   }
+  ],
+  "objective_target": 30000,
+  "objective_unit": "tonnes recovered",
+  "milestones": [
+   {
+    "id": "arrival",
+    "name": "Vane reached",
+    "progress_threshold": 0.05
+   },
+   {
+    "id": "first_stripping",
+    "name": "First assets stripped",
+    "progress_threshold": 0.4,
+    "reward": {
+     "credits": 100
+    }
+   },
+   {
+    "id": "holdouts",
+    "name": "Holdouts cleared",
+    "progress_threshold": 0.85
+   },
+   {
+    "id": "recovered",
+    "name": "Recovery certified",
+    "progress_threshold": 1.0
+   }
+  ],
+  "success_metrics": [
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Population survival",
+    "weight": 0.2,
+    "target": 0.9
+   },
+   {
+    "id": "mission_completion",
+    "kind": "mission_completion",
+    "name": "Mission completion",
+    "weight": 0.45,
+    "target": 1.0
+   },
+   {
+    "id": "resource_efficiency",
+    "kind": "resource_efficiency",
+    "name": "Resource efficiency",
+    "weight": 0.2,
+    "target": 0.7
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.15,
+    "target": 0.6
+   }
+  ],
+  "failure_risks": [
+   "hull_breach",
+   "succession_crisis"
+  ],
+  "reward": {
+   "credits": 9500,
+   "minerals": 1200
+  },
+  "min_renown": 100,
+  "tags": [
+   "hostile_space",
+   "salvage"
+  ],
+  "hazard": 0.12,
+  "max_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.35
+   }
+  ]
  }
 ]
