@@ -162,6 +162,16 @@ pub struct SubsystemsConfig {
     /// children. 0 = the habitat's state does not touch renewal.
     #[serde(default)]
     pub habitat_renewal_penalty: f32,
+    /// How much a *degraded* medical bay lowers the dynasty's yearly renewal (content-
+    /// depth subsystems round 23): the infirmary's coupling to the birth model, the
+    /// healthcare twin of the habitat's housing. The yearly birth chance is scaled by
+    /// `1 - medical_renewal_penalty·(1 - condition)`, penalty-below-full — a sound bay
+    /// brings the cohort up whole, a failing one loses more of the young to the fevers
+    /// and frailties of childhood before their majority. Distinct from the it medical
+    /// *death* relief (which keeps the grown alive). 0 = the bay's state does not touch
+    /// renewal.
+    #[serde(default)]
+    pub medical_renewal_penalty: f32,
     /// How much a module's tending-faction approval modulates its yearly decay
     /// (content-depth factions round 12): the reverse of the neglect-to-sentiment
     /// loop. A devoted people keeps its own domain sharp while a resentful one lets

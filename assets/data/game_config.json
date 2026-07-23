@@ -127,6 +127,7 @@
     "habitat_morale_swing": 0.01,
     "education_morale_swing": 0.008,
     "habitat_renewal_penalty": 0.5,
+    "medical_renewal_penalty": 0.3,
     "tender_approval_decay_scale": 0.3,
     "agriculture_condition_food_penalty": 0.3,
     "education_transmission_condition_penalty": 0.5,

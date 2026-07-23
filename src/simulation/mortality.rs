@@ -90,8 +90,13 @@ pub fn annual_aging(sim: &mut SimState, data: &GameData) {
         } else {
             1.0
         };
-        let birth_chance =
-            cfg.annual_birth_chance * subsystems::habitat_renewal_factor(sim, data) * plenty;
+        // The home raises the young (r19 habitat) and the infirmary keeps them alive to
+        // grow up (content-depth subsystems round 23) — housing × healthcare both scale
+        // how many of the cohort reach their majority.
+        let birth_chance = cfg.annual_birth_chance
+            * subsystems::habitat_renewal_factor(sim, data)
+            * subsystems::medical_renewal_factor(sim, data)
+            * plenty;
         let legacy_id = sim.legacy.legacy_id.clone();
         let mut rng = sim.rng;
         let slots = cfg.dynasty_target_size - count;

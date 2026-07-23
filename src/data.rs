@@ -1846,6 +1846,14 @@ mod tests {
             "education_morale_swing {} out of the gentle range [0, 0.05]",
             subs_cfg.education_morale_swing
         );
+        // Content-depth subsystems round 23: the medical renewal penalty is a fraction
+        // (a failing bay loses *some* of the young, never all — a collapsed infirmary
+        // must not zero out births).
+        assert!(
+            (0.0..=0.8).contains(&subs_cfg.medical_renewal_penalty),
+            "medical_renewal_penalty {} out of range [0, 0.8]",
+            subs_cfg.medical_renewal_penalty
+        );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(
                 subs_cfg.crisis_weight_floor > 0.0,

@@ -538,6 +538,27 @@ pub fn habitat_renewal_factor(sim: &SimState, data: &GameData) -> f32 {
     (1.0 - penalty * (1.0 - condition)).clamp(0.0, 1.0)
 }
 
+/// Multiplier on the dynasty's yearly renewal from the *medical bay's* condition
+/// (content-depth subsystems round 23): where the habitat is where children are
+/// *raised* (it19), the infirmary is what keeps them *alive* to grow up — prenatal and
+/// infant care, the fevers of childhood caught in time. A sound bay brings the cohort
+/// up whole (factor 1.0), a failing one loses more of the young before their majority
+/// (`1 - medical_renewal_penalty·(1 - condition)`). Penalty-below-full, so a pristine
+/// bay is the baseline; stacks with the habitat factor (housing × healthcare), and
+/// distinct from the it medical *death* relief, which keeps the grown alive. 1.0 when
+/// the coupling is off or the module is gone.
+pub fn medical_renewal_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.medical_renewal_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("medical_bay")
+        .map_or(1.0, |s| s.condition);
+    (1.0 - penalty * (1.0 - condition)).clamp(0.0, 1.0)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -586,6 +607,39 @@ mod tests {
             habitat_morale_effect(&sim, &data),
             0.0,
             "a middling home neither lifts nor drags"
+        );
+    }
+
+    #[test]
+    fn a_sound_infirmary_brings_the_cohort_up_whole_and_a_failing_one_loses_the_young() {
+        // Content-depth subsystems round 23: the medical bay is what keeps the young
+        // alive to grow up. A sound bay leaves the renewal at baseline; a failing one
+        // scales it down (fewer of the cohort reach their majority); a wrecked one loses
+        // the most, but never all (the penalty is a fraction).
+        let (data, mut sim) = campaign(21);
+        let penalty = data.config.subsystems.medical_renewal_penalty;
+        assert!(
+            penalty > 0.0,
+            "this test needs the medical renewal coupling enabled"
+        );
+
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 1.0;
+        assert_eq!(
+            medical_renewal_factor(&sim, &data),
+            1.0,
+            "a sound infirmary keeps the baseline renewal"
+        );
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.5;
+        let half = medical_renewal_factor(&sim, &data);
+        assert!(
+            half < 1.0,
+            "a failing infirmary raises fewer of the young ({half})"
+        );
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.0;
+        let wrecked = medical_renewal_factor(&sim, &data);
+        assert!(
+            wrecked < half && wrecked > 0.0,
+            "a wrecked infirmary loses the most, but never all ({wrecked})"
         );
     }
 
