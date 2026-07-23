@@ -42,6 +42,12 @@ pub fn annual_aging(sim: &mut SimState, data: &GameData) {
     for officer in &mut sim.crew {
         officer.age += 1;
     }
+    // Count the sitting leader's reign each Founding Day (content-depth campaign
+    // skeleton round 19); succession resets it. An enduring captaincy is the
+    // long-reign beat's trigger.
+    if sim.dynasty.leader().is_some() {
+        sim.dynasty.leader_reign_years += 1;
+    }
 
     // Officers past their term retire — the post falls vacant, to be re-crewed
     // in drydock. Distinct from the death roll below (they leave alive).

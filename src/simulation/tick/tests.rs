@@ -604,8 +604,10 @@ fn contract_completes_at_target_duration() {
         .clear();
     // The succession beat (round 18) forces an event when a sitting leader dies —
     // continuous mortality can kill one mid-run — so silence it for these
-    // isolated-timeline tests too.
+    // isolated-timeline tests too, along with the round-19 long-reign beat (an
+    // enduring leader can trip it on a full voyage).
     data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.campaign_skeleton.long_reign_beat_family.clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -1338,8 +1340,10 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
         .clear();
     // The succession beat (round 18) forces an event when a sitting leader dies —
     // continuous mortality can kill one mid-run — so silence it for these
-    // isolated-timeline tests too.
+    // isolated-timeline tests too, along with the round-19 long-reign beat (an
+    // enduring leader can trip it on a full voyage).
     data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.campaign_skeleton.long_reign_beat_family.clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -1425,8 +1429,10 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
         .clear();
     // The succession beat (round 18) forces an event when a sitting leader dies —
     // continuous mortality can kill one mid-run — so silence it for these
-    // isolated-timeline tests too.
+    // isolated-timeline tests too, along with the round-19 long-reign beat (an
+    // enduring leader can trip it on a full voyage).
     data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.campaign_skeleton.long_reign_beat_family.clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -2043,6 +2049,42 @@ fn characters_age_die_and_the_line_renews_over_a_long_voyage() {
     assert_ne!(
         current_ages, founding_ages,
         "the roster aged and turned over"
+    );
+}
+
+#[test]
+fn an_enduring_reign_earns_a_long_reign_beat_once() {
+    // Content-depth campaign skeleton round 19: a leader who beats the odds of
+    // continuous mortality and holds the chair for `long_reign_years` earns a beat,
+    // once — the hopeful mirror of the succession beat.
+    let (data, mut sim) = provisioned(3, 1.0);
+    // Keep the leader young so no death/retirement resets the reign mid-test.
+    for member in &mut sim.dynasty.members {
+        if member.is_leader {
+            member.age = 40;
+        }
+    }
+    let threshold = data.config.campaign_skeleton.long_reign_years;
+    assert!(threshold > 0, "the long-reign beat must be configured");
+    sim.dynasty.leader_reign_years = threshold;
+    assert!(
+        !sim.dynasty.long_reign_marked,
+        "the reign is not yet marked"
+    );
+
+    sim.pending_event = None;
+    sim.pending_dilemma = None;
+    advance_months(&mut sim, &data, 1);
+    assert!(
+        sim.dynasty.long_reign_marked,
+        "an enduring reign is marked with a beat"
+    );
+
+    // A fresh succession re-arms it for the next reign.
+    crate::simulation::succession::install_successor(&mut sim.dynasty, &data.config);
+    assert!(
+        !sim.dynasty.long_reign_marked && sim.dynasty.leader_reign_years == 0,
+        "a handoff starts a new, unmarked reign"
     );
 }
 

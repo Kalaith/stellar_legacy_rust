@@ -25,6 +25,9 @@ pub fn eligible_heir_exists(dynasty: &Dynasty, config: &GameConfig) -> bool {
 /// Returns the new leader's name (if any member remained) and whether the dynasty
 /// is now extinct (no members at all).
 pub fn install_successor(dynasty: &mut Dynasty, config: &GameConfig) -> (Option<String>, bool) {
+    // A handoff starts a new reign (content-depth campaign skeleton round 19).
+    dynasty.leader_reign_years = 0;
+    dynasty.long_reign_marked = false;
     for member in &mut dynasty.members {
         member.is_leader = false;
     }

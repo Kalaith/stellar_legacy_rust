@@ -82,6 +82,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && report.contract_completed.is_none()
             && !report.dynasty_extinct
             && !fire_succession_beat(sim, data, &mut report)
+            && !fire_long_reign_beat(sim, data, &mut report)
             && !fire_scheduled_beat(sim, data, &mut report)
             && !fire_charter_scheduled_beat(sim, data, &mut report)
             && !fire_due_beat(sim, data, &mut report)
@@ -593,6 +594,31 @@ fn fire_succession_beat(sim: &mut SimState, data: &GameData, report: &mut TickRe
         return false;
     }
     report.leader_died = false;
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire a long-reign beat (content-depth campaign-skeleton round 19 — the hopeful
+/// mirror of the succession beat): once a sitting leader has held the first chair
+/// for `long_reign_years`, force a beat from the long-reign family, the ship
+/// reckoning with an era under one enduring hand — a thing grown rare now that
+/// continuous mortality takes most leaders young. Fires once per reign (marked on
+/// the dynasty, cleared by the next succession); voyage-only. Returns whether it
+/// replaced the reactive roll.
+fn fire_long_reign_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.long_reign_years == 0 || cfg.long_reign_beat_family.is_empty() || sim.contract.is_none()
+    {
+        return false;
+    }
+    let due = !sim.dynasty.long_reign_marked
+        && sim.dynasty.leader().is_some()
+        && sim.dynasty.leader_reign_years >= cfg.long_reign_years;
+    if !due {
+        return false;
+    }
+    sim.dynasty.long_reign_marked = true;
+    let family = cfg.long_reign_beat_family.clone();
     force_family_beat(sim, data, &family, report);
     true
 }

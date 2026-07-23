@@ -2248,5 +2248,81 @@
     "log": "There was no halt, no rite the founders would have known — a name logged, a watch kept, the voyage unbroken. Some called it strength. Some never forgave it."
    }
   ]
+ },
+ {
+  "id": "the_long_reign",
+  "category": "generational_challenge",
+  "family": "legacy_drift",
+  "title": "The Long Reign",
+  "description": "One hand has held the first chair longer than most captains of a ship like this ever get — long enough that a whole generation has come up knowing no other leader, long enough that the way things are done and the way this one captain does them have quietly become the same thing. It is a rare gift, an era of steady continuity. It is also a shadow the young are beginning to notice.",
+  "requires_decision": true,
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "an_era_of_one_hand",
+    "label": "Honor the continuity",
+    "description": "Let the long reign be what it is — a steadying hand through a stretch of the dark that needed one.",
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.04,
+     "adaptation": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship leaned into the long reign and let one steady hand be the thing that held it. A generation that had known no other captain took the continuity for granted, the way the lucky always do."
+   },
+   {
+    "id": "make_room_for_the_young",
+    "label": "Make room for the young",
+    "description": "Have the captain share the chair — apprentice the heirs, loosen the grip before the grip becomes the ship.",
+    "population_delta": {
+     "morale": 0.03,
+     "adaptation": 0.05,
+     "stability": -0.02
+    },
+    "log": "At the council's urging the long-serving captain began to let others decide beside them — a deliberate loosening, so that when the reign ended the ship would not have forgotten how to steer without this one hand."
+   }
+  ]
+ },
+ {
+  "id": "the_only_captain_they_know",
+  "category": "legacy_moment",
+  "family": "legacy_drift",
+  "title": "The Only Captain They Know",
+  "description": "The leader who has held this ship for a generation is old now, and the arithmetic has begun to weigh on every deck: no one under forty has ever served under anyone else. When this reign ends — and it will — the ship will meet something it has not faced in a lifetime. The council can begin, quietly, to prepare for it, or let the good years run and trust the ending to sort itself.",
+  "requires_decision": true,
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "prepare_the_succession",
+    "label": "Prepare the succession now",
+    "description": "Name and season an heir while the captain still lives to teach them, so the handoff is a plan and not a scramble.",
+    "resource_delta": {
+     "influence": -15
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.02
+    },
+    "log": "While the old captain still had years and wits to spare them, the council named the next and set them to learn at that hand. The ship would not, this time, be caught steering blind."
+   },
+   {
+    "id": "let_the_good_years_run",
+    "label": "Let the good years run",
+    "description": "Do not borrow tomorrow's trouble. The reign is good; ride it, and face the ending when it comes.",
+    "population_delta": {
+     "morale": 0.03,
+     "legacy_loyalty": 0.03
+    },
+    "long_term_consequences": [
+     "unprepared_succession"
+    ],
+    "log": "The council chose not to rush the ending of a good thing, and let the long reign run its course unhurried. The decks were the gladder for it — and a little less ready for the day the chair went cold."
+   }
+  ]
  }
 ]

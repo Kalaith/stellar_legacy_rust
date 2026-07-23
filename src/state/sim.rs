@@ -126,6 +126,18 @@ pub struct Dynasty {
     /// line is still logged once a generation, reporting this running tally.
     #[serde(default)]
     pub births_this_generation: u32,
+    /// Years the current leader has held the first chair (content-depth campaign
+    /// skeleton round 19): counted up each Founding Day while a leader sits, reset
+    /// to 0 on every succession. Drives the long-reign beat — now that continuous
+    /// mortality takes most leaders within a few decades, an enduring one is a rare,
+    /// era-defining thing worth a reckoning.
+    #[serde(default)]
+    pub leader_reign_years: u32,
+    /// Whether the long-reign beat has already fired for the *current* reign
+    /// (content-depth campaign skeleton round 19): set when it fires, cleared on
+    /// the next succession, so one enduring captaincy is marked once.
+    #[serde(default)]
+    pub long_reign_marked: bool,
     /// Set when a generation tick finds no leader and no eligible heir.
     pub extinct: bool,
 }
@@ -680,6 +692,8 @@ fn founding_dynasty(data: &GameData, legacy_id: &str, rng: &mut SeededRng) -> Dy
         members: Vec::new(),
         designated_heir: None,
         births_this_generation: 0,
+        leader_reign_years: 0,
+        long_reign_marked: false,
         extinct: false,
     };
 

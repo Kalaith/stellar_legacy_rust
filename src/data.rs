@@ -796,6 +796,16 @@ pub struct CampaignSkeletonConfig {
     /// handoff does not fire it. Empty = no succession beat.
     #[serde(default)]
     pub succession_beat_family: String,
+    /// Long-reign beat (content-depth campaign skeleton round 19 — the hopeful mirror
+    /// of the succession beat): once a *sitting leader* has held the first chair for
+    /// `long_reign_years`, a beat is forced from `long_reign_beat_family` — the ship
+    /// reckoning with an era defined by one enduring hand, rare now that continuous
+    /// mortality takes most leaders young. Fires once per reign (a succession re-arms
+    /// it). 0 / empty = no long-reign beat.
+    #[serde(default)]
+    pub long_reign_years: u32,
+    #[serde(default)]
+    pub long_reign_beat_family: String,
     /// Anniversary cadence (content-depth round 7): every this-many years of the
     /// voyage, a beat is forced from `anniversary_beat_family` — a periodic
     /// archetype (vs the threshold beats), giving the voyage a commemorative
@@ -2047,6 +2057,15 @@ mod tests {
                 families.contains(&sk.succession_beat_family),
                 "campaign_skeleton succession_beat_family '{}' has no events",
                 sk.succession_beat_family
+            );
+        }
+        // Content-depth round 19: the long-reign beat needs a family with events
+        // when switched on.
+        if sk.long_reign_years > 0 && !sk.long_reign_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.long_reign_beat_family),
+                "campaign_skeleton long_reign_beat_family '{}' has no events",
+                sk.long_reign_beat_family
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty
