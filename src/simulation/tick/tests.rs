@@ -1985,6 +1985,45 @@ fn fuel_is_spent_in_travel_but_not_on_station() {
 }
 
 #[test]
+fn the_drive_reports_the_fuel_it_scoops_on_a_crossing_and_is_silent_on_station() {
+    // A crossing sags the tank monthly and the scoop tops it up yearly; the
+    // periodic provisioning line makes that rise legible (real-time loop
+    // follow-up). On a full tank on-station, nothing is scooped, so it is silent.
+    let gap = GameData::load()
+        .unwrap()
+        .config
+        .flavor
+        .fuel_report_gap_years;
+    assert!(gap > 0, "fuel report cadence must be configured");
+    // Step month-by-month past the phase-change hard-stops, clearing any decision
+    // so the crossing runs uninterrupted (the autoplay soak pattern).
+    let run = |sim: &mut SimState, data: &GameData, months: u32| {
+        for _ in 0..months {
+            sim.pending_event = None;
+            sim.pending_dilemma = None;
+            advance_months(sim, data, 1);
+        }
+    };
+
+    // Under way on a full tank: the burn/scoop churn accrues a real haul.
+    let (data, mut sim) = provisioned(5, 1.0);
+    run(&mut sim, &data, gap * 12 + 12);
+    assert!(
+        sim.log.iter().any(|e| e.text.contains("fuel)")),
+        "the drive's fuel haul is reported after a long crossing"
+    );
+
+    // On-station on a full tank: no burn, the scoop is capped away, so no report.
+    let (data, mut sim) = provisioned(5, 1.0);
+    sim.contract.as_mut().unwrap().months_elapsed = 110 * 12; // into Operation
+    run(&mut sim, &data, gap * 12 + 12);
+    assert!(
+        !sim.log.iter().any(|e| e.text.contains("fuel)")),
+        "a full tank sitting on-station reports no fuel haul"
+    );
+}
+
+#[test]
 fn a_dry_tank_stalls_travel_and_doubles_systems_decay() {
     // Launch dry: every travel month coasts until the year-boundary regen
     // frees one, so the voyage barely moves and the year's decay doubles.

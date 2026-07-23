@@ -390,6 +390,26 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         }
     }
 
+    // Legible fuel provisioning (real-time loop follow-up: stat changes should
+    // read as *something the ship did*). The tank sags monthly with the burn and
+    // is topped up yearly by the drive's scoop — a sawtooth that used to move with
+    // no word in the log. Periodically report the fuel actually gathered since the
+    // last note, so the rise has an in-world cause. Self-throttling: the accrual
+    // only grows while the tank has room to take on fuel (i.e. while a crossing is
+    // drawing it down), so a ship sitting on a full tank on-station stays silent.
+    if fl.fuel_report_gap_years > 0
+        && !fl.fuel_gain.is_empty()
+        && sim.year() > 0
+        && sim.year().is_multiple_of(fl.fuel_report_gap_years)
+    {
+        let amount = (sim.fuel_scooped_accum * 100.0).round() as i64;
+        if amount >= 5 {
+            let idx = (sim.year() / fl.fuel_report_gap_years) as usize % fl.fuel_gain.len();
+            sim.push_log(fl.fuel_gain[idx].replace("{amount}", &amount.to_string()));
+            sim.fuel_scooped_accum = 0.0;
+        }
+    }
+
     // Market drift closes the economic year. Contract progress is monthly (W2)
     // and the event roll is monthly (W3) — both live in `advance` now; log
     // trimming happens once there too.

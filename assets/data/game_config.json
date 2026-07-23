@@ -276,6 +276,14 @@
       "No burn this year. The ship drifted on momentum alone while its systems wore at the no-fuel rate.",
       "The dry tanks held the ship becalmed a year longer, every deck a degree colder than the last."
     ],
+    "fuel_gain": [
+      "Scanners flagged a drifting ice fragment on the approach; the reclaimers rendered it down to reaction mass. (+{amount} fuel)",
+      "The ramscoop threaded a denser pocket of the interstellar medium these past years — a steady haul of volatiles for the tanks. (+{amount} fuel)",
+      "A tumbling chondrite crossed the bow and was taken; cracked in the foundry, it gave up its ices to the fuel lines. (+{amount} fuel)",
+      "The drive's slow skim of the dark finally told on the gauges — years of gathered dust and gas, processed and stored. (+{amount} fuel)",
+      "Survey drones seined a comet's tail on the crossing; the catch bought the tanks back some of what the burn had spent. (+{amount} fuel)"
+    ],
+    "fuel_report_gap_years": 5,
     "appointment": [
       "{name} took up the post of {post}, the roster whole again for a while.",
       "{name} was sworn in as {post} — a young hand on an old duty.",

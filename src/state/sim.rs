@@ -347,6 +347,13 @@ pub struct SimState {
     /// at the year boundary to double that year's systems decay (W4).
     #[serde(default)]
     pub fuel_stalled_this_year: bool,
+    /// Fuel actually scooped by the drive since the last provisioning report
+    /// (real-time loop follow-up: legible stat changes), 0-1 fraction. Accrued
+    /// each year by the engine regen (only the part that wasn't capped away), so a
+    /// periodic in-world line can tell the player where their fuel came from. Reset
+    /// when that line fires.
+    #[serde(default)]
+    pub fuel_scooped_accum: f32,
     /// Set when the player dismisses the first-voyage checklist; it also stops
     /// showing once the Chronicle records a completed mission.
     #[serde(default)]
@@ -519,6 +526,7 @@ impl SimState {
             selected_charter: None,
             stalled_months: 0,
             fuel_stalled_this_year: false,
+            fuel_scooped_accum: 0.0,
             tutorial_dismissed: false,
             market,
             delegation: DelegationSettings::default(),

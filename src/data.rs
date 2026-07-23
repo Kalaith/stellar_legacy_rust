@@ -383,6 +383,21 @@ pub struct FlavorConfig {
     /// fires once per stalled year. Indexed by year; empty falls back.
     #[serde(default)]
     pub fuel_stall: Vec<String>,
+    /// The ramscoop/scanners replenishing reaction mass (real-time loop follow-up:
+    /// legible stat changes): a periodic in-world report of the fuel the drive has
+    /// gathered and processed over the last few travel years, so the fuel gauge's
+    /// rise reads as *something the ship did* rather than an unexplained jump.
+    /// Placeholder `{amount}` (whole fuel points gained). Indexed by year; empty =
+    /// no fuel-replenishment narration.
+    #[serde(default)]
+    pub fuel_gain: Vec<String>,
+    /// How many voyage years between provisioning reports (real-time loop follow-up):
+    /// the fuel-gain line fires at most once per this many years, and only when a
+    /// meaningful haul has actually accrued, so a long crossing gets an occasional
+    /// legible "here is where your fuel comes from" beat without one line a year.
+    /// 0 = disabled.
+    #[serde(default)]
+    pub fuel_report_gap_years: u32,
     /// A crew officer takes up a post (content-depth voice round 7): the positive
     /// twin of `retirement`, fired whenever a vacancy is filled — repeatedly
     /// across a voyage as posts turn over — so it needs variety and the post's
