@@ -2294,6 +2294,22 @@ mod tests {
                 "the fabrication mechanic is on but its costs/yield are not all positive"
             );
         }
+        // Content-depth factions round 22: the proud-tender upkeep is a gentle yearly
+        // dividend of a delighted people, at a plausible "delighted" approval band — not
+        // a repair crew that rebuilds a module from pride alone.
+        let fac_cfg = data.config.factions;
+        if fac_cfg.proud_tender_condition_bonus > 0.0 {
+            assert!(
+                (0.5..1.0).contains(&fac_cfg.proud_tender_approval_threshold),
+                "proud_tender_approval_threshold {} should sit in a 'delighted' band [0.5, 1.0)",
+                fac_cfg.proud_tender_approval_threshold
+            );
+            assert!(
+                fac_cfg.proud_tender_condition_bonus <= 0.05
+                    && fac_cfg.proud_tender_knowledge_bonus <= 0.05,
+                "proud-tender upkeep must be a gentle yearly dividend, not a rebuild"
+            );
+        }
         // Content-depth voice round 2: if ambient flavor is switched on, it needs
         // lines to draw from.
         if fl.ambient_gap_years > 0 {

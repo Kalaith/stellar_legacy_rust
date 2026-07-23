@@ -382,6 +382,45 @@ impl SimState {
         }
     }
 
+    /// The bright mirror of `apply_subsystem_neglect_sentiment` (content-depth factions
+    /// round 22): where a people whose tended module rots *sours* (r12), a people
+    /// *delighted* with its lot tends its module with pride — the makers keeping the
+    /// engine bay a shade truer than duty demands, the gardeners the grow-decks a touch
+    /// greener, the Keepers the archive that much better kept. Each year an aboard
+    /// tending faction's approval sits at or above the proud threshold, its tended
+    /// subsystem gains a little condition and knowledge (clamped to 1). This closes a
+    /// feedback loop across the faction↔subsystem boundary the neglect coupling only
+    /// half-drew: a kept module keeps its people content (r12 spares them the penalty)
+    /// and content people keep the module kept — a virtuous circle, with a vicious twin
+    /// when a module is let go and its souring people let it rot the faster.
+    /// Deterministic, no RNG.
+    pub fn apply_proud_tender_upkeep(&mut self, data: &GameData) {
+        let cfg = data.config.factions;
+        if cfg.proud_tender_condition_bonus <= 0.0 || cfg.proud_tender_approval_threshold <= 0.0 {
+            return;
+        }
+        // Gather the tended modules of every delighted people from the immutable
+        // catalog first, then apply — so the read of `data.factions` and the mutation
+        // of `self.subsystems` never overlap.
+        let mut lifts: Vec<String> = Vec::new();
+        for fstate in &self.factions {
+            if !fstate.is_aboard() || fstate.approval < cfg.proud_tender_approval_threshold {
+                continue;
+            }
+            if let Some(def) = data.factions.get(&fstate.faction_id) {
+                if !def.tended_subsystem.is_empty() {
+                    lifts.push(def.tended_subsystem.clone());
+                }
+            }
+        }
+        for id in lifts {
+            if let Some(state) = self.subsystems.get_mut(&id) {
+                state.condition = (state.condition + cfg.proud_tender_condition_bonus).min(1.0);
+                state.knowledge = (state.knowledge + cfg.proud_tender_knowledge_bonus).min(1.0);
+            }
+        }
+    }
+
     /// Sour the aboard rivals of any people an event just favored (content-depth
     /// factions round 14): each positive approval gain spills a fraction of its
     /// resentment onto the favored people's aboard rivals, so favoring one people
@@ -1605,6 +1644,66 @@ mod tests {
             "the government steadying says so afresh"
         );
         assert_eq!(sim.stability_voice_band, 1);
+    }
+
+    #[test]
+    fn a_delighted_people_keeps_its_module_sharp() {
+        // Content-depth factions round 22: the bright mirror of the neglect coupling. A
+        // tending people delighted with its lot lifts its module's condition and
+        // knowledge a little each year; a merely-content one (below the proud threshold)
+        // lifts nothing.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let cfg = data.config.factions;
+        assert!(
+            cfg.proud_tender_condition_bonus > 0.0,
+            "this test needs the proud-tender coupling enabled"
+        );
+
+        // Steel Covenant tends the engineering bay; hold it mid-range so no clamp hides
+        // the lift, and read the delta a single year's upkeep applies.
+        let run = |approval: f32| -> (f32, f32) {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                7,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.factions = vec![FactionState {
+                faction_id: "steel_covenant".to_string(),
+                members: sim.population.count,
+                status: FactionStatus::Aboard,
+                approval,
+                mood_band: 0,
+            }];
+            {
+                let bay = sim.subsystems.get_mut("engineering_bay").unwrap();
+                bay.condition = 0.5;
+                bay.knowledge = 0.5;
+            }
+            sim.apply_proud_tender_upkeep(&data);
+            let bay = sim.subsystems.get("engineering_bay").unwrap();
+            (bay.condition - 0.5, bay.knowledge - 0.5)
+        };
+
+        // A delighted people: its module gains exactly the year's dividend.
+        let (dc, dk) = run(0.9);
+        assert!(
+            (dc - cfg.proud_tender_condition_bonus).abs() < 1e-6,
+            "a proud people lifts its module's condition by the yearly bonus ({dc})"
+        );
+        assert!(
+            (dk - cfg.proud_tender_knowledge_bonus).abs() < 1e-6,
+            "…and its knowledge ({dk})"
+        );
+
+        // A merely-content people (below the proud threshold): no lift.
+        let (dc_neutral, dk_neutral) = run(0.5);
+        assert_eq!(
+            (dc_neutral, dk_neutral),
+            (0.0, 0.0),
+            "a people below the proud threshold tends its module no better than duty"
+        );
     }
 
     #[test]

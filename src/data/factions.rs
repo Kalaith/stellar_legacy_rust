@@ -127,6 +127,20 @@ pub struct FactionConfig {
     /// is what drives a people toward the door.
     #[serde(default)]
     pub neglect_approval_penalty: f32,
+    /// At or above this approval, a *delighted* tending people keeps its module extra
+    /// sharp (content-depth factions round 22): the bright mirror of the neglect
+    /// coupling above. A people this content tends its subsystem with pride, lifting its
+    /// condition and knowledge a little each year. 0 disables the coupling.
+    #[serde(default)]
+    pub proud_tender_approval_threshold: f32,
+    /// Condition a delighted tending people adds to its module per year (round 22).
+    /// Gentle by design — the standing dividend of a content polity, not a repair crew.
+    #[serde(default)]
+    pub proud_tender_condition_bonus: f32,
+    /// Knowledge a delighted tending people adds to its module per year (round 22):
+    /// a proud people not only keeps its module running but keeps its craft alive.
+    #[serde(default)]
+    pub proud_tender_knowledge_bonus: f32,
     /// How much a people's *approval* bends its per-generation demographic growth
     /// (content-depth factions round 13): the missing link between the approval
     /// meter (r8) and demographic drift (r11). Each generation a people's growth

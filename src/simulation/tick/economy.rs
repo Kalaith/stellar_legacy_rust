@@ -270,6 +270,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // (content-depth subsystems round 8): sustained neglect of a faction's
     // tended subsystem erodes its approval, feeding the round-8 withdrawal.
     sim.apply_subsystem_neglect_sentiment(data);
+    // …and its bright mirror (content-depth factions round 22): a people *delighted*
+    // with its lot tends its module with pride, keeping it a shade sharper than duty
+    // alone would — so a kept module keeps its people content and content people keep
+    // the module kept, a virtuous circle across the faction↔subsystem boundary.
+    sim.apply_proud_tender_upkeep(data);
 
     // …and give the approval meter a voice (content-depth voice round 8): a people
     // crossing into restlessness or contentment says so in the log, once, so the
