@@ -2049,5 +2049,43 @@
     "log": "The council kept the stores for the working hands and let the hunger take whom it would. The roster came out of the year shorter, and no one who lived through it forgot which side of the ledger they had stood on."
    }
   ]
+ },
+ {
+  "id": "the_full_cradles",
+  "category": "generational_challenge",
+  "family": "survival",
+  "title": "The Full Cradles",
+  "description": "The larder has stood full for years now, and the ship has answered the way living things do when fed: it has made more of itself. The nurseries are the busiest since the founding, a whole cohort growing up round-cheeked and unafraid in a way their lean-born parents never were. It is a good problem — a ship with a future crowding its corridors — and still a problem, because plenty does not last, and a large generation raised soft will have to learn the dark the hard way.",
+  "requires_decision": true,
+  "min_fat_food_years": 10,
+  "outcomes": [
+   {
+    "id": "raise_them_soft",
+    "label": "Let them have their good years",
+    "description": "Do not borrow the lean times early. Let the fat generation be children while the ship can afford it.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.02
+     }
+    ],
+    "log": "The council let the plenty be plenty and the children be children. The fat generation grew up loved and unhurried — a warmth the ship banked against whatever came next, and a softness it could only hope it never had to spend."
+   },
+   {
+    "id": "temper_them_early",
+    "label": "Temper them for the dark",
+    "description": "Raise the fat generation lean on purpose — drills, rations, the founders' discipline — so plenty does not leave them unready.",
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The council raised the fat generation as though the larder were empty, and the children learned a hunger they had never felt and a discipline they had not earned. They were readier for the lean years to come, and they never quite forgave the lesson."
+   }
+  ]
  }
 ]

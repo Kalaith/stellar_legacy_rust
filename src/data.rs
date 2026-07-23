@@ -162,6 +162,16 @@ pub struct GameConfig {
     /// 0 = chronic hunger costs no lives directly.
     #[serde(default)]
     pub chronic_hunger_death_bonus: f32,
+    /// Fractional boost to the dynasty's yearly renewal while the ship has stood in
+    /// sustained plenty past `chronic_hunger_years` (content-depth provisioning round
+    /// 19 — the positive pole of `chronic_hunger_death_bonus`, and the mirror of the
+    /// hunger's toll). Where a long lean thins the roster, a long plenty fills the
+    /// cradles: a well-fed generation raises more of its young to their majority, so
+    /// the birth chance is multiplied by `1 + this` while the fat years hold. A second
+    /// lever (with the habitat, it152) on the renewal that stands between the line and
+    /// extinction. 0 = plenty gives no renewal boost.
+    #[serde(default)]
+    pub sustained_plenty_birth_bonus: f32,
     pub hull_warning_threshold: f32,
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,

@@ -80,8 +80,18 @@ pub fn annual_aging(sim: &mut SimState, data: &GameData) {
     let count = sim.dynasty.members.len() as u32;
     if count >= 2 && count < cfg.dynasty_target_size {
         // A failing home raises fewer children (content-depth subsystems round 19):
-        // the habitat's condition scales the yearly birth chance.
-        let birth_chance = cfg.annual_birth_chance * subsystems::habitat_renewal_factor(sim, data);
+        // the habitat's condition scales the yearly birth chance. …and a ship long in
+        // plenty fills its cradles (content-depth provisioning round 19): sustained fat
+        // years lift the same chance, the positive pole of the chronic-hunger toll.
+        let plenty = if data.config.chronic_hunger_years > 0
+            && sim.fat_food_years >= data.config.chronic_hunger_years
+        {
+            1.0 + data.config.sustained_plenty_birth_bonus
+        } else {
+            1.0
+        };
+        let birth_chance =
+            cfg.annual_birth_chance * subsystems::habitat_renewal_factor(sim, data) * plenty;
         let legacy_id = sim.legacy.legacy_id.clone();
         let mut rng = sim.rng;
         let slots = cfg.dynasty_target_size - count;
@@ -318,6 +328,47 @@ mod tests {
         for (officer, before) in sim.crew.iter().zip(&crew_before) {
             assert_eq!(officer.age, before + 1);
         }
+    }
+
+    #[test]
+    fn sustained_plenty_fills_the_cradles_faster_than_lean() {
+        // Content-depth provisioning round 19: a ship long in plenty lifts the yearly
+        // renewal — the positive pole of the chronic-hunger death toll.
+        let mut data = GameData::load().unwrap();
+        // Decisive plenty: fed, the boosted chance clears 1.0 and every open cradle
+        // fills; lean, only the base chance applies.
+        data.config.mortality.annual_birth_chance = 0.3;
+        data.config.sustained_plenty_birth_bonus = 4.0;
+        let base = crate::state::sim::SimState::new_campaign(
+            &data,
+            "preservers",
+            7,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let target = data.config.mortality.dynasty_target_size as usize;
+
+        // Thin the line to two (the minimum that can renew) with a sound home.
+        let mut fed = base.clone();
+        fed.dynasty.members.truncate(2);
+        if let Some(h) = fed.subsystems.get_mut("life_support_habitat") {
+            h.condition = 1.0;
+        }
+        let mut lean = fed.clone();
+
+        fed.fat_food_years = data.config.chronic_hunger_years.max(1);
+        lean.fat_food_years = 0;
+        annual_aging(&mut fed, &data);
+        annual_aging(&mut lean, &data);
+
+        assert_eq!(
+            fed.dynasty.members.len(),
+            target,
+            "sustained plenty fills every open cradle"
+        );
+        assert!(
+            fed.dynasty.members.len() > lean.dynasty.members.len(),
+            "and faster than a lean ship raises its young"
+        );
     }
 
     #[test]
