@@ -166,7 +166,15 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
     let speed = ship::loadout_stats(sim, data).speed;
     let progress = contract::advance_contract(sim, &data.config, speed);
     for milestone in &progress.reached_milestones {
-        sim.push_log(format!("Milestone reached: {milestone}"));
+        // Pooled so a voyage's many milestones don't read as a form letter (voice
+        // round 19); indexed by log length so consecutive marks vary.
+        let pool = &data.config.flavor.milestone;
+        let line = if pool.is_empty() {
+            format!("Milestone reached: {milestone}")
+        } else {
+            pool[sim.log.len() % pool.len()].replace("{milestone}", milestone)
+        };
+        sim.push_log(line);
     }
     if let Some(phase) = progress.phase_changed {
         let occurrence = sim
@@ -743,7 +751,15 @@ fn apply_pending_event(
     if let Some(template) = data.events.get(&pending.template_id).cloned() {
         let delegated = sim.delegation.is_delegated(template.category);
         if template.requires_decision && !delegated {
-            sim.push_log(format!("Council decision required: {}", template.title));
+            // Pooled — this precedes every blocking decision, dozens a voyage, so a
+            // flat prefix was the loudest repetition tell (voice round 19).
+            let pool = &data.config.flavor.council_summons;
+            let line = if pool.is_empty() {
+                format!("Council decision required: {}", template.title)
+            } else {
+                pool[sim.log.len() % pool.len()].replace("{title}", &template.title)
+            };
+            sim.push_log(line);
             sim.pending_event = Some(pending);
             report.decision_required = true;
         } else {

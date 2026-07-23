@@ -401,6 +401,18 @@ pub struct FlavorConfig {
     /// `{name}`, `{post}`. Indexed by the officer's id; empty falls back.
     #[serde(default)]
     pub crew_death: Vec<String>,
+    /// A contract milestone reached (content-depth voice round 19): fires several
+    /// times per charter across many charters, so a flat "Milestone reached: X"
+    /// read as a form letter. Placeholder `{milestone}`; indexed by log length so
+    /// consecutive marks vary. Empty falls back to the built-in line.
+    #[serde(default)]
+    pub milestone: Vec<String>,
+    /// A blocking decision brought before the council (content-depth voice round 19):
+    /// the line that precedes *every* decision-required event — dozens a voyage — so a
+    /// flat "Council decision required: X" was the game's loudest repetition tell.
+    /// Placeholder `{title}`; indexed by log length. Empty falls back.
+    #[serde(default)]
+    pub council_summons: Vec<String>,
     /// A starving year (content-depth voice round 6): fires once per *year* the
     /// larder is empty, so a multi-year famine needs variety or it reprints one
     /// line. Placeholder: `{losses}`. Indexed by year; empty falls back.
@@ -2100,6 +2112,17 @@ mod tests {
         assert!(
             !fl.coming_of_age.is_empty(),
             "coming_of_age flavor must not be empty"
+        );
+        // Content-depth voice round 19: the two high-frequency pooled lines must
+        // carry their substitution slot, or the mark/summons reads with a literal.
+        assert!(
+            fl.milestone.is_empty() || fl.milestone.iter().all(|s| s.contains("{milestone}")),
+            "every milestone flavor line needs its {{milestone}} slot"
+        );
+        assert!(
+            fl.council_summons.is_empty()
+                || fl.council_summons.iter().all(|s| s.contains("{title}")),
+            "every council_summons flavor line needs its {{title}} slot"
         );
         // Content-depth voice round 2: if ambient flavor is switched on, it needs
         // lines to draw from.

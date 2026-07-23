@@ -316,6 +316,26 @@
       "They left the {post}'s chair a day empty for {name}, out of respect, then filled it — the ship cannot afford reverence for long.",
       "The {post} {name} is gone, and with them a little of the ship's hard-won competence; a successor starts from less."
     ],
+    "milestone": [
+      "Milestone logged: {milestone}.",
+      "The work reached a marked stage — {milestone} — and the ship allowed itself a moment's satisfaction.",
+      "{milestone}. One more piece of the charter turned from plan into record.",
+      "The log noted it plainly: {milestone}. The generation that would finish the work was not yet born.",
+      "A quiet mark against the writ: {milestone}.",
+      "{milestone} — the crews stood down a watch, the way the founders did when a thing was truly done.",
+      "The board updated: {milestone}. The dark did not notice; the ship did.",
+      "{milestone}, logged and certified. The voyage measured itself by such small completions."
+    ],
+    "council_summons": [
+      "The council is summoned: {title}.",
+      "A matter for the whole council came to the table — {title}.",
+      "The bells called the council together over {title}.",
+      "{title}. The kind of thing that cannot be left to a duty officer; the council convened.",
+      "The council took its seats to weigh {title}.",
+      "A decision the ship could not defer: {title}. The council was called.",
+      "Word went round the decks that the council sat late over {title}.",
+      "{title} — brought before the council, because someone had to choose, and no one else could."
+    ],
     "fuel_gain": [
       "Scanners flagged a drifting ice fragment on the approach; the reclaimers rendered it down to reaction mass. (+{amount} fuel)",
       "The ramscoop threaded a denser pocket of the interstellar medium these past years — a steady haul of volatiles for the tanks. (+{amount} fuel)",
