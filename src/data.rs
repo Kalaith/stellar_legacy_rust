@@ -1779,6 +1779,14 @@ mod tests {
                     d.id
                 );
             }
+            // Content-depth charters round 20: a completion component reward must name
+            // a real ship component, or the salvage hold gains a phantom.
+            if let Some(comp) = &c.completion_reward.grant_component {
+                assert!(
+                    data.ship_components.find_any(comp).is_some(),
+                    "charter '{id}' completion_reward grant_component '{comp}' is not a real component"
+                );
+            }
             // Content-depth charters round 13: a route toll must be a gentle,
             // survivable headwind — a per-year crew drain that could empty a
             // generational voyage is a bug, not a hazard.

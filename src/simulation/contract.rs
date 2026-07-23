@@ -128,6 +128,12 @@ pub fn apply_completion_reward(sim: &mut SimState, template: &ContractTemplate) 
             state.adjust_approval(delta.delta);
         }
     }
+    // …and a mission can leave the ship a lasting piece of kit (content-depth
+    // charters round 20): the recovered component drops into the salvage hold, to be
+    // installed in drydock — mirroring an event's `grant_component`.
+    if let Some(component_id) = &reward.grant_component {
+        sim.ship.salvage.push(component_id.clone());
+    }
     Some(if reward.log.is_empty() {
         format!("The lessons of {} stay with the ship.", template.name)
     } else {
@@ -561,6 +567,35 @@ mod tests {
         assert!(
             after > before,
             "carrying the frightened home leaves the Hearth glad it came"
+        );
+    }
+
+    #[test]
+    fn a_completed_salvage_charter_leaves_a_component_in_the_hold() {
+        // Content-depth charters round 20: a mission can recover a lasting piece of
+        // kit — the Long Tow pulls a warp coil from the dead titan it hauls home.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 1, &picks);
+        let tow = data.contracts.get("the_long_tow").unwrap();
+        let comp = tow
+            .completion_reward
+            .grant_component
+            .clone()
+            .expect("the long tow recovers a component");
+        assert!(
+            data.ship_components.find_any(&comp).is_some(),
+            "the recovered component is real"
+        );
+        assert!(
+            !sim.ship.salvage.contains(&comp),
+            "the hold starts without it"
+        );
+
+        apply_completion_reward(&mut sim, tow);
+        assert!(
+            sim.ship.salvage.contains(&comp),
+            "the recovered component lands in the salvage hold to install"
         );
     }
 

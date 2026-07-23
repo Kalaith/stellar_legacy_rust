@@ -688,6 +688,10 @@
   ],
   "objective_target": 600,
   "objective_unit": "survivors recovered",
+  "completion_reward": {
+   "grant_component": "spinal_railgun",
+   "log": "The hollow fleet gave up more than its living: among the dead escorts drifting the wreck-line was a warship's spinal mount, its firing chain intact, salvageable by a crew willing to cut it free. It came home in the hold — a heavy, ugly reminder that the dark is not always empty of teeth, waiting on a drydock to bolt it to the spine."
+  },
   "milestones": [
    {
     "id": "wreck_line",
@@ -1286,6 +1290,10 @@
   ],
   "objective_target": 900,
   "objective_unit": "kilotonnes secured under tow",
+  "completion_reward": {
+   "grant_component": "warp_coil",
+   "log": "Grappling the dead titan, the salvage crews found more than archives in its silent engineering spaces — an experimental drive coil, generations ahead of anything this ship carried, cold but whole. It rode home in the hold, a prize the writ never thought to promise, waiting for a drydock bold enough to fit it."
+  },
   "milestones": [
    {
     "id": "grapple_made",

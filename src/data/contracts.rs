@@ -268,6 +268,13 @@ pub struct CompletionReward {
     /// charter cycle feeding the faction-goodwill well. Aboard factions only.
     #[serde(default)]
     pub faction_approval_deltas: Vec<crate::data::events::FactionApprovalDelta>,
+    /// A ship component this charter recovers (content-depth charters round 20): a
+    /// mission seen through can leave the ship a lasting *piece of kit*, not only
+    /// stats and goodwill — a salvage writ pulls a warp coil from a dead hull, a deep
+    /// survey brings back alien drive tech. It drops into the salvage hold to be
+    /// installed in drydock, mirroring an event's `grant_component`. `None` = none.
+    #[serde(default)]
+    pub grant_component: Option<String>,
     /// Line narrating the boon; empty = a generic line.
     #[serde(default)]
     pub log: String,
@@ -279,6 +286,7 @@ impl CompletionReward {
         self.subsystem_deltas.is_empty()
             && self.reputation_deltas.is_empty()
             && self.faction_approval_deltas.is_empty()
+            && self.grant_component.is_none()
             && self.resource == ResourceDelta::default()
             && self.population == PopulationDelta::default()
     }
