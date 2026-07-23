@@ -1550,6 +1550,20 @@ mod tests {
                 "faction '{id}' tends unknown subsystem '{}'",
                 faction.tended_subsystem
             );
+            // Content-depth factions round 21 (the first factions↔voice coupling):
+            // every people colors the ordinary quiet in its own voice, so a long calm
+            // stretch sounds like whoever runs the ship. No group falls back to the
+            // generic ambient — each authors its own.
+            assert!(
+                faction.ambient.len() >= 2,
+                "faction '{id}' has fewer than 2 ambient (quiet-voice) lines"
+            );
+            for line in &faction.ambient {
+                assert!(
+                    !line.trim().is_empty(),
+                    "faction '{id}' has a blank ambient line"
+                );
+            }
             // Content-depth factions round 11: demographic drift is a gentle
             // per-generation share shift, not a population weapon.
             assert!(

@@ -342,34 +342,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     if fl.ambient_gap_years > 0 {
         let years_since = sim.month_clock.saturating_sub(sim.last_event_month_clock) / 12;
         if years_since > 0 && years_since.is_multiple_of(fl.ambient_gap_years) {
-            // The quiet reads differently as the ship changes, in order of how
-            // loudly each condition speaks in a silence: a long hunger (round 13)
-            // above a hollowed-out crew (round 12) above a far-drifted people
-            // (round 10) — the grim notes first, loudest to quietest. Failing all
-            // three, a *long-prosperous* ship's quiet reads fat and easy (round 14,
-            // the first positive-condition ambient); only a ship neither grim nor
-            // notably flush reads the plain ordinary.
-            let pool = if !fl.ambient_lean.is_empty()
-                && sim.lean_food_years >= fl.ambient_lean_years_threshold
-                && fl.ambient_lean_years_threshold > 0
-            {
-                &fl.ambient_lean
-            } else if !fl.ambient_hollow.is_empty()
-                && sim.population.count <= fl.ambient_population_threshold
-            {
-                &fl.ambient_hollow
-            } else if !fl.ambient_drifted.is_empty()
-                && sim.population.cultural_drift >= fl.ambient_drift_threshold
-            {
-                &fl.ambient_drifted
-            } else if !fl.ambient_fat.is_empty()
-                && fl.ambient_fat_years_threshold > 0
-                && sim.fat_food_years >= fl.ambient_fat_years_threshold
-            {
-                &fl.ambient_fat
-            } else {
-                &fl.ambient
-            };
+            // The quiet reads differently as the ship changes (see
+            // `quiet_ambient_pool`): the grim/flush *conditions* first, and failing
+            // all of them, the plain "ordinary" quiet colored by *who runs the ship*.
+            let pool = quiet_ambient_pool(sim, data);
             if !pool.is_empty() {
                 let idx = (sim.year() / fl.ambient_gap_years) as usize % pool.len();
                 sim.push_log(pool[idx].clone());
@@ -401,6 +377,42 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // and the event roll is monthly (W3) — both live in `advance` now; log
     // trimming happens once there too.
     market::drift_prices(sim);
+}
+
+/// The ambient "life aboard" pool a quiet year draws from. The ship's *condition*
+/// takes precedence — a long hunger, then a hollowed-out crew, then a far-drifted
+/// people, then a long-flush larder (grim notes loudest first) — and failing all
+/// of them, the plain *ordinary* quiet is colored by *who runs the ship*: a clear
+/// dominant people's own `ambient` lines (content-depth factions round 21), or the
+/// generic ordinary pool when it has none. Returns an empty pool only if every
+/// candidate is empty.
+pub(super) fn quiet_ambient_pool<'a>(sim: &SimState, data: &'a GameData) -> &'a Vec<String> {
+    let fl = &data.config.flavor;
+    if !fl.ambient_lean.is_empty()
+        && fl.ambient_lean_years_threshold > 0
+        && sim.lean_food_years >= fl.ambient_lean_years_threshold
+    {
+        return &fl.ambient_lean;
+    }
+    if !fl.ambient_hollow.is_empty() && sim.population.count <= fl.ambient_population_threshold {
+        return &fl.ambient_hollow;
+    }
+    if !fl.ambient_drifted.is_empty() && sim.population.cultural_drift >= fl.ambient_drift_threshold
+    {
+        return &fl.ambient_drifted;
+    }
+    if !fl.ambient_fat.is_empty()
+        && fl.ambient_fat_years_threshold > 0
+        && sim.fat_food_years >= fl.ambient_fat_years_threshold
+    {
+        return &fl.ambient_fat;
+    }
+    // Ordinary quiet — colored by the largest aboard people if it has ambient lines.
+    sim.dominant_faction_id()
+        .and_then(|id| data.factions.get(id))
+        .map(|f| &f.ambient)
+        .filter(|a| !a.is_empty())
+        .unwrap_or(&fl.ambient)
 }
 
 /// Apply one year of voyage drift to the population (PLAN M4.1). Identity terms

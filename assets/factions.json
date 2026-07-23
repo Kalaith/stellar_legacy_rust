@@ -1,6 +1,10 @@
 [
   {
     "id": "ascension_circle",
+    "ambient": [
+      "A quiet decade under the Ascension Circle: the med-bays ran through the night shifts, and more of the crew each year wore the small silver ports of the augmented at their temples.",
+      "The ship ran clean and cool and a little inhuman on the Circle's watch — schedules optimized, sentiment logged and filed, the founders' warmth traded for a precision they would not have recognized."
+    ],
     "growth_bias": -0.04,
     "name": "The Ascension Circle",
     "ideology": 0.9,
@@ -21,6 +25,10 @@
   },
   {
     "id": "steel_covenant",
+    "ambient": [
+      "Under the Steel Covenant the ship never quite fell silent — somewhere a shop was always running, a weld always cooling, the makers unable to leave a thing unmended or unimproved.",
+      "A maker's peace: the corridors smelled of hot metal and machine oil, and every fixture the crew touched had been rebuilt at least once, better than the founders drew it."
+    ],
     "name": "The Steel Covenant",
     "ideology": 0.5,
     "description": "Machinists and engineers who trust tools over doctrine. If a thing can be built, maintained, and improved, the Covenant will build it — and argue the theology later.",
@@ -42,6 +50,10 @@
   },
   {
     "id": "meridian_accord",
+    "ambient": [
+      "The Accord's quiet was a lawful one — disputes filed and heard and settled, the ship's long grievances worn smooth by patient arbitration, everything in its docket and its place.",
+      "Under the Meridian Accord the decks ran to procedure; even the silences seemed scheduled, and the crew took a dry comfort in a ship where everything had a rule, and the rule was usually followed."
+    ],
     "name": "The Meridian Accord",
     "ideology": 0.0,
     "description": "Pragmatic administrators who hold the middle line, weighing each innovation against each tradition and committing wholly to neither.",
@@ -64,6 +76,10 @@
   },
   {
     "id": "hearth_union",
+    "ambient": [
+      "A Hearth decade: the long tables stayed set, the corridors smelled of cooking and close company, and the ship felt less like a machine crossing the dark than a very large family that happened to live in one.",
+      "Under the Hearth Union the ship kept its festivals and its griefs together, out loud, at shared tables — a warmth the founders would have known and been glad the voyage still carried."
+    ],
     "growth_bias": 0.03,
     "name": "The Hearth Union",
     "ideology": -0.3,
@@ -83,6 +99,10 @@
   },
   {
     "id": "verdant_kin",
+    "ambient": [
+      "The Verdant Kin's quiet grew things: the grow-decks ran lush past all need, green crept into corridors never meant for it, and the ship breathed a little easier for a people who could not stop tending living things.",
+      "A garden peace under the Kin — the air sweet with growth, the reclaimers fat and idle, the ship greener each year than the founders had dared hope a sealed hull could stay."
+    ],
     "growth_bias": 0.02,
     "name": "The Verdant Kin",
     "ideology": -0.6,
@@ -105,6 +125,10 @@
   },
   {
     "id": "first_flame",
+    "ambient": [
+      "Under the Keepers of the First Flame the founding was never far — the first-day rites kept in full, the old words spoken over small occasions, the ship steering by a faith in the ones who signed the charter.",
+      "A Keeper's quiet: the founders' log read aloud on the anniversaries, the charter honored to the letter, the ship holding its course by reverence for a hand two centuries cold."
+    ],
     "growth_bias": 0.01,
     "name": "Keepers of the First Flame",
     "ideology": -0.9,

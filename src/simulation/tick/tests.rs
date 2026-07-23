@@ -1,10 +1,25 @@
 //! Tests for the advance loop and the economic year — split out of `tick.rs`
 //! to keep it under the size limit.
 
-use super::economy::apply_voyage_drift;
+use super::economy::{apply_voyage_drift, quiet_ambient_pool};
 use super::*;
 use crate::data::GameData;
 use crate::simulation::contract::start_contract;
+
+/// Content-depth factions round 21: strip every people's quiet-voice lines so the
+/// *ordinary* ambient falls back to the generic pool. The condition-precedence
+/// tests below predate the factions↔voice coupling and assert on the generic
+/// ordinary lines — this keeps them testing precedence, not whoever runs the ship
+/// (the coupling itself is covered by `the_ordinary_quiet_reads_in_the_dominant_peoples_voice`).
+fn without_faction_voices(data: &mut GameData) {
+    let ids: Vec<String> = data.factions.ids().cloned().collect();
+    for id in ids {
+        if let Some(mut f) = data.factions.remove(&id) {
+            f.ambient.clear();
+            data.factions.insert(id, f);
+        }
+    }
+}
 
 fn fresh(seed: u64) -> (GameData, SimState) {
     let data = GameData::load().unwrap();
@@ -138,6 +153,56 @@ fn the_dominant_faction_ideology_bends_how_fast_the_people_drift() {
 }
 
 #[test]
+fn the_ordinary_quiet_reads_in_the_dominant_peoples_voice() {
+    // Content-depth factions round 21: the ambient dead-air line, in ordinary
+    // times, draws from the largest aboard people's own quiet-voice lines — a
+    // Hearth ship's calm and an Ascension ship's are nothing alike — but a real
+    // *condition* (a long hunger) still speaks over any people's ordinary voice.
+    use crate::state::sim::factions::{FactionState, FactionStatus};
+    let data = GameData::load().unwrap();
+    let make = |dominant_id: &str| {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.factions = vec![FactionState {
+            faction_id: dominant_id.to_string(),
+            members: sim.population.count,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        }];
+        sim
+    };
+
+    // Ordinary conditions: each people's quiet reads in its own voice.
+    let hearth = make("hearth_union");
+    let ascension = make("ascension_circle");
+    let hearth_pool = quiet_ambient_pool(&hearth, &data);
+    let ascension_pool = quiet_ambient_pool(&ascension, &data);
+    assert_eq!(
+        hearth_pool,
+        &data.factions.get("hearth_union").unwrap().ambient,
+        "an ordinary Hearth quiet draws from the Hearth's own voice"
+    );
+    assert_ne!(
+        hearth_pool, ascension_pool,
+        "two different peoples' ordinary quiets read differently"
+    );
+
+    // A real condition speaks over the people's ordinary voice: a long hunger.
+    let mut lean = make("hearth_union");
+    lean.lean_food_years = data.config.flavor.ambient_lean_years_threshold + 5;
+    assert_eq!(
+        quiet_ambient_pool(&lean, &data),
+        &data.config.flavor.ambient_lean,
+        "a long hunger reads as hunger, whoever runs the ship"
+    );
+}
+
+#[test]
 fn a_well_kept_culture_archive_slows_the_cultural_drift_but_not_adaptation() {
     // Content-depth subsystems round 10: the education/culture archive is the
     // ship's memory of the founders. A vivid archive (high knowledge) resists the
@@ -205,6 +270,7 @@ fn a_far_drifted_ships_quiet_reads_alien() {
         gap > 0 && threshold > 0.0 && data.config.flavor.ambient_drifted.len() >= 4,
         "this test needs the drift-aware ambient pool enabled"
     );
+    without_faction_voices(&mut data);
 
     let run = |drift: f32| -> Vec<String> {
         let mut sim = SimState::new_campaign(
@@ -259,6 +325,7 @@ fn a_hollowed_out_ships_quiet_reads_empty() {
         gap > 0 && ceiling > 0 && data.config.flavor.ambient_hollow.len() >= 4,
         "this test needs the population-aware ambient pool enabled"
     );
+    without_faction_voices(&mut data);
 
     let run = |count: u32, drift: f32| -> Vec<String> {
         let mut sim = SimState::new_campaign(
@@ -327,6 +394,7 @@ fn a_long_hungry_ships_quiet_reads_lean() {
         gap > 0 && lean_years > 0 && data.config.flavor.ambient_lean.len() >= 4,
         "this test needs the scarcity-aware ambient pool enabled"
     );
+    without_faction_voices(&mut data);
 
     let run = |lean: u32, count: u32| -> Vec<String> {
         let mut sim = SimState::new_campaign(
@@ -397,6 +465,7 @@ fn a_long_prosperous_ships_quiet_reads_fat() {
         gap > 0 && fat_years > 0 && data.config.flavor.ambient_fat.len() >= 4,
         "this test needs the prosperity-aware ambient pool enabled"
     );
+    without_faction_voices(&mut data);
 
     let run = |fat: u32, count: u32| -> Vec<String> {
         let mut sim = SimState::new_campaign(
@@ -1972,6 +2041,7 @@ fn ambient_flavor_surfaces_during_a_long_quiet_stretch() {
     data.config.campaign_skeleton.crisis_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     assert!(gap > 0, "this test needs ambient flavor enabled");
+    without_faction_voices(&mut data);
     let ambient: std::collections::HashSet<String> =
         data.config.flavor.ambient.iter().cloned().collect();
 

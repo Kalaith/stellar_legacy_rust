@@ -85,6 +85,16 @@ pub struct FactionDef {
     /// ship's name to its choices alone.
     #[serde(default)]
     pub reputation_leanings: HashMap<String, f32>,
+    /// How the ship's *quiet* reads while this people runs it (content-depth factions
+    /// round 21 — the first factions↔voice coupling): the ambient dead-air line already
+    /// read the ship's *condition* (lean, hollowed, drifted, flush) but never *who is in
+    /// charge*, though a Hearth ship's quiet and an Ascension ship's are nothing alike.
+    /// When no grimmer or flusher note holds — the plain "ordinary" quiet — and this
+    /// people is the largest aboard, the ambient draws from these lines instead, so a
+    /// long calm stretch sounds like the people living it. Empty = the generic ordinary
+    /// pool colors this people's rule.
+    #[serde(default)]
+    pub ambient: Vec<String>,
 }
 
 /// How a faction left the ship when an event drives it off (W7). WipedOut and
