@@ -162,6 +162,15 @@ pub struct ActiveContract {
     /// faster by an armed ship, 0 for a mission indifferent to how the ship is armed.
     #[serde(default)]
     pub objective_combat_scaling: f32,
+    /// Whether this charter's objective is *preserved* rather than accrued (content-depth
+    /// charters round 23), copied at launch: a cargo carried and kept, not built — its
+    /// progress starts full and only erodes.
+    #[serde(default)]
+    pub preserve_objective: bool,
+    /// Fraction of the carried objective lost per voyage-year on a preserve charter
+    /// (round 23), copied at launch.
+    #[serde(default)]
+    pub preserve_attrition_per_year: f32,
 }
 
 impl ActiveContract {

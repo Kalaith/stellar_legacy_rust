@@ -109,11 +109,29 @@ pub struct ContractTemplate {
     pub phases: Vec<PhaseDef>,
     /// Quantified objective amount the mission must reach for full pay (W2):
     /// mine X, land X, chart X. Accrued only during Operation; pay is strictly
-    /// proportional to the fraction of this reached.
+    /// proportional to the fraction of this reached. For a *preserve* charter (below)
+    /// this is instead the amount the ship sets out *carrying*, and pay is the fraction
+    /// that survives to arrival.
     pub objective_target: f32,
     /// Human unit for the objective counter ("proof-of-yield cores", "settlers
     /// landed", "systems charted", "souls recovered").
     pub objective_unit: String,
+    /// A fundamentally different objective *shape* (content-depth charters round 23): an
+    /// objective the ship does not *build* but *keeps*. Where an ordinary charter accrues
+    /// its objective from zero during Operation, a preserve charter sets out *carrying*
+    /// the full `objective_target` — frozen colonists, refugees, a fragile cargo — and
+    /// the mission is to arrive with as much of it intact as possible. Its objective does
+    /// not accrue; it only *erodes*, at `preserve_attrition_per_year` over the whole
+    /// voyage (the cold banks fail, the sick do not all wake), plus whatever hazard events
+    /// take. Pay is the surviving fraction. false = an ordinary accruing objective.
+    #[serde(default)]
+    pub preserve_objective: bool,
+    /// Fraction of the carried objective lost per voyage-year on a preserve charter
+    /// (round 23): the steady attrition of a fragile cargo across the long dark, applied
+    /// every month of Travel/Operation/Return. Gentle — the mission is to minimise a loss
+    /// that cannot be wholly stopped. Ignored unless `preserve_objective`.
+    #[serde(default)]
+    pub preserve_attrition_per_year: f32,
     pub milestones: Vec<MilestoneDef>,
     pub success_metrics: Vec<MetricDef>,
     #[serde(default)]

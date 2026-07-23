@@ -2000,6 +2000,15 @@ mod tests {
                 "charter '{id}' objective_combat_scaling {} out of range [0, 0.2]",
                 c.objective_combat_scaling
             );
+            // Content-depth charters round 23: a preserve charter must actually erode
+            // (a positive, gentle yearly attrition), or "keep the cargo" is a free win.
+            if c.preserve_objective {
+                assert!(
+                    c.preserve_attrition_per_year > 0.0 && c.preserve_attrition_per_year <= 0.01,
+                    "charter '{id}' preserve_attrition_per_year {} must be a gentle positive rate",
+                    c.preserve_attrition_per_year
+                );
+            }
             // Content-depth charters round 15: a completion reward's subsystem boons
             // must name real modules, or the legacy could never land.
             for delta in &c.completion_reward.subsystem_deltas {

@@ -202,7 +202,13 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         starting_population: sim.population.count,
         objective_target: template.objective_target,
         objective_unit: template.objective_unit.clone(),
-        objective_progress: 0.0,
+        // A preserve charter (round 23) sets out *carrying* the full objective and only
+        // loses it; an ordinary one builds from zero.
+        objective_progress: if template.preserve_objective {
+            template.objective_target
+        } else {
+            0.0
+        },
         // Beats are laid out at LAUNCH by the caller (W6); a bare contract has
         // none until then.
         beats: Vec::new(),
@@ -225,6 +231,8 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         scheduled_beats_fired: 0,
         objective_subsystem: template.objective_subsystem.clone(),
         objective_combat_scaling: template.objective_combat_scaling,
+        preserve_objective: template.preserve_objective,
+        preserve_attrition_per_year: template.preserve_attrition_per_year,
     }
 }
 
@@ -293,9 +301,22 @@ pub fn advance_contract(
             out.phase_changed = Some(phase);
         }
 
-        // Objective work happens only on-station (Operation): base_rate spreads
-        // the target across the operation window, and ship speed quickens it.
-        if phase == ContractPhase::Operation {
+        // A preserve charter (round 23) does not *build* its objective — it carries it,
+        // and loses a little every month of the voyage (the cold banks fail, the sick do
+        // not all wake). Applied across Travel/Operation/Return, not the pre-launch or
+        // post-return bookends; hazard events take the rest. No accrual.
+        if contract.preserve_objective {
+            if matches!(
+                phase,
+                ContractPhase::Travel | ContractPhase::Operation | ContractPhase::Return
+            ) {
+                let monthly_loss =
+                    contract.objective_target * contract.preserve_attrition_per_year / 12.0;
+                contract.objective_progress = (contract.objective_progress - monthly_loss).max(0.0);
+            }
+        } else if phase == ContractPhase::Operation {
+            // Objective work happens only on-station (Operation): base_rate spreads
+            // the target across the operation window, and ship speed quickens it.
             let operation_months = contract.operation_months().max(1);
             let base_rate = contract.objective_target / operation_months as f32;
             let speed_factor = 1.0 + speed.max(0) as f32 * progress_per_speed;
@@ -1033,6 +1054,44 @@ mod tests {
         assert!(
             (quiet_armed - quiet_unarmed).abs() < 1e-4,
             "a quiet survey is indifferent to arms: {quiet_armed} vs {quiet_unarmed}"
+        );
+    }
+
+    #[test]
+    fn a_preserve_charter_sets_out_full_and_only_erodes() {
+        // Content-depth charters round 23: a fundamentally different objective shape. An
+        // ark run carries its full objective from the start and loses a little every
+        // voyage-month; it never accrues, where an ordinary charter builds from zero.
+        let (data, mut sim) = armed(4, "the_ark_run");
+        {
+            let c = sim.contract.as_ref().unwrap();
+            assert!(c.preserve_objective, "the ark run preserves its objective");
+            assert_eq!(
+                c.objective_progress, c.objective_target,
+                "an ark run sets out carrying all its sleepers"
+            );
+        }
+
+        // A voyage month erodes it (never accrues): each on-voyage step loses ground.
+        let before = sim.contract.as_ref().unwrap().objective_progress;
+        advance_contract(&mut sim, &data.config, 0, 0);
+        let after = sim.contract.as_ref().unwrap().objective_progress;
+        assert!(
+            after < before,
+            "the cold banks lose a little every month: {before} -> {after}"
+        );
+        assert_eq!(
+            sim.contract.as_ref().unwrap().phase,
+            ContractPhase::Travel,
+            "the loss begins the moment the crossing does"
+        );
+
+        // Contrast: an ordinary charter starts empty and builds.
+        let (_d, sim2) = armed(4, "deep_vein_survey");
+        assert_eq!(
+            sim2.contract.as_ref().unwrap().objective_progress,
+            0.0,
+            "an ordinary charter builds its objective from zero"
         );
     }
 

@@ -2178,5 +2178,71 @@
    ],
    "log": "In the end the ship could not finish it — could not go on stripping a place that people still called home — and turned for its own port with the writ undone and the backers unpaid. It cost the ship its fee and its name for hard reliability both; but a crew that discovers, at the last, a line it will not cross has learned something about itself that a colder ship never will, even as the dark marks it down as a hull that folds."
   }
+ },
+ {
+  "id": "the_ark_run",
+  "name": "The Ark Charter: Ten Thousand Sleepers",
+  "objective": "colonization",
+  "description": "Ten thousand colonists sleep frozen in the holds — a whole world's founding population, entrusted to this ship to carry across three centuries of dark to a waiting shore. They cannot be replaced and they cannot be woken early. The cold banks will fail here and there no matter how well they are tended, and the dark will take its share; the charter does not ask that none be lost, only that as many as possible arrive alive. Everything the ship does for three hundred years is, in the end, in service of a number that can only ever go down.",
+  "target_duration_years": 320,
+  "phases": [
+   {
+    "kind": "travel",
+    "years": 220
+   },
+   {
+    "kind": "operation",
+    "years": 40
+   },
+   {
+    "kind": "return",
+    "years": 60
+   }
+  ],
+  "objective_target": 10000,
+  "objective_unit": "sleepers delivered alive",
+  "preserve_objective": true,
+  "preserve_attrition_per_year": 0.0005,
+  "milestones": [],
+  "success_metrics": [
+   {
+    "id": "sleepers_delivered",
+    "kind": "mission_completion",
+    "name": "Sleepers delivered alive",
+    "weight": 0.5,
+    "target": 0.8
+   },
+   {
+    "id": "population_survival",
+    "kind": "population_survival",
+    "name": "Crew survival",
+    "weight": 0.3,
+    "target": 0.9
+   },
+   {
+    "id": "social_cohesion",
+    "kind": "social_cohesion",
+    "name": "Social cohesion",
+    "weight": 0.2,
+    "target": 0.6
+   }
+  ],
+  "reward": {
+   "credits": 7200,
+   "influence": 260
+  },
+  "min_renown": 40,
+  "tags": [
+   "colony",
+   "long_haul"
+  ],
+  "hazard": 0.1,
+  "completion_reward": {
+   "population": {
+    "morale": 0.04,
+    "legacy_loyalty": 0.03
+   },
+   "log": "The waiting shore woke its sleepers one by one, and most of them opened their eyes on a new world. The ship that carried them there is remembered, in that colony's first histories, as the vessel that kept faith with the frozen — and the crew carried home the rare knowledge that they had delivered a world its people, very nearly whole."
+  }
  }
 ]
