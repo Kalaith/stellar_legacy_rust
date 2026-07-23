@@ -390,6 +390,23 @@ pub struct FlavorConfig {
     /// 15): the peoples as a whole settling, content with their lot. No name.
     #[serde(default)]
     pub polity_warming: Vec<String>,
+    /// The ship crossing into a *merciful* reputation (content-depth voice round 16):
+    /// the quiet marker, at a gentler threshold than the it109 beat, that the ship's
+    /// name has begun to mean kindness in the dark. No name; indexed by year. Empty =
+    /// silence. Watches the `campaign_skeleton.reputation_beat_trait`.
+    #[serde(default)]
+    pub reputation_merciful: Vec<String>,
+    /// The ship crossing into a *feared* reputation (content-depth voice round 16):
+    /// the mirror — its name beginning to mean the hard thing done without flinching.
+    #[serde(default)]
+    pub reputation_feared: Vec<String>,
+    /// Reputation levels at/above which the ship remarks a merciful name (`_high`) or
+    /// at/below which it remarks a feared one (`_low`) — gentler than the beat bands,
+    /// so the voice precedes the reckoning (content-depth voice round 16).
+    #[serde(default)]
+    pub reputation_voice_high: f32,
+    #[serde(default)]
+    pub reputation_voice_low: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month

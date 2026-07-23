@@ -319,6 +319,18 @@
       "The ship's politics are warm this year in the way that asks no attention: no crisis averted, no grievance answered, just a broad and steady contentment among the peoples, each grudgingly satisfied the others are not being favored over them.",
       "A season of civic ease has come to the ship. The peoples deal with one another and with the council in good faith, a whole polity relaxed for once into the rare belief that the ship is fair, and being run for the good of all who live on it."
     ],
+    "reputation_merciful": [
+      "It comes up in the corridors now, half-joking and half-proud: that the ship is getting a name for itself out in the dark, and the name is a kind one. The hands who deal with passing hulls report a new warmth in how the ship is met — the small courtesy strangers extend to a vessel they have heard good things about.",
+      "The ship has begun, without quite deciding to, to be known as a helping hull. It shows in little things — a stranger who hails with unusual trust, a waystation that deals a shade more generously — and the crew wears the growing reputation the way one wears a coat a size too large: a little self-consciously, and glad of the warmth.",
+      "Word has gone out, the way word does, that this is a ship that does the decent thing. The crew did not set out to earn the name and cannot quite say when it arrived, but it is there now in the manner of every hull they meet, and there is a quiet pride in the decks that was not there before."
+    ],
+    "reputation_feared": [
+      "The hands who deal with passing hulls have started to notice it, and to keep it to themselves: that the ship is getting a name in the dark, and the name is not a warm one. Strangers hail warily now, deal minimally, keep the exits clear — the wide berth one gives a vessel one has heard hard things about.",
+      "The ship has begun, one cold choice at a time, to be known as a hull that does the hard thing. It shows in how it is met — a new caution in every hail, a waystation's quiet, a trader who names a fair price fast and does not linger — and the crew notices the change in the dark's manner and does not entirely dislike the room it makes.",
+      "Word has gone out that this is a ship best not crossed and best not counted on. The crew did not set out to earn the name, but it is theirs now, plain in the wariness of every hull they meet, and there is a hard set to the decks that was not there before — a people growing, quietly, into the fear it inspires."
+    ],
+    "reputation_voice_high": 0.66,
+    "reputation_voice_low": 0.34,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

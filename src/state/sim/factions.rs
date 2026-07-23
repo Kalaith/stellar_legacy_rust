@@ -590,6 +590,43 @@ impl SimState {
         self.polity_mood_band = band;
     }
 
+    /// Give the ship's growing *reputation* a voice (content-depth voice round 16):
+    /// the quiet companion to the it109 reputation beat, at a gentler threshold. When
+    /// the watched trait crosses *into* a merciful or a feared band, surface one
+    /// pooled line — the ship remarking that its name has begun to mean something —
+    /// before that name grows defining enough to force the beat's reckoning.
+    /// Deterministic (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_reputation_name(&mut self, data: &GameData) {
+        let trait_id = &data.config.campaign_skeleton.reputation_beat_trait;
+        let fl = &data.config.flavor;
+        if trait_id.is_empty() || fl.reputation_voice_high <= 0.0 {
+            return;
+        }
+        let value = self.reputation(trait_id);
+        let band = if value >= fl.reputation_voice_high {
+            1
+        } else if value <= fl.reputation_voice_low {
+            -1
+        } else {
+            0
+        };
+        if band == self.reputation_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.reputation_merciful,
+            -1 => &fl.reputation_feared,
+            _ => {
+                self.reputation_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.reputation_voice_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -1144,6 +1181,50 @@ mod tests {
         sim.announce_ship_mood(&data);
         assert_eq!(mood_lines(&sim), 2, "the ship lifting says so afresh");
         assert_eq!(sim.morale_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_name_begins_to_mean_something() {
+        // Content-depth voice round 16: the reputation voice, the quiet companion to
+        // the it109 reputation beat at a gentler threshold. Crossing into a merciful
+        // name surfaces one pooled line; a return to the middle re-arms; a feared
+        // name gets its own, opposite line.
+        let (data, mut sim, _picks) = armed(29);
+        let trait_id = data.config.campaign_skeleton.reputation_beat_trait.clone();
+        let high = data.config.flavor.reputation_voice_high;
+        let low = data.config.flavor.reputation_voice_low;
+        assert!(
+            !trait_id.is_empty() && high > 0.0 && data.config.flavor.reputation_merciful.len() >= 3,
+            "this test needs the reputation voice enabled"
+        );
+        let name_lines = |sim: &SimState| {
+            let m = &data.config.flavor.reputation_merciful;
+            let f = &data.config.flavor.reputation_feared;
+            sim.log
+                .iter()
+                .filter(|l| m.contains(&l.text) || f.contains(&l.text))
+                .count()
+        };
+
+        // A ship of neutral repute says nothing.
+        sim.announce_reputation_name(&data);
+        assert_eq!(name_lines(&sim), 0, "an unknown ship remarks nothing");
+
+        // A name for mercy: one line.
+        sim.reputation.insert(trait_id.clone(), high + 0.05);
+        sim.announce_reputation_name(&data);
+        assert_eq!(name_lines(&sim), 1, "a growing merciful name says so once");
+        assert_eq!(sim.reputation_voice_band, 1);
+
+        // Still merciful — no reprint.
+        sim.announce_reputation_name(&data);
+        assert_eq!(name_lines(&sim), 1, "staying merciful is not re-announced");
+
+        // A name for fear: a second, distinct line.
+        sim.reputation.insert(trait_id.clone(), low - 0.05);
+        sim.announce_reputation_name(&data);
+        assert_eq!(name_lines(&sim), 2, "a feared name says so afresh");
+        assert_eq!(sim.reputation_voice_band, -1);
     }
 
     #[test]

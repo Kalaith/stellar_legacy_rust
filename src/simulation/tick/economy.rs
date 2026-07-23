@@ -211,6 +211,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // the generations (content-depth factions round 16): a kind majority drifts the
     // ship toward a merciful name, a cold one hardens it, no dramatic choice required.
     sim.apply_dominant_reputation_lean(data);
+    // …and the ship remarks when its name begins to mean something (content-depth
+    // voice round 16): a merciful or a feared reputation says so once, at a gentler
+    // threshold than the it109 beat — the quiet marker before the defining reckoning.
+    sim.announce_reputation_name(data);
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,

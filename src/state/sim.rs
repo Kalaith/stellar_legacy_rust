@@ -400,6 +400,12 @@ pub struct SimState {
     /// at launch; a return to the middle silently re-arms it.
     #[serde(default)]
     pub reputation_beat_band: i8,
+    /// The reputation band the ship's *voice* last announced (content-depth voice
+    /// round 16): a gentler crossing than the beat's — the ship remarking it is
+    /// becoming known for a trait, once, before that name grows defining. 0 at
+    /// launch; a return to the middle silently re-arms.
+    #[serde(default)]
+    pub reputation_voice_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -510,6 +516,7 @@ impl SimState {
             morale_band: 0,
             polity_mood_band: 0,
             reputation_beat_band: 0,
+            reputation_voice_band: 0,
             depopulation_beats_fired: 0,
             lean_food_years: 0,
             fat_food_years: 0,
