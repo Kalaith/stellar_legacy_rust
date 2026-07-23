@@ -138,6 +138,20 @@ pub struct GameConfig {
     /// state that separates a windfall year from a lifetime of plenty. 0 = disabled.
     #[serde(default)]
     pub fat_food_threshold: i64,
+    /// Years of sustained lean the crew endures before chronic hunger begins to wear
+    /// their spirits (content-depth provisioning round 17): the provisioning axis's
+    /// first *systemic* coupling. Once `lean_food_years` reaches this, the year tick
+    /// drains a little morale each year the lean holds — so a grinding multi-year
+    /// hunger doesn't merely gate content (it89) and read hungry (voice r13), it
+    /// mechanically wears the ship down. A single bad winter stays below it (the acute
+    /// famine events' domain). 0 = no chronic-hunger toll.
+    #[serde(default)]
+    pub chronic_hunger_years: u32,
+    /// Morale drained per year while the ship is in a sustained lean past
+    /// `chronic_hunger_years` (content-depth provisioning round 17). Gentle by design —
+    /// the slow attrition of a hunger that will not end, not a single hard blow.
+    #[serde(default)]
+    pub chronic_hunger_morale_drain: f32,
     pub hull_warning_threshold: f32,
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,

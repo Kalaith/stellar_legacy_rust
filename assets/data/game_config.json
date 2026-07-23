@@ -23,6 +23,8 @@
   "low_food_threshold": 500,
   "lean_food_threshold": 4000,
   "fat_food_threshold": 15000,
+  "chronic_hunger_years": 5,
+  "chronic_hunger_morale_drain": 0.004,
   "low_energy_threshold": 1000,
   "hull_warning_threshold": 0.7,
   "life_support_warning_threshold": 0.8,

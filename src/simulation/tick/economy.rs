@@ -149,6 +149,22 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.morale = (sim.population.morale + habitat).clamp(0.0, 1.0);
     }
 
+    // The long lean wears the crew down (content-depth provisioning round 17): the
+    // provisioning axis's first *systemic* coupling — where every prior scarcity
+    // mechanic was an event gate or a counter, a hunger that has ground on for years
+    // now bites the year tick directly. The it89 lean-years counter, until now only
+    // gating content and the drift-aware ambient (voice r13), gets a mechanical toll:
+    // a chronic hunger doesn't merely read hungry, it *is* wearing. Threshold-gated so
+    // one bad winter is inert (the acute famine events' domain) — only a sustained
+    // lean grinds the crew's spirits down, and via the ship-mood voice the decks
+    // audibly go heavy as it does.
+    if config.chronic_hunger_morale_drain > 0.0
+        && sim.lean_food_years >= config.chronic_hunger_years
+    {
+        sim.population.morale =
+            (sim.population.morale - config.chronic_hunger_morale_drain).max(0.0);
+    }
+
     // Ship wear, eased while spare parts remain for upkeep (PLAN M4.2). Once
     // the stores run dry the ship wears at full rate — the "held together on
     // hope and prayers" end of a long, unresupplied voyage. Field repair
