@@ -195,6 +195,9 @@ pub struct GameConfig {
     pub voyage_drift: VoyageDrift,
     /// Field-vs-port repair tunables (PLAN M4.3).
     pub repair: RepairConfig,
+    /// Real-time voyage pacing (real-time loop): auto-advance cadence, decision
+    /// auto-resolve timeout, and ranged-impact tuning.
+    pub real_time: RealTimeConfig,
     /// Gating for installing salvaged parts underway (PLAN M4.4).
     pub field_install: FieldInstallConfig,
     /// Commission-a-new-ship tunables (PLAN M4.5).
@@ -287,6 +290,20 @@ pub struct RepairConfig {
     pub full_credits_cost: i64,
     pub full_minerals_cost: i64,
     pub full_parts_restock: i64,
+}
+
+/// Real-time voyage pacing (real-time loop): while a mission is under way the
+/// month clock auto-advances one month every `seconds_per_month` real seconds,
+/// scaled by the 1×/2×/3× speed selector. A blocked council decision auto-
+/// resolves to a random option after `decision_timeout_secs`. `impact_variance`
+/// / `impact_min_magnitude_for_range` drive the ranged event impacts (a delta of
+/// magnitude ≥ the minimum is shown as a band and rolled within it).
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct RealTimeConfig {
+    pub seconds_per_month: f32,
+    pub decision_timeout_secs: f32,
+    pub impact_variance: f32,
+    pub impact_min_magnitude_for_range: i64,
 }
 
 /// Gating for fitting a salvaged component underway (PLAN M4.4). At port any

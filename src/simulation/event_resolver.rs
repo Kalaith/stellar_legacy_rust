@@ -3,9 +3,10 @@
 pub mod skeleton;
 
 use crate::data::events::{Complication, EventCategory, EventOutcome, EventTemplate};
-use crate::data::{GameConfig, GameData};
+use crate::data::{GameConfig, GameData, RealTimeConfig};
 use crate::simulation::subsystems;
 use crate::state::sim::{PendingEvent, SimState};
+use macroquad_toolkit::rng::SeededRng;
 
 /// The one complication (content-depth round 6) riding this event right now, if
 /// any: the first, in authored order, whose gates all hold for the current sim.
@@ -91,6 +92,55 @@ pub fn available_outcome_indices(sim: &SimState, template: &EventTemplate) -> Ve
         .filter(|(_, o)| outcome_available(sim, o))
         .map(|(i, _)| i)
         .collect()
+}
+
+/// The band of population impact an outcome may land (real-time loop §3), as a
+/// signed `(low, high)` head-count delta — negative for lives lost, positive for
+/// arrivals/births. Derived from the outcome's *buffered* `population_delta.count`
+/// (the same value `apply_outcome` rolls within, since the sim is paused, so the
+/// shown band and the rolled result agree). `None` when the magnitude is below
+/// `impact_min_magnitude_for_range` — a small, specific effect shown exactly.
+pub fn outcome_pop_impact_range(
+    sim: &SimState,
+    data: &GameData,
+    template: &EventTemplate,
+    outcome_index: usize,
+) -> Option<(i64, i64)> {
+    let outcome = template.outcomes.get(outcome_index)?;
+    let (_, _, population) = subsystems::buffered_deltas(
+        sim,
+        data,
+        &template.family,
+        outcome.resource_delta,
+        outcome.ship_delta,
+        outcome.population_delta,
+    );
+    impact_range(population.count as i64, data.config.real_time)
+}
+
+/// The signed `(low, high)` band for a head-count delta, or `None` when it is too
+/// small to bother ranging (`impact_min_magnitude_for_range`). Ordered low ≤ high
+/// regardless of sign.
+fn impact_range(count: i64, cfg: RealTimeConfig) -> Option<(i64, i64)> {
+    if count.abs() < cfg.impact_min_magnitude_for_range {
+        return None;
+    }
+    let lo = (count as f32 * (1.0 - cfg.impact_variance)).round() as i64;
+    let hi = (count as f32 * (1.0 + cfg.impact_variance)).round() as i64;
+    Some((lo.min(hi), lo.max(hi)))
+}
+
+/// Roll an actual head-count delta within its impact band (real-time loop §3).
+/// A magnitude below the range floor applies exactly; otherwise a uniform draw in
+/// `[low, high]` through the seeded RNG.
+fn rolled_pop_count(count: i32, cfg: RealTimeConfig, rng: &mut SeededRng) -> i32 {
+    match impact_range(count as i64, cfg) {
+        Some((lo, hi)) => {
+            let span = (hi - lo + 1).max(1) as usize;
+            (lo + rng.below(span) as i64) as i32
+        }
+        None => count,
+    }
 }
 
 /// An event's description as it should be shown: the template's, plus the riding
@@ -451,7 +501,7 @@ pub fn apply_outcome(
     let complication = active_complication(sim, template).cloned();
     // A subsystem buffering this event's family softens its harm (W5): every
     // negative delta is scaled down; the boons land in full.
-    let (resource_delta, ship_delta, population_delta) = subsystems::buffered_deltas(
+    let (resource_delta, ship_delta, mut population_delta) = subsystems::buffered_deltas(
         sim,
         data,
         &template.family,
@@ -459,6 +509,10 @@ pub fn apply_outcome(
         outcome.ship_delta,
         outcome.population_delta,
     );
+    // The population toll is uncertain within its shown band (real-time loop §3):
+    // roll the actual head-count delta the range promised, through the seeded RNG.
+    population_delta.count =
+        rolled_pop_count(population_delta.count, data.config.real_time, &mut sim.rng);
     sim.resources.apply(&resource_delta);
     sim.ship.apply(&ship_delta);
     sim.population.apply(&population_delta);
@@ -610,6 +664,42 @@ mod tests {
     use super::*;
     use crate::data::GameData;
     use crate::state::sim::SimState;
+
+    fn impact_cfg() -> RealTimeConfig {
+        RealTimeConfig {
+            seconds_per_month: 5.0,
+            decision_timeout_secs: 30.0,
+            impact_variance: 0.4,
+            impact_min_magnitude_for_range: 20,
+        }
+    }
+
+    #[test]
+    fn impact_range_bands_large_deltas_and_leaves_small_ones_exact() {
+        let cfg = impact_cfg();
+        // A specific, small toll stays exact — no band (real-time loop §3).
+        assert_eq!(impact_range(-8, cfg), None);
+        assert_eq!(impact_range(19, cfg), None);
+        // A big toll becomes a ±variance band, ordered low ≤ high.
+        assert_eq!(impact_range(-300, cfg), Some((-420, -180)));
+        assert_eq!(impact_range(500, cfg), Some((300, 700)));
+    }
+
+    #[test]
+    fn rolled_pop_count_stays_within_its_band() {
+        let cfg = impact_cfg();
+        let mut rng = macroquad_toolkit::rng::SeededRng::new(42);
+        // Below the floor: applied exactly.
+        assert_eq!(rolled_pop_count(-8, cfg, &mut rng), -8);
+        // Above the floor: every draw lands inside the shown band.
+        for _ in 0..200 {
+            let rolled = rolled_pop_count(-300, cfg, &mut rng);
+            assert!(
+                (-420..=-180).contains(&(rolled as i64)),
+                "rolled {rolled} outside [-420, -180]"
+            );
+        }
+    }
 
     #[test]
     fn a_cultural_drift_gate_holds_a_template_until_the_drift_arrives() {

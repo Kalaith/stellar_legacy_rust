@@ -19,8 +19,9 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
     };
 
     let header = format!(
-        "COUNCIL DECISION — {}",
-        template.category.label().to_uppercase()
+        "COUNCIL DECISION — {}  ·  AUTO-RESOLVE {}s",
+        template.category.label().to_uppercase(),
+        countdown_secs(ctx.decision_remaining)
     );
     // Only the outcomes this ship has earned are offered (content-depth event
     // families round 12): a gated outcome — a fix only a kept-expert crew can try,
@@ -54,11 +55,24 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
             card.x + 14.0,
             card.y + 8.0,
             card.w - 200.0,
-            60.0,
+            48.0,
             13.0,
             3.0,
             term::dim(),
         );
+        // The uncertain human cost of this choice (real-time loop §3): a band, not
+        // a number — the council rarely knows exactly who a crisis will take.
+        if let Some((lo, hi)) = crate::simulation::event_resolver::outcome_pop_impact_range(
+            ctx.sim, ctx.data, template, i,
+        ) {
+            let (text, color) = impact_label(lo, hi);
+            draw_ui_text_ex(
+                &text,
+                card.x + 14.0,
+                card.y + 72.0,
+                TextStyle::new(12.0, color).params(),
+            );
+        }
         if term_button(
             Rect::new(card.right() - 178.0, card.y + 24.0, 164.0, 36.0),
             &format!("[{}] {}", shown + 1, outcome.label.to_uppercase()),
@@ -84,7 +98,11 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
         .map(|l| l.name.clone())
         .unwrap_or_default();
 
-    let header = format!("LEGACY DILEMMA — {}", legacy_name.to_uppercase());
+    let header = format!(
+        "LEGACY DILEMMA — {}  ·  AUTO-RESOLVE {}s",
+        legacy_name.to_uppercase(),
+        countdown_secs(ctx.decision_remaining)
+    );
     let content = modal_frame(&header, dilemma.options.len(), term::primary());
     let mut y = content.y + 22.0;
     draw_ui_text_ex(
@@ -153,6 +171,27 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
             actions.push(UiAction::ResolveDilemma(i));
         }
         y += 96.0;
+    }
+}
+
+/// Whole seconds left on the auto-resolve countdown, floored at 0 (real-time
+/// loop §2).
+fn countdown_secs(remaining: f32) -> i32 {
+    remaining.ceil().max(0.0) as i32
+}
+
+/// Human phrasing of a population-impact band (real-time loop §3), with a tone:
+/// a loss band reads warm-red, a gain accent, a straddle neutral.
+fn impact_label(lo: i64, hi: i64) -> (String, Color) {
+    if hi <= 0 {
+        (
+            format!("~ {}–{} souls may be lost", hi.abs(), lo.abs()),
+            term::alert(),
+        )
+    } else if lo >= 0 {
+        (format!("~ {lo}–{hi} souls may join"), term::accent())
+    } else {
+        (format!("~ {lo} to +{hi} souls"), term::dim())
     }
 }
 

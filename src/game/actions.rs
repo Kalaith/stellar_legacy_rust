@@ -115,11 +115,6 @@ impl Game {
             }
 
             // ---- Gameplay ----
-            UiAction::Advance => {
-                self.advance();
-                self.check_achievements();
-                None
-            }
             UiAction::SetSpeed(step) => {
                 if let GameState::Gameplay(gameplay) = &mut self.state {
                     gameplay.sim.speed = step;
@@ -283,6 +278,13 @@ impl Game {
                     // Start the cosmetic run timer for this mission (PLAN M4.7).
                     self.mission_started = Some(get_time());
                     self.last_mission_real_secs = None;
+                    // The tab set changes under way (real-time loop §5): land on the
+                    // active CONTRACT view since the DRYDOCK tab is now gone.
+                    if let GameState::Gameplay(gameplay) = &mut self.state {
+                        if !crate::state::Screen::UNDERWAY.contains(&gameplay.screen) {
+                            gameplay.screen = crate::state::Screen::Contract;
+                        }
+                    }
                     self.notifications.success("Launched. The voyage begins.");
                 } else {
                     self.notifications
@@ -402,7 +404,10 @@ impl Game {
         }
     }
 
-    fn advance(&mut self) {
+    /// Advance the sim one month and react to what it produced (real-time loop
+    /// §1): the sole tick driver now that time auto-advances. Called by the
+    /// game-loop accumulator, once per elapsed month.
+    pub(super) fn advance_one_month(&mut self) {
         let GameState::Gameplay(gameplay) = &mut self.state else {
             return;
         };
@@ -411,7 +416,8 @@ impl Game {
             return;
         }
 
-        let report = tick::advance(sim, &self.data);
+        let report = tick::advance_months(sim, &self.data, 1);
+        let completed = report.contract_completed.is_some();
 
         if report.decision_required {
             self.notifications.warning("The council must decide.");
@@ -525,6 +531,55 @@ impl Game {
             }
             self.notifications
                 .success("Contract concluded — see the Chronicle.");
+        }
+
+        // Reaching 100% docks the ship (real-time loop §4): the contract is now
+        // cleared, so time auto-pauses. Land the player on the DRYDOCK board for
+        // repairs / upgrades / the next charter.
+        if completed {
+            if let GameState::Gameplay(gameplay) = &mut self.state {
+                gameplay.screen = crate::state::Screen::Drydock;
+            }
+            self.notifications.info("Docked for refit.");
+        }
+        self.check_achievements();
+    }
+
+    /// Resolve a blocked council decision by a random available option (real-time
+    /// loop §2): the 30s countdown ran out. The pick flows through the seeded RNG
+    /// so a given state still resolves reproducibly.
+    pub(super) fn auto_resolve_decision(&mut self) {
+        let GameState::Gameplay(gameplay) = &mut self.state else {
+            return;
+        };
+        let sim = &mut gameplay.sim;
+        if let Some(pending) = sim.pending_event.clone() {
+            match self.data.events.get(&pending.template_id).cloned() {
+                Some(template) => {
+                    let avail = event_resolver::available_outcome_indices(sim, &template);
+                    let pick = if avail.is_empty() {
+                        0
+                    } else {
+                        avail[sim.rng.below(avail.len())]
+                    };
+                    event_resolver::apply_outcome(sim, &self.data, &template, pick);
+                }
+                None => sim.pending_event = None,
+            }
+            self.notifications
+                .warning("The council let the clock decide.");
+            self.check_achievements();
+            return;
+        }
+        if sim.pending_dilemma.is_some() {
+            let count = legacy::pending_dilemma_def(sim, &self.data)
+                .map(|d| d.options.len())
+                .unwrap_or(0);
+            let pick = if count == 0 { 0 } else { sim.rng.below(count) };
+            legacy::resolve_dilemma(sim, &self.data, pick);
+            self.notifications
+                .warning("The council let the clock decide.");
+            self.check_achievements();
         }
     }
 

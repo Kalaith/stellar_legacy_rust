@@ -21,7 +21,7 @@ use crate::chronicle::ChronicleStore;
 use crate::data::events::EventCategory;
 use crate::data::ship_components::ComponentKind;
 use crate::data::GameData;
-use crate::state::sim::{SimState, SpeedStep, TradeResource};
+use crate::state::sim::{GameSpeed, SimState, TradeResource};
 use crate::state::{MenuState, Screen};
 use macroquad::prelude::*;
 use macroquad_toolkit::achievements::Achievements;
@@ -162,8 +162,8 @@ pub enum UiAction {
     RetireVoyage,
     SelectScreen(Screen),
     // Gameplay verbs (GDD §4)
-    Advance,
-    SetSpeed(SpeedStep),
+    /// Set the real-time auto-advance rate / pause (real-time loop §1).
+    SetSpeed(GameSpeed),
     /// Turn the current mission for home early (W2). Only emitted underway.
     AbortMission,
     ResolveEvent(usize),
@@ -543,6 +543,10 @@ pub struct GameplayCtx<'a> {
     /// current mission (live), or the last mission's while in port. `None`
     /// before the first charter. Never feeds the deterministic sim.
     pub run_clock: Option<f32>,
+    /// Real seconds left before a blocking council decision auto-resolves to a
+    /// random option (real-time loop §2). Only meaningful while a decision is
+    /// pending; the modal renders it as a countdown.
+    pub decision_remaining: f32,
 }
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
@@ -559,13 +563,26 @@ pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
     draw_header(&ctx);
     draw_tabs(&ctx, mouse, &mut actions);
 
+    // Fall back to the dashboard if the open tab is not in the current voyage
+    // state's set (real-time loop §5) — e.g. an old save resuming on CONTRACT
+    // while docked, before the launch/dock clamps take effect.
+    let in_port = ctx.sim.contract.is_none();
+    let screen = if Screen::tabs(in_port).contains(&ctx.screen) {
+        ctx.screen
+    } else {
+        Screen::Dashboard
+    };
+
     let content = Rect::new(16.0, 128.0, LOGICAL_WIDTH - 32.0, LOGICAL_HEIGHT - 144.0);
-    match ctx.screen {
+    match screen {
         Screen::Dashboard => dashboard::draw(&ctx, content, mouse, &mut actions),
+        Screen::Drydock => contract_systems::draw_drydock(&ctx, content, mouse, &mut actions),
         Screen::ShipBuilder => ship_builder::draw(&ctx, content, mouse, &mut actions),
         Screen::Subsystems => subsystems::draw(&ctx, content, mouse, &mut actions),
         Screen::CrewDynasty => crew_dynasty::draw(&ctx, content, mouse, &mut actions),
-        Screen::Contract => contract_systems::draw(&ctx, content, mouse, &mut actions),
+        Screen::Contract => {
+            contract_systems::draw_active_screen(&ctx, content, mouse, &mut actions)
+        }
         Screen::Market => market::draw(&ctx, content, mouse, &mut actions),
         Screen::Chronicle => chronicle::draw(&ctx, content, mouse, &mut actions),
     }
@@ -648,7 +665,9 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
 }
 
 fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
-    let tabs = Screen::ALL;
+    // The tab set changes with voyage state (real-time loop §5): DRYDOCK + MARKET
+    // in port, CONTRACT under way.
+    let tabs = Screen::tabs(ctx.sim.contract.is_none());
     let total_w = LOGICAL_WIDTH - 32.0 - 220.0;
     let tab_w = (total_w - (tabs.len() as f32 - 1.0) * 6.0) / tabs.len() as f32;
     for (i, screen) in tabs.iter().enumerate() {

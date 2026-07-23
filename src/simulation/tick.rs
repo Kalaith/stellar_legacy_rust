@@ -15,7 +15,7 @@ use crate::data::contracts::ContractPhase;
 use crate::data::GameData;
 use crate::simulation::contract::SuccessLevel;
 use crate::simulation::{contract, event_resolver, ship};
-use crate::state::sim::{SimState, SpeedStep};
+use crate::state::sim::SimState;
 
 /// Everything a single year produced that the caller (game.rs) must react
 /// to: log lines are already recorded on the sim; a completed contract and a
@@ -35,19 +35,20 @@ pub struct TickReport {
     pub phase_changed: Option<ContractPhase>,
 }
 
-/// Advance time by the current speed step (W3). Steps month by month, applying
-/// the W1-tuned economic year on each year boundary and rolling for events every
-/// month, and hard-stops the instant a council decision, contract completion, or
-/// extinction lands — so a single Advance press never skips past a moment that
-/// needs the player (Pillar 4).
-pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
+/// Advance time up to `max_months`. Steps month by month, applying the W1-tuned
+/// economic year on each year boundary and rolling for events every month, and
+/// hard-stops the instant a council decision, contract completion, or extinction
+/// lands — so an advance never skips past a moment that needs the player. The
+/// real-time driver calls this with the whole months its accumulator crossed
+/// (usually 1); tests/tooling pass a fixed span.
+pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> TickReport {
     debug_assert!(
         !sim.has_pending_decision(),
         "caller must resolve the pending event/dilemma before advancing time"
     );
     let mut report = TickReport::default();
 
-    for _ in 0..sim.speed.months() {
+    for _ in 0..max_months {
         sim.month_clock += 1;
         report.months_advanced += 1;
 
@@ -113,12 +114,11 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
     report
 }
 
-/// Test/tooling helper: advance one year's worth of the loop at `OneYear` speed.
-/// Still hard-stops early on a decision, exactly like a player pressing Advance
-/// at 1-yr speed.
+/// Test/tooling helper: advance up to one year's worth of the loop. Still
+/// hard-stops early on a decision/completion/phase change, exactly like the
+/// real-time driver would as the months tick past.
 pub fn advance_year(sim: &mut SimState, data: &GameData) -> TickReport {
-    sim.speed = SpeedStep::OneYear;
-    advance(sim, data)
+    advance_months(sim, data, 12)
 }
 
 /// One month of contract progress (W2): objective accrual on-station, the

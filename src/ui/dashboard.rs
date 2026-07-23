@@ -1,7 +1,7 @@
 //! Dashboard: ship vitals, population, advance-time control, ship's log.
 
 use crate::simulation::ship::RepairKind;
-use crate::state::sim::{PopulationState, SpeedStep};
+use crate::state::sim::{GameSpeed, PopulationState};
 use crate::state::Screen;
 use crate::ui::{
     stat_line, term, term_button, term_meter, term_meter_toned, term_panel, GameplayCtx, MeterTone,
@@ -152,42 +152,38 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
     // Extinction is handled by the full-screen game-over takeover
     // (`ui::game_over`), so the dashboard never renders in that state.
     //
-    // Speed selector (W3): how far one Advance press fast-forwards. The active
-    // step is bracketed; picking a new one only changes the span, never advances
-    // time (that stays an explicit Advance — Pillar 4).
+    // Time control (real-time loop §1): under way the month clock auto-advances;
+    // the row pauses it or sets the 1×/2×/3× rate. Docked, time is frozen no
+    // matter the setting, so the row disables and says so.
+    let label_rect = Rect::new(content.x, content.bottom() - 92.0, content.w, 20.0);
+    let underway = sim.contract.is_some();
+    draw_ui_text_ex(
+        if underway {
+            "TIME CONTROL"
+        } else {
+            "TIME CONTROL — IN DRYDOCK, TIME PAUSED"
+        },
+        label_rect.x,
+        label_rect.y + 14.0,
+        TextStyle::new(13.0, if underway { term::dim() } else { term::faint() }).params(),
+    );
+
     let gap = 6.0;
     let bw = (content.w - gap * 3.0) / 4.0;
-    let speed_y = content.bottom() - 92.0;
-    for (i, step) in SpeedStep::ALL.iter().enumerate() {
-        let r = Rect::new(content.x + (bw + gap) * i as f32, speed_y, bw, 26.0);
-        let active = sim.speed == *step;
+    let speed_y = content.bottom() - 56.0;
+    for (i, step) in GameSpeed::ALL.iter().enumerate() {
+        let r = Rect::new(content.x + (bw + gap) * i as f32, speed_y, bw, 40.0);
+        let active = underway && sim.speed == *step;
         let label = if active {
             format!("[{}]", step.label())
         } else {
             step.label().to_owned()
         };
-        if term_button(r, &label, true, mouse) {
+        if term_button(r, &label, underway, mouse) {
             actions.push(UiAction::SetSpeed(*step));
         }
     }
-
-    let advance = Rect::new(content.x, content.bottom() - 56.0, content.w, 48.0);
-    let can_advance = sim.pending_event.is_none() && !sim.dynasty.extinct;
-    if term_button(advance, &advance_label(sim.speed), can_advance, mouse) {
-        actions.push(UiAction::Advance);
-    }
     let _ = y;
-}
-
-/// The Advance button label for the active speed step (W3).
-fn advance_label(speed: SpeedStep) -> String {
-    let span = match speed {
-        SpeedStep::OneMonth => "1 MONTH",
-        SpeedStep::OneYear => "1 YEAR",
-        SpeedStep::FiveYears => "5 YEARS",
-        SpeedStep::TenYears => "10 YEARS",
-    };
-    format!("ADVANCE {span}  [SPACE]")
 }
 
 fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {

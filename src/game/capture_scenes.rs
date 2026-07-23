@@ -115,6 +115,28 @@ impl Game {
                 gameplay.screen = Screen::ShipBuilder;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
+            "ship_underway" => {
+                // The SHIP tab under way (real-time loop §5): a status readout —
+                // installed modules, live integrity, active loadout modifiers, and
+                // the field-installable salvage hold. No shipyard while in the black.
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "adaptors",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
+                if let Some(template) = self.data.contracts.get("deep_vein_survey") {
+                    sim.contract = Some(contract::start_contract(template, &sim));
+                }
+                sim.ship.hull_integrity = 0.62;
+                sim.ship.life_support = 0.74;
+                sim.ship.fuel = 0.4;
+                sim.ship.weapon = Some("mass_driver".to_owned());
+                sim.ship.salvage = vec!["solar_sail".to_owned()];
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = Screen::ShipBuilder;
+                self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
+            }
             "subsystems" => {
                 // The subsystems screen (W5) with mixed tiers, worn condition,
                 // and a knowledge stat dipping below a repair threshold.
@@ -160,7 +182,7 @@ impl Game {
                     &crate::state::sim::founding_faction_ids(&self.data),
                 );
                 let mut gameplay = GameplayState::new(sim);
-                gameplay.screen = Screen::Contract;
+                gameplay.screen = Screen::Drydock;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "prep" => {
@@ -177,7 +199,7 @@ impl Game {
                 sim.resources.food = 800;
                 sim.ship.spare_parts = 45;
                 let mut gameplay = GameplayState::new(sim);
-                gameplay.screen = Screen::Contract;
+                gameplay.screen = Screen::Drydock;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "drydock" => {
@@ -205,7 +227,7 @@ impl Game {
                 });
                 self.capture_run_secs = Some(2280.0); // 38m — the run just flown
                 let mut gameplay = GameplayState::new(sim);
-                gameplay.screen = Screen::Contract;
+                gameplay.screen = Screen::Drydock;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
             "contract_active" => {

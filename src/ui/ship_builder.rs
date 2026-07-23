@@ -1,13 +1,21 @@
 //! Ship Builder: component catalog and current loadout (GDD §9).
 
 use crate::data::ship_components::{ComponentKind, ComponentStats, ShipComponent};
-use crate::simulation::ship::{install_eligibility, InstallEligibility};
-use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
+use crate::simulation::ship::{install_eligibility, loadout_stats, InstallEligibility};
+use crate::ui::{term, term_button, term_meter, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    // Under way the SHIP tab is a status readout, not a shipyard (real-time loop
+    // §5): installed modules, current integrity, and the boosts/debuffs in force.
+    // Buying, commissioning, and refits wait for the drydock.
+    if ctx.sim.contract.is_some() {
+        draw_underway(ctx, area, mouse, actions);
+        return;
+    }
+
     let columns = [
         (ComponentKind::Hull, "HULLS"),
         (ComponentKind::Engine, "ENGINES"),
@@ -26,6 +34,145 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
             let card = Rect::new(content.x, y, content.w, 96.0);
             draw_component_card(ctx, card, component, installed, mouse, *kind, actions);
             y += 100.0;
+        }
+    }
+}
+
+/// The under-way SHIP readout (real-time loop §5): installed hull/engine/weapon
+/// with their stats, the ship's live integrity meters, and the aggregate loadout
+/// boosts currently in force. No purchase/commission — those are drydock jobs.
+fn draw_underway(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    let sim = ctx.sim;
+    let left = Rect::new(area.x, area.y, area.w * 0.5 - 6.0, area.h);
+    let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
+
+    // --- Installed modules ---
+    term_panel(left, Some("INSTALLED MODULES"));
+    let content = left.inset(18.0);
+    let mut y = content.y + 40.0;
+    let modules = [
+        (ComponentKind::Hull, "HULL", Some(sim.ship.hull.as_str())),
+        (
+            ComponentKind::Engine,
+            "ENGINE",
+            Some(sim.ship.engine.as_str()),
+        ),
+        (ComponentKind::Weapon, "WEAPON", sim.ship.weapon.as_deref()),
+    ];
+    for (kind, slot, id) in modules {
+        let component = id.and_then(|i| ctx.data.ship_components.find(kind, i));
+        draw_ui_text_ex(
+            slot,
+            content.x,
+            y,
+            TextStyle::new(12.0, term::dim()).params(),
+        );
+        match component {
+            Some(c) => {
+                draw_ui_text_ex(
+                    &c.name,
+                    content.x + 80.0,
+                    y,
+                    TextStyle::new(15.0, term::accent()).params(),
+                );
+                let stats = stats_line(&c.stats);
+                if !stats.is_empty() {
+                    draw_ui_text_ex(
+                        &stats,
+                        content.x + 80.0,
+                        y + 18.0,
+                        TextStyle::new(12.0, term::primary()).params(),
+                    );
+                }
+            }
+            None => {
+                draw_ui_text_ex(
+                    "— none —",
+                    content.x + 80.0,
+                    y,
+                    TextStyle::new(15.0, term::faint()).params(),
+                );
+            }
+        }
+        y += 48.0;
+    }
+
+    // Aggregate loadout modifiers currently in force — the ship's live boosts.
+    y += 8.0;
+    draw_ui_text_ex(
+        "ACTIVE MODIFIERS",
+        content.x,
+        y,
+        TextStyle::new(14.0, term::primary()).params(),
+    );
+    y += 22.0;
+    let agg = loadout_stats(sim, ctx.data);
+    let agg_line = stats_line(&agg);
+    draw_ui_text_ex(
+        if agg_line.is_empty() {
+            "no loadout bonuses"
+        } else {
+            &agg_line
+        },
+        content.x,
+        y,
+        TextStyle::new(13.0, term::accent()).params(),
+    );
+
+    // --- Integrity + salvage hold ---
+    term_panel(right, Some("INTEGRITY"));
+    let rc = right.inset(18.0);
+    let mut ry = rc.y + 42.0;
+    let meters = [
+        ("HULL", sim.ship.hull_integrity),
+        ("LIFE SUPPORT", sim.ship.life_support),
+        ("FUEL", sim.ship.fuel),
+    ];
+    for (label, value) in meters {
+        term_meter(
+            Rect::new(rc.x, ry, rc.w, 22.0),
+            value,
+            1.0,
+            &format!("{label} {:.0}%", value * 100.0),
+        );
+        ry += 34.0;
+    }
+    ry += 6.0;
+    draw_ui_text_ex(
+        &format!("SPARE PARTS {}", sim.ship.spare_parts),
+        rc.x,
+        ry,
+        TextStyle::new(14.0, term::accent()).params(),
+    );
+    ry += 30.0;
+
+    // A part in the salvage hold can still be field-fitted under way if crew and
+    // stores allow (PLAN M4.4) — the one loadout change the black permits.
+    if !sim.ship.salvage.is_empty() {
+        draw_ui_text_ex(
+            "SALVAGE HOLD",
+            rc.x,
+            ry,
+            TextStyle::new(14.0, term::primary()).params(),
+        );
+        ry += 24.0;
+        for id in sim.ship.salvage.clone() {
+            let name = ctx
+                .data
+                .ship_components
+                .find_any(&id)
+                .map(|(_, c)| c.name.clone())
+                .unwrap_or_else(|| id.clone());
+            let (enabled, label) = match install_eligibility(sim, ctx.data, &id) {
+                InstallEligibility::Ready => (true, format!("FIELD INSTALL — {name}")),
+                InstallEligibility::NeedsEngineer => (false, format!("{name} · NEEDS ENGINEER")),
+                InstallEligibility::NeedsConsumables => (false, format!("{name} · NEEDS PARTS")),
+                _ => (false, format!("{name} · UNAVAILABLE")),
+            };
+            if term_button(Rect::new(rc.x, ry, rc.w, 26.0), &label, enabled, mouse) {
+                actions.push(UiAction::InstallSalvage(id.clone()));
+            }
+            ry += 30.0;
         }
     }
 }

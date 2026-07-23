@@ -13,9 +13,9 @@
 
 use crate::data::GameData;
 use crate::simulation::contract::start_contract;
-use crate::simulation::tick::advance;
+use crate::simulation::tick::advance_months;
 use crate::simulation::{event_resolver, legacy, market, ship, subsystems};
-use crate::state::sim::{SimState, SpeedStep, TradeResource};
+use crate::state::sim::{SimState, TradeResource};
 
 /// How a played-out mission ended.
 #[derive(Debug, Clone, Copy)]
@@ -63,9 +63,6 @@ pub fn play_mission(
         );
     }
     sim.selected_charter = None;
-    // Fly at full speed: each Advance covers up to a decade but hard-stops on
-    // the next decision, so the policy still resolves everything in order (W3).
-    sim.speed = SpeedStep::TenYears;
 
     let mut outcome = MissionOutcome {
         completed: false,
@@ -123,7 +120,9 @@ pub fn play_mission(
             }
         }
 
-        let report = advance(sim, data);
+        // Fly a decade per step (hard-stops on the next decision either way), so
+        // the dumb policy still resolves everything in order (real-time loop).
+        let report = advance_months(sim, data, 120);
         outcome.final_year = sim.year();
         assert_year_invariants(sim);
         for faction in &sim.factions {
@@ -492,7 +491,6 @@ mod tests {
         }
         // Absurd food so the run never dies to famine — we only care about beats.
         sim.resources.food = 100_000_000;
-        sim.speed = SpeedStep::TenYears;
         let total = sim.contract.as_ref().unwrap().beats.len();
         assert_eq!(total, 17, "17 beats for a 340-yr charter");
 
@@ -511,7 +509,7 @@ mod tests {
             if sim.dynasty.extinct {
                 break;
             }
-            let report = advance(&mut sim, &data);
+            let report = advance_months(&mut sim, &data, 120);
             if report.contract_completed.is_some() {
                 break;
             }
@@ -553,9 +551,8 @@ mod tests {
             sim.contract = Some(start_contract(&template, &sim));
             sim.resources.food = 10_000_000;
             sim.ship.fuel = fuel;
-            sim.speed = SpeedStep::TenYears;
             while sim.month_clock < 50 * 12 {
-                advance(&mut sim, &data);
+                advance_months(&mut sim, &data, 120);
             }
             (
                 sim.month_clock,

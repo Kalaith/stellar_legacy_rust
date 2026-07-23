@@ -656,9 +656,8 @@ fn a_phase_boundary_hard_stops_the_fast_forward() {
     let template = data.contracts.get("deep_vein_survey").unwrap().clone();
     sim.contract = Some(start_contract(&template, &sim));
     sim.resources.food = 1_000_000;
-    sim.speed = SpeedStep::TenYears;
 
-    let report = advance(&mut sim, &data);
+    let report = advance_months(&mut sim, &data, 120);
     assert_eq!(report.months_advanced, 1, "departure is a hard-stop");
     assert_eq!(
         report.phase_changed,
@@ -718,8 +717,7 @@ fn a_ten_year_advance_matches_ten_one_year_advances() {
     fast.resources.food = 1_000_000;
     slow.resources.food = 1_000_000;
 
-    fast.speed = SpeedStep::TenYears;
-    let report = advance(&mut fast, &data);
+    let report = advance_months(&mut fast, &data, 120);
     assert_eq!(
         report.months_advanced, 120,
         "a clear 10-yr advance crosses exactly 120 months"
@@ -757,9 +755,8 @@ fn a_fast_advance_stops_at_the_generation_dilemma() {
         &crate::state::sim::founding_faction_ids(&data),
     );
     sim.resources.food = 1_000_000;
-    sim.speed = SpeedStep::TenYears;
 
-    let report = advance(&mut sim, &data);
+    let report = advance_months(&mut sim, &data, 120);
     assert!(
         sim.pending_dilemma.is_some(),
         "the generation dilemma must block the fast-forward"
@@ -1977,15 +1974,13 @@ fn provisioned(seed: u64, fuel: f32) -> (GameData, SimState) {
 fn fuel_is_spent_in_travel_but_not_on_station() {
     // A travel month burns fuel.
     let (data, mut sim) = provisioned(5, 1.0);
-    sim.speed = SpeedStep::OneMonth;
-    advance(&mut sim, &data);
+    advance_months(&mut sim, &data, 1);
     assert!(sim.ship.fuel < 1.0, "the first travel month burns fuel");
 
     // An operation month burns none.
     let (data, mut sim) = provisioned(5, 1.0);
     sim.contract.as_mut().unwrap().months_elapsed = 110 * 12; // end of Travel
-    sim.speed = SpeedStep::OneMonth;
-    advance(&mut sim, &data);
+    advance_months(&mut sim, &data, 1);
     assert_eq!(sim.ship.fuel, 1.0, "on-station months burn no fuel");
 }
 

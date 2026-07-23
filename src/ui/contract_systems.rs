@@ -31,14 +31,31 @@ fn reward_hint(reward: &ResourceDelta) -> String {
     }
 }
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
-    match (&ctx.sim.contract, &ctx.sim.selected_charter) {
-        // Underway: the active-contract view.
-        (Some(_), _) => draw_active(ctx, area, mouse, actions),
+/// The DRYDOCK tab (docked only, real-time loop §5): the PREP screen when a
+/// charter is under consideration, else the available-charter board. Never shows
+/// under way — the CONTRACT tab replaces it there.
+pub fn draw_drydock(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    if ctx.sim.selected_charter.is_some() {
         // A charter under consideration in port → the PREP screen (W4).
-        (None, Some(_)) => crate::ui::prep::draw(ctx, area, mouse, actions),
+        crate::ui::prep::draw(ctx, area, mouse, actions);
+    } else {
         // In port, nothing selected → the available-charter list.
-        (None, None) => draw_available(ctx, area, mouse, actions),
+        draw_available(ctx, area, mouse, actions);
+    }
+}
+
+/// The CONTRACT tab (under way only, real-time loop §5): the active-contract
+/// progress view. Falls back to the drydock board if somehow drawn in port.
+pub fn draw_active_screen(
+    ctx: &GameplayCtx<'_>,
+    area: Rect,
+    mouse: Vec2,
+    actions: &mut Vec<UiAction>,
+) {
+    if ctx.sim.contract.is_some() {
+        draw_active(ctx, area, mouse, actions);
+    } else {
+        draw_drydock(ctx, area, mouse, actions);
     }
 }
 

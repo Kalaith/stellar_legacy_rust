@@ -265,44 +265,46 @@ pub struct LogEntry {
     pub text: String,
 }
 
-/// How far one Advance press fast-forwards (W3). The advance loop always steps
-/// month by month; this only caps how many months a single press covers before
-/// it hard-stops on the next decision.
+/// Real-time voyage speed (real-time loop): while a mission is under way the
+/// month clock auto-advances one month every `seconds_per_month / multiplier`
+/// real seconds. `Paused` freezes time even mid-voyage; docked, time is frozen
+/// regardless of this setting. Replaces the old manual per-press `SpeedStep`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-pub enum SpeedStep {
-    OneMonth,
+pub enum GameSpeed {
+    Paused,
     #[default]
-    OneYear,
-    FiveYears,
-    TenYears,
+    X1,
+    X2,
+    X3,
 }
 
-impl SpeedStep {
-    pub const ALL: [SpeedStep; 4] = [
-        SpeedStep::OneMonth,
-        SpeedStep::OneYear,
-        SpeedStep::FiveYears,
-        SpeedStep::TenYears,
+impl GameSpeed {
+    /// The selector row order: pause first, then the ascending rates.
+    pub const ALL: [GameSpeed; 4] = [
+        GameSpeed::Paused,
+        GameSpeed::X1,
+        GameSpeed::X2,
+        GameSpeed::X3,
     ];
 
-    /// Months a single Advance at this step covers (before any decision stop).
-    pub fn months(self) -> u32 {
+    /// Real-time multiplier on the auto-advance cadence (0 while paused).
+    pub fn multiplier(self) -> f32 {
         match self {
-            SpeedStep::OneMonth => 1,
-            SpeedStep::OneYear => 12,
-            SpeedStep::FiveYears => 60,
-            SpeedStep::TenYears => 120,
+            GameSpeed::Paused => 0.0,
+            GameSpeed::X1 => 1.0,
+            GameSpeed::X2 => 2.0,
+            GameSpeed::X3 => 3.0,
         }
     }
 
     /// Short label for the speed-selector row.
     pub fn label(self) -> &'static str {
         match self {
-            SpeedStep::OneMonth => "1mo",
-            SpeedStep::OneYear => "1yr",
-            SpeedStep::FiveYears => "5yr",
-            SpeedStep::TenYears => "10yr",
+            GameSpeed::Paused => "II",
+            GameSpeed::X1 => "1x",
+            GameSpeed::X2 => "2x",
+            GameSpeed::X3 => "3x",
         }
     }
 }
@@ -318,9 +320,10 @@ pub struct SimState {
     /// Month-clock reading when the last event fired, for the event-chance
     /// ramp (GDD §5.4, now month-resolution).
     pub last_event_month_clock: u32,
-    /// How far one Advance press fast-forwards (W3 speed selector).
+    /// Real-time auto-advance rate while under way (real-time loop). Read by the
+    /// game-loop driver + the dashboard selector; never touched by the tick.
     #[serde(default)]
-    pub speed: SpeedStep,
+    pub speed: GameSpeed,
     pub resources: ResourcePool,
     pub production: ProductionRates,
     pub ship: ShipState,
@@ -480,7 +483,7 @@ impl SimState {
             rng,
             month_clock: 0,
             last_event_month_clock: 0,
-            speed: SpeedStep::default(),
+            speed: GameSpeed::default(),
             resources: ResourcePool::from_delta(config.starting_resources),
             production: config.base_production,
             ship: ShipState {

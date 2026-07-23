@@ -110,10 +110,19 @@ Sources: `game_apps/stellar_legacy/` (React/PHP original), `RustGames/migration_
    it doesn't get a panel that implies otherwise. The original's Legacy Deck and Chronicle
    analytics looked rich in the type system and were empty in play — the port doesn't
    repeat that mistake (§0 redesigns exist specifically to close this gap).
-4. **Centuries move at the speed of decisions, not a clock.** No background real-time
+4. **Centuries move at the speed of decisions, not a clock.** ~~No background real-time
    ticking (the original's `setInterval` resource loop). Time advances only when the
    player asks it to, so a "century-scale mission" is legible and deterministic, not a
-   race against a wall-clock timer.
+   race against a wall-clock timer.~~
+   **Superseded (real-time loop).** Time now auto-advances while a mission is under way
+   (~1 month per 5 s real time, `real_time.seconds_per_month`), controllable with a
+   Pause / 1× / 2× / 3× selector; **docked, time is frozen** so refit and charter choice
+   are unhurried. A blocked council decision holds the clock and **auto-resolves to a
+   random option after 30 s** (`real_time.decision_timeout_secs`). The *sim internals*
+   stay seeded (event rolls, ranged impacts, and timeout picks all draw from `sim.rng`),
+   so a manual `advance_*` still replays deterministically — but the live wall-clock pace
+   and player-timed choices mean a played session is no longer a strict seed replay.
+   The decision still *matters*; it just no longer waits forever.
 5. **Succession is a mechanic, not a screen transition.** Leader death/retirement,
    heir selection, and generational aging (§5.3) drive real gameplay stakes — new leaders
    bring different skills, and the player should feel the loss of a specialist captain.
@@ -200,10 +209,10 @@ refit economy that gives past success somewhere to go.*
   roughly **30–60 minutes** of real play: ~1 hour is a soft cap, and a run should *not* come
   in **under 30 minutes** — the only way a run ends sooner is game-over (extinction). Reached
   by tuning mission length (in-game years) against decision density (events, dilemmas) plus
-  the drydock phase — **not** by any real-time/background simulation, which stays a non-goal
-  (§12). Time still advances only on an explicit *Advance* (Pillar 4). A cosmetic wall-clock
-  run timer surfaces so the floor/cap can be measured and felt; the mission must be sized so
-  even brisk, decisive play cannot clear it in under ~30 minutes.
+  the drydock phase, **and** the real-time auto-advance cadence (`real_time.seconds_per_month`
+  × the 1×/2×/3× selector — Pillar 4, superseded). A cosmetic wall-clock run timer surfaces so
+  the floor/cap can be measured and felt; the mission must be sized so even brisk play at 3×
+  cannot clear it in under ~30 minutes.
 
 See PLAN.md "M4 — The Voyage-and-Return Refit Loop" for the code-grounded build order.
 
@@ -484,7 +493,7 @@ Interaction flow (mirrors `realmseed/gdd.md`'s numbered turn structure):
 | Cross-system messaging | `events` (`EventBus<UiAction>`) | Yes | Event/dilemma resolution, delegation toggles |
 | Palette | `colors` | Yes | Reuse the original's amber/green/red terminal palette values |
 | Vector/grid math | `math` | Maybe | Only if a literal starmap node layout is added |
-| Frame timing | `timing` | Yes | Standard frame loop only — no wall-clock gameplay ticking (Pillar 4) |
+| Frame timing | `timing` | Yes | Drives the real-time month auto-advance while under way (Pillar 4, superseded); frozen while docked |
 | Particles/juice | `fx` | Minimal | A terminal-log game has little use for particles; maybe subtle text-flicker/typewriter effects |
 | User settings | `settings` | Yes | Time-advance pace, delegation defaults |
 | Unlocks/achievements | `achievements` | Maybe | Could back Chronicle milestones |

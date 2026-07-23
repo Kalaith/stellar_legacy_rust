@@ -40,6 +40,19 @@ fn digit_pressed(index: usize) -> bool {
     is_key_pressed(key)
 }
 
+/// A stable key identifying the blocking council decision currently up, if any
+/// (`E:{template}` for an event, `D:{dilemma}` for a legacy dilemma). Drives both
+/// the typewriter reveal clock and the auto-resolve countdown (real-time loop §2).
+fn current_decision_key(sim: &SimState) -> Option<String> {
+    if let Some(p) = &sim.pending_event {
+        Some(format!("E:{}", p.template_id))
+    } else {
+        sim.pending_dilemma
+            .as_ref()
+            .map(|p| format!("D:{}", p.dilemma_id))
+    }
+}
+
 pub struct Game {
     data: GameData,
     state: GameState,
@@ -90,6 +103,15 @@ pub struct Game {
     capture_log_reveal: Option<f32>,
     /// One-shot power-on boot log shown before the menu on launch.
     boot: BootScreen,
+    /// Real-time auto-advance accumulator (real-time loop §1): real seconds banked
+    /// toward the next month tick while under way. Reset whenever time is not
+    /// advancing (docked, paused, blocked).
+    month_accumulator: f32,
+    /// The blocking decision the auto-resolve countdown is currently timing
+    /// (`E:{id}` / `D:{id}`), and the wall-clock it started at (real-time loop §2).
+    /// Reset when the pending decision changes.
+    decision_key: Option<String>,
+    decision_started: f64,
 }
 
 impl Game {
@@ -148,6 +170,9 @@ impl Game {
             instant_reveal: false,
             capture_log_reveal: None,
             boot: BootScreen::new(),
+            month_accumulator: 0.0,
+            decision_key: None,
+            decision_started: 0.0,
         }
     }
 
@@ -199,13 +224,89 @@ impl Game {
         if let Some(transition) = transition {
             self.transition(transition);
         }
+
+        // Drive real time last, once input has been applied (real-time loop §1/§2):
+        // auto-advance the month clock under way, or run the decision countdown.
+        self.update_realtime(dt);
+    }
+
+    /// The real-time driver (real-time loop §1/§2). While under way and unpaused,
+    /// bank real seconds toward the next month and step the tick each time the
+    /// per-month threshold is crossed, hard-stopping the moment a decision,
+    /// completion, or extinction lands. While a decision blocks, freeze the clock
+    /// and auto-resolve it once the countdown runs out. Docked, nothing advances.
+    /// Skipped entirely in capture mode (deterministic screenshots).
+    fn update_realtime(&mut self, dt: f32) {
+        if self.instant_reveal {
+            return;
+        }
+        let (is_gameplay, key, can_advance, multiplier) = match &self.state {
+            GameState::Gameplay(g) => {
+                let key = current_decision_key(&g.sim);
+                let can_advance = key.is_none()
+                    && !g.sim.dynasty.extinct
+                    && g.sim.contract.is_some()
+                    && g.sim.speed != crate::state::sim::GameSpeed::Paused;
+                (true, key, can_advance, g.sim.speed.multiplier())
+            }
+            _ => (false, None, false, 0.0),
+        };
+        if !is_gameplay {
+            self.decision_key = None;
+            self.month_accumulator = 0.0;
+            return;
+        }
+
+        // Track the countdown clock, restarting it whenever the decision changes.
+        if key != self.decision_key {
+            self.decision_key = key.clone();
+            self.decision_started = get_time();
+        }
+
+        if key.is_some() {
+            // A decision blocks time; let the clock decide once it runs out.
+            self.month_accumulator = 0.0;
+            let timeout = self.data.config.real_time.decision_timeout_secs as f64;
+            if get_time() - self.decision_started >= timeout {
+                self.auto_resolve_decision();
+            }
+            return;
+        }
+
+        if !can_advance {
+            self.month_accumulator = 0.0;
+            return;
+        }
+
+        self.month_accumulator += dt * multiplier;
+        let per_month = self.data.config.real_time.seconds_per_month.max(0.01);
+        while self.month_accumulator >= per_month {
+            self.month_accumulator -= per_month;
+            self.advance_one_month();
+            // Stop bursting months the instant something needs the player or the
+            // voyage ended; the remainder is dropped so it doesn't fast-forward on
+            // resume.
+            let stop = match &self.state {
+                GameState::Gameplay(g) => {
+                    g.sim.has_pending_decision()
+                        || g.sim.dynasty.extinct
+                        || g.sim.contract.is_none()
+                }
+                _ => true,
+            };
+            if stop {
+                self.month_accumulator = 0.0;
+                break;
+            }
+        }
     }
 
     /// Terminal-style keyboard navigation. On the menu, number keys pick a
     /// legacy, arrows move the selection, Enter begins the voyage. In gameplay,
     /// a blocking council modal takes the number keys for its options, otherwise
-    /// 1-6 switch screen tabs and Space/Enter advances the year. Suppressed while
-    /// the settings or help panel is up.
+    /// the number keys switch screen tabs. Time advances on its own (real-time
+    /// loop §1), so there is no manual step key. Suppressed while the settings or
+    /// help panel is up.
     fn gather_keyboard_actions(&mut self, actions: &mut Vec<UiAction>) {
         if self.settings_open || self.help_open {
             return;
@@ -261,13 +362,13 @@ impl Game {
             return;
         }
 
-        for (i, screen) in crate::state::Screen::ALL.iter().enumerate() {
+        // Number keys switch tabs within the current voyage state's set (real-time
+        // loop §5). Time advances on its own now — there is no manual step key.
+        let in_port = sim.contract.is_none();
+        for (i, screen) in crate::state::Screen::tabs(in_port).iter().enumerate() {
             if digit_pressed(i) {
                 actions.push(UiAction::SelectScreen(*screen));
             }
-        }
-        if is_key_pressed(KeyCode::Space) || is_key_pressed(KeyCode::Enter) {
-            actions.push(UiAction::Advance);
         }
     }
 
@@ -302,6 +403,7 @@ impl Game {
                     modal_reveal,
                     log_reveal,
                     run_clock: self.run_clock_for(&gameplay.sim),
+                    decision_remaining: self.decision_remaining(&gameplay.sim),
                 }),
             }
         };
@@ -386,16 +488,7 @@ impl Game {
             return f32::MAX;
         }
         let key = match &self.state {
-            GameState::Gameplay(g) => {
-                if let Some(p) = &g.sim.pending_event {
-                    Some(format!("E:{}", p.template_id))
-                } else {
-                    g.sim
-                        .pending_dilemma
-                        .as_ref()
-                        .map(|p| format!("D:{}", p.dilemma_id))
-                }
-            }
+            GameState::Gameplay(g) => current_decision_key(&g.sim),
             _ => None,
         };
         if key != self.modal_key {
@@ -429,6 +522,20 @@ impl Game {
     /// The cosmetic run timer's elapsed seconds (PLAN M4.7): live while a mission
     /// is active, frozen at the last mission's time while in port, and a fixed
     /// override in capture. Never feeds the deterministic sim.
+    /// Real seconds left before the current blocking decision auto-resolves
+    /// (real-time loop §2). Full timeout in capture (the clock never runs there);
+    /// 0 when nothing is pending.
+    fn decision_remaining(&self, sim: &SimState) -> f32 {
+        let timeout = self.data.config.real_time.decision_timeout_secs;
+        if self.instant_reveal {
+            return timeout;
+        }
+        if !sim.has_pending_decision() {
+            return 0.0;
+        }
+        (timeout - (get_time() - self.decision_started) as f32).max(0.0)
+    }
+
     fn run_clock_for(&self, sim: &SimState) -> Option<f32> {
         if let Some(secs) = self.capture_run_secs {
             return Some(secs);
