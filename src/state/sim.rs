@@ -413,6 +413,12 @@ pub struct SimState {
     /// a stage it already passed. 0 at launch.
     #[serde(default)]
     pub depopulation_beats_fired: u32,
+    /// Subsystem modules whose collapse beat the skeleton has already marked
+    /// (content-depth campaign-skeleton round 17): each listed module's red-line beat
+    /// fires once across the whole campaign, tracked by id, so a keystone repaired and
+    /// let collapse again does not re-mark a reckoning already had. Empty at launch.
+    #[serde(default)]
+    pub subsystem_beats_fired: Vec<String>,
     /// Consecutive years the food store has sat below the *lean* line (content-depth
     /// provisioning round 13): a rolling count of how long scarcity has ground on,
     /// reset the moment the larder recovers. It's what lets content tell a chronic
@@ -518,6 +524,7 @@ impl SimState {
             reputation_beat_band: 0,
             reputation_voice_band: 0,
             depopulation_beats_fired: 0,
+            subsystem_beats_fired: Vec::new(),
             lean_food_years: 0,
             fat_food_years: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),

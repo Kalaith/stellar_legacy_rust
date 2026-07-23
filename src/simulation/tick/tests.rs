@@ -543,6 +543,9 @@ fn contract_completes_at_target_duration() {
         .campaign_skeleton
         .power_transition_beat_family
         .clear();
+    // The subsystem-collapse beat (round 17) also ignores event chance; a full
+    // unrepaired voyage rots engineering past its red line, so clear it too.
+    data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -1083,6 +1086,57 @@ fn a_stability_beat_fires_as_the_ships_institutions_fail() {
 }
 
 #[test]
+fn a_subsystem_collapse_beat_fires_when_a_keystone_truly_fails() {
+    // Content-depth campaign-skeleton round 17: the first forced beat keyed to a
+    // *subsystem's condition*. With reactive rolls and the other threshold beats off,
+    // the only thing that can fire is the keystone-collapse beat — and it must, once
+    // the engineering bay rots past its red line, while a sound bay stays silent.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    let beat = data
+        .config
+        .campaign_skeleton
+        .subsystem_beats
+        .iter()
+        .find(|b| b.subsystem == "engineering_bay")
+        .expect("the engineering keystone should carry a collapse beat")
+        .clone();
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // A sound engineering bay: no keystone failure to mark.
+    sim.subsystems.get_mut("engineering_bay").unwrap().condition = beat.threshold + 0.3;
+    advance_year(&mut sim, &data);
+    assert!(
+        sim.subsystem_beats_fired.is_empty(),
+        "a sound keystone forces no collapse beat"
+    );
+
+    // The bay rots past its red line: the beat fires, and marks the module once.
+    sim.subsystems.get_mut("engineering_bay").unwrap().condition = beat.threshold - 0.02;
+    advance_year(&mut sim, &data);
+    assert!(
+        sim.subsystem_beats_fired
+            .contains(&"engineering_bay".to_string()),
+        "the keystone failing past its red line forces a beat"
+    );
+}
+
+#[test]
 fn a_loyalty_beat_fires_as_the_founders_covenant_lapses() {
     // Content-depth campaign-skeleton round 14: the last identity stat to get a
     // beat. With reactive rolls and the other threshold beats off, the only thing
@@ -1222,6 +1276,9 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
         .campaign_skeleton
         .power_transition_beat_family
         .clear();
+    // The subsystem-collapse beat (round 17) also ignores event chance; a full
+    // unrepaired voyage rots engineering past its red line, so clear it too.
+    data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -1302,6 +1359,9 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
         .campaign_skeleton
         .power_transition_beat_family
         .clear();
+    // The subsystem-collapse beat (round 17) also ignores event chance; a full
+    // unrepaired voyage rots engineering past its red line, so clear it too.
+    data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 

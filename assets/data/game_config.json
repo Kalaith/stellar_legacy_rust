@@ -213,7 +213,14 @@
     "homecoming_beat_family": "legacy_drift",
     "power_transition_beat_family": "legacy_drift",
     "anniversary_years": 100,
-    "anniversary_beat_family": "legacy_drift"
+    "anniversary_beat_family": "legacy_drift",
+    "subsystem_beats": [
+      {
+        "subsystem": "engineering_bay",
+        "threshold": 0.25,
+        "family": "engineering"
+      }
+    ]
   },
   "flavor": {
     "obituary": [

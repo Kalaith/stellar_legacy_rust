@@ -77,6 +77,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_crisis_beat(sim, data, &mut report)
             && !fire_loyalty_beat(sim, data, &mut report)
             && !fire_stability_beat(sim, data, &mut report)
+            && !fire_subsystem_beat(sim, data, &mut report)
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
@@ -307,6 +308,34 @@ fn fire_stability_beat(sim: &mut SimState, data: &GameData, report: &mut TickRep
         contract.stability_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.stability_beat_family, report);
+    true
+}
+
+/// Fire a subsystem-collapse beat (content-depth round 17): the first forced beat
+/// keyed to a *subsystem's condition* — the physical-crisis dimension the beat
+/// lattice never watched. The first tick a configured module's condition falls to or
+/// below its red line, a beat is forced from its family (a keystone that has truly
+/// failed is a defining voyage crisis, guaranteed a reckoning rather than left to a
+/// reactive roll). Campaign-scoped, once per module a voyage. Fires only during a
+/// voyage; at most one per month.
+fn fire_subsystem_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.subsystem_beats.is_empty() || sim.contract.is_none() {
+        return false;
+    }
+    let hit = cfg.subsystem_beats.iter().find(|b| {
+        !sim.subsystem_beats_fired.contains(&b.subsystem)
+            && sim
+                .subsystems
+                .get(&b.subsystem)
+                .is_some_and(|s| s.condition <= b.threshold)
+    });
+    let Some(beat) = hit else {
+        return false;
+    };
+    let family = beat.family.clone();
+    sim.subsystem_beats_fired.push(beat.subsystem.clone());
+    force_family_beat(sim, data, &family, report);
     true
 }
 

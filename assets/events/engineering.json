@@ -1030,6 +1030,111 @@
   ]
  },
  {
+  "id": "the_mending_lost",
+  "category": "generational_challenge",
+  "title": "The Mending Lost",
+  "description": "The engineering bay has fallen so far that the ship can no longer keep pace with its own decay. Every system now fails a shade faster than the workshop can mend it, and the machinists — who once could fix anything — spend their days choosing what to let die. A ship that cannot repair itself is a ship on a slow road to nowhere.",
+  "requires_decision": true,
+  "family": "engineering",
+  "condition_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.25
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_core",
+    "label": "Strip the ship to rebuild the core",
+    "description": "Tear down whole decks for their metal and their machines, and rebuild the one capability the ship cannot live without.",
+    "resource_delta": {
+     "credits": -800,
+     "minerals": -400
+    },
+    "ship_delta": {
+     "spare_parts": -20,
+     "hull_integrity": -0.05
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.35
+     }
+    ],
+    "log": "They gutted two sealed decks for their metal and their machines and poured all of it into the workshop, on the old law that you mend the tools before the work. The ship was smaller for it, and sound again where it mattered most: it could make and mend once more."
+   },
+   {
+    "id": "accept_the_decline",
+    "label": "Accept a ship that only wears down",
+    "description": "Stop pretending the bay will come back. Husband what still works and live within a margin that will only narrow.",
+    "population_delta": {
+     "morale": -0.05,
+     "adaptation": 0.05,
+     "cultural_drift": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.05
+     }
+    ],
+    "log": "The council stopped promising the bay would be whole again and taught the crew to live within a margin that would only ever narrow. It was an honest grief, and a kind of freedom: a people learning to want no more than a wearing ship could give."
+   }
+  ]
+ },
+ {
+  "id": "the_cannibalized_ship",
+  "category": "generational_challenge",
+  "title": "The Cannibalized Ship",
+  "description": "The bay is past whole repair with anything left in the stores, and the only parts of the right kind remaining aboard are inside the ship's own working systems. To keep the core alive, something else that still runs must be taken apart for its bones.",
+  "requires_decision": true,
+  "family": "engineering",
+  "min_generation": 4,
+  "condition_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.25
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "strip_a_redundant_system",
+    "label": "Cannibalize a redundant system",
+    "description": "Take apart something the ship can just about live without, and feed its parts to the core.",
+    "ship_delta": {
+     "spare_parts": 25
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.2
+     },
+     {
+      "id": "security",
+      "condition": -0.2
+     }
+    ],
+    "log": "They stripped the second security ring for its actuators and its clean-drives and fed the lot to the engineering bay. The corps grumbled at a watch-house half gone, but the workshop breathed again — and a ship that can mend itself can mend a watch-house later."
+   },
+   {
+    "id": "hold_what_remains",
+    "label": "Keep every system whole",
+    "description": "Refuse to trade one failing system for another. Let the bay stay crippled and hold the rest intact.",
+    "population_delta": {
+     "unity": 0.03,
+     "adaptation": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.03
+     }
+    ],
+    "log": "The engineers refused to eat the ship to feed the bay, and held every other system whole while the workshop stayed half-dead. It was a discipline of sorts — a people that would not rob Peter to pay Paul, even as both went hungry."
+   }
+  ]
+ },
+ {
   "id": "the_towline",
   "category": "immediate_crisis",
   "title": "The Tow-Line",

@@ -706,6 +706,27 @@ pub struct CampaignSkeletonConfig {
     /// The family an anniversary beat draws from.
     #[serde(default)]
     pub anniversary_beat_family: String,
+    /// Subsystem-collapse beats (content-depth round 17): the first forced skeleton
+    /// beat keyed to a *subsystem's condition* rather than a stat, time, phase, the
+    /// objective, or a political change — the physical-crisis dimension the beat
+    /// lattice never watched. The first tick a listed module's condition falls to or
+    /// below its red line, a beat is forced from its family: the ship reckoning with
+    /// a keystone that has *truly* failed, a guaranteed reckoning where before only a
+    /// reactive condition-gated event might (or might not) roll. Campaign-scoped —
+    /// fires once per module a voyage, tracked by id, so a repaired-then-re-collapsed
+    /// module does not re-mark. Empty = no subsystem beats.
+    #[serde(default)]
+    pub subsystem_beats: Vec<SubsystemBeat>,
+}
+
+/// One subsystem-collapse beat (content-depth campaign skeleton round 17): when the
+/// named module's `condition` first falls to or below `threshold`, a beat is forced
+/// from `family` — the physical-crisis trigger the beat lattice lacked.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SubsystemBeat {
+    pub subsystem: String,
+    pub threshold: f32,
+    pub family: String,
 }
 
 /// One step of the first-voyage checklist. The `id` binds it to a completion
@@ -1823,6 +1844,27 @@ mod tests {
                     .iter()
                     .all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton depopulation_beats must be within (0, 1]"
+            );
+        }
+        // Content-depth round 17: subsystem-collapse beats — each names a real
+        // module, a red line in (0, 1], and a family with events.
+        for beat in &sk.subsystem_beats {
+            assert!(
+                data.subsystems.get(&beat.subsystem).is_some(),
+                "campaign_skeleton subsystem_beat names unknown module '{}'",
+                beat.subsystem
+            );
+            assert!(
+                beat.threshold > 0.0 && beat.threshold <= 1.0,
+                "campaign_skeleton subsystem_beat '{}' threshold {} must be within (0, 1]",
+                beat.subsystem,
+                beat.threshold
+            );
+            assert!(
+                families.contains(&beat.family),
+                "campaign_skeleton subsystem_beat '{}' family '{}' has no events",
+                beat.subsystem,
+                beat.family
             );
         }
         // Content-depth round 9: objective-progress beats — mission-fraction
