@@ -1717,6 +1717,37 @@ mod tests {
     }
 
     #[test]
+    fn a_convergent_chain_needs_both_its_seeds_on_record() {
+        // Content-depth event families round 24: a payoff gated on TWO seed consequences.
+        // The Untethered reckons only for a ship that both let its founders go AND turned
+        // its purpose inward — closing two chains at once, and proving the AND semantics
+        // (one releasing is not enough).
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 55, &picks);
+        let tmpl = data.events.get("the_untethered").unwrap();
+        sim.dynasty.generation = 6; // clear the min_generation gate
+
+        // Neither releasing on record: barred.
+        assert!(
+            !passes_gate(&sim, tmpl),
+            "no releasing on record, no reckoning"
+        );
+        // Only one: still barred — this is an AND, not an OR.
+        sim.consequences.push("founding_let_go".to_string());
+        assert!(
+            !passes_gate(&sim, tmpl),
+            "one releasing alone is not enough"
+        );
+        // Both: the capstone opens.
+        sim.consequences.push("purpose_turned_inward".to_string());
+        assert!(
+            passes_gate(&sim, tmpl),
+            "both releasings on record open the untethered reckoning"
+        );
+    }
+
+    #[test]
     fn a_soft_ship_complication_rides_only_after_a_long_plenty() {
         // Content-depth event families round 23: the abundance twin of the lean-years
         // complication. Micrometeoroid Storm gains a twist that rides only on a crew

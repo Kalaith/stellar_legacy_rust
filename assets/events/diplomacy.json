@@ -1475,5 +1475,57 @@
     "log": "The ship ran dark and bluffed a strength it did not have, and the prowlers — bored or wary or merely elsewhere-bound — eventually fell away. It worked this time. The crew did not sleep well knowing how thin the watch that had held them was."
    }
   ]
+ },
+ {
+  "id": "the_watchers_return",
+  "category": "immediate_crisis",
+  "family": "diplomacy",
+  "title": "The Watchers Return",
+  "description": "They came back. The same scavengers — or their heirs, in the same battered hulls — that once shadowed this ship when its watch had gone thin, and were turned away not by strength but by a cold bluff run dark and quiet. They have not forgotten a hull they marked as soft, and this time they have brought company. They mean to find out whether the ship was bluffing.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "the_prowlers_probed"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "show_them_the_teeth_we_grew",
+    "label": "Show them the teeth we grew",
+    "description": "The years since bought guns and drills and a watch that is no longer a bluff. Meet the scavengers with the readiness they gambled the ship still lacked, and end the name for softness for good.",
+    "ship_delta": {
+     "spare_parts": -6
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.04
+     }
+    ],
+    "log": "The scavengers came to test a soft hull and found a hard one. What the ship had only pretended to be the first time it was, in truth, this time — and the shadows broke off for good, a name for softness spent and a name for teeth earned."
+   },
+   {
+    "id": "bluff_once_more",
+    "label": "Bluff once more",
+    "description": "There was never the will or the parts to arm in earnest, and there is not now. Run the same cold bluff a second time, and pray it holds against watchers who have come back precisely because they doubt it.",
+    "ship_delta": {
+     "hull_integrity": -0.08
+    },
+    "population_delta": {
+     "morale": -0.05,
+     "unity": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": -0.04
+     }
+    ],
+    "log": "The ship bluffed a strength it still did not have, and this time the watchers did not quite believe it — they took their toll on the hull before breaking off, and the crew understood that a third time would not be bluffed away."
+   }
+  ]
  }
 ]

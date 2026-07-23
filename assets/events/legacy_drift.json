@@ -2548,5 +2548,81 @@
     "log": "The ship let its void-born be void-born, at home where their elders had only ever been in transit — and gained, in the bargain, a crew wholly at peace with the only world it had, if a little further from the one it was bound for."
    }
   ]
+ },
+ {
+  "id": "the_untethered",
+  "category": "legacy_moment",
+  "family": "legacy_drift",
+  "title": "The Untethered",
+  "description": "Two great releasings, generations apart, have brought the ship to a strange freedom. It let its founders go — buried the last of them and stopped pretending to be their crew — and it turned its loyalty inward, to the living rather than to a chart drawn by the dead. What is left is a ship that answers to no one but itself: no covenant it must keep, no shore it must reach, no promise it is failing. A generation stands in that freedom and finds it is also a kind of vertigo. If the voyage is not for the founders and not for a fixed destination, then it is for whatever this crew decides — and nothing at all decides it for them.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "founding_let_go",
+   "purpose_turned_inward"
+  ],
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "choose_a_shore_of_our_own",
+    "label": "Choose a shore of our own",
+    "description": "Freedom is unbearable without a purpose to spend it on. Let the crew choose — argue, vote, commit — a destination of its own making, and bind the ship to a dream it authored rather than inherited.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "unity": 0.04,
+     "stability": 0.02
+    },
+    "log": "The untethered ship did the hardest thing a free people can: it chose. Out of argument and vote and long persuasion it named a destination of its own, and bound itself to a dream no founder had dreamed for it — its own, and the truer for that."
+   },
+   {
+    "id": "wander_free",
+    "label": "Wander free",
+    "description": "Refuse the tyranny of any destination. Let the ship be a people who go where they go, owing arrival to no one, at home in the going itself.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.04,
+     "morale": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship chose the open road over any shore — a people wholly of the void, bound for nowhere and at peace with it, the founders' fixed star traded for the whole sky."
+   }
+  ]
+ },
+ {
+  "id": "the_shore_declined",
+  "category": "generational_challenge",
+  "family": "legacy_drift",
+  "title": "The Shore Declined",
+  "description": "Long ago, at the midpoint of the crossing, this ship decided it was not a journey but a home — that the deck underfoot, and not some distant landfall, was the world. Now the landfall is real: the navigators have the destination close enough that a course-change would put boots on open ground within a generation. And the ship discovers it does not want to. The corridors that were meant to be endured have become beloved; the open sky the founders promised looks, to a people born to the hull, less like a destination than an eviction.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "the_voyage_became_home"
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "make_planetfall_anyway",
+    "label": "Make planetfall anyway",
+    "description": "Honour the founders' whole point, whatever the living feel. The ship was built to arrive; let it arrive, and let the void-born learn a sky.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.02,
+     "adaptation": -0.03,
+     "morale": -0.03
+    },
+    "log": "The ship kept the founders' faith over its own comfort and turned for the shore, carrying a reluctant people toward a world their grandparents had wanted and they themselves had never asked for."
+   },
+   {
+    "id": "sail_on_past",
+    "label": "Sail on past",
+    "description": "The home is here — in the hull, in each other. Log the shore, salute it, and keep flying. A people has the right to refuse a destiny chosen for it by the dead.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.04,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.05
+    },
+    "log": "The ship reached the founders' shore and sailed on past it, saluting the world it would not land on. The home was the hull now, and the people in it, and a destination is no destination when no one aboard wishes to arrive."
+   }
+  ]
  }
 ]
