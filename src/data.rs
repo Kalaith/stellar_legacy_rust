@@ -380,6 +380,16 @@ pub struct FlavorConfig {
     /// by year; empty falls back to silence.
     #[serde(default)]
     pub ship_mood_lifting: Vec<String>,
+    /// The ship's *political climate* crossing into broad discontent (content-depth
+    /// voice round 15): distinct from the crew's spirits — the peoples as a whole
+    /// growing restive about their treatment. No name; indexed by year; empty =
+    /// silence.
+    #[serde(default)]
+    pub polity_souring: Vec<String>,
+    /// The political climate crossing into broad ease (content-depth voice round
+    /// 15): the peoples as a whole settling, content with their lot. No name.
+    #[serde(default)]
+    pub polity_warming: Vec<String>,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month

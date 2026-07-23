@@ -381,6 +381,12 @@ pub struct SimState {
     /// launch; settling back to steady is silent but remembered.
     #[serde(default)]
     pub morale_band: i8,
+    /// The political-climate band the ship last announced (content-depth voice round
+    /// 15): the aggregate faction mood (`aboard_approval_mean`) as a band, so a ship
+    /// crossing *into* broad discontent or broad ease says so once. 0 (neutral) at
+    /// launch; a return to neutral is silent but remembered.
+    #[serde(default)]
+    pub polity_mood_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -488,6 +494,7 @@ impl SimState {
             event_fire_counts: HashMap::new(),
             last_dominant_faction: String::new(),
             morale_band: 0,
+            polity_mood_band: 0,
             depopulation_beats_fired: 0,
             lean_food_years: 0,
             fat_food_years: 0,

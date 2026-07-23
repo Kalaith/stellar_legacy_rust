@@ -298,6 +298,20 @@
       "A warmth has spread through the decks that no single feast explains — the accumulated weight of good years, felt at last as ease, the crew moving through its days gladder than it has been in a generation.",
       "The ship is happy this season, plainly and without apology. The work goes quicker for it, quarrels settle before they harden, and the founders, could they see it, would know their gamble had bought their heirs some joy."
     ],
+    "polity_souring": [
+      "A sourness has crept into the ship's politics of late. It is not one people aggrieved but most of them at once — a general, low-burning sense across the decks that the ship no longer looks after its own, that whoever is deciding things is not deciding them for us.",
+      "The peoples of the ship have grown restive together this season. The council chambers are louder and the corridors quieter, and there is a widely shared, rarely spoken conviction that the arrangement everyone lives under has stopped being fair.",
+      "Something has curdled in how the ship's peoples regard their governing. No single faction has raised a banner; it is subtler and worse than that — a broad, mutual withdrawal of goodwill, a whole polity deciding, quietly and separately, that it is owed better than it is getting.",
+      "A season of grievance has settled over the ship, and it belongs to everyone. The old accommodations between the peoples fray at once, each convinced the others are favored, none convinced the ship is being run for any of them.",
+      "The ship's politics have gone cold. Not to open quarrel — to something more corrosive: a general disaffection, peoples that no longer bother to feel aggrieved separately because they have all quietly agreed the whole ship is being mishandled."
+    ],
+    "polity_warming": [
+      "A rare ease has come over the ship's politics this season. The peoples, on the whole, feel themselves fairly dealt with — a broad, unshowy contentment that a ship earns only when most of its factions, most of the time, believe they are being looked after.",
+      "The old frictions between the peoples have gone quiet together. It is not that the differences are gone, only that a general goodwill has risen over them, a shared and mostly unspoken sense that the ship, this season, is being run for all of them.",
+      "Something has settled between the ship's peoples of late. The council works, the accommodations hold, and there is across the decks a widely felt fairness — the quiet civic weather of a polity that trusts, for now, that it is in good hands.",
+      "The ship's politics are warm this year in the way that asks no attention: no crisis averted, no grievance answered, just a broad and steady contentment among the peoples, each grudgingly satisfied the others are not being favored over them.",
+      "A season of civic ease has come to the ship. The peoples deal with one another and with the council in good faith, a whole polity relaxed for once into the rare belief that the ship is fair, and being run for the good of all who live on it."
+    ],
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

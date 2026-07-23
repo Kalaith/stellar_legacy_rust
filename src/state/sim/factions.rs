@@ -537,6 +537,33 @@ impl SimState {
         self.morale_band = band;
     }
 
+    /// Give the ship's *political climate* a voice (content-depth voice round 15):
+    /// distinct from the crew's spirits (`announce_ship_mood`) and from any one
+    /// people's mood (`announce_faction_moods`), this is the member-weighted mood of
+    /// the aboard peoples as a whole (it100's `aboard_approval_mean`) — how content
+    /// the polity is with its treatment. When it crosses *into* broad discontent or
+    /// broad ease, surface one pooled line, so a ship's peoples curdling or settling
+    /// together says so. Deterministic (indexed by year), no RNG; a return to
+    /// neutral is silent but remembered.
+    pub fn announce_polity_mood(&mut self, data: &GameData) {
+        let band = mood_band_for(self.aboard_approval_mean());
+        if band == self.polity_mood_band {
+            return;
+        }
+        let pool = match band {
+            -1 => &data.config.flavor.polity_souring,
+            1 => &data.config.flavor.polity_warming,
+            _ => {
+                self.polity_mood_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.polity_mood_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -1047,6 +1074,47 @@ mod tests {
         sim.announce_ship_mood(&data);
         assert_eq!(mood_lines(&sim), 2, "the ship lifting says so afresh");
         assert_eq!(sim.morale_band, 1);
+    }
+
+    #[test]
+    fn the_ships_political_climate_says_so_once_when_it_turns() {
+        // Content-depth voice round 15: the polity-mood voice. Distinct from the
+        // crew's spirits and from any one people's mood, this reads the aggregate
+        // mood of the aboard peoples. Crossing into broad discontent surfaces one
+        // pooled line; a return to broad ease gets its own, opposite line.
+        let (data, mut sim, _picks) = armed(23);
+        let polity_lines = |sim: &SimState| {
+            let sour = &data.config.flavor.polity_souring;
+            let warm = &data.config.flavor.polity_warming;
+            sim.log
+                .iter()
+                .filter(|l| sour.contains(&l.text) || warm.contains(&l.text))
+                .count()
+        };
+
+        // A fairly-treated polity (launch approvals 0.5) says nothing.
+        sim.announce_polity_mood(&data);
+        assert_eq!(polity_lines(&sim), 0, "a fairly-treated polity is silent");
+
+        // Sour every aboard people: the whole political climate curdles — one line.
+        for f in sim.factions.iter_mut().filter(|f| f.is_aboard()) {
+            f.approval = 0.15;
+        }
+        sim.announce_polity_mood(&data);
+        assert_eq!(polity_lines(&sim), 1, "the polity curdling says so once");
+        assert_eq!(sim.polity_mood_band, -1);
+
+        // Still sour next year — no reprint.
+        sim.announce_polity_mood(&data);
+        assert_eq!(polity_lines(&sim), 1, "staying sour is not re-announced");
+
+        // Win them all back: the climate turns to broad ease — a second, distinct line.
+        for f in sim.factions.iter_mut().filter(|f| f.is_aboard()) {
+            f.approval = 0.9;
+        }
+        sim.announce_polity_mood(&data);
+        assert_eq!(polity_lines(&sim), 2, "the polity settling says so afresh");
+        assert_eq!(sim.polity_mood_band, 1);
     }
 
     #[test]

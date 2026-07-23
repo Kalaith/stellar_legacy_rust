@@ -194,6 +194,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // crossing into restlessness or contentment says so in the log, once, so the
     // player feels the mood turn well before a withdrawal beat fires.
     sim.announce_faction_moods(data);
+    // …and give the ship's whole political climate a voice (content-depth voice
+    // round 15): when the aggregate mood of the peoples crosses into broad
+    // discontent or broad ease, the polity as a whole says so once — the ship-level
+    // companion to the per-faction and morale voices.
+    sim.announce_polity_mood(data);
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,
