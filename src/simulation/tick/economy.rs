@@ -193,6 +193,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     if habitat != 0.0 {
         sim.population.morale = (sim.population.morale + habitat).clamp(0.0, 1.0);
     }
+    // …and the ship's *cultural* life is the other pillar of its spirits (content-depth
+    // subsystems round 22): a living education/culture module — schools, arts, the
+    // year's festivals, the shared story — lifts morale the way a sound home does, and a
+    // hollowed-out one drags it, so a crew can be warm and fed and still grim. The
+    // cultural twin of the habitat morale swing, completing morale's environmental map.
+    let culture = subsystems::education_morale_effect(sim, data);
+    if culture != 0.0 {
+        sim.population.morale = (sim.population.morale + culture).clamp(0.0, 1.0);
+    }
 
     // The long lean wears the crew down (content-depth provisioning round 17): the
     // provisioning axis's first *systemic* coupling — where every prior scarcity

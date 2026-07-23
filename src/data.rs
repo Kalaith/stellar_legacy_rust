@@ -1798,6 +1798,13 @@ mod tests {
             "security_crisis_mitigation {} out of the gentle range [0, 0.3]",
             subs_cfg.security_crisis_mitigation
         );
+        // Content-depth subsystems round 22: the cultural morale swing is gentle, like
+        // the habitat one it mirrors — a pillar of spirits, not a lever that swamps them.
+        assert!(
+            (0.0..=0.05).contains(&subs_cfg.education_morale_swing),
+            "education_morale_swing {} out of the gentle range [0, 0.05]",
+            subs_cfg.education_morale_swing
+        );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(
                 subs_cfg.crisis_weight_floor > 0.0,

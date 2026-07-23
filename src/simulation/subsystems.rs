@@ -499,6 +499,27 @@ pub fn habitat_morale_effect(sim: &SimState, data: &GameData) -> f32 {
     }
 }
 
+/// Signed yearly morale shift from the state of the ship's *cultural* life
+/// (content-depth subsystems round 22): the education/culture module is the ship's
+/// schools, theatres, festival spaces, and living memory — the pillar of morale the
+/// habitat (the physical home) and the larder (nourishment) do not cover. A crew can
+/// be warm and well-fed and still grim if its cultural life has hollowed out (schools
+/// teaching rote, the arts forgotten, the year's festivals lapsed); a vivid one lifts
+/// spirits the way a good home does. `swing * (condition - 0.5)`, the cultural twin of
+/// `habitat_morale_effect`, reading education's *condition* (its facilities functioning)
+/// — distinct from its *knowledge* (the founding remembered), which resists drift (it).
+/// 0 when the module is gone.
+pub fn education_morale_effect(sim: &SimState, data: &GameData) -> f32 {
+    let swing = data.config.subsystems.education_morale_swing;
+    if swing == 0.0 {
+        return 0.0;
+    }
+    match sim.subsystems.get("education_culture") {
+        Some(s) => swing * (s.condition - 0.5),
+        None => 0.0,
+    }
+}
+
 /// Multiplier on the dynasty's yearly renewal from the habitat's condition
 /// (content-depth subsystems round 19): a home kept sound raises the young on
 /// schedule (factor 1.0), a failing one sees fewer come of age
@@ -565,6 +586,44 @@ mod tests {
             habitat_morale_effect(&sim, &data),
             0.0,
             "a middling home neither lifts nor drags"
+        );
+    }
+
+    #[test]
+    fn a_living_culture_lifts_morale_and_a_hollow_one_drags_it() {
+        // Content-depth subsystems round 22: the ship's cultural life is a pillar of
+        // morale beside the physical home — a vivid education/culture module lifts
+        // spirits, a hollowed-out one drags them, a middling one does neither.
+        let (data, mut sim) = campaign(19);
+        assert!(
+            data.config.subsystems.education_morale_swing > 0.0,
+            "this test needs the cultural morale coupling enabled"
+        );
+
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .condition = 1.0;
+        assert!(
+            education_morale_effect(&sim, &data) > 0.0,
+            "a living culture lifts the ship's spirits"
+        );
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .condition = 0.1;
+        assert!(
+            education_morale_effect(&sim, &data) < 0.0,
+            "a hollowed-out cultural life drags the ship's spirits down"
+        );
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .condition = 0.5;
+        assert_eq!(
+            education_morale_effect(&sim, &data),
+            0.0,
+            "a middling cultural life neither lifts nor drags"
         );
     }
 

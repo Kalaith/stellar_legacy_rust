@@ -143,6 +143,14 @@ pub struct SubsystemsConfig {
     /// 0 = the habitat's state does not touch morale.
     #[serde(default)]
     pub habitat_morale_swing: f32,
+    /// How much the ship's *cultural* life moves morale each year (content-depth
+    /// subsystems round 22): the cultural twin of `habitat_morale_swing`. The
+    /// education/culture module's *condition* — its schools, arts, and festivals
+    /// functioning — lifts spirits above the midpoint and drags them below it, the
+    /// morale pillar the physical home and the larder do not cover. Applied as
+    /// `swing * (condition - 0.5)`. 0 = the ship's cultural life does not touch morale.
+    #[serde(default)]
+    pub education_morale_swing: f32,
     /// How much a *degraded* habitat slows the dynasty's yearly renewal (content-depth
     /// subsystems round 19 — the habitat's coupling to the real-time-loop birth model):
     /// the life-support/habitat is where families are raised, so a home kept sound
