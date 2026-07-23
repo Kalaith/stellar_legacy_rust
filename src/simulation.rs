@@ -8,6 +8,7 @@ pub mod crew;
 pub mod event_resolver;
 pub mod legacy;
 pub mod market;
+pub mod mortality;
 pub mod ship;
 pub mod subsystems;
 pub mod succession;

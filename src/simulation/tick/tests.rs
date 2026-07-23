@@ -1854,12 +1854,14 @@ fn a_depopulation_beat_fires_as_the_crew_thins() {
         "crossing the first fraction marks the thinning"
     );
 
-    // Resolve whatever it surfaced; still at the same stage, no re-mark
+    // Resolve whatever it surfaced, then pin the crew back to the same stage (the
+    // resolution may itself cost lives); staying at one stage must not re-mark it
     // (campaign-scoped counter).
     if let Some(p) = sim.pending_event.clone() {
         let t = data.events.get(&p.template_id).cloned().unwrap();
         crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
     }
+    sim.population.count = (first * founding as f32) as u32 - 1;
     advance_year(&mut sim, &data);
     assert_eq!(
         sim.depopulation_beats_fired, 1,
@@ -1982,6 +1984,51 @@ fn fuel_is_spent_in_travel_but_not_on_station() {
     sim.contract.as_mut().unwrap().months_elapsed = 110 * 12; // end of Travel
     advance_months(&mut sim, &data, 1);
     assert_eq!(sim.ship.fuel, 1.0, "on-station months burn no fuel");
+}
+
+#[test]
+fn characters_age_die_and_the_line_renews_over_a_long_voyage() {
+    // Real-time loop follow-up: aging is yearly, death is a monthly age-scaled
+    // roll, and yearly births keep the line viable. Over a long crossing the
+    // founders pass on, leadership changes hands, new members come of age, and
+    // the dynasty survives — always led while anyone lives.
+    let (data, mut sim) = provisioned(3, 1.0);
+    let founder_id = sim.dynasty.leader().unwrap().id;
+    let founding_next_id = sim.dynasty.next_member_id;
+    let founding_ages: Vec<u32> = sim.dynasty.members.iter().map(|m| m.age).collect();
+
+    for _ in 0..(120 * 12) {
+        sim.pending_event = None;
+        sim.pending_dilemma = None;
+        advance_months(&mut sim, &data, 1);
+        if sim.dynasty.extinct {
+            break;
+        }
+    }
+
+    assert!(
+        !sim.dynasty.extinct,
+        "a renewing line survives the crossing"
+    );
+    assert!(
+        sim.dynasty.leader().is_some(),
+        "a living dynasty is always led"
+    );
+    assert_ne!(
+        sim.dynasty.leader().unwrap().id,
+        founder_id,
+        "the founding leader did not reign for 120 years"
+    );
+    assert!(
+        sim.dynasty.next_member_id > founding_next_id,
+        "new members came of age to renew the line"
+    );
+    // The surviving members are not the founding cohort frozen in time.
+    let current_ages: Vec<u32> = sim.dynasty.members.iter().map(|m| m.age).collect();
+    assert_ne!(
+        current_ages, founding_ages,
+        "the roster aged and turned over"
+    );
 }
 
 #[test]

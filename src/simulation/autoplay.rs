@@ -552,6 +552,10 @@ mod tests {
             sim.resources.food = 10_000_000;
             sim.ship.fuel = fuel;
             while sim.month_clock < 50 * 12 {
+                // Clear any beat-forced decision so the calendar keeps moving
+                // uninterrupted — this test measures fuel/stall, not choices.
+                sim.pending_event = None;
+                sim.pending_dilemma = None;
                 advance_months(&mut sim, &data, 120);
             }
             (

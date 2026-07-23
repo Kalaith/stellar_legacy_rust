@@ -121,6 +121,11 @@ pub struct Dynasty {
     /// next succession if still living and age-eligible.
     #[serde(default)]
     pub designated_heir: Option<u32>,
+    /// Young adults who have come of age since the last generational beat
+    /// (real-time loop follow-up): births are yearly now, but the coming-of-age
+    /// line is still logged once a generation, reporting this running tally.
+    #[serde(default)]
+    pub births_this_generation: u32,
     /// Set when a generation tick finds no leader and no eligible heir.
     pub extinct: bool,
 }
@@ -674,6 +679,7 @@ fn founding_dynasty(data: &GameData, legacy_id: &str, rng: &mut SeededRng) -> Dy
         next_member_id: 0,
         members: Vec::new(),
         designated_heir: None,
+        births_this_generation: 0,
         extinct: false,
     };
 

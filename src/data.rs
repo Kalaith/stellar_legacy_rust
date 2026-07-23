@@ -189,6 +189,8 @@ pub struct GameConfig {
     /// voice iteration).
     pub flavor: FlavorConfig,
     pub crew: CrewConfig,
+    /// Per-character aging + death (real-time loop follow-up).
+    pub mortality: MortalityConfig,
     pub failure_risk: FailureRiskConfig,
     pub ship: ShipConfig,
     /// Per-year population drift over a voyage (PLAN M4.1).
@@ -374,6 +376,11 @@ pub struct FlavorConfig {
     /// the built-in line so the ending is never blank.
     #[serde(default)]
     pub extinction: Vec<String>,
+    /// A serving officer dies at their post (real-time loop follow-up: characters
+    /// age and die on a monthly roll, not only at generation ticks). Placeholders
+    /// `{name}`, `{post}`. Indexed by the officer's id; empty falls back.
+    #[serde(default)]
+    pub crew_death: Vec<String>,
     /// A starving year (content-depth voice round 6): fires once per *year* the
     /// larder is empty, so a multi-year famine needs variety or it reprints one
     /// line. Placeholder: `{losses}`. Indexed by year; empty falls back.
@@ -838,6 +845,38 @@ pub struct CrewConfig {
     pub retirement_age: u32,
     /// Security-chief unity recovery only applies below this ceiling.
     pub unity_recovery_ceiling: f32,
+}
+
+/// Per-character mortality (real-time loop follow-up: characters age and die).
+/// Aging is a shared "Founding Day" event — everyone gains a year on the last
+/// day of the year, whatever their true birthdate — but *death* is a monthly
+/// roll whose odds climb with age: a flat accident chance at any age, plus an
+/// age-scaled term that switches on past `onset_age` and doubles every
+/// `doubling_years`. Certain at `member_max_age`. A heavy population-loss event
+/// can also claim a named crew officer or relative.
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub struct MortalityConfig {
+    /// Age past which the age-scaled monthly death term switches on.
+    pub onset_age: u32,
+    /// Monthly death chance at `onset_age` (before the accident floor).
+    pub monthly_base_chance: f32,
+    /// Years over which the age-scaled term doubles.
+    pub doubling_years: f32,
+    /// Flat monthly death chance at any age (accidents, mishaps).
+    pub monthly_accident_chance: f32,
+    /// A population loss of at least this many souls in one outcome may also
+    /// take a named character.
+    pub event_death_loss_threshold: u32,
+    /// Chance a qualifying population-loss event claims a named character.
+    pub event_death_chance: f32,
+    /// The dynasty size the line renews toward. Each Founding Day, while the
+    /// dynasty sits below this and has at least two members to carry it on, new
+    /// young adults come of age (see `annual_birth_chance`) — the counterweight to
+    /// the death roll, so a healthy line churns individuals without dying out.
+    pub dynasty_target_size: u32,
+    /// Per open slot below `dynasty_target_size`, the yearly chance a new young
+    /// adult comes of age. Higher fills a depleted line back up faster.
+    pub annual_birth_chance: f32,
 }
 
 /// Thresholds and point values for the §5.5 failure-risk formula. Drift and

@@ -276,6 +276,12 @@
       "No burn this year. The ship drifted on momentum alone while its systems wore at the no-fuel rate.",
       "The dry tanks held the ship becalmed a year longer, every deck a degree colder than the last."
     ],
+    "crew_death": [
+      "{name}, the ship's {post}, died at their post; the roster is one name shorter tonight.",
+      "Age caught up with {name}; the {post}'s watch falls to whoever the ship can spare.",
+      "The {post} {name} was carried from the bridge for the last time — a life spent, and a post gone cold.",
+      "{name} did not wake for the morning watch. The {post}'s duties wait now on a successor."
+    ],
     "fuel_gain": [
       "Scanners flagged a drifting ice fragment on the approach; the reclaimers rendered it down to reaction mass. (+{amount} fuel)",
       "The ramscoop threaded a denser pocket of the interstellar medium these past years — a steady haul of volatiles for the tanks. (+{amount} fuel)",
@@ -486,6 +492,16 @@
     "recruit_age_max": 40,
     "retirement_age": 68,
     "unity_recovery_ceiling": 0.6
+  },
+  "mortality": {
+    "onset_age": 50,
+    "monthly_base_chance": 0.005,
+    "doubling_years": 10.0,
+    "monthly_accident_chance": 0.0002,
+    "event_death_loss_threshold": 60,
+    "event_death_chance": 0.2,
+    "dynasty_target_size": 8,
+    "annual_birth_chance": 0.35
   },
   "failure_risk": {
     "drift_threshold": 0.7,

@@ -172,22 +172,6 @@ pub fn unity_recovery(sim: &SimState, data: &GameData) -> f32 {
         .sum()
 }
 
-/// Age the crew on a generation boundary; officers past retirement stand
-/// down and their posts fall vacant. Returns the names of the retired.
-pub fn process_generation(sim: &mut SimState, data: &GameData) -> Vec<String> {
-    let interval = data.config.generation_interval_years;
-    let retirement = data.config.crew.retirement_age;
-    for member in &mut sim.crew {
-        member.age += interval;
-    }
-    let (serving, retired): (Vec<_>, Vec<_>) = sim
-        .crew
-        .drain(..)
-        .partition(|member| member.age <= retirement);
-    sim.crew = serving;
-    retired.into_iter().map(|m| m.name).collect()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -293,13 +277,18 @@ mod tests {
     }
 
     #[test]
-    fn officers_retire_on_generation_boundaries() {
+    fn officers_retire_when_aging_past_their_term() {
         let (data, mut sim) = fresh(7);
         let posts_before = sim.crew.len();
-        sim.crew[0].age = data.config.crew.retirement_age; // retires after +25
-        let retired = process_generation(&mut sim, &data);
-        assert_eq!(retired.len(), 1);
-        assert_eq!(sim.crew.len(), posts_before - 1);
+        // One year short of retirement: Founding Day tips them over, and they
+        // stand down (a vacancy, not a death).
+        sim.crew[0].age = data.config.crew.retirement_age;
+        crate::simulation::mortality::annual_aging(&mut sim, &data);
+        assert_eq!(
+            sim.crew.len(),
+            posts_before - 1,
+            "the over-age officer retires"
+        );
         for member in &sim.crew {
             assert!(member.age <= data.config.crew.retirement_age);
         }

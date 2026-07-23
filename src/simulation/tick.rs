@@ -14,7 +14,7 @@ mod tests;
 use crate::data::contracts::ContractPhase;
 use crate::data::GameData;
 use crate::simulation::contract::SuccessLevel;
-use crate::simulation::{contract, event_resolver, ship};
+use crate::simulation::{contract, event_resolver, mortality, ship};
 use crate::state::sim::SimState;
 
 /// Everything a single year produced that the caller (game.rs) must react
@@ -61,6 +61,13 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
         // Monthly contract progress (W2): objective accrual on-station, the
         // authored phase timeline, milestones, and completion all step here.
         month_of_contract(sim, data, &mut report);
+
+        // Monthly death roll (real-time loop follow-up): every living character
+        // faces an age-scaled chance of death, and a vacated seat is filled. An
+        // extinction ends the run — surface it so the loop hard-stops below.
+        if mortality::monthly_tick(sim, data) {
+            report.dynasty_extinct = true;
+        }
 
         // Monthly event step (GDD §5.4), dated to this exact month. Skipped on a
         // month that already produced a blocking dilemma, a completion, or an

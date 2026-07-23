@@ -516,6 +516,10 @@ pub fn apply_outcome(
     sim.resources.apply(&resource_delta);
     sim.ship.apply(&ship_delta);
     sim.population.apply(&population_delta);
+    // A heavy toll may also take a named character (real-time loop follow-up:
+    // "a random chance of dying … especially due to an event").
+    let population_lost = (-population_delta.count).max(0) as u32;
+    crate::simulation::mortality::event_claim(sim, data, population_lost);
     sim.consequences
         .extend(outcome.long_term_consequences.iter().cloned());
     // …and nudge the ship's cumulative character (content-depth round 16): many

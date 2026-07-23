@@ -286,17 +286,34 @@ more contract *content* (objective-specific milestones/risks — currently 2 bas
 
 ### 5.3 Dynasty & Succession
 
+~~Every 25 years members age by 25, elders past `member_max_age` pass on, a leader past
+70 hands off, and 1-3 new members join.~~ **Superseded (real-time loop): aging and death
+are now continuous.**
+
 ```text
-every 25 years:
-  each dynasty member ages += 25
-  if leader.age > 70:
-      successor = eligible member (age 30-50) with highest leadership skill
-      leader = successor
-  add 1-3 new young members to the dynasty
+Founding Day (each year-end): everyone shares one birthday, whatever their true
+  birthdate — every living dynasty member and crew officer ages += 1. Officers past
+  their term (68) stand down; a line below its target size (8), with ≥2 members left
+  to carry it on, sees young adults come of age (annual_birth_chance per open slot).
+
+Each month (mortality::monthly_tick): every character faces a death roll —
+  chance = accident_floor + (age >= 50 ? base * 2^((age-50)/doubling) : 0), certain
+  at member_max_age (90). A dead leader (or one past 70 with an heir ready) hands off
+  to the eligible heir (age 30-50, highest leadership; designated heir first; failing
+  the band, the best survivor — a ship is never uncaptained while anyone lives).
+  The last of the line gone = extinction (§7).
+
+Plus: a heavy population-loss event may claim a named crew officer or relative
+  (mortality::event_claim).
 ```
 
-Kept as-is — simple, legible, and already produces the "leaders retire, heirs inherit"
-pillar from the original pitch. This is the mechanical heart of "Generational Command."
+The lore: on a sealed generation ship the calendar, not the cradle, marks the years —
+so **everyone celebrates on Founding Day** and ages together. Death, though, comes when
+it comes, a low monthly hazard that climbs with age. Continuous mortality means the crew
+the player commands genuinely turns over across a centuries-long voyage; the yearly
+renewal is its counterweight, and a line worn down faster than it renews dies out. This
+is the mechanical heart of "Generational Command." All rolls flow through the seeded RNG,
+so a hand-stepped `advance_*` still replays — but the live real-time run does not (§Pillar 4).
 
 ### 5.4 Event System
 

@@ -4,8 +4,8 @@
 //! out of `tick.rs` to keep the advance loop readable and the file under the
 //! size limit.
 
-use crate::data::{FlavorConfig, GameData, PopulationDelta, ResourceDelta};
-use crate::simulation::{crew, legacy, market, ship, subsystems, succession};
+use crate::data::{GameData, PopulationDelta, ResourceDelta};
+use crate::simulation::{crew, legacy, market, mortality, ship, subsystems, succession};
 use crate::state::sim::SimState;
 
 use super::TickReport;
@@ -268,82 +268,57 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // voices above.
     sim.announce_stability_mood(data);
 
-    // Generational tick (GDD §5.3).
+    // Founding Day (real-time loop follow-up): everyone gains a year at once, and
+    // any officer aged past their term stands down. Aging is yearly; death is the
+    // separate monthly roll in `mortality::monthly_tick` (driven from the tick).
+    mortality::annual_aging(sim, data);
+
+    // Generational renewal (GDD §5.3): every interval a new cohort comes of age.
+    // Aging, death, and succession are continuous now and live in `mortality`;
+    // this tick only adds the young and runs the once-a-generation beats.
     sim.dynasty.years_since_generation += 1;
-    if sim.dynasty.years_since_generation >= config.generation_interval_years {
-        let base_index = sim.dynasty.generation as usize;
-        for (i, name) in crew::process_generation(sim, data).into_iter().enumerate() {
-            // Data-driven so several retirements a generation don't reprint one
-            // line (content-depth voice round 5); index by holder so they vary.
-            let line =
-                FlavorConfig::line_with_name(&data.config.flavor.retirement, base_index + i, &name)
-                    .unwrap_or_else(|| format!("{name} stood down from their post."));
-            sim.push_log(line);
-        }
-        let generation = succession::process_generation(sim, data);
+    if !sim.dynasty.extinct
+        && sim.dynasty.years_since_generation >= config.generation_interval_years
+    {
+        let births = succession::process_generation(sim, data);
         let gen_index = sim.dynasty.generation as usize;
         let flavor = &data.config.flavor;
-        for (i, name) in generation.deaths.iter().enumerate() {
-            if let Some(line) = FlavorConfig::line_with_name(&flavor.obituary, gen_index + i, name)
-            {
-                sim.push_log(line);
-            }
-        }
-        if let Some(name) = &generation.new_leader {
-            if let Some(line) = FlavorConfig::line_with_name(&flavor.succession, gen_index, name) {
-                sim.push_log(line);
-            }
-        }
-        if generation.births > 0 {
+        if births > 0 && !flavor.coming_of_age.is_empty() {
             let pool = &flavor.coming_of_age;
-            if !pool.is_empty() {
-                let line = pool[gen_index % pool.len()]
-                    .replace("{generation}", &sim.dynasty.generation.to_string())
-                    .replace("{births}", &generation.births.to_string());
-                sim.push_log(line);
-            }
-        }
-        if generation.extinct {
-            let line = FlavorConfig::line_with_name(&flavor.extinction, gen_index, "")
-                .unwrap_or_else(|| "The dynasty has no heirs. The line ends here.".to_owned());
+            let line = pool[gen_index % pool.len()]
+                .replace("{generation}", &sim.dynasty.generation.to_string())
+                .replace("{births}", &births.to_string());
             sim.push_log(line);
-            report.dynasty_extinct = true;
         }
 
         // Each people's numbers wax or wane over the generations (content-depth
         // factions round 11): the balance of power shifts, so which people runs
         // the ship can change mid-voyage. Applied before assimilation, so a people
         // that dwindles far enough can then be folded into a larger one.
-        if !generation.extinct {
-            sim.apply_faction_demographic_drift(data);
-        }
+        sim.apply_faction_demographic_drift(data);
 
         // A generation of drift can quietly fold a dwindling faction into a
         // larger one (W7 soft assimilation).
-        if !generation.extinct {
-            sim.assimilate_drifted_factions(data);
-            // Knowledge dies with the people; the education subsystem passes it
-            // forward (W5). A generation with no schooling loses expertise.
-            subsystems::transmit_knowledge(sim, data);
-        }
+        sim.assimilate_drifted_factions(data);
+        // Knowledge dies with the people; the education subsystem passes it
+        // forward (W5). A generation with no schooling loses expertise.
+        subsystems::transmit_knowledge(sim, data);
 
         // Each new generation may confront its legacy's defining dilemma
         // (GDD §5.5). Dilemmas always block — they are never delegated.
-        if !generation.extinct {
-            if let Some(pending) = legacy::roll_dilemma(sim, data) {
-                if let Some(dilemma) = data
-                    .legacies
-                    .get(&sim.legacy.legacy_id)
-                    .and_then(|l| l.dilemmas.iter().find(|d| d.id == pending.dilemma_id))
-                {
-                    sim.push_log(format!(
-                        "The new generation faces a reckoning: {}",
-                        dilemma.title
-                    ));
-                }
-                sim.pending_dilemma = Some(pending);
-                report.decision_required = true;
+        if let Some(pending) = legacy::roll_dilemma(sim, data) {
+            if let Some(dilemma) = data
+                .legacies
+                .get(&sim.legacy.legacy_id)
+                .and_then(|l| l.dilemmas.iter().find(|d| d.id == pending.dilemma_id))
+            {
+                sim.push_log(format!(
+                    "The new generation faces a reckoning: {}",
+                    dilemma.title
+                ));
             }
+            sim.pending_dilemma = Some(pending);
+            report.decision_required = true;
         }
     }
 
