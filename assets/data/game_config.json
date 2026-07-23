@@ -60,6 +60,8 @@
     "proud_tender_approval_threshold": 0.7,
     "proud_tender_condition_bonus": 0.01,
     "proud_tender_knowledge_bonus": 0.005,
+    "rival_unity_friction": 0.03,
+    "ally_unity_solidarity": 0.02,
     "approval_growth_factor": 0.04,
     "rival_approval_spillover": 0.3,
     "ally_approval_spillover": 0.2,

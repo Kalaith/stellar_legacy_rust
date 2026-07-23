@@ -167,6 +167,13 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         let mood = sim.aboard_approval_mean();
         sim.population.unity = (sim.population.unity + cohesion * (mood - 0.5)).clamp(0.0, 1.0);
     }
+    // …and whether the aboard peoples *get along* touches cohesion too (content-depth
+    // factions round 23): where the coupling above reads how *content* they are, this
+    // reads how they stand *to each other* — two large aboard rivals sharing a hull
+    // grind at unity year over year (a standing friction, not only the it14 event-time
+    // spillover), while an aboard allied bloc lifts it. So the *composition* of the
+    // roster, not just its mood, is a standing cohesion cost or dividend.
+    sim.apply_faction_relationship_cohesion(data);
 
     // A divided ship is harder to govern (content-depth factions round 18): where the
     // approval→unity coupling reads how *content* the peoples are, this reads how

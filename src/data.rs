@@ -2396,6 +2396,13 @@ mod tests {
                 "proud-tender upkeep must be a gentle yearly dividend, not a rebuild"
             );
         }
+        // Content-depth factions round 23: the standing rival/ally cohesion pressures are
+        // gentle yearly drifts (scaled further down by the product of two shares), not
+        // levers that swing unity in a season.
+        assert!(
+            fac_cfg.rival_unity_friction <= 0.1 && fac_cfg.ally_unity_solidarity <= 0.1,
+            "rival/ally unity pressures must be gentle yearly drifts"
+        );
         // Content-depth voice round 2: if ambient flavor is switched on, it needs
         // lines to draw from.
         if fl.ambient_gap_years > 0 {

@@ -421,6 +421,55 @@ impl SimState {
         }
     }
 
+    /// Move the ship's `unity` by how the aboard peoples stand *to each other*
+    /// (content-depth factions round 23): the relationship-side twin of the it100
+    /// approval→unity coupling. Where that reads how *content* the peoples are, this
+    /// reads their *standing relationships* — a pair of aboard **rivals** (it14) both
+    /// holding real shares of the ship grind at cohesion year over year (a permanent
+    /// friction, distinct from the event-time approval spillover), while a pair of
+    /// aboard **allies** (it17) lift it. Each contribution scales by the *product* of the
+    /// two peoples' shares, so a rivalry only bites when both parties are large — a tiny
+    /// remnant faction troubles no one — and the balance of the whole roster, not just
+    /// its mood, becomes a standing cohesion cost or dividend. Deterministic, no RNG;
+    /// pairs are read symmetrically (both directions), the tuning constants absorbing it.
+    pub fn apply_faction_relationship_cohesion(&mut self, data: &GameData) {
+        let cfg = data.config.factions;
+        if cfg.rival_unity_friction <= 0.0 && cfg.ally_unity_solidarity <= 0.0 {
+            return;
+        }
+        let total: u32 = self
+            .factions
+            .iter()
+            .filter(|f| f.is_aboard())
+            .map(|f| f.members)
+            .sum();
+        if total == 0 {
+            return;
+        }
+        let share = |id: &str| -> f32 {
+            self.factions
+                .iter()
+                .find(|f| f.faction_id == id && f.is_aboard())
+                .map_or(0.0, |f| f.members as f32 / total as f32)
+        };
+        let mut net = 0.0f32;
+        for fstate in self.factions.iter().filter(|f| f.is_aboard()) {
+            let Some(def) = data.factions.get(&fstate.faction_id) else {
+                continue;
+            };
+            let share_f = fstate.members as f32 / total as f32;
+            for rival in &def.rivals {
+                net -= cfg.rival_unity_friction * share_f * share(rival);
+            }
+            for ally in &def.allies {
+                net += cfg.ally_unity_solidarity * share_f * share(ally);
+            }
+        }
+        if net != 0.0 {
+            self.population.unity = (self.population.unity + net).clamp(0.0, 1.0);
+        }
+    }
+
     /// Sour the aboard rivals of any people an event just favored (content-depth
     /// factions round 14): each positive approval gain spills a fraction of its
     /// resentment onto the favored people's aboard rivals, so favoring one people
@@ -1681,6 +1730,63 @@ mod tests {
             "the government steadying says so afresh"
         );
         assert_eq!(sim.stability_voice_band, 1);
+    }
+
+    #[test]
+    fn aboard_rivals_grind_at_cohesion_and_allies_lift_it() {
+        // Content-depth factions round 23: the relationship-side twin of the mood→unity
+        // coupling. Two large aboard rivals wear at cohesion year over year; a large
+        // aboard allied bloc lifts it.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.rival_unity_friction > 0.0,
+            "this test needs the relationship-cohesion coupling enabled"
+        );
+
+        // Two named peoples, evenly large, and nothing else aboard — so only their
+        // mutual relationship counts. Returns the one-year unity delta.
+        let run = |a: &str, b: &str| -> f32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                8,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.population.unity = 0.6;
+            sim.factions = vec![
+                FactionState {
+                    faction_id: a.to_string(),
+                    members: 500,
+                    status: FactionStatus::Aboard,
+                    approval: 0.5,
+                    mood_band: 0,
+                },
+                FactionState {
+                    faction_id: b.to_string(),
+                    members: 500,
+                    status: FactionStatus::Aboard,
+                    approval: 0.5,
+                    mood_band: 0,
+                },
+            ];
+            let before = sim.population.unity;
+            sim.apply_faction_relationship_cohesion(&data);
+            sim.population.unity - before
+        };
+
+        // The Ascension and the Keepers are rivals: their sharing a hull grinds unity.
+        let rival_delta = run("ascension_circle", "first_flame");
+        assert!(
+            rival_delta < 0.0,
+            "two large aboard rivals wear at unity ({rival_delta})"
+        );
+        // The Hearth and the Kin are allies: their bloc lifts unity.
+        let ally_delta = run("hearth_union", "verdant_kin");
+        assert!(
+            ally_delta > 0.0,
+            "a large aboard allied bloc lifts unity ({ally_delta})"
+        );
     }
 
     #[test]

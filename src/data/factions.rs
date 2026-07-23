@@ -163,6 +163,18 @@ pub struct FactionConfig {
     /// kinships do not spill over.
     #[serde(default)]
     pub ally_approval_spillover: f32,
+    /// Unity ground away per year by a pair of aboard *rivals* (content-depth factions
+    /// round 23): the standing friction of two quarreling peoples sharing one hull, the
+    /// permanent twin of the it14 event-time spillover. Scaled by the *product* of the
+    /// two peoples' shares of the ship, so a rivalry bites only when both are large.
+    /// 0 = rivalries carry no standing cohesion cost.
+    #[serde(default)]
+    pub rival_unity_friction: f32,
+    /// Unity lifted per year by a pair of aboard *allies* (content-depth factions round
+    /// 23): the positive mirror — the standing solidarity of an aboard allied bloc,
+    /// scaled by the product of their shares. 0 = alliances carry no standing lift.
+    #[serde(default)]
+    pub ally_unity_solidarity: f32,
     /// How much the aboard peoples' mood moves the ship's `unity` each year
     /// (content-depth factions round 15): the faction system's first coupling to the
     /// ship's own cohesion. Unity drifts by `approval_unity_coupling · (mean_approval
