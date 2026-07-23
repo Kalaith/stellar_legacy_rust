@@ -167,4 +167,13 @@ pub struct FactionConfig {
     /// can counterbalance.
     #[serde(default)]
     pub ideology_spread_stability_penalty: f32,
+    /// Subsystem *knowledge* a departing people takes with them (content-depth
+    /// factions round 20): when a schism or a withdrawal loses a whole people, the
+    /// module they tended (`FactionDef.tended_subsystem`) loses this much of its
+    /// living expertise — the ones who truly understood it are gone. So shedding a
+    /// people costs more than its headcount; it costs the craft it carried, feeding
+    /// the knowledge-crisis events and the education keystone's slow re-teaching.
+    /// Clamped at 0 knowledge. 0 = a departure takes no craft.
+    #[serde(default)]
+    pub departed_faction_knowledge_loss: f32,
 }

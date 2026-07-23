@@ -788,6 +788,33 @@ impl SimState {
             FactionLossKind::Departed => "broke away and set their own course into the dark",
         };
         self.push_log(format!("{name} {tail}."));
+
+        // The departing people take their craft with them (content-depth factions
+        // round 20): the module they tended loses a chunk of its living expertise —
+        // the ones who truly understood it are gone. Feeds the knowledge-crisis
+        // events and the education keystone's slow re-teaching.
+        let tended = data
+            .factions
+            .get(&self.factions[idx].faction_id)
+            .map(|f| f.tended_subsystem.clone())
+            .unwrap_or_default();
+        let loss = data.config.factions.departed_faction_knowledge_loss;
+        if !tended.is_empty() && loss > 0.0 {
+            if let Some(state) = self.subsystems.get_mut(&tended) {
+                let dropped = state.knowledge.min(loss);
+                if dropped > 0.0 {
+                    state.knowledge -= dropped;
+                    let subname = data
+                        .subsystems
+                        .get(&tended)
+                        .map(|d| d.name.clone())
+                        .unwrap_or_else(|| tended.clone());
+                    self.push_log(format!(
+                        "The craft of the {subname} went with {name}; the hands that truly understood it are aboard no longer."
+                    ));
+                }
+            }
+        }
     }
 
     /// On a generation boundary, fold any tiny, drifted faction into the largest
@@ -1790,6 +1817,29 @@ mod tests {
         assert!(
             solo.factions[0].is_aboard(),
             "the last people are never lost"
+        );
+    }
+
+    #[test]
+    fn a_departing_people_takes_the_craft_of_its_tended_module() {
+        // Content-depth factions round 20: shedding a people costs more than its
+        // headcount — the module it tended loses a chunk of its living expertise.
+        let (data, mut sim, picks) = armed(3);
+        let loss = data.config.factions.departed_faction_knowledge_loss;
+        assert!(loss > 0.0, "the coupling must be configured");
+        let fid = picks[1].clone();
+        let tended = data.factions.get(&fid).unwrap().tended_subsystem.clone();
+        assert!(!tended.is_empty(), "the founding people tends a module");
+        // Pin the tended module's knowledge to a known value.
+        sim.subsystems.get_mut(&tended).unwrap().knowledge = 0.8;
+
+        sim.apply_faction_loss_by_id(&data, FactionLossKind::Departed, &fid);
+
+        assert!(!sim.is_faction_aboard(&fid), "the people are gone");
+        let after = sim.subsystems.get(&tended).unwrap().knowledge;
+        assert!(
+            (after - (0.8 - loss)).abs() < 1e-4,
+            "the tended module lost the departed's expertise (knowledge {after})"
         );
     }
 
