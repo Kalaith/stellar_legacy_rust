@@ -199,6 +199,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // discontent or broad ease, the polity as a whole says so once — the ship-level
     // companion to the per-faction and morale voices.
     sim.announce_polity_mood(data);
+    // …and the standing character of whoever runs the ship bends its reputation over
+    // the generations (content-depth factions round 16): a kind majority drifts the
+    // ship toward a merciful name, a cold one hardens it, no dramatic choice required.
+    sim.apply_dominant_reputation_lean(data);
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,

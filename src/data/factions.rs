@@ -3,6 +3,7 @@
 //! names or balance numbers appear in Rust source.
 
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 use crate::data::events::SubsystemDelta;
 use crate::data::PopulationDelta;
@@ -62,6 +63,15 @@ pub struct FactionDef {
     /// Empty = a people with no standing rivals.
     #[serde(default)]
     pub rivals: Vec<String>,
+    /// How this people, while it runs the ship, bends the ship's *reputation* traits
+    /// (content-depth factions round 16): a per-trait lean strength (signed), so a
+    /// communal, kind majority drifts the ship's `mercy` up over the generations and
+    /// a coldly pragmatic one drifts it down — reputation built not only from event
+    /// choices (it105) but from the standing character of who is in charge. Scaled by
+    /// `dominant_reputation_lean_per_year`. Empty = a people whose rule leaves the
+    /// ship's name to its choices alone.
+    #[serde(default)]
+    pub reputation_leanings: HashMap<String, f32>,
 }
 
 /// How a faction left the ship when an event drives it off (W7). WipedOut and
@@ -116,4 +126,11 @@ pub struct FactionConfig {
     /// the crisis the beats watch for. 0 = faction mood does not touch cohesion.
     #[serde(default)]
     pub approval_unity_coupling: f32,
+    /// Per-year drift the *dominant* people's `reputation_leanings` impart to the
+    /// ship's reputation traits (content-depth factions round 16): the standing
+    /// character of who runs the ship bleeds slowly into the ship's name. A trait
+    /// drifts by `leaning · this` each year the leaning-holder is dominant. 0 = who
+    /// rules does not touch reputation.
+    #[serde(default)]
+    pub dominant_reputation_lean_per_year: f32,
 }

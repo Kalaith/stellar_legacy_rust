@@ -1187,6 +1187,20 @@ mod tests {
                 );
             }
         }
+        // Content-depth factions round 16: a dominant-faction reputation leaning must
+        // name a real trait and be a gentle lean, not a lever.
+        for (id, f) in data.factions.iter() {
+            for (trait_id, lean) in &f.reputation_leanings {
+                assert!(
+                    rep_produced.contains(trait_id),
+                    "faction '{id}' leans reputation '{trait_id}' no outcome nudges"
+                );
+                assert!(
+                    (-1.0..=1.0).contains(lean),
+                    "faction '{id}' reputation lean {lean} out of range [-1, 1]"
+                );
+            }
+        }
         // Content-depth round 14: a complication that targets specific choices must
         // name real outcomes of its own event (typo guard), or the toll could never
         // land.

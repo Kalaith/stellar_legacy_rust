@@ -410,6 +410,32 @@ impl SimState {
         }
     }
 
+    /// Drift the ship's reputation by the standing character of whoever runs it
+    /// (content-depth factions round 16): the dominant people's `reputation_leanings`
+    /// nudge each named trait a little each year, so a ship long-run by a kind people
+    /// grows known for mercy and one run by a cold people hardens — reputation built
+    /// from who is in charge, not only from event choices. Deterministic, no RNG.
+    pub fn apply_dominant_reputation_lean(&mut self, data: &GameData) {
+        let per_year = data.config.factions.dominant_reputation_lean_per_year;
+        if per_year == 0.0 {
+            return;
+        }
+        let Some(dominant) = self.dominant_faction_id().map(str::to_owned) else {
+            return;
+        };
+        let leanings: Vec<(String, f32)> = match data.factions.get(&dominant) {
+            Some(def) => def
+                .reputation_leanings
+                .iter()
+                .map(|(k, v)| (k.clone(), *v))
+                .collect(),
+            None => return,
+        };
+        for (trait_id, lean) in leanings {
+            self.adjust_reputation(&trait_id, lean * per_year);
+        }
+    }
+
     /// The member-weighted mean approval of the aboard peoples (content-depth
     /// factions round 15): the ship's overall political mood, so a large content
     /// majority weighs more than a small soured minority. `0.5` (neutral) when no
@@ -795,6 +821,50 @@ mod tests {
             Some("hearth_union"),
             "a fecund launch-minority has become the majority"
         );
+    }
+
+    #[test]
+    fn who_runs_the_ship_bends_its_reputation_over_the_generations() {
+        // Content-depth factions round 16: the dominant people's standing character
+        // drifts the ship's reputation. A ship run by a kind people (the Hearth)
+        // grows more merciful over the years; one run by a cold people (the
+        // Ascension) hardens — no dramatic choice required.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.dominant_reputation_lean_per_year > 0.0,
+            "this test needs the dominant-reputation lean enabled"
+        );
+
+        let mercy_after = |dominant: &str| -> f32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                31,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.factions = vec![FactionState {
+                faction_id: dominant.to_string(),
+                members: sim.population.count,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            }];
+            for _ in 0..30 {
+                sim.apply_dominant_reputation_lean(&data);
+            }
+            sim.reputation("mercy")
+        };
+
+        let under_hearth = mercy_after("hearth_union");
+        let under_ascension = mercy_after("ascension_circle");
+        assert!(
+            under_hearth > 0.5,
+            "a kind majority grows the ship a merciful name"
+        );
+        assert!(under_ascension < 0.5, "a cold majority hardens it");
+        // A people with no leaning leaves the ship's name to its choices.
+        let under_neutral = mercy_after("meridian_accord");
+        assert_eq!(under_neutral, 0.5, "an unleaning people touches nothing");
     }
 
     #[test]

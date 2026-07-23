@@ -16,7 +16,8 @@
       "flavor": "The Ascension Circle came aboard, and with them a body of knowledge the ship's medics had only read about — augmentation, gene-work, the long study of remaking the flesh for the dark."
     },
     "tended_subsystem": "medical_bay",
-    "rivals": ["first_flame", "hearth_union"]
+    "rivals": ["first_flame", "hearth_union"],
+    "reputation_leanings": {"mercy": -0.4}
   },
   {
     "id": "steel_covenant",
@@ -35,7 +36,8 @@
       "flavor": "The Steel Covenant came aboard and walked straight into the engineering bay, and by the end of the shift it ran a shade truer than it had in a generation. The makers brought their craft with them."
     },
     "tended_subsystem": "engineering_bay",
-    "rivals": ["verdant_kin"]
+    "rivals": ["verdant_kin"],
+    "reputation_leanings": {"mercy": -0.2}
   },
   {
     "id": "meridian_accord",
@@ -73,7 +75,8 @@
       "flavor": "The Hearth Union came aboard and, within a week, there was a common table on every deck that had gone without one. The ship felt, for the first time in a long while, like somewhere people lived rather than travelled."
     },
     "tended_subsystem": "life_support_habitat",
-    "rivals": ["ascension_circle"]
+    "rivals": ["ascension_circle"],
+    "reputation_leanings": {"mercy": 0.5}
   },
   {
     "id": "verdant_kin",
@@ -93,7 +96,8 @@
       "flavor": "The Verdant Kin came aboard and were in the grow-decks before their bags were stowed, and the tired hydroponics answered their hands as if remembering something. The ship would eat greener for their coming."
     },
     "tended_subsystem": "agriculture",
-    "rivals": ["steel_covenant"]
+    "rivals": ["steel_covenant"],
+    "reputation_leanings": {"mercy": 0.3}
   },
   {
     "id": "first_flame",
