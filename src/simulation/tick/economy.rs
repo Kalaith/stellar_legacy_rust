@@ -141,6 +141,24 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.unity = (sim.population.unity + cohesion * (mood - 0.5)).clamp(0.0, 1.0);
     }
 
+    // A divided ship is harder to govern (content-depth factions round 18): where the
+    // approval→unity coupling reads how *content* the peoples are, this reads how
+    // ideologically *split* they are — a coalition spanning the tech↔tradition spectrum
+    // strains the institutions, eroding `stability` each year its spread runs past the
+    // threshold. Distinct from cohesion: a polity can be content yet fractious. A
+    // single-minded ship (spread below the line) governs freely; a well-kept security
+    // corps (it108) can offset the drain. Neutral only within the tolerated spread.
+    let spread_penalty = data.config.factions.ideology_spread_stability_penalty;
+    if spread_penalty > 0.0 {
+        let excess = (sim.aboard_ideology_spread(data)
+            - data.config.factions.ideology_spread_threshold)
+            .max(0.0);
+        if excess > 0.0 {
+            sim.population.stability =
+                (sim.population.stability - spread_penalty * excess).max(0.0);
+        }
+    }
+
     // The habitat is where the people live (content-depth subsystems round 11): a
     // home kept sound lifts the ship's morale year over year, a failing one drags
     // it — the one maintenance-driven counterweight morale has to the voyage strain.

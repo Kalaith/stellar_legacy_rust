@@ -53,7 +53,9 @@
     "rival_approval_spillover": 0.3,
     "ally_approval_spillover": 0.2,
     "approval_unity_coupling": 0.01,
-    "dominant_reputation_lean_per_year": 0.008
+    "dominant_reputation_lean_per_year": 0.008,
+    "ideology_spread_threshold": 0.6,
+    "ideology_spread_stability_penalty": 0.01
   },
   "provisioning": {
     "fuel_burn_per_travel_month": 0.0035,

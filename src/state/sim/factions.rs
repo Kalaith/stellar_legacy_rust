@@ -513,6 +513,36 @@ impl SimState {
         }
     }
 
+    /// The member-weighted ideological *spread* of the aboard peoples (content-depth
+    /// factions round 18): the mean absolute deviation of their `ideology` from the
+    /// member-weighted mean — how ideologically *divided* the polity is. `0` for a
+    /// single-minded ship (one people, or peoples that all think alike), rising as the
+    /// roster spans the tech-embracing↔tradition-bound spectrum. A wide spread is a
+    /// coalition harder to govern; it drives the faction→stability coupling. Reads the
+    /// catalog ideology (constant) and the living roster; deterministic, no RNG.
+    pub fn aboard_ideology_spread(&self, data: &GameData) -> f32 {
+        let members: Vec<(f32, f32)> = self
+            .factions
+            .iter()
+            .filter(|f| f.is_aboard() && f.members > 0)
+            .filter_map(|f| {
+                data.factions
+                    .get(&f.faction_id)
+                    .map(|d| (d.ideology, f.members as f32))
+            })
+            .collect();
+        let total: f32 = members.iter().map(|(_, m)| m).sum();
+        if total <= 0.0 {
+            return 0.0;
+        }
+        let mean = members.iter().map(|(i, m)| i * m).sum::<f32>() / total;
+        members
+            .iter()
+            .map(|(i, m)| (i - mean).abs() * m)
+            .sum::<f32>()
+            / total
+    }
+
     /// The approval of the aboard people that tends `subsystem_id` (content-depth
     /// factions round 12), or `None` if no aboard faction tends it. The upkeep
     /// half of the tended-subsystem coupling: `apply_subsystem_neglect_sentiment`
@@ -1045,6 +1075,72 @@ mod tests {
             content > resentful,
             "a content polity holds the ship together where a resentful one frays it \
              (content {content} vs resentful {resentful})"
+        );
+    }
+
+    #[test]
+    fn a_divided_ship_is_harder_to_govern() {
+        // Content-depth factions round 18: governing a divided ship strains its
+        // institutions. Two otherwise-identical ships — one carrying ideologically
+        // aligned peoples, one carrying peoples at opposite ends of the tech↔tradition
+        // spectrum — diverge in stability, the divided coalition eroding where the
+        // aligned one holds. Distinct from the content/resentful (approval→unity) axis.
+        use crate::simulation::tick::advance_year;
+        let mut data = GameData::load().unwrap();
+        data.config.event_chance_base = 0.0;
+        data.config.event_chance_cap = 0.0;
+        data.config.dilemma_chance_per_generation = 0.0;
+        data.config.campaign_skeleton.stability_beats.clear();
+        data.config.campaign_skeleton.crisis_beats.clear();
+        data.config.campaign_skeleton.drift_beats.clear();
+        data.config.campaign_skeleton.adaptation_beats.clear();
+        data.config.campaign_skeleton.loyalty_beats.clear();
+        // Isolate the coupling: no security recovery pushing stability back up.
+        data.config
+            .subsystems
+            .security_stability_recovery_per_condition = 0.0;
+        assert!(
+            data.config.factions.ideology_spread_stability_penalty > 0.0,
+            "this test needs the ideology-spread coupling enabled"
+        );
+
+        let stability_after = |ids: &[&str]| -> f32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                88,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.resources.food = 1_000_000;
+            let each = sim.population.count / ids.len() as u32;
+            sim.factions = ids
+                .iter()
+                .map(|id| FactionState {
+                    faction_id: (*id).to_string(),
+                    members: each,
+                    status: FactionStatus::Aboard,
+                    approval: 0.5,
+                    mood_band: 0,
+                })
+                .collect();
+            sim.population.stability = 0.6;
+            for _ in 0..20 {
+                advance_year(&mut sim, &data);
+            }
+            sim.population.stability
+        };
+
+        // Aligned peoples (all tradition-leaning) vs a coalition spanning the spectrum.
+        let aligned = stability_after(&["verdant_kin", "hearth_union", "first_flame"]);
+        let divided = stability_after(&["ascension_circle", "first_flame"]);
+        assert!(
+            divided < aligned,
+            "a ship split across the ideological spectrum governs worse than an aligned one \
+             (divided {divided} vs aligned {aligned})"
+        );
+        assert!(
+            (aligned - 0.6).abs() < 1e-6,
+            "an ideologically unified ship's institutions are untouched by the coupling"
         );
     }
 

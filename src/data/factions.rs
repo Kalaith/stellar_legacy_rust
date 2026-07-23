@@ -153,4 +153,18 @@ pub struct FactionConfig {
     /// rules does not touch reputation.
     #[serde(default)]
     pub dominant_reputation_lean_per_year: f32,
+    /// Ideological spread (member-weighted MAD of aboard `ideology`) past which a
+    /// divided polity begins to erode the ship's `stability` (content-depth factions
+    /// round 18): the faction system's coupling to *governance*, distinct from the
+    /// approval→unity one — a ship can be content yet fractious. A polity more unified
+    /// than this is easy to govern (no drift); a coalition spanning the tech↔tradition
+    /// spectrum past it strains the institutions. 0 threshold = the coupling is off.
+    #[serde(default)]
+    pub ideology_spread_threshold: f32,
+    /// Stability drained per year per unit of ideological spread *above* the threshold
+    /// (content-depth factions round 18). Gentle by design — the standing cost of
+    /// holding a divided coalition together, which a well-kept security corps (it108)
+    /// can counterbalance.
+    #[serde(default)]
+    pub ideology_spread_stability_penalty: f32,
 }
