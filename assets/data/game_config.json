@@ -27,6 +27,7 @@
   "chronic_hunger_morale_drain": 0.004,
   "chronic_hunger_death_bonus": 0.003,
   "sustained_plenty_birth_bonus": 0.5,
+  "sustained_plenty_morale_lift": 0.004,
   "low_energy_threshold": 1000,
   "hull_warning_threshold": 0.7,
   "life_support_warning_threshold": 0.8,

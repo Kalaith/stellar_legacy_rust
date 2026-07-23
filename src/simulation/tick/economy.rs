@@ -182,6 +182,18 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.morale =
             (sim.population.morale - config.chronic_hunger_morale_drain).max(0.0);
     }
+    // …and the long plenty lifts them (content-depth provisioning round 20): the
+    // morale mirror of the chronic-hunger drain, on the same "sustained" threshold —
+    // a well-fed generation is a happy one, so a fat spell held past `chronic_hunger_
+    // years` adds a little morale each year, completing the provisioning→morale pole
+    // (hunger wears the spirit, plenty eases it) beside the death/birth poles.
+    if config.sustained_plenty_morale_lift > 0.0
+        && config.chronic_hunger_years > 0
+        && sim.fat_food_years >= config.chronic_hunger_years
+    {
+        sim.population.morale =
+            (sim.population.morale + config.sustained_plenty_morale_lift).min(1.0);
+    }
 
     // Ship wear, eased while spare parts remain for upkeep (PLAN M4.2). Once
     // the stores run dry the ship wears at full rate — the "held together on

@@ -172,6 +172,15 @@ pub struct GameConfig {
     /// extinction. 0 = plenty gives no renewal boost.
     #[serde(default)]
     pub sustained_plenty_birth_bonus: f32,
+    /// Morale added per year while the ship has stood in sustained plenty past
+    /// `chronic_hunger_years` (content-depth provisioning round 20 — the morale mirror
+    /// of `chronic_hunger_morale_drain`, on the same threshold). A well-fed generation
+    /// is a happier one, so a long fat spell eases the crew's spirits each year it
+    /// holds, completing the provisioning→morale pole (hunger wears it down, plenty
+    /// lifts it back) beside the death/birth couplings. Gentle by design. 0 = plenty
+    /// gives no morale lift.
+    #[serde(default)]
+    pub sustained_plenty_morale_lift: f32,
     pub hull_warning_threshold: f32,
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,

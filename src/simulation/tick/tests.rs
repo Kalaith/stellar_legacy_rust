@@ -1912,9 +1912,13 @@ fn dead_air_forces_a_beat_after_too_long_a_silence() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
     // The succession beat (round 18) forces an event when a sitting leader dies —
-    // continuous mortality can take one within the gap — so silence it too.
+    // continuous mortality can take one within the gap — so silence it too. The
+    // plenty morale lift (round 20) would climb morale into a flourish beat over the
+    // gap; clearing flourish covers it, but zero the lift too so the timeline is inert.
     data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.sustained_plenty_morale_lift = 0.0;
     let dead = data.config.campaign_skeleton.dead_air_years;
     assert!(
         dead > 0 && !data.config.campaign_skeleton.dead_air_pool.is_empty(),
@@ -2097,6 +2101,36 @@ fn an_enduring_reign_earns_a_long_reign_beat_once() {
     assert!(
         !sim.dynasty.long_reign_marked && sim.dynasty.leader_reign_years == 0,
         "a handoff starts a new, unmarked reign"
+    );
+}
+
+#[test]
+fn a_long_plenty_lifts_the_crews_spirits() {
+    // Content-depth provisioning round 20: a fat spell held past the sustained
+    // threshold eases morale each year — the mirror of the chronic-hunger drain.
+    let (data, base) = provisioned(5, 1.0);
+    // Next month crosses a year boundary; everything else identical between the two.
+    let setup = |food: i64, fat_years: u32| {
+        let mut s = base.clone();
+        s.month_clock = 11;
+        s.resources.food = food;
+        s.fat_food_years = fat_years;
+        s.lean_food_years = 0;
+        s.population.morale = 0.5;
+        s.pending_event = None;
+        s.pending_dilemma = None;
+        s
+    };
+    let mut fat = setup(100_000, data.config.chronic_hunger_years.max(1));
+    let mut plain = setup(8_000, 0);
+
+    advance_months(&mut fat, &data, 1);
+    advance_months(&mut plain, &data, 1);
+    assert!(
+        fat.population.morale > plain.population.morale,
+        "a well-fed generation is a happier one (fat {} vs plain {})",
+        fat.population.morale,
+        plain.population.morale
     );
 }
 
