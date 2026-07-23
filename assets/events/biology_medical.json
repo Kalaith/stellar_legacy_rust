@@ -777,5 +777,57 @@
     "log": "The council sealed the hot decks rather than heal them — the annex, the shops beside it, the quarters of the ones who had lived too close, all walled off and written out of the deck plan. The bloom stopped at the bulkhead. The ship was smaller and sounder and short the people and the workshops it left behind the seal."
    }
   ]
+ },
+ {
+  "id": "the_elders_ward",
+  "category": "generational_challenge",
+  "family": "biology_medical",
+  "title": "The Elders' Ward",
+  "description": "The infirmary is a generation past its best, and it shows first in the old. The ward that once returned the aging to their posts now mostly eases them out of them, and the physicians bring the council the same grim arithmetic every quarter — more names on the roll, sooner. Pour the ship's dwindling stores into the bay, or let age take what a failing infirmary can no longer hold back.",
+  "requires_decision": true,
+  "min_generation": 3,
+  "condition_below": [
+   {
+    "id": "medical_bay",
+    "below": 0.4
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_ward",
+    "label": "Rebuild the ward",
+    "description": "Strip parts and skilled hands from the rest of the ship to bring the infirmary back — the crew stops dying before their time.",
+    "resource_delta": {
+     "minerals": -180
+    },
+    "ship_delta": {
+     "spare_parts": -18
+    },
+    "subsystem_deltas": [
+     {
+      "id": "medical_bay",
+      "condition": 0.45
+     }
+    ],
+    "log": "The ship gave up parts and skilled hands to rebuild the ward, wearing faster everywhere else for it. But the infirmary's lights came back up, and the quarterly roll of the dead grew short again."
+   },
+   {
+    "id": "comfort_not_cure",
+    "label": "Comfort, not cure",
+    "description": "Keep the stores for the hull. The bay does what little it can; the old go sooner.",
+    "population_delta": {
+     "count": -35,
+     "morale": -0.04,
+     "legacy_loyalty": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.03
+     }
+    ],
+    "log": "The council kept the ship whole and let the ward keep only the comfortable. The elders went sooner than a better infirmary would have allowed, and every soul aboard did the quiet arithmetic on their own remaining years."
+   }
+  ]
  }
 ]

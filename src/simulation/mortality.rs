@@ -13,8 +13,8 @@
 //! [`event_claim`]. All rolls flow through the sim's seeded RNG.
 
 use crate::data::{FlavorConfig, GameData, MortalityConfig};
-use crate::simulation::succession;
 use crate::simulation::tick::TickReport;
+use crate::simulation::{subsystems, succession};
 use crate::state::sim::{generate_member, CrewMember, DynastyMember, SimState};
 
 /// The chance a character of `age` dies in a given month: a flat accident floor
@@ -104,13 +104,25 @@ pub fn annual_aging(sim: &mut SimState, data: &GameData) {
 pub fn monthly_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
     let max_age = data.config.member_max_age;
     let cfg = &data.config.mortality;
+    // A well-kept infirmary thins the reaper's odds (content-depth subsystems round
+    // 18): read the bay's relief once, applied to every pre-cap death roll below.
+    let relief = subsystems::medical_mortality_relief(sim, data);
+    let chance_for = |age: u32| {
+        let base = monthly_death_chance(age, cfg, max_age);
+        // The bay eases aging deaths but can never cheat the hard age cap.
+        if age >= max_age {
+            base
+        } else {
+            base * (1.0 - relief)
+        }
+    };
 
     // Roll deaths through a local copy of the seeded RNG, then write it back
     // (avoids borrowing `sim.rng` while draining `sim.dynasty`/`sim.crew`).
     let mut rng = sim.rng;
     let mut dead: Vec<DynastyMember> = Vec::new();
     sim.dynasty.members.retain(|member| {
-        let dies = rng.chance(monthly_death_chance(member.age, cfg, max_age));
+        let dies = rng.chance(chance_for(member.age));
         if dies {
             dead.push(member.clone());
         }
@@ -118,7 +130,7 @@ pub fn monthly_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport
     });
     let mut crew_dead: Vec<CrewMember> = Vec::new();
     sim.crew.retain(|officer| {
-        let dies = rng.chance(monthly_death_chance(officer.age, cfg, max_age));
+        let dies = rng.chance(chance_for(officer.age));
         if dies {
             crew_dead.push(officer.clone());
         }

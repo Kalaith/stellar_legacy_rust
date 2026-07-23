@@ -419,6 +419,25 @@ pub fn medical_famine_relief(sim: &SimState, data: &GameData) -> f32 {
     condition * data.config.subsystems.medical_famine_relief_per_condition
 }
 
+/// Fraction by which the medical bay lowers each character's monthly age-based
+/// death chance (content-depth subsystems round 18 — the first subsystem coupling
+/// to the real-time-loop mortality system). Scales by *condition*, so keeping the
+/// infirmary sharp keeps the crew alive longer; clamped just below 1 so a bay can
+/// never make anyone immortal (and never applies at the hard age cap). 0 when the
+/// coupling is disabled or the bay is gone.
+pub fn medical_mortality_relief(sim: &SimState, data: &GameData) -> f32 {
+    let condition = sim
+        .subsystems
+        .get("medical_bay")
+        .map_or(0.0, |s| s.condition);
+    (condition
+        * data
+            .config
+            .subsystems
+            .medical_mortality_relief_per_condition)
+        .clamp(0.0, 0.9)
+}
+
 /// Yearly unity recovery from a well-kept security/justice system (content-depth
 /// subsystems round 9): a functioning corps steadies a fractious ship. Scales by
 /// *condition* and, like the security chief, only helps a ship still below the
@@ -549,6 +568,35 @@ mod tests {
             security_unity_recovery(&sim, &data),
             0.0,
             "a steady ship needs no steadying"
+        );
+    }
+
+    #[test]
+    fn a_well_kept_medical_bay_thins_the_reapers_odds() {
+        // Content-depth subsystems round 18: the infirmary's condition eases the
+        // monthly age-based death roll — a sound bay saves more of the aging, and
+        // it can never grant immortality.
+        let (data, mut sim) = campaign(18);
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 1.0;
+        let sound = medical_mortality_relief(&sim, &data);
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.1;
+        let wrecked = medical_mortality_relief(&sim, &data);
+        assert!(
+            sound > wrecked && wrecked >= 0.0,
+            "a bay in good repair lowers the reaper's odds more than a rotted one"
+        );
+        assert!(sound < 1.0, "the bay can never make anyone immortal");
+
+        // The relief genuinely eases an elder's effective monthly chance.
+        let cfg = &data.config.mortality;
+        let max = data.config.member_max_age;
+        let old = cfg.onset_age + 20;
+        let base = crate::simulation::mortality::monthly_death_chance(old, cfg, max);
+        sim.subsystems.get_mut("medical_bay").unwrap().condition = 1.0;
+        let eased = base * (1.0 - medical_mortality_relief(&sim, &data));
+        assert!(
+            eased < base,
+            "a sound infirmary eases an aging character's odds"
         );
     }
 

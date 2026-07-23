@@ -78,6 +78,15 @@ pub struct SubsystemsConfig {
     /// (combined reduction capped). 0 = no bay-level relief.
     #[serde(default)]
     pub medical_famine_relief_per_condition: f32,
+    /// Fraction by which a full-condition medical bay lowers each character's
+    /// *monthly age-based death chance* (content-depth subsystems round 18 — the
+    /// first subsystem coupling to the real-time-loop mortality system): the
+    /// infirmary's most fundamental job is keeping people alive, so a bay in good
+    /// repair thins the reaper's odds, a failing one leaves the aging to their age.
+    /// Applied as `chance · (1 - condition · this)` below the hard age cap (a bay
+    /// cannot cheat `member_max_age`). 0 = the bay's state does not touch mortality.
+    #[serde(default)]
+    pub medical_mortality_relief_per_condition: f32,
     /// Yearly unity recovery from a well-kept security/justice system at full
     /// condition (content-depth subsystems round 9), scaling by condition and
     /// stacking with a serving security chief. Only steadies a ship below the

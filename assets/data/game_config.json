@@ -103,6 +103,7 @@
     "agriculture_food_bonus_per_tier": 0.05,
     "engineering_decay_swing": 0.4,
     "medical_famine_relief_per_condition": 0.3,
+    "medical_mortality_relief_per_condition": 0.35,
     "security_unity_recovery_per_condition": 0.006,
     "security_stability_recovery_per_condition": 0.006,
     "security_stability_recovery_ceiling": 0.7,
