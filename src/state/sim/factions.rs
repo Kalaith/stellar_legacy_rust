@@ -750,6 +750,47 @@ impl SimState {
         self.stability_voice_band = band;
     }
 
+    /// Give the crew's *devotion to the founders' mission* a voice (content-depth voice
+    /// round 20): the identity-side twin of the morale (`announce_ship_mood`) and
+    /// governance (`announce_stability_mood`) voices, on `legacy_loyalty`. Distinct from
+    /// the crew's spirits and from how far the people have *changed* (the it-drift
+    /// ambient) — this voices the founders' *purpose* itself waxing or fading: when
+    /// loyalty crosses *into* a guttering band (the charter read as a story, the young
+    /// unable to feel why the ship flies) or a bright one (the dream taken up afresh, the
+    /// mission honored from conviction), surface one pooled line. Announced right after
+    /// the year's voyage drift, which erodes loyalty, so the fading of the founders' fire
+    /// is narrated as it happens. Deterministic (indexed by year), no RNG; a return to
+    /// the middle re-arms.
+    pub fn announce_loyalty_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.loyalty_voice_high <= 0.0 {
+            return;
+        }
+        let value = self.population.legacy_loyalty;
+        let band = if value >= fl.loyalty_voice_high {
+            1
+        } else if value <= fl.loyalty_voice_low {
+            -1
+        } else {
+            0
+        };
+        if band == self.loyalty_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.loyalty_bright,
+            -1 => &fl.loyalty_guttering,
+            _ => {
+                self.loyalty_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.loyalty_voice_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -1564,6 +1605,59 @@ mod tests {
             "the government steadying says so afresh"
         );
         assert_eq!(sim.stability_voice_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_the_founders_fire_gutters_or_flares() {
+        // Content-depth voice round 20: the loyalty voice, the identity-side twin of
+        // the morale and governance voices. A founding crew's moderate loyalty is the
+        // silent baseline; crossing into a guttering band (the founders' purpose fading)
+        // surfaces one pooled line; a return to a bright band gets its own, opposite
+        // line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(37);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.loyalty_voice_high > 0.0 && fl.loyalty_guttering.len() >= 3,
+            "this test needs the loyalty voice enabled"
+        );
+        let low = fl.loyalty_voice_low;
+        let high = fl.loyalty_voice_high;
+        let loyalty_lines = |sim: &SimState| {
+            let gut = &data.config.flavor.loyalty_guttering;
+            let bright = &data.config.flavor.loyalty_bright;
+            sim.log
+                .iter()
+                .filter(|l| gut.contains(&l.text) || bright.contains(&l.text))
+                .count()
+        };
+
+        // A founding crew's moderate devotion — the launch band is recorded, silent.
+        sim.announce_loyalty_mood(&data);
+        assert_eq!(
+            loyalty_lines(&sim),
+            0,
+            "a founding crew's loyalty is silent"
+        );
+
+        // The founders' fire gutters past the low line: one line.
+        sim.population.legacy_loyalty = low - 0.05;
+        sim.announce_loyalty_mood(&data);
+        assert_eq!(loyalty_lines(&sim), 1, "the mission fading says so once");
+        assert_eq!(sim.loyalty_voice_band, -1);
+
+        // Still guttering — no reprint.
+        sim.announce_loyalty_mood(&data);
+        assert_eq!(loyalty_lines(&sim), 1, "staying faded is not re-announced");
+
+        // The dream flares bright again: a second, distinct line.
+        sim.population.legacy_loyalty = high + 0.05;
+        sim.announce_loyalty_mood(&data);
+        assert_eq!(
+            loyalty_lines(&sim),
+            2,
+            "the founders' fire rekindled says so afresh"
+        );
+        assert_eq!(sim.loyalty_voice_band, 1);
     }
 
     #[test]

@@ -279,6 +279,13 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // slipping or working — the governance twin of the spirits and political-climate
     // voices above.
     sim.announce_stability_mood(data);
+    // …and give the crew's *devotion to the founders' mission* a voice (content-depth
+    // voice round 20), now that the year's drift has eroded loyalty and any event
+    // shifts have settled: when loyalty crosses into a guttering band (the founders'
+    // purpose fading to a story) or a bright one (the dream taken up afresh), the decks
+    // remark it once — the identity-side twin of the spirits and governance voices, and
+    // the voice that gives the game's core theme (a ship forgetting why it flies) a line.
+    sim.announce_loyalty_mood(data);
 
     // Founding Day (real-time loop follow-up): everyone gains a year at once, and
     // any officer aged past their term stands down. Aging is yearly; death is the

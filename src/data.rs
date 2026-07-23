@@ -530,6 +530,27 @@ pub struct FlavorConfig {
     pub stability_voice_high: f32,
     #[serde(default)]
     pub stability_voice_low: f32,
+    /// The crew's *devotion to the founders' mission* crossing into a guttering band
+    /// (content-depth voice round 20): the identity-side twin of the morale/governance
+    /// voices, on `legacy_loyalty`. Distinct from the crew's spirits and from how the
+    /// people have *changed* (drift) — this voices the founders' *purpose* fading: the
+    /// charter read as a story rather than a promise, the young unable to feel why the
+    /// ship flies. No name; indexed by year; empty = silence.
+    #[serde(default)]
+    pub loyalty_guttering: Vec<String>,
+    /// The founders' mission burning fierce again (content-depth voice round 20): the
+    /// positive twin — a generation that has taken the founders' dream as its own, the
+    /// charter honored not from duty but conviction, the purpose felt afresh. No name;
+    /// indexed by year.
+    #[serde(default)]
+    pub loyalty_bright: Vec<String>,
+    /// Loyalty at/above which the ship remarks the founders' fire burning bright
+    /// (`_high`) or at/below which it remarks the mission guttering (`_low`)
+    /// (content-depth voice round 20).
+    #[serde(default)]
+    pub loyalty_voice_high: f32,
+    #[serde(default)]
+    pub loyalty_voice_low: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -2198,6 +2219,26 @@ mod tests {
             assert!(
                 !fl.ambient.is_empty(),
                 "ambient_gap_years is set but the ambient pool is empty"
+            );
+        }
+        // Content-depth voice round 20: if the loyalty voice is switched on, both
+        // bands need lines to draw from, and the thresholds must order (low < high,
+        // both inside 0..1) or the crossing logic is nonsense.
+        if fl.loyalty_voice_high > 0.0 {
+            assert!(
+                !fl.loyalty_guttering.is_empty() && !fl.loyalty_bright.is_empty(),
+                "loyalty voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.loyalty_voice_low > 0.0 && fl.loyalty_voice_low < fl.loyalty_voice_high,
+                "loyalty voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.loyalty_voice_low,
+                fl.loyalty_voice_high
+            );
+            assert!(
+                fl.loyalty_voice_high < 1.0,
+                "loyalty_voice_high {} must be below 1.0 to be reachable",
+                fl.loyalty_voice_high
             );
         }
         // Content-depth voice round 6: the recurring-crisis pools need variety

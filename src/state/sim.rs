@@ -446,6 +446,15 @@ pub struct SimState {
     /// (a founding ship's institutions are sound) is recorded, not announced.
     #[serde(default)]
     pub stability_voice_band: i8,
+    /// The last-announced band of the crew's *devotion to the founders' mission*
+    /// (content-depth voice round 20): the twin of `morale_band`/`stability_voice_band`
+    /// for `legacy_loyalty`. Tracks whether loyalty last crossed into a bright band (the
+    /// founders' dream burning fierce) or a guttering one (the mission fading to a story
+    /// the young no longer feel) so the ship remarks the crossing once, not every year it
+    /// holds. The launch band (a founding crew's loyalty runs high) is recorded, not
+    /// announced. 0 at launch; a return to the middle silently re-arms.
+    #[serde(default)]
+    pub loyalty_voice_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -565,6 +574,7 @@ impl SimState {
             reputation_beat_band: 0,
             reputation_voice_band: 0,
             stability_voice_band: 0,
+            loyalty_voice_band: 0,
             depopulation_beats_fired: 0,
             subsystem_beats_fired: Vec::new(),
             lean_food_years: 0,
@@ -584,6 +594,14 @@ impl SimState {
             sim.population.stability,
             config.flavor.stability_voice_high,
             config.flavor.stability_voice_low,
+        );
+        // Likewise record the launch band of the crew's devotion to the founders'
+        // mission, so a founding crew's high loyalty reads as the baseline, not a
+        // "brightening" the loyalty voice announces (content-depth voice round 20).
+        sim.loyalty_voice_band = factions::stability_voice_band_for(
+            sim.population.legacy_loyalty,
+            config.flavor.loyalty_voice_high,
+            config.flavor.loyalty_voice_low,
         );
         // Founding senior staff fill the configured starting posts.
         for archetype_id in &config.crew.starting_posts {

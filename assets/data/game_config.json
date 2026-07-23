@@ -430,6 +430,20 @@
     ],
     "stability_voice_high": 0.7,
     "stability_voice_low": 0.4,
+    "loyalty_guttering": [
+      "Somewhere in the last stretch the founders stopped being a purpose and became a story. The charter is still read on the anniversaries, but the young hear it the way they hear any old tale — a thing that happened to other people, long ago, for reasons that no longer quite reach them. The ship still flies where it was pointed; fewer and fewer aboard could tell you, with any heat, why.",
+      "The founders' dream has gone thin in the crew. Not rejected — nothing so definite — only slowly emptied of the thing that made it burn: the certainty that this voyage matters, that the ones who signed the charter were owed its keeping. The mission is a habit now more than a faith, and a habit is a quieter thing to steer a ship of generations by.",
+      "It shows in the small omissions: a founding rite let lapse for want of anyone who felt it, the founders' log unopened a decade at a stretch, the old words spoken by rote at the turnings of the year and felt by almost no one. The loyalty that launched the ship is guttering — the fire still lit, but low, and tended now by fewer hands each generation.",
+      "A census of belief, had anyone taken one, would have found the founders' cause slipped from conviction to inheritance — a thing the crew carries because it was handed to them, not because they would have chosen it. The dream that pointed the ship into the dark is fading in the ones who fly it, and a ship that forgets why it flies is only, in the end, a very long fall."
+    ],
+    "loyalty_bright": [
+      "The founders' dream has caught fire in the crew again. A generation that might have let the old cause fade has instead taken it up as its own — the charter honored now not from duty but from a conviction freshly felt, as though the ship had remembered, all at once, what it was for. The decks fly with a purpose that has not been this bright in a long age.",
+      "Something has rekindled the ship's old faith in its mission. The founding rites are kept in full and felt in full; the founders' log is read and argued and taken to heart; the young speak of the destination the way the first crew did, as a thing worth the whole voyage. The loyalty that launched the ship burns fierce again, and a ship sure of why it flies is a hard thing to turn aside.",
+      "The crew has come back around to the founders' cause with a warmth that surprises even them. Not the dutiful loyalty of the middle years but something nearer the first crew's — the sense that this voyage is a keeping, a promise made to the dead and worth the making good. The mission is a faith once more, and the ship the better and steadier for it.",
+      "A conviction long banked has flared bright across the decks: that the founders were right, that the charter is worth its keeping, that the ship's long fall through the dark is toward something and not merely away from home. The loyalty runs high this season the way it ran high at launch — and a people that believes in where it is going carries the going more easily."
+    ],
+    "loyalty_voice_high": 0.72,
+    "loyalty_voice_low": 0.4,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",
