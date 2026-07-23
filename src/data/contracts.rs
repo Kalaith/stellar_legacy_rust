@@ -192,6 +192,19 @@ pub struct ContractTemplate {
     /// voyage exists for. Empty = the objective is indifferent to any module's state.
     #[serde(default)]
     pub objective_subsystem: String,
+    /// How the ship's *combat rating* quickens this mission's objective (content-depth
+    /// charters round 21 — the charter↔ship-loadout coupling). Until now the ship's
+    /// aggregate combat did exactly one thing (back a Wanderer's defining gamble,
+    /// `dilemma_odds`); the drydock's weapon-fitting decision never touched a mission.
+    /// On a *contested* writ — a salvage on a wreck-line picked over by scavengers, a
+    /// run through hostile space — an armed ship holds the field and works the objective
+    /// openly while an unarmed one works furtive, in snatches, always ready to run: each
+    /// point of combat adds this fraction to the accrual rate, exactly as `speed` does,
+    /// but *only* where the mission's nature rewards firepower (a quiet survey sets 0, so
+    /// guns are dead weight there). So the guns you fit in dock now decide which missions
+    /// go *well*, not only which dilemmas you win. 0 = an objective indifferent to arms.
+    #[serde(default)]
+    pub objective_combat_scaling: f32,
     /// Reputation gates on the writ (content-depth charters round 16): the mission
     /// is offered only while the ship's cumulative character meets every named trait
     /// — at or above (`min_reputation`) or at or below (`max_reputation`) its

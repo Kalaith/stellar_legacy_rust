@@ -151,6 +151,11 @@ pub struct ActiveContract {
     /// objective accrues at the base rate regardless of any module.
     #[serde(default)]
     pub objective_subsystem: String,
+    /// How this mission's objective quickens with the ship's *combat rating*
+    /// (content-depth charters round 21), copied at launch: a contested writ worked
+    /// faster by an armed ship, 0 for a mission indifferent to how the ship is armed.
+    #[serde(default)]
+    pub objective_combat_scaling: f32,
 }
 
 impl ActiveContract {

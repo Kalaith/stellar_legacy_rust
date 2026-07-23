@@ -776,7 +776,8 @@
     "unity": -0.002
    }
   },
-  "objective_subsystem": "engineering_bay"
+  "objective_subsystem": "engineering_bay",
+  "objective_combat_scaling": 0.04
  },
  {
   "id": "warden_patrol",
@@ -871,7 +872,8 @@
   "tags": [
    "patrol",
    "hostile_space"
-  ]
+  ],
+  "objective_combat_scaling": 0.05
  },
  {
   "id": "the_long_dark",
@@ -2147,6 +2149,7 @@
    "salvage"
   ],
   "hazard": 0.12,
+  "objective_combat_scaling": 0.04,
   "max_reputation": [
    {
     "id": "mercy",

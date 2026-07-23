@@ -1850,6 +1850,15 @@ mod tests {
                 "charter '{id}' objective_subsystem names unknown module '{}'",
                 c.objective_subsystem
             );
+            // Content-depth charters round 21: a mission's combat scaling is a
+            // positive accelerator (firepower quickens contested work, never slows
+            // it) and gentle — an over-steep value would make the drydock's guns the
+            // only thing that matters. Bounded like the speed lever's reach.
+            assert!(
+                (0.0..=0.2).contains(&c.objective_combat_scaling),
+                "charter '{id}' objective_combat_scaling {} out of range [0, 0.2]",
+                c.objective_combat_scaling
+            );
             // Content-depth charters round 15: a completion reward's subsystem boons
             // must name real modules, or the legacy could never land.
             for delta in &c.completion_reward.subsystem_deltas {
@@ -1865,6 +1874,15 @@ mod tests {
         assert!(
             data.contracts.iter().any(|(_, c)| !c.annual_toll.is_none()),
             "some charter should exact a per-year route toll"
+        );
+        // Content-depth charters round 21: at least one charter should reward
+        // firepower (a contested writ worked faster by an armed ship), so the
+        // charter↔combat coupling is actually exercised.
+        assert!(
+            data.contracts
+                .iter()
+                .any(|(_, c)| c.objective_combat_scaling > 0.0),
+            "some charter should let combat quicken its objective"
         );
         // Content-depth charters round 14: a charter's deed gates must name a
         // consequence *something* produces — an event outcome or another charter's
