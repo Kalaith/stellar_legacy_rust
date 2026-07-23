@@ -1975,5 +1975,74 @@
     "log": "The council restored the founding decrees' binding weight — not from reverence, which had long since thinned, but from a cold prudence: that a crew answering only to its own mood was a bad generation away from ruin, and that the founders had bound their heirs precisely because they foresaw the temptation the living felt. It was authority chosen as ballast rather than felt as faith, a hand kept on the tiller that no single generation could vote away."
    }
   ]
+ },
+ {
+  "id": "the_ungoverned_ship",
+  "category": "legacy_moment",
+  "title": "The Ungoverned Ship",
+  "description": "The ship is not at war with itself; the people, on the whole, get along. It is simply that the machinery of governing them has quietly stopped working. The council rarely reaches quorum and rarer still agrees on anything; half the founding offices sit unfilled, their duties done by whoever happens to be willing; the charter's rules are honored the way old customs are, when convenient and not otherwise. The ship runs on habit, goodwill, and the memory of order — which serves, right up until the day it is asked to do something habit cannot.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_stability": 0.3,
+  "outcomes": [
+   {
+    "id": "rebuild_the_institutions",
+    "label": "Rebuild the institutions in earnest",
+    "description": "Habit is not government. Re-establish the council with real quorum and real teeth, fill the founding offices and hold their holders to account, enforce the charter as law and not as folklore — accept that a people used to informal ease will chafe at the return of formality, and rebuild the structures anyway, because a ship that governs by goodwill has no answer ready for the day goodwill runs out.",
+    "population_delta": {
+     "stability": 0.09,
+     "unity": 0.03,
+     "morale": -0.04
+    },
+    "log": "The council rebuilt itself into something worth the name — quorum enforced, offices filled and answerable, the charter restored from custom to law. The ship grumbled at the return of formality it had grown out of the habit of, and it grumbled from behind functioning institutions for the first time in a generation, a polity again and not merely a crowd that mostly got along."
+   },
+   {
+    "id": "embrace_the_informal_rule",
+    "label": "Govern by habit and consensus",
+    "description": "The founders' institutions were built for a ship that no longer exists. Stop pretending to a formal order no one uses and make the informal one honest: rule by the standing consensus of the decks, by the people who actually do the work, by custom openly acknowledged as the real law. It is fragile against a true crisis, but it is what the ship is, and a government a people actually uses beats a grand one it ignores.",
+    "population_delta": {
+     "morale": 0.05,
+     "adaptation": 0.05,
+     "cultural_drift": 0.04,
+     "stability": -0.02
+    },
+    "log": "The ship stopped pretending to the founders' formal order and made its informal one honest — government by the open consensus of the decks, custom acknowledged as the real law, the empty offices quietly retired rather than mournfully preserved. It was a lighter and a more fragile way to be ruled, fitted to the ship the voyage had actually become, and everyone knew it would hold only until the day it was asked to bear a weight consensus could not."
+   }
+  ]
+ },
+ {
+  "id": "the_hollow_offices",
+  "category": "legacy_moment",
+  "title": "The Hollow Offices",
+  "description": "A crisis, a small one, needs a decision made and made bindingly — and the ship discovers it no longer has anyone empowered to make it. The offices that once held that authority are hollow forms, their titles worn by people who never truly held the power the titles imply, because the power drained out of the institutions so gradually that no one noticed the moment it was gone. The ship must reckon with a government that exists entirely on paper.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_stability": 0.3,
+  "min_generation": 5,
+  "outcomes": [
+   {
+    "id": "reforge_the_authority",
+    "label": "Put the power back in the offices",
+    "description": "A title with no authority behind it is worse than no title — it is a promise of order the ship cannot keep. Reforge the offices with real power, whatever the discomfort of concentrating authority again, so that when the ship needs a binding decision it has someone who can bind it. Better a government feared a little than one that cannot govern at all.",
+    "population_delta": {
+     "stability": 0.08,
+     "legacy_loyalty": 0.03,
+     "morale": -0.03
+    },
+    "log": "The ship poured authority back into its hollow offices, reforging titles into powers a people had grown unused to obeying. It was an uncomfortable reconcentration of a thing the drift had gently dispersed, and it left the ship able, once more, to make a decision and mean it — a government that could govern, feared a little and functional again."
+   },
+   {
+    "id": "decide_it_in_the_moment",
+    "label": "Improvise it, this time and every time",
+    "description": "There is no time to rebuild a government before this decision must be made, so make it the way the ship makes everything now: in the moment, by whoever is present and willing, by a rough consensus hammered out under pressure. It works this time. It has worked every time so far. Trust that it will keep working, and let the offices stay the hollow forms they have become.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "morale": 0.02,
+     "cultural_drift": 0.03,
+     "stability": -0.03
+    },
+    "log": "The ship met the crisis the way it met everything now — improvised in the moment by whoever was present and willing, a rough consensus hammered out under pressure and, this time, sufficient. The hollow offices stayed hollow, the ship trusting its knack for muddling through over any structure it might rebuild, and it muddled through, one more time, on the strength of that trust and nothing firmer."
+   }
+  ]
  }
 ]

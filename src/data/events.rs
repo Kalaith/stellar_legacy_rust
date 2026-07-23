@@ -311,6 +311,13 @@ pub struct EventTemplate {
     /// loyalty-collapse beat or rolled. 0.0 = ungated.
     #[serde(default)]
     pub max_legacy_loyalty: f32,
+    /// Governance gate (content-depth campaign-skeleton round 15): the event only
+    /// enters the pool while `stability` has fallen to or below this — the honest
+    /// gate for institutional-collapse content, so "the government no longer
+    /// functions" cannot surface on a well-ordered ship, whether forced by a
+    /// stability beat or rolled. 0.0 = ungated.
+    #[serde(default)]
+    pub max_stability: f32,
     /// Mission-progress gate (content-depth campaign-skeleton round 9): the event
     /// only enters the pool while an active charter's objective is at or past this
     /// fraction — the honest gate for milestone content, so "the work is half

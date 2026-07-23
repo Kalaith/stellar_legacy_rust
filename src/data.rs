@@ -598,6 +598,17 @@ pub struct CampaignSkeletonConfig {
     /// The family a loyalty-collapse beat draws from.
     #[serde(default)]
     pub loyalty_beat_family: String,
+    /// Governance-collapse thresholds (content-depth round 15): the last population
+    /// stat without a beat. As `stability` falls to or below each threshold (high→
+    /// low), a beat is forced — not the *people* fracturing (the crisis beat) nor
+    /// the *founders'* authority lapsing (the loyalty beat), but the ship's own
+    /// institutions ceasing to function: councils that cannot reach quorum, offices
+    /// unfilled, the charter gone to folklore. Empty = no stability beats.
+    #[serde(default)]
+    pub stability_beats: Vec<f32>,
+    /// The family a governance-collapse stability beat draws from.
+    #[serde(default)]
+    pub stability_beat_family: String,
     /// Flourishing thresholds (content-depth round 8): the *positive* pole of the
     /// crisis beat. As the people's `morale` climbs to or past each threshold
     /// (authored low→high) a beat is forced — a thriving ship generates its own
@@ -1611,6 +1622,23 @@ mod tests {
             assert!(
                 sk.loyalty_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton loyalty_beats must be within (0, 1]"
+            );
+        }
+        // Content-depth round 15: stability beats are the DESCENDING governance
+        // mirror — strictly descending, in range, family with events.
+        if !sk.stability_beats.is_empty() {
+            assert!(
+                families.contains(&sk.stability_beat_family),
+                "campaign_skeleton stability_beat_family '{}' has no events",
+                sk.stability_beat_family
+            );
+            assert!(
+                sk.stability_beats.windows(2).all(|w| w[0] > w[1]),
+                "campaign_skeleton stability_beats must be strictly descending"
+            );
+            assert!(
+                sk.stability_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton stability_beats must be within (0, 1]"
             );
         }
         // Content-depth round 8: flourish beats are the ASCENDING positive pole —

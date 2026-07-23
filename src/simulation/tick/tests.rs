@@ -962,6 +962,51 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn a_stability_beat_fires_as_the_ships_institutions_fail() {
+    // Content-depth campaign-skeleton round 15: the last population stat to get a
+    // beat. With reactive rolls and the other threshold beats off, the only thing
+    // that can fire is the governance-collapse beat — and it must, once stability
+    // falls past the first threshold, while a well-ordered ship stays silent.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    let first = data.config.campaign_skeleton.stability_beats[0];
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // A well-governed ship: no institutional collapse to mark.
+    sim.population.stability = first + 0.1;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().stability_beats_fired,
+        0,
+        "a functioning government has no collapse to mark"
+    );
+
+    // Stability falls past the first threshold: the beat fires.
+    sim.population.stability = first - 0.02;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.contract.as_ref().unwrap().stability_beats_fired,
+        1,
+        "the institutions failing past the threshold forces one beat"
+    );
+}
+
+#[test]
 fn a_loyalty_beat_fires_as_the_founders_covenant_lapses() {
     // Content-depth campaign-skeleton round 14: the last identity stat to get a
     // beat. With reactive rolls and the other threshold beats off, the only thing

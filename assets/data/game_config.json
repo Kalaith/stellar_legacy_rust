@@ -179,6 +179,11 @@
       0.2
     ],
     "loyalty_beat_family": "legacy_drift",
+    "stability_beats": [
+      0.3,
+      0.18
+    ],
+    "stability_beat_family": "legacy_drift",
     "flourish_beats": [
       0.8,
       0.92

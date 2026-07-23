@@ -76,6 +76,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_adaptation_beat(sim, data, &mut report)
             && !fire_crisis_beat(sim, data, &mut report)
             && !fire_loyalty_beat(sim, data, &mut report)
+            && !fire_stability_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
@@ -284,6 +285,27 @@ fn fire_loyalty_beat(sim: &mut SimState, data: &GameData, report: &mut TickRepor
         contract.loyalty_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.loyalty_beat_family, report);
+    true
+}
+
+/// Fire a stability-collapse beat (content-depth round 15): the last population stat
+/// to get a beat. As `stability` falls to or below each authored threshold (high→
+/// low), force a beat — not the people fracturing (crisis) nor the founders' authority
+/// lapsing (loyalty), but the ship's own institutions ceasing to function. Fires at
+/// most one threshold per month; returns whether it replaced the reactive roll.
+fn fire_stability_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.stability_beats_fired as usize) < cfg.stability_beats.len()
+            && sim.population.stability <= cfg.stability_beats[c.stability_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.stability_beats_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.stability_beat_family, report);
     true
 }
 

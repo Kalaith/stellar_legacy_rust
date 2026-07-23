@@ -107,6 +107,10 @@ pub struct ActiveContract {
     /// fires once as the founders' covenant lapses past a threshold.
     #[serde(default)]
     pub loyalty_beats_fired: u32,
+    /// How many governance-collapse beats have fired (content-depth round 15): each
+    /// fires once as the ship's institutions fail past a threshold.
+    #[serde(default)]
+    pub stability_beats_fired: u32,
     /// How many anniversary beats have fired (content-depth round 7): the
     /// periodic commemoration cadence. Doubles as the count of anniversaries
     /// observed, so the next fires when the voyage passes the following multiple.

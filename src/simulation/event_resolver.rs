@@ -284,6 +284,11 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Governance gate (content-depth round 15): institutional-collapse content stays
+    // out of the pool while the ship's government still functions.
+    if template.max_stability > 0.0 && sim.population.stability > template.max_stability {
+        return false;
+    }
     sim.year() >= template.min_year
         && sim.dynasty.generation >= template.min_generation
         && sim.population.cultural_drift >= template.min_cultural_drift
@@ -2210,6 +2215,33 @@ mod tests {
         assert!(
             passes_gate(&sim, event),
             "wealth it cannot eat and a larder run dry, at once"
+        );
+    }
+
+    #[test]
+    fn a_governance_gate_waits_for_a_failing_government() {
+        // Content-depth campaign-skeleton round 15: the honest gate for
+        // institutional-collapse content. `the_ungoverned_ship` stays out of the
+        // pool on a well-ordered ship and surfaces only once stability has fallen.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 62, &picks);
+        let event = data.events.get("the_ungoverned_ship").unwrap();
+        let ceiling = event.max_stability;
+        assert!(
+            ceiling > 0.0,
+            "the ungoverned ship gates on fallen stability"
+        );
+
+        sim.population.stability = ceiling + 0.1;
+        assert!(
+            !passes_gate(&sim, event),
+            "a well-ordered ship's government still functions"
+        );
+        sim.population.stability = ceiling;
+        assert!(
+            passes_gate(&sim, event),
+            "a failing government surfaces the reckoning"
         );
     }
 
