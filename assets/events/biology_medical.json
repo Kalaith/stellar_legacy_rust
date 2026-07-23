@@ -909,5 +909,51 @@
     "log": "The council let the habitat go on failing and kept the stores for the ship's other hungers. The living decks stayed cold, the nurseries stayed thin, and the ship grew a little older every year for it."
    }
   ]
+ },
+ {
+  "id": "the_cold_generation",
+  "category": "generational_challenge",
+  "family": "biology_medical",
+  "title": "The Cold Generation",
+  "description": "The cohort raised in the failing habitat has come of age, and they are not like the generations before them. They grew up cold and hungry and patched-together, and it shows — hardier than their soft-raised elders, warier, quicker to do without and slower to trust that the ship will provide. They are the toughest hands aboard and the least sentimental about the founders' comforts. The ship must decide what to make of a generation it half-neglected into being.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "the_cold_years"
+  ],
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "honor_their_hardness",
+    "label": "Make them the ship's spine",
+    "description": "Lean into what the cold made them — put the hardy, unsentimental generation where the ship needs endurance most.",
+    "population_delta": {
+     "stability": 0.04,
+     "adaptation": 0.05,
+     "cultural_drift": 0.04
+    },
+    "log": "The ship made a virtue of its neglect and set the cold generation where hardness mattered — the maintenance crews, the lean watches, the jobs the soft-raised shirked. They served well, and never once pretended the ship had raised them kindly."
+   },
+   {
+    "id": "make_amends",
+    "label": "Give them the warmth they missed",
+    "description": "Spend to give the cold-raised generation, late, some of the comfort they came up without, and try to heal the quiet grudge.",
+    "resource_delta": {
+     "credits": -400,
+     "food": -1500
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "unity": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship spent what it had to give the cold generation, belatedly, the warmth it had gone without — and something in them eased that had been braced a long time. It did not undo the cold years. But it said, at last, that they had been seen."
+   }
+  ]
  }
 ]

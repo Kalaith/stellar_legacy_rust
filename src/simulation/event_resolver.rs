@@ -768,6 +768,25 @@ mod tests {
     }
 
     #[test]
+    fn a_chain_payoff_waits_for_its_seeded_consequence() {
+        // Content-depth event families round 21: closing the loops — a payoff event
+        // stays out of the pool until the choice that seeds it is on record.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 1, &picks);
+        let payoff = data.events.get("the_unready_hour").unwrap();
+        assert!(
+            !passes_gate(&sim, payoff),
+            "the unready hour stays out until a reign has run unprepared"
+        );
+        sim.consequences.push("unprepared_succession".to_owned());
+        assert!(
+            passes_gate(&sim, payoff),
+            "once the consequence is on record, the reckoning can fire"
+        );
+    }
+
+    #[test]
     fn a_worn_ship_complication_rides_only_when_its_state_holds() {
         // Content-depth event families round 20: a crisis reads and bites worse on a
         // ship the mortality/famine systems have worn down — here a fever turns

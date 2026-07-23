@@ -2324,5 +2324,41 @@
     "log": "The council chose not to rush the ending of a good thing, and let the long reign run its course unhurried. The decks were the gladder for it — and a little less ready for the day the chair went cold."
    }
   ]
+ },
+ {
+  "id": "the_unready_hour",
+  "category": "immediate_crisis",
+  "family": "legacy_drift",
+  "title": "The Unready Hour",
+  "description": "The captain who held the ship for a lifetime is gone at last, and in the raw hours after, the ship discovers exactly what it chose years ago when it decided not to rush the ending of a good thing: there is no seasoned heir. The one who reigned so long never had to share the deciding, and no one else ever learned how. The chair is empty, and the ship, for the first time in a generation, does not know whose hand belongs on the helm.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "unprepared_succession"
+  ],
+  "outcomes": [
+   {
+    "id": "improvise_a_handoff",
+    "label": "Improvise a handoff",
+    "description": "Push the readiest of an unready field into the chair and hope the ship holds while they learn on the job.",
+    "population_delta": {
+     "stability": -0.06,
+     "unity": -0.03
+    },
+    "log": "The council pushed the readiest of an unready field into the first chair and held its breath. They learned the helm in a storm, at the ship's expense, and the decks felt every lesson."
+   },
+   {
+    "id": "rule_by_committee",
+    "label": "Rule by council for now",
+    "description": "Let no one inherit the whole weight; spread the deciding across the council until someone grows into it.",
+    "resource_delta": {
+     "influence": -30
+    },
+    "population_delta": {
+     "stability": 0.02,
+     "legacy_loyalty": -0.04
+    },
+    "log": "Rather than crown the unready, the council held the ship's authority in common — slower, safer, and a quiet break with the founders' idea of a single hand on the helm that some aboard would never forgive."
+   }
+  ]
  }
 ]

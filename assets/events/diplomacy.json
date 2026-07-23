@@ -1345,5 +1345,48 @@
     "log": "The ship that always folded, this once, did not — refused the price, held its posts, and made plain it would pay in more than credits before it paid the toll a soft name is charged. The hard party, who had come certain of a blink, found none, and left the terms unmet; and the crew, who had watched their ship yield too many times, stood a little straighter for having finally seen it refuse. One stand does not remake a name, but it is where a different name begins."
    }
   ]
+ },
+ {
+  "id": "the_toll_at_the_narrows",
+  "category": "immediate_crisis",
+  "family": "diplomacy",
+  "title": "The Toll at the Narrows",
+  "description": "A holdfast athwart the ship's only viable lane demands a toll to pass — steep, and backed by enough hulls to make refusal a real fight. It is exactly the kind of shakedown a poorer ship would have to bleed for or run from. But this ship is not poor: the war chest banked in the fat years, saved against precisely such a day, sits ready in the treasury. The founders' prudence has a bill to pay, if the council will let it.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "war_chest"
+  ],
+  "outcomes": [
+   {
+    "id": "pay_from_the_chest",
+    "label": "Pay the toll from the war chest",
+    "description": "This is what the chest was for. Buy passage, keep the ship whole, and count the prudence well spent.",
+    "resource_delta": {
+     "credits": -600
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "log": "The council opened the war chest and paid the narrows' price without a fight — the founders' fat-years thrift spending itself, exactly once, to carry the ship through a squeeze that would have cost a poorer hull far more than credits."
+   },
+   {
+    "id": "refuse_and_run",
+    "label": "Refuse and force the lane",
+    "description": "Keep the chest and take the risk — run the narrows against the holdfast's guns, and trust the ship's speed and nerve.",
+    "ship_delta": {
+     "hull_integrity": -0.08
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.04
+     }
+    ],
+    "log": "The council kept its chest closed and ran the narrows under fire, trading hull and nerve for money it would not pay. The ship came through scarred and unbowed, and word of a hull that does not pay to pass went ahead of it into the dark."
+   }
+  ]
  }
 ]
