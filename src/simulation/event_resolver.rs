@@ -43,6 +43,8 @@ pub fn active_complication<'a>(
             // Lived-state gates (content-depth round 15): a thinned crew, a long hunger.
             && (c.max_population == 0 || sim.population.count <= c.max_population)
             && sim.lean_food_years >= c.min_lean_food_years
+            // …and its abundance twin (round 23): a crew grown soft on a long plenty.
+            && sim.fat_food_years >= c.min_fat_food_years
             // Reputation gates (content-depth round 22): the name the ship has earned.
             && c.min_reputation
                 .iter()
@@ -1712,6 +1714,45 @@ mod tests {
             Some(&comp.id)
         );
         assert!(shown_description(&sim, template).contains("Keepers"));
+    }
+
+    #[test]
+    fn a_soft_ship_complication_rides_only_after_a_long_plenty() {
+        // Content-depth event families round 23: the abundance twin of the lean-years
+        // complication. Micrometeoroid Storm gains a twist that rides only on a crew
+        // grown soft over many fat years — unpractised at real danger.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 41, &picks);
+        let template = data.events.get("micrometeoroid_storm").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| c.min_fat_food_years > 0)
+            .expect("the storm carries a soft-generation reaction");
+
+        // Hold the Steel Covenant dominant so the First Flame reaction (the other
+        // complication) never rides — this isolates the fat-years gate.
+        sim.factions = vec![FactionState {
+            faction_id: "steel_covenant".to_string(),
+            members: sim.population.count,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        }];
+
+        // Short of a long plenty: the soft-generation twist stays out.
+        sim.fat_food_years = comp.min_fat_food_years - 1;
+        assert!(active_complication(&sim, template).is_none());
+
+        // Once the plenty has held long enough: it rides and shows.
+        sim.fat_food_years = comp.min_fat_food_years;
+        assert_eq!(
+            active_complication(&sim, template).map(|c| &c.id),
+            Some(&comp.id)
+        );
+        assert!(shown_description(&sim, template).contains("easy years"));
     }
 
     #[test]

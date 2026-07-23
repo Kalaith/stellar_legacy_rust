@@ -132,6 +132,16 @@
      "morale": -0.03
     },
     "log": "With too few hands to tend every scrubber, whole decks breathed thin while the crew chose which air to save. The plant took a lasting bite out of the life-support margin, and a few of the unlucky with it."
+   },
+   {
+    "id": "unpractised_at_want",
+    "min_fat_food_years": 12,
+    "description_add": "And this crew has been comfortable a long time — years of full stores and easy air, a generation that never learned to sit with real discomfort. The thin, rationed air frightens them out of proportion to the danger, and the grumbling and the hoarding make a manageable shortage harder to manage than it should be.",
+    "population_delta": {
+     "morale": -0.03,
+     "unity": -0.02
+    },
+    "log": "A crew grown soft on long plenty took the rationed air badly, meeting a discomfort their grandparents would have shrugged at with a disbelief that made the whole business harder."
    }
   ]
  },
@@ -254,6 +264,16 @@
      "morale": -0.03
     },
     "log": "With the ward too far gone to hold it, the quiet fever stopped being quiet — it took the frail and the old before the biome finally turned, a toll a working infirmary would never have allowed."
+   },
+   {
+    "id": "a_crew_that_has_buried_few",
+    "min_fat_food_years": 12,
+    "description_add": "And this is a crew that has buried few — a long soft stretch of full stores and gentle years in which death came rarely and quietly. They meet the fever's first real losses with a shock and a grief out of all proportion to the numbers, unpractised at the one thing a generation ship always, eventually, asks of its people.",
+    "population_delta": {
+     "morale": -0.04,
+     "unity": -0.02
+    },
+    "log": "The soft years showed in the mourning: a crew unused to loss took the fever's toll far harder than the count alone would explain, and the ship was a long time lifting its head afterward."
    }
   ]
  },

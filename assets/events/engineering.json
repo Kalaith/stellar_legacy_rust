@@ -145,6 +145,16 @@
      "morale": -0.02
     },
     "log": "Under the Keepers, the ship met the storm as scripture met fire — grimly, together, certain it meant something. The debris did not care, but the people came through it harder and more one thing than they went in."
+   },
+   {
+    "id": "a_soft_generation_meets_the_dark",
+    "min_fat_food_years": 12,
+    "description_add": "And this is a generation that has known only the easy years — full larders, quiet watches, no real reckoning in living memory. The storm is the first violent thing many of them have ever faced, and the unpractised fear of it runs through the ship faster than the debris does, turning a hard hour into something closer to a panic.",
+    "population_delta": {
+     "morale": -0.03,
+     "unity": -0.02
+    },
+    "log": "The long soft years told in the storm: a crew that had never truly been frightened met its first real danger badly, and the ship came through it shaken in a way a harder-worn people would not have been."
    }
   ]
  },

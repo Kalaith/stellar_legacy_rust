@@ -289,6 +289,16 @@ pub struct Complication {
     pub max_population: u32,
     #[serde(default)]
     pub min_lean_food_years: u32,
+    /// The abundance twin of `min_lean_food_years` (content-depth event families round
+    /// 23): the complication rides only once the ship has been *fat* for at least this
+    /// many years — a crew grown soft on a long plenty, a generation that has never
+    /// known want or rationing or the burying of many. Where the lean gate makes a
+    /// crisis bite a worn ship, this makes it land strangely on a comfortable one:
+    /// disbelief, unpractised panic, a discipline gone slack for lack of use. 0 = the
+    /// gate is ignored. (A ship cannot be lean and fat at once, so the two never both
+    /// ride.)
+    #[serde(default)]
+    pub min_fat_food_years: u32,
     /// Reputation gates (content-depth event families round 22): the complication
     /// rides only while the ship's cumulative *character* meets every named trait —
     /// at or above (`min_reputation`) or at or below (`max_reputation`). The same
