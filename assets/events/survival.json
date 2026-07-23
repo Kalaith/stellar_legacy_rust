@@ -252,6 +252,21 @@
     "force_return": true,
     "log": "The blighted decks were sealed and the mission cut short. The ship came about, holds light and hopes lighter, for the long road home."
    }
+  ],
+  "complications": [
+   {
+    "id": "on_a_starving_ship",
+    "min_lean_food_years": 8,
+    "description_add": "The larder was already thin — years thin. A blight now is not a setback but a sentence: there is nothing banked to eat while a replant grows.",
+    "resource_delta": {
+     "food": -2000
+    },
+    "population_delta": {
+     "count": -30,
+     "morale": -0.03
+    },
+    "log": "Coming on top of a hunger years deep, the blight cut where the ship had no reserve to give. The lean got leaner and the roster shorter before the first new shoots showed."
+   }
   ]
  },
  {

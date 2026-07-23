@@ -768,6 +768,35 @@ mod tests {
     }
 
     #[test]
+    fn a_worn_ship_complication_rides_only_when_its_state_holds() {
+        // Content-depth event families round 20: a crisis reads and bites worse on a
+        // ship the mortality/famine systems have worn down — here a fever turns
+        // killer only when the infirmary that should break it is itself failing.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 1, &picks);
+        let fever = data.events.get("quiet_fever").unwrap();
+
+        // A sound ward: no complication rides.
+        if let Some(bay) = sim.subsystems.get_mut("medical_bay") {
+            bay.condition = 0.8;
+        }
+        assert!(
+            active_complication(&sim, fever).is_none(),
+            "a working ward keeps the fever a nuisance"
+        );
+        // A failing ward: the killer twist rides.
+        if let Some(bay) = sim.subsystems.get_mut("medical_bay") {
+            bay.condition = 0.2;
+        }
+        assert_eq!(
+            active_complication(&sim, fever).map(|c| c.id.as_str()),
+            Some("no_ward_to_hold_it"),
+            "a broken ward lets the fever turn deadly"
+        );
+    }
+
+    #[test]
     fn trilemma_events_offer_a_genuinely_distinct_third_path() {
         // Content-depth event-families round 8: the set was overwhelmingly binary
         // (175/189 events had exactly two outcomes). Five iconic dilemmas gained a

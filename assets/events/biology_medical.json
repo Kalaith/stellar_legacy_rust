@@ -118,7 +118,22 @@
     "log": "The ship moved at half-effort until the air cleared. Everyone learned to sit very still."
    }
   ],
-  "family": "biology_medical"
+  "family": "biology_medical",
+  "complications": [
+   {
+    "id": "too_few_hands",
+    "max_population": 400,
+    "description_add": "There are not enough hands left aboard to work every failing scrubber at once; the decks that go unmanned go stale first.",
+    "ship_delta": {
+     "life_support": -0.05
+    },
+    "population_delta": {
+     "count": -20,
+     "morale": -0.03
+    },
+    "log": "With too few hands to tend every scrubber, whole decks breathed thin while the crew chose which air to save. The plant took a lasting bite out of the life-support margin, and a few of the unlucky with it."
+   }
+  ]
  },
  {
   "id": "water_bloom",
@@ -222,6 +237,23 @@
      "adaptation": 0.03
     },
     "log": "The council chose patience. The fever lingered a generation, and the survivors carried its mark."
+   }
+  ],
+  "complications": [
+   {
+    "id": "no_ward_to_hold_it",
+    "condition_below": [
+     {
+      "id": "medical_bay",
+      "below": 0.35
+     }
+    ],
+    "description_add": "The infirmary that should break this fever is itself half-broken — cannibalized parts and half-remembered procedure. What should be a nuisance is turning killer.",
+    "population_delta": {
+     "count": -25,
+     "morale": -0.03
+    },
+    "log": "With the ward too far gone to hold it, the quiet fever stopped being quiet — it took the frail and the old before the biome finally turned, a toll a working infirmary would never have allowed."
    }
   ]
  },
