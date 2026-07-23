@@ -222,6 +222,13 @@ pub struct CompletionReward {
     pub resource: ResourceDelta,
     #[serde(default)]
     pub population: PopulationDelta,
+    /// How seeing this charter through shapes the ship's *character* (content-depth
+    /// charters round 17): a whole voyage of carrying refugees to safety deepens the
+    /// ship's mercy; one spent on cold enforcement hardens it. So the missions a
+    /// reputation *unlocks* (it106) then *build that reputation further* — a
+    /// self-reinforcing spiral through the mission cycle. Applied on full completion.
+    #[serde(default)]
+    pub reputation_deltas: Vec<crate::data::events::ReputationDelta>,
     /// Line narrating the boon; empty = a generic line.
     #[serde(default)]
     pub log: String,
@@ -231,6 +238,7 @@ impl CompletionReward {
     /// True when the reward grants nothing (an ordinary charter with no legacy).
     pub fn is_none(&self) -> bool {
         self.subsystem_deltas.is_empty()
+            && self.reputation_deltas.is_empty()
             && self.resource == ResourceDelta::default()
             && self.population == PopulationDelta::default()
     }

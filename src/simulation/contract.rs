@@ -111,6 +111,11 @@ pub fn apply_completion_reward(sim: &mut SimState, template: &ContractTemplate) 
             state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
         }
     }
+    // A whole voyage of one kind of work shapes the ship's character (content-depth
+    // charters round 17): the mission the reputation unlocked now builds it further.
+    for delta in &reward.reputation_deltas {
+        sim.adjust_reputation(&delta.id, delta.delta);
+    }
     Some(if reward.log.is_empty() {
         format!("The lessons of {} stay with the ship.", template.name)
     } else {
@@ -451,6 +456,38 @@ mod tests {
             tapped_morale > survey_morale && tapped_hull > survey_hull,
             "the star's reach wears morale and hull faster than a quiet survey \
              (tap {tapped_morale}/{tapped_hull} vs survey {survey_morale}/{survey_hull})"
+        );
+    }
+
+    #[test]
+    fn completing_a_charter_shapes_the_ships_character() {
+        // Content-depth charters round 17: the missions a reputation unlocks build it
+        // further. Seeing the sanctuary run through deepens the ship's mercy; the
+        // hard contract hardens it — a self-reinforcing spiral through the missions.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let sanctuary = data.contracts.get("the_sanctuary_run").unwrap();
+        let hard = data.contracts.get("the_hard_contract").unwrap();
+        assert!(
+            !sanctuary.completion_reward.reputation_deltas.is_empty()
+                && !hard.completion_reward.reputation_deltas.is_empty(),
+            "both reputation-gated charters shape character on completion"
+        );
+
+        let mut kind = SimState::new_campaign(&data, "preservers", 87, &picks);
+        let m0 = kind.reputation("mercy");
+        apply_completion_reward(&mut kind, sanctuary);
+        assert!(
+            kind.reputation("mercy") > m0,
+            "a voyage of carrying refugees deepens the ship's mercy"
+        );
+
+        let mut cold = SimState::new_campaign(&data, "preservers", 88, &picks);
+        let c0 = cold.reputation("mercy");
+        apply_completion_reward(&mut cold, hard);
+        assert!(
+            cold.reputation("mercy") < c0,
+            "a voyage of cold enforcement hardens it"
         );
     }
 

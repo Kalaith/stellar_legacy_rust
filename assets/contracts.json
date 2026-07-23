@@ -2008,7 +2008,13 @@
      "knowledge": 0.08
     }
    ],
-   "log": "Four centuries of carrying the frail and the frightened made the ship's medics the finest kind — practiced in keeping the vulnerable alive across a crossing, a depth of care the medical bay keeps."
+   "log": "Four centuries of carrying the frail and the frightened made the ship's medics the finest kind — practiced in keeping the vulnerable alive across a crossing, a depth of care the medical bay keeps.",
+   "reputation_deltas": [
+    {
+     "id": "mercy",
+     "delta": 0.06
+    }
+   ]
   }
  },
  {
@@ -2107,6 +2113,15 @@
     "id": "mercy",
     "threshold": 0.35
    }
-  ]
+  ],
+  "completion_reward": {
+   "reputation_deltas": [
+    {
+     "id": "mercy",
+     "delta": -0.06
+    }
+   ],
+   "log": "Four centuries of stripping a place people still called home left their mark on the ship — a crew grown practiced at the cold thing done without flinching, and a name in the dark grown colder to match."
+  }
  }
 ]

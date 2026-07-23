@@ -1197,6 +1197,12 @@ mod tests {
             .iter()
             .flat_map(|(_, e)| e.outcomes.iter())
             .flat_map(|o| o.reputation_deltas.iter().map(|r| &r.id))
+            // Content-depth round 17: a charter's completion also nudges reputation.
+            .chain(
+                data.contracts
+                    .iter()
+                    .flat_map(|(_, c)| c.completion_reward.reputation_deltas.iter().map(|r| &r.id)),
+            )
             .collect();
         for (id, e) in data.events.iter() {
             for gate in e
