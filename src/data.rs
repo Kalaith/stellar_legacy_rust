@@ -421,6 +421,29 @@ pub struct FlavorConfig {
     pub reputation_voice_high: f32,
     #[serde(default)]
     pub reputation_voice_low: f32,
+    /// The ship's *institutions* crossing into disorder (content-depth voice round 17):
+    /// the governance twin of the morale (`ship_mood_darkening`) and polity
+    /// (`polity_souring`) voices — distinct from the crew's spirits and from how
+    /// content the peoples are, this voices the *machinery of government* beginning to
+    /// slip: quorums missed, offices going unfilled, decisions drifting. Gated at a
+    /// gentler threshold than the it102 collapse *beat*, so the voice (a fraying
+    /// noticed) precedes the reckoning (a government failed). No name; indexed by year;
+    /// empty = silence.
+    #[serde(default)]
+    pub stability_fraying: Vec<String>,
+    /// The ship's institutions crossing into good order (content-depth voice round 17):
+    /// the positive twin — councils reaching quorum again, offices filled, the charter
+    /// honored in practice, the government visibly working. No name; indexed by year.
+    #[serde(default)]
+    pub stability_firming: Vec<String>,
+    /// Stability at/above which the ship remarks its institutions in good order
+    /// (`_high`) or at/below which it remarks them fraying (`_low`) — the `_low`
+    /// gentler than the it102 collapse-beat bands, so the voice precedes the reckoning
+    /// (content-depth voice round 17).
+    #[serde(default)]
+    pub stability_voice_high: f32,
+    #[serde(default)]
+    pub stability_voice_low: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month

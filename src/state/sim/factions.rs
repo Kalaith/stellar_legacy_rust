@@ -75,6 +75,20 @@ pub fn mood_band_for(approval: f32) -> i8 {
     }
 }
 
+/// The band of institutional order for a stability value (content-depth voice round
+/// 17), given the governance-voice thresholds: firm (+1) at/above `high`, fraying
+/// (-1) at/below `low`, steady (0) between. Shared by the launch-band record and the
+/// yearly announcement so both read the same bands.
+pub fn stability_voice_band_for(stability: f32, high: f32, low: f32) -> i8 {
+    if stability >= high {
+        1
+    } else if stability <= low {
+        -1
+    } else {
+        0
+    }
+}
+
 impl FactionState {
     pub fn is_aboard(&self) -> bool {
         self.status == FactionStatus::Aboard
@@ -668,6 +682,42 @@ impl SimState {
             self.push_log(line);
         }
         self.reputation_voice_band = band;
+    }
+
+    /// Give the ship's *institutions* a voice (content-depth voice round 17): the
+    /// governance twin of the morale (`announce_ship_mood`) and polity
+    /// (`announce_polity_mood`) voices. Distinct from the crew's spirits and from how
+    /// content the peoples are, this voices the *machinery of government* — when
+    /// `stability` crosses *into* a fraying band (quorums missed, offices unfilled) or
+    /// a firm one (the councils working, the charter honored in practice), surface one
+    /// pooled line. Gated gentler than the it102 collapse *beat*, so the voice (a
+    /// fraying noticed) precedes the reckoning (a government failed). Deterministic
+    /// (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_stability_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.stability_voice_high <= 0.0 {
+            return;
+        }
+        let band = stability_voice_band_for(
+            self.population.stability,
+            fl.stability_voice_high,
+            fl.stability_voice_low,
+        );
+        if band == self.stability_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.stability_firming,
+            -1 => &fl.stability_fraying,
+            _ => {
+                self.stability_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.stability_voice_band = band;
     }
 
     /// Shift the smallest aboard faction's approval by `delta`, clamped
@@ -1343,6 +1393,54 @@ mod tests {
         sim.announce_reputation_name(&data);
         assert_eq!(name_lines(&sim), 2, "a feared name says so afresh");
         assert_eq!(sim.reputation_voice_band, -1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_government_slips_or_steadies() {
+        // Content-depth voice round 17: the governance voice, the institutional twin of
+        // the morale and polity voices. A founding ship's sound government is the silent
+        // baseline; crossing into a fraying band surfaces one pooled line; a return to a
+        // firm band gets its own, opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(31);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.stability_voice_high > 0.0 && fl.stability_fraying.len() >= 3,
+            "this test needs the governance voice enabled"
+        );
+        let low = fl.stability_voice_low;
+        let high = fl.stability_voice_high;
+        let gov_lines = |sim: &SimState| {
+            let fray = &data.config.flavor.stability_fraying;
+            let firm = &data.config.flavor.stability_firming;
+            sim.log
+                .iter()
+                .filter(|l| fray.contains(&l.text) || firm.contains(&l.text))
+                .count()
+        };
+
+        // A founding ship's institutions are sound — the launch band is recorded, silent.
+        sim.announce_stability_mood(&data);
+        assert_eq!(gov_lines(&sim), 0, "a sound founding government is silent");
+
+        // The institutions fray past the gentle line: one line.
+        sim.population.stability = low - 0.05;
+        sim.announce_stability_mood(&data);
+        assert_eq!(gov_lines(&sim), 1, "a government slipping says so once");
+        assert_eq!(sim.stability_voice_band, -1);
+
+        // Still fraying — no reprint.
+        sim.announce_stability_mood(&data);
+        assert_eq!(gov_lines(&sim), 1, "staying frayed is not re-announced");
+
+        // The institutions firm up again: a second, distinct line.
+        sim.population.stability = high + 0.05;
+        sim.announce_stability_mood(&data);
+        assert_eq!(
+            gov_lines(&sim),
+            2,
+            "the government steadying says so afresh"
+        );
+        assert_eq!(sim.stability_voice_band, 1);
     }
 
     #[test]

@@ -342,6 +342,20 @@
     ],
     "reputation_voice_high": 0.66,
     "reputation_voice_low": 0.34,
+    "stability_fraying": [
+      "The machinery of the ship's government has begun, quietly, to slip its gears. A council meets and cannot make quorum; an office falls vacant and no one is quite appointed to fill it; a decision that ought to take a week takes a season, or takes no one at all. Nothing has collapsed — it is only that the government is a little less a government than it was.",
+      "It is a small thing at first and then it is everywhere: the charter cited and then worked around, the standing orders honored in the letter and quietly ignored in the fact, the offices of the ship going through motions whose reason no one now insists upon. The institutions are fraying — not with a crisis but with a shrug.",
+      "The ship's councils have grown slow and its offices thin. Business that once moved through proper channels now moves through whoever happens to be willing, and the difference — between a ship governed and a ship merely running — has begun to show at the edges, in the small matters that fall through and are not caught.",
+      "Somewhere in the last stretch the government stopped quite working. Not dramatically, no coup and no collapse, but the quorums come harder and the appointments go unmade, and more and more the ship is held together by habit and goodwill where once it was held together by its institutions. The decks feel the slack, and are uneasy in it."
+    ],
+    "stability_firming": [
+      "The ship's government has quietly found its feet again. The councils meet and reach quorum, the offices are filled and answer for their work, and the charter is honored not as an old custom but as a working rule — the unshowy machinery of a polity that has decided, once more, to be governed.",
+      "It shows in the small things first: a decision made cleanly through proper channels, an office filled the day it falls vacant, a dispute settled by the standing law rather than by whoever shouts loudest. The institutions are firm again, and the ship moves with the quiet confidence of a place where the rules mean what they say.",
+      "Something has been set right in the ship's governance of late. The business of the vessel moves through its proper offices again, the councils work, and there is across the decks the particular ease of a people who know that if a thing needs deciding, there is someone whose job it is to decide it — and who will.",
+      "The government works this season in the way that asks no notice. Quorums are reached, offices answer, the charter is kept, and the ship carries the unremarkable and invaluable steadiness of a polity whose institutions are, for now, simply doing what institutions are for."
+    ],
+    "stability_voice_high": 0.7,
+    "stability_voice_low": 0.4,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

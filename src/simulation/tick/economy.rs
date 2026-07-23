@@ -243,6 +243,12 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // when the whole crew's spirits cross into a grim or a buoyant band, the decks
     // say so once — the ship-wide twin of the faction-mood announcement above.
     sim.announce_ship_mood(data);
+    // …and give the ship's *institutions* a voice (content-depth voice round 17), now
+    // that the year's security-driven recovery and any event shifts have settled: when
+    // stability crosses into a fraying or a firm band the decks remark the government
+    // slipping or working — the governance twin of the spirits and political-climate
+    // voices above.
+    sim.announce_stability_mood(data);
 
     // Generational tick (GDD §5.3).
     sim.dynasty.years_since_generation += 1;

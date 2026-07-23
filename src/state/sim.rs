@@ -406,6 +406,13 @@ pub struct SimState {
     /// launch; a return to the middle silently re-arms.
     #[serde(default)]
     pub reputation_voice_band: i8,
+    /// The last-announced band of the ship's *institutional* order (content-depth
+    /// voice round 17): the governance twin of `morale_band`. Tracks whether stability
+    /// last crossed into a firm or a fraying band so a government quietly working, or
+    /// quietly slipping, says so once rather than every year it holds. The launch band
+    /// (a founding ship's institutions are sound) is recorded, not announced.
+    #[serde(default)]
+    pub stability_voice_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -523,6 +530,7 @@ impl SimState {
             polity_mood_band: 0,
             reputation_beat_band: 0,
             reputation_voice_band: 0,
+            stability_voice_band: 0,
             depopulation_beats_fired: 0,
             subsystem_beats_fired: Vec::new(),
             lean_food_years: 0,
@@ -535,6 +543,14 @@ impl SimState {
         // read as the baseline, not a "lift" the collective-mood voice announces
         // (content-depth voice round 11).
         sim.morale_band = factions::mood_band_for(sim.population.morale);
+        // Likewise record the launch band of the ship's institutional order so a
+        // founding ship's sound government reads as the baseline, not a "firming" the
+        // governance voice announces (content-depth voice round 17).
+        sim.stability_voice_band = factions::stability_voice_band_for(
+            sim.population.stability,
+            config.flavor.stability_voice_high,
+            config.flavor.stability_voice_low,
+        );
         // Founding senior staff fill the configured starting posts.
         for archetype_id in &config.crew.starting_posts {
             let age_span = config.crew.recruit_age_max - config.crew.recruit_age_min + 1;
