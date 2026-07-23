@@ -262,6 +262,15 @@ pub fn advance_contract(
         })
         .unwrap_or(1.0);
 
+    // A crew's spirits move how fast the work goes (content-depth charters round 22):
+    // the objective's first coupling to the crew's *state* rather than the ship's
+    // fittings (speed, combat) or its modules. A devoted, high-hearted crew drives the
+    // work harder than any drive tuning; a dispirited one drags at it. A swing around
+    // the neutral midpoint, floored so a broken crew slows the mission but never wholly
+    // stalls it. Read before the mutable contract borrow.
+    let morale_factor =
+        (1.0 + config.ship.morale_objective_swing * (sim.population.morale - 0.5)).max(0.2);
+
     let mut out = ContractProgress::default();
 
     // Mutate the contract in a scope so its borrow ends before we grant any
@@ -295,7 +304,7 @@ pub fn advance_contract(
             // combat_factor is 1.0 and the accrual is unchanged there.
             let combat_factor = 1.0 + combat.max(0) as f32 * contract.objective_combat_scaling;
             contract.objective_progress +=
-                base_rate * speed_factor * objective_condition * combat_factor;
+                base_rate * speed_factor * objective_condition * combat_factor * morale_factor;
         }
 
         let progress = contract.progress();
@@ -940,6 +949,9 @@ mod tests {
     #[test]
     fn objective_accrues_only_during_operation() {
         let (data, mut sim) = armed(2, "deep_vein_survey");
+        // Neutralize the round-22 crew-morale factor (as speed/combat are passed 0) so
+        // this isolates the base accrual rate: at the 0.5 midpoint the factor is 1.0.
+        sim.population.morale = 0.5;
 
         // Nothing accrues in Preparation or Travel.
         loop {
@@ -960,6 +972,30 @@ mod tests {
             (c.objective_progress - expected).abs() < 1e-3,
             "one operation month accrues base_rate: {} vs {expected}",
             c.objective_progress
+        );
+    }
+
+    #[test]
+    fn a_high_hearted_crew_works_the_objective_faster() {
+        // Content-depth charters round 22: the mission's coupling to the crew's spirits.
+        // A devoted crew drives the objective harder than a dispirited one, all else
+        // equal — the crew-state twin of the loadout accrual levers.
+        let first_operation_accrual = |morale: f32| -> f32 {
+            let (data, mut sim) = armed(9, "deep_vein_survey");
+            sim.population.morale = morale; // advance_contract never moves morale
+            loop {
+                let p = advance_contract(&mut sim, &data.config, 0, 0);
+                if p.phase_changed == Some(ContractPhase::Operation) {
+                    break;
+                }
+            }
+            sim.contract.as_ref().unwrap().objective_progress
+        };
+        let devoted = first_operation_accrual(0.95);
+        let broken = first_operation_accrual(0.15);
+        assert!(
+            devoted > broken * 1.05,
+            "a high-hearted crew works the objective faster: {devoted} vs {broken}"
         );
     }
 

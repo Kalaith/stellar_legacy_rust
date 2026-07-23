@@ -299,6 +299,13 @@ pub struct ShipConfig {
     /// Bonus contract progress-years added per point of aggregate speed each
     /// year (boosts milestones/score, not the duration).
     pub contract_progress_per_speed: f32,
+    /// How much the crew's *morale* swings objective accrual (content-depth charters
+    /// round 22): the mission's coupling to the crew's spirits. Accrual is scaled by
+    /// `1 + this·(morale − 0.5)`, floored — so a high-hearted crew drives the work
+    /// faster and a dispirited one drags, around a neutral 0.5 midpoint. 0 = the crew's
+    /// mood does not touch how fast the mission goes.
+    #[serde(default)]
+    pub morale_objective_swing: f32,
     /// Success-chance bonus per point of aggregate combat on Wanderer dilemmas
     /// (firepower backs the confrontation).
     pub combat_dilemma_odds_per_point: f32,
@@ -2294,6 +2301,14 @@ mod tests {
                 "the fabrication mechanic is on but its costs/yield are not all positive"
             );
         }
+        // Content-depth charters round 22: the crew-morale accrual swing is gentle —
+        // a devoted crew works meaningfully but not miraculously faster, and even a
+        // broken one is floored above a stall at runtime.
+        assert!(
+            (0.0..=1.0).contains(&data.config.ship.morale_objective_swing),
+            "morale_objective_swing {} out of the gentle range [0, 1]",
+            data.config.ship.morale_objective_swing
+        );
         // Content-depth factions round 22: the proud-tender upkeep is a gentle yearly
         // dividend of a delighted people, at a plausible "delighted" approval band — not
         // a repair crew that rebuilds a module from pride alone.
