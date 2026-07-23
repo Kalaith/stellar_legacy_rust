@@ -1882,5 +1882,108 @@
     "log": "The ship let its hard-won thrift soften at last, the young unlearning a fear whose cause was a generation dead, the lean rites quietly retired amid a plenty that made them look less like wisdom than like a wound worn too long as a virtue. Something austere and defining went out of the ship with the fear, and something lighter came in — a people that had suffered enough, finally allowing itself to stop."
    }
   ]
+ },
+ {
+  "id": "the_kindness_returned",
+  "category": "immediate_crisis",
+  "title": "The Kindness Returned",
+  "description": "The larder is thin and the ship is bracing to ration hard — and then, unhailed and unasked, a stranger's hull matches course and offers to share what it has. Its captain explains, almost apologetically, that word of this ship travels: that here is a vessel known to help others in exactly this strait, and that the dark keeps a longer memory than anyone credits it with. The mercy the ship spent generations building, one small choice at a time, has come back around to it at the moment it needs mercy itself.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 3500,
+  "min_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.62
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "accept_and_remember",
+    "label": "Accept it gladly, and remember the debt",
+    "description": "Take the aid with an open hand and a grateful heart, and file the debt where the ship files all such things — not as a ledger entry to be repaid but as a bond to be carried forward, one more strand in the web of mercy that just, for once, held the ship up instead of others. A people that gives freely and receives freely is a people the dark looks after.",
+    "resource_delta": {
+     "food": 6000,
+     "influence": 40
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.02
+     }
+    ],
+    "log": "The ship took the stranger's aid gladly and gratefully, and the famine broke before it had properly begun — the mercy of generations returning, unbidden, at the hour of need. The crew learned a thing that no ration drill teaches: that a name for kindness is the one larder the dark cannot empty, and that a people generous in the good years is a people someone comes for in the lean ones."
+   },
+   {
+    "id": "accept_and_repay",
+    "label": "Accept, but insist on paying fair",
+    "description": "Gratitude is one thing and dependence another; the ship's pride does not sit easy under a debt it cannot see the end of. Take the aid, break the famine, and press hard credit on the stranger in return — not to diminish the kindness but to keep the ship a giver and not a taker, even in the strait where it must, this once, receive.",
+    "resource_delta": {
+     "food": 5000,
+     "credits": -1200
+    },
+    "population_delta": {
+     "stability": 0.04,
+     "unity": 0.02
+    },
+    "log": "The ship took the aid and paid for it in hard credit, breaking the famine and keeping its pride intact — a giver even in the hour it had to receive. The stranger shrugged and took the payment, a little bemused, and the ship sailed on fed and square with the dark, having declined even in extremity to be the sort of hull that simply takes."
+   }
+  ]
+ },
+ {
+  "id": "the_famine_faced_alone",
+  "category": "immediate_crisis",
+  "title": "The Famine Faced Alone",
+  "description": "The larder is failing and the ship does the thing any ship does: it hails the dark for aid. And the dark, this time, does not answer. The hulls in range go quiet, or answer only to decline; the waystations find reasons; word has traveled, and the word is that this is a ship that takes and does not give, that left castaways to the void and cut its own weak to spare its strong, and that a hull like that can face its lean years the way it made others face theirs — alone. The reputation the ship built one hard choice at a time has become a debt, and it has come due at the worst hour there is.",
+  "requires_decision": true,
+  "family": "survival",
+  "food_below": 3500,
+  "max_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.35
+   }
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "endure_it_alone",
+    "label": "Endure it alone, and count the cost",
+    "description": "There is no one coming, and there is a certain grim clarity in knowing it. Ration to the bone, bury the dead, and bear the famine on the ship's own discipline and nothing else — and let the crew draw what solidarity it can from a hardship that is, at least, entirely theirs, earned by their own hand and borne by it too.",
+    "population_delta": {
+     "count": -40,
+     "unity": 0.05,
+     "stability": 0.03,
+     "morale": -0.05
+    },
+    "log": "No one came, and the ship endured its famine the way it had made others endure theirs — alone, on its own hard discipline, burying its dead and asking nothing of a dark that had nothing to offer a hull like it. There was a bleak solidarity in it, a people bearing a hardship earned entirely by its own hand, and there was the cold arithmetic of a reputation come due: that the ship which gives nothing is given nothing, at exactly the hour it has nothing itself."
+   },
+   {
+    "id": "take_what_you_need",
+    "label": "Take what you need by force",
+    "description": "If the dark will not help a feared ship, let it fear the ship properly. There is a weaker hull in range with stores it cannot defend; take them. The ship is already known for the hard thing done without flinching — this is only one more, and a hungry crew is not the crew to develop a conscience it never had when it was fed.",
+    "resource_delta": {
+     "food": 5500,
+     "minerals": -200
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": -0.03,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.08
+     }
+    ],
+    "log": "The ship took what it needed from a hull too weak to keep it, breaking its famine on someone else's stores and deepening, one more notch, the fearsome name that had left it with no gentler option. It was efficient and it was a prophecy fulfilling itself — a ship that no one would help becoming, hunger by hunger, a ship no one dared refuse — and the dark's memory, already cold toward it, grew colder by exactly the width of the theft."
+   }
+  ]
  }
 ]

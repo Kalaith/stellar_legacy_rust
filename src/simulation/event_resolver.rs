@@ -2191,6 +2191,46 @@ mod tests {
     }
 
     #[test]
+    fn a_famines_options_turn_on_the_ships_reputation() {
+        // Content-depth provisioning round 16: reputation as a survival factor. In a
+        // famine, a merciful ship's name brings aid unbidden; a feared ship's finds
+        // every door closed; a neutral ship faces the ordinary famine, neither.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let aid = data.events.get("the_kindness_returned").unwrap();
+        let alone = data.events.get("the_famine_faced_alone").unwrap();
+        let famine = aid.food_below.expect("the aid gates on a famine");
+
+        let mut sim = SimState::new_campaign(&data, "preservers", 91, &picks);
+        sim.resources.food = famine - 1; // a real famine
+        sim.dynasty.generation = 5; // past the feared-alone gate's min_generation
+
+        // A neutral name: neither reputation-conditioned famine surfaces.
+        assert!(
+            !passes_gate(&sim, aid) && !passes_gate(&sim, alone),
+            "an unknown ship faces its famine on ordinary terms"
+        );
+        // A merciful name in a famine: aid comes, and the feared version stays shut.
+        sim.reputation.insert("mercy".to_string(), 0.7);
+        assert!(
+            passes_gate(&sim, aid) && !passes_gate(&sim, alone),
+            "a merciful name is helped, not shunned"
+        );
+        // A feared name in a famine: the doors close, and no aid comes.
+        sim.reputation.insert("mercy".to_string(), 0.2);
+        assert!(
+            passes_gate(&sim, alone) && !passes_gate(&sim, aid),
+            "a feared name faces its famine alone"
+        );
+        // But only *in* a famine — a fed feared ship faces neither.
+        sim.resources.food = famine + 5000;
+        assert!(
+            !passes_gate(&sim, alone),
+            "reputation only bites where the larder is already thin"
+        );
+    }
+
+    #[test]
     fn a_sustained_plenty_gate_waits_for_a_soft_generation() {
         // Content-depth provisioning round 14: the mirror of the chronic-scarcity
         // gate. `the_soft_generation` tells a lifetime of plenty from one bumper
