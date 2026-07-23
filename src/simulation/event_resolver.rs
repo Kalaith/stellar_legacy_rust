@@ -2209,6 +2209,75 @@ mod tests {
     }
 
     #[test]
+    fn the_ship_has_a_second_face_its_resolve() {
+        // Content-depth event families round 18: the graded-character system gets a
+        // second trait. `resolve` — the ship's name for steadfastness, seeing things
+        // through and holding its nerve — is built and read entirely through event
+        // choices, and is orthogonal to `mercy`: holding a line builds resolve without
+        // touching mercy, and a resolute name opens a door a yielding one cannot.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 83, &picks);
+
+        // A fresh ship reads neutral on the new trait, and the steadfast door is shut.
+        assert_eq!(
+            sim.reputation("resolve"),
+            0.5,
+            "an untouched trait is neutral"
+        );
+        let unblinking = data.events.get("the_unblinking_ship").unwrap();
+        let folds = data.events.get("the_ship_that_folds").unwrap();
+        assert!(
+            !passes_gate(&sim, unblinking),
+            "no name for nerve yet, no door"
+        );
+        assert!(
+            folds.max_reputation.iter().any(|g| g.id == "resolve"),
+            "the yielding-name door reads the same second trait"
+        );
+
+        // Hold the line, again and again: resolve builds — and mercy does not move.
+        let standoff = data.events.get("the_line_in_the_dark").unwrap();
+        let hold = standoff
+            .outcomes
+            .iter()
+            .position(|o| o.id == "hold_the_line")
+            .unwrap();
+        let mercy_before = sim.reputation("mercy");
+        for _ in 0..3 {
+            apply_outcome(&mut sim, &data, standoff, hold);
+        }
+        assert!(
+            sim.reputation("resolve") > 0.62,
+            "holding the line builds a name for nerve"
+        );
+        assert_eq!(
+            sim.reputation("mercy"),
+            mercy_before,
+            "resolve is its own axis — building it leaves mercy untouched"
+        );
+        assert!(
+            passes_gate(&sim, unblinking),
+            "a name for nerve opens a door a softer ship can't reach"
+        );
+
+        // A ship that instead yields builds the opposite name.
+        let mut soft = SimState::new_campaign(&data, "preservers", 84, &picks);
+        let give = standoff
+            .outcomes
+            .iter()
+            .position(|o| o.id == "yield_the_ground")
+            .unwrap();
+        for _ in 0..3 {
+            apply_outcome(&mut soft, &data, standoff, give);
+        }
+        assert!(
+            soft.reputation("resolve") < 0.38,
+            "yielding the ground earns a name for folding"
+        );
+    }
+
+    #[test]
     fn a_forbidden_consequence_closes_a_door_a_choice_slammed() {
         // Content-depth event families round 13: the negative gate. A generally
         // available opportunity is barred once a disqualifying history is on record

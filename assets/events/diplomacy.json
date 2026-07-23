@@ -1179,5 +1179,171 @@
     "log": "The ship said nothing, and let its name say everything — and the stranger, having heard exactly what that name meant, cleared the passage and threw in a tribute of ore besides rather than test a reputation it plainly believed. It was the easiest passage the ship ever bought, paid for entirely by the fear it had spent generations earning, and the story that spread afterward made the next such encounter easier still, and the ship a little more the thing that story said."
    }
   ]
+ },
+ {
+  "id": "the_line_in_the_dark",
+  "category": "generational_challenge",
+  "title": "The Line in the Dark",
+  "description": "A stronger hull falls into step alongside and makes a demand dressed as a courtesy: that the ship stand aside from a charted lane it found and has every right to, and let the bigger vessel work it first. There is no treaty to appeal to out here, only what each ship is willing to back with its nerve. The ship can hold its claim and dare the other to make something of it, or stand aside and keep the peace — and the dark, which remembers these things, is watching to learn which kind of ship this is.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "outcomes": [
+   {
+    "id": "hold_the_line",
+    "label": "Hold the claim, and dare them to test it",
+    "description": "Refuse to move. Hold station on the lane, keep the drives warm and the crew at their posts, and let the stronger hull decide whether the lane is worth the trouble of a ship that will not be pushed off it. It costs to stand ready and it risks more, but a claim held once is a claim rarely contested twice.",
+    "resource_delta": {
+     "energy": -300,
+     "fuel": -0.04
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "stability": 0.02,
+     "morale": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.08
+     }
+    ],
+    "log": "The ship held its ground and kept its posts lit, and let the stronger hull weigh the cost of shifting a vessel that plainly would not shift. After a long cold pause the other worked a different lane, and the ship kept what was its — and kept, besides, the thing the standoff had really been about: a name, spread quietly afterward through the trade-dark, for a hull that holds its line."
+   },
+   {
+    "id": "yield_the_ground",
+    "label": "Stand aside and keep the peace",
+    "description": "Give up the lane. It is not worth a confrontation with a bigger hull, whatever the right of it, and a prudent ship spends no blood on pride. Step aside, let them work it first, and take the small loss over the large risk — and let the story of it travel where such stories travel.",
+    "resource_delta": {
+     "credits": 150
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "legacy_loyalty": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": -0.08
+     }
+    ],
+    "log": "The ship stood aside and let the stronger hull take the lane it had every right to keep, and told itself, correctly, that pride was a poor thing to die for. It was the sensible choice and it left a mark all the same — a crew that had watched its ship fold, and a story that went out into the dark that this was a hull that could be moved, if you were big enough to lean on it."
+   }
+  ]
+ },
+ {
+  "id": "the_unblinking_ship",
+  "category": "generational_challenge",
+  "title": "The Unblinking Ship",
+  "description": "A rival hull contests the ship's approach to an unclaimed field — the kind of standoff that, with a softer vessel, would drag out into threat and counter-threat and a slow test of who flinches first. But word of this ship has gone ahead of it, and the word is that this is a hull that does not blink: that holds its claims to the last, that has never yet been the one to fold. The rival is weighing a ship it believes will not back down, and its posture has already begun to change before a single word crosses between them.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "min_reputation": [
+   {
+    "id": "resolve",
+    "threshold": 0.62
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "let_the_name_work",
+    "label": "Let your name do the work",
+    "description": "Do nothing but hold, and let the reputation negotiate. A ship known never to fold need not raise a weapon or a voice; the rival, weighing a hull it is certain will not yield, decides the field is not worth the certainty of a fight — and withdraws, leaving it to the ship that would not blink.",
+    "resource_delta": {
+     "minerals": 500,
+     "influence": 60
+    },
+    "population_delta": {
+     "unity": 0.03,
+     "stability": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship held, and said nothing, and let a reputation for never folding do what a fight would have done more expensively. The rival weighed a hull it was sure would not yield, found the arithmetic unwelcome, and withdrew — and the ship took the field without a shot, its name for nerve a shade deeper for having, once again, not needed to prove itself."
+   },
+   {
+    "id": "offer_terms_anyway",
+    "label": "Offer to share the field, though you needn't",
+    "description": "The leverage is total; use none of it. Hail the rival and offer to split the field though the ship could plainly take it whole — a strength that chooses generosity, which the dark notices even more than a strength that chooses to press. It gives up the larger prize for the better name.",
+    "resource_delta": {
+     "minerals": 250,
+     "influence": 90
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.04
+     }
+    ],
+    "log": "The ship held every card and laid down half of them, offering to share a field it could have taken whole, and the rival — braced for a hull that would press its certain advantage — took the terms with the wary gratitude of the surprised. It cost the larger prize and bought a subtler thing: a name not only for nerve but for using it gently, which travels the dark further than either alone."
+   }
+  ]
+ },
+ {
+  "id": "the_ship_that_folds",
+  "category": "generational_challenge",
+  "title": "The Ship That Folds",
+  "description": "A hard-dealing party names a price for passage that is plainly too high, and names it without much bothering to disguise why: word is that this hull folds. That it has stood aside before, cut its losses before, yielded a claim rather than back it with nerve — and a ship known to blink is a ship worth leaning on. The party is not testing whether the ship can pay. It is testing whether it will blink again, the way it is said to.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "min_generation": 4,
+  "max_reputation": [
+   {
+    "id": "resolve",
+    "threshold": 0.38
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "pay_the_soft_tax",
+    "label": "Pay it, and keep the peace",
+    "description": "Meet the price. It is too high and both parties know why, but a fight is dearer than a tax, and a prudent ship pays the toll a soft name levies rather than spend blood disproving it. Hand over the terms, take the passage, and swallow the small confirmation that this is indeed a hull that blinks.",
+    "resource_delta": {
+     "credits": -900,
+     "minerals": -200
+    },
+    "population_delta": {
+     "stability": 0.02,
+     "morale": -0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": -0.03
+     }
+    ],
+    "log": "The ship paid the inflated price and took its passage, telling itself that peace was worth a tax — which it was, and which also, quietly, confirmed the thing the price had been built on. Word went out that the hull had blinked again, as expected, and the next hard party that met it named its own price a little higher, having heard that this was a ship one could lean on and be paid for the leaning."
+   },
+   {
+    "id": "make_a_stand",
+    "label": "Refuse, and back it — this once",
+    "description": "Say no, and mean it, and be ready to make the no cost something. It is dear and it is dangerous and it is exactly what no one expects of this hull — which is the point: a ship known to fold that suddenly will not is a ship whose whole story changes in a single hour. Spend what the stand costs and begin, at last, to be a different kind of ship.",
+    "resource_delta": {
+     "energy": -400,
+     "fuel": -0.05
+    },
+    "ship_delta": {
+     "hull_integrity": -0.03
+    },
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.05
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.1
+     }
+    ],
+    "log": "The ship that always folded, this once, did not — refused the price, held its posts, and made plain it would pay in more than credits before it paid the toll a soft name is charged. The hard party, who had come certain of a blink, found none, and left the terms unmet; and the crew, who had watched their ship yield too many times, stood a little straighter for having finally seen it refuse. One stand does not remake a name, but it is where a different name begins."
+   }
+  ]
  }
 ]
