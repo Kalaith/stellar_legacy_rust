@@ -43,6 +43,13 @@ pub fn active_complication<'a>(
             // Lived-state gates (content-depth round 15): a thinned crew, a long hunger.
             && (c.max_population == 0 || sim.population.count <= c.max_population)
             && sim.lean_food_years >= c.min_lean_food_years
+            // Reputation gates (content-depth round 22): the name the ship has earned.
+            && c.min_reputation
+                .iter()
+                .all(|g| sim.reputation(&g.id) >= g.threshold)
+            && c.max_reputation
+                .iter()
+                .all(|g| sim.reputation(&g.id) <= g.threshold)
     })
 }
 
@@ -1658,6 +1665,35 @@ mod tests {
             Some(&comp.id)
         );
         assert!(shown_description(&sim, template).contains("Keepers"));
+    }
+
+    #[test]
+    fn a_reputation_gated_complication_rides_only_on_a_ship_of_that_name() {
+        // Content-depth event families round 22: the same crisis reads differently by
+        // the *name* the ship has earned. The Petitioners gains a twist that rides only
+        // on a famously merciful hull — the desperate steered for its mercy by name.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 91, &picks);
+        let template = data.events.get("asylum_request").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| c.min_reputation.iter().any(|g| g.id == "mercy"))
+            .expect("the petitioners carry a merciful-name reaction");
+
+        // A neutral (0.5) name: the twist stays out.
+        assert!(sim.reputation("mercy") < 0.62);
+        assert!(active_complication(&sim, template).is_none());
+
+        // A famously merciful name: the twist rides and shows.
+        sim.adjust_reputation("mercy", 0.2);
+        assert!(sim.reputation("mercy") >= 0.62);
+        assert_eq!(
+            active_complication(&sim, template).map(|c| &c.id),
+            Some(&comp.id)
+        );
+        assert!(shown_description(&sim, template).contains("kind"));
     }
 
     #[test]

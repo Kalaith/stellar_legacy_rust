@@ -289,6 +289,18 @@ pub struct Complication {
     pub max_population: u32,
     #[serde(default)]
     pub min_lean_food_years: u32,
+    /// Reputation gates (content-depth event families round 22): the complication
+    /// rides only while the ship's cumulative *character* meets every named trait —
+    /// at or above (`min_reputation`) or at or below (`max_reputation`). The same
+    /// crisis reads differently depending on the *name the ship has earned*, the
+    /// character-side companion to the `requires_dominant_faction` gate (who is *in
+    /// charge*): a famously merciful crew answers a hard call one way, a feared one
+    /// another. Reputation gates events (r17), outcomes (r17), and charters (r16);
+    /// this is the first to gate a *complication*. Empty = ungated by reputation.
+    #[serde(default)]
+    pub min_reputation: Vec<ReputationGate>,
+    #[serde(default)]
+    pub max_reputation: Vec<ReputationGate>,
     /// Choice targeting (content-depth event families round 14): when non-empty,
     /// the complication's extra toll and log land *only* if the chosen outcome's id
     /// is listed here — so a twist can punish a *specific* decision (an unstable

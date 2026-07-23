@@ -1428,6 +1428,12 @@ mod tests {
                         .iter()
                         .chain(o.requires.max_reputation.iter())
                 }))
+                // Content-depth round 22: and a complication can gate on the ship's name.
+                .chain(
+                    e.complications
+                        .iter()
+                        .flat_map(|c| c.min_reputation.iter().chain(c.max_reputation.iter())),
+                )
             {
                 assert!(
                     rep_produced.contains(&gate.id),

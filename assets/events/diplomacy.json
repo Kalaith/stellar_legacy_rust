@@ -194,6 +194,26 @@
     ],
     "log": "The council turned the petitioners away. The craft fell behind, and no one aboard spoke of it at supper."
    }
+  ],
+  "complications": [
+   {
+    "id": "drawn_by_a_kind_name",
+    "min_reputation": [
+     {
+      "id": "mercy",
+      "threshold": 0.62
+     }
+    ],
+    "applies_to_outcomes": [
+     "turn_them_away"
+    ],
+    "description_add": "These petitioners did not find the ship by chance. Word of a kind hull travels farthest among the desperate, and they steered for its mercy by name — which makes the closing of the airlock, if it comes to that, a harder and colder thing than turning away a stranger who expected nothing of you.",
+    "population_delta": {
+     "morale": -0.03,
+     "unity": -0.02
+    },
+    "log": "The ones turned away had come *because* the ship was known to be kind. A crew can bear refusing a stranger; refusing those its own good name summoned sits worse, and sat with them a long while."
+   }
   ]
  },
  {
@@ -253,6 +273,23 @@
      "morale": 0.03
     },
     "log": "The voyage bought its passage with a season's work — a survey run, a failing relay rebuilt, a stretch of dark charted for people who could not spare the ships. The local power waved them through with something closer to respect than tolerance, and the crew learned that a ship good at what it does is never truly poor."
+   }
+  ],
+  "complications": [
+   {
+    "id": "a_name_the_tithe_ships_know",
+    "max_reputation": [
+     {
+      "id": "mercy",
+      "threshold": 0.35
+     }
+    ],
+    "description_add": "But the tithe ships have heard what kind of hull this is. They hang back further than their custom, their demand named in a hedging, half-apologetic tone — a shakedown crew that has clearly heard how the last ones to press this ship fared, and would rather this one simply pass.",
+    "population_delta": {
+     "morale": 0.02,
+     "unity": 0.01
+    },
+    "log": "The tithe ships kept their distance and their manners, and the crew took a cold satisfaction in a name fearsome enough to do half the negotiating for them."
    }
   ]
  },

@@ -210,6 +210,23 @@
     ],
     "log": "The rule named the skilled as first to be saved. It is efficient. No one is proud of it."
    }
+  ],
+  "complications": [
+   {
+    "id": "a_rule_against_our_own_name",
+    "min_reputation": [
+     {
+      "id": "mercy",
+      "threshold": 0.62
+     }
+    ],
+    "description_add": "And this is a ship the dark calls kind — a hull known, out to the range of rumour, for carrying the frail and the frightened when it need not have. To set down in writing, in that ship's own log, a rule for whom the medics may let die is to draft a small betrayal of the thing the crew had come to believe about themselves.",
+    "population_delta": {
+     "morale": -0.03,
+     "unity": -0.02
+    },
+    "log": "A crew famous for its mercy wrote a rule for withholding it, and something quiet went out of the wardroom that no signature could put back."
+   }
   ]
  },
  {
