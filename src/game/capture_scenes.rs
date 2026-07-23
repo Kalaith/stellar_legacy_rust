@@ -25,11 +25,13 @@ impl Game {
         match scene {
             "menu" => self.state = crate::state::GameState::Menu(MenuState::new(false)),
             "green" => {
-                // Same menu on the green (P1) tube, to verify the recolor.
+                // The new-game picker on the green (P1) tube, to verify the recolor.
                 self.display.phosphor = crate::settings::Phosphor::Green;
                 self.crt_style = self.display.crt_style();
                 ui::term::set_phosphor(self.display.phosphor);
-                self.state = crate::state::GameState::Menu(MenuState::new(true));
+                let mut menu = MenuState::new(true);
+                menu.phase = crate::state::MenuPhase::NewGame;
+                self.state = crate::state::GameState::Menu(menu);
             }
             "settings" => {
                 // Delegate one category so the capture shows both toggle states.
@@ -56,7 +58,9 @@ impl Game {
                         duration_years: 60,
                     });
                 }
-                self.state = crate::state::GameState::Menu(MenuState::new(true));
+                let mut menu = MenuState::new(true);
+                menu.phase = crate::state::MenuPhase::NewGame;
+                self.state = crate::state::GameState::Menu(menu);
             }
             "boot" => {
                 // Freeze the boot log mid-stream for a screenshot.

@@ -116,6 +116,11 @@ pub struct Game {
 
 impl Game {
     pub async fn new() -> Self {
+        // Seed macroquad's shared generator from the wall clock so `random_u64`
+        // (the per-campaign seed source) actually varies launch to launch — left
+        // unseeded it starts from a fixed default, so every new game came out the
+        // same. A `fixed_seed` in game_config still overrides this for testing.
+        macroquad_toolkit::rng::srand((macroquad::miniquad::date::now() * 1000.0) as u64);
         let data = GameData::load()
             .unwrap_or_else(|err| panic!("Stellar Legacy embedded data failed to load: {err}"));
         let chronicle = ChronicleStore::load(
@@ -312,8 +317,12 @@ impl Game {
             return;
         }
 
-        // Menu: keyboard legacy selection and launch (terminals are keyboard-first).
+        // Menu: keyboard is only wired on the new-game picker (terminals are
+        // keyboard-first); the main-menu screen is mouse-driven.
         if let GameState::Menu(menu) = &self.state {
+            if menu.phase != crate::state::MenuPhase::NewGame {
+                return;
+            }
             let selected = menu.selected_legacy;
             let count = self.legacy_ids.len();
             for i in 0..count {
@@ -331,6 +340,9 @@ impl Game {
             }
             if is_key_pressed(KeyCode::Enter) {
                 actions.push(UiAction::StartNewGame);
+            }
+            if is_key_pressed(KeyCode::Escape) {
+                actions.push(UiAction::BackToMainMenu);
             }
             return;
         }

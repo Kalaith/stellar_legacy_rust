@@ -8,7 +8,7 @@ pub mod menu;
 pub mod sim;
 
 pub use gameplay::{GameplayState, Screen};
-pub use menu::MenuState;
+pub use menu::{MenuPhase, MenuState};
 pub use sim::SimState;
 
 pub enum GameState {

@@ -19,17 +19,21 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
     };
 
     let header = format!(
-        "COUNCIL DECISION — {}  ·  AUTO-RESOLVE {}s",
-        template.category.label().to_uppercase(),
-        countdown_secs(ctx.decision_remaining)
+        "COUNCIL DECISION — {}",
+        template.category.label().to_uppercase()
     );
     // Only the outcomes this ship has earned are offered (content-depth event
     // families round 12): a gated outcome — a fix only a kept-expert crew can try,
     // a path only a past choice unlocks — is hidden until its condition holds. The
     // real outcome index is preserved for `ResolveEvent`.
     let available = crate::simulation::event_resolver::available_outcome_indices(ctx.sim, template);
-    let content = modal_frame(&header, available.len(), term::alert());
-    let mut y = content.y + 22.0;
+    let content = modal_frame(
+        &header,
+        countdown_secs(ctx.decision_remaining),
+        available.len(),
+        term::alert(),
+    );
+    let mut y = content.y + 30.0;
     draw_ui_text_ex(
         &template.title,
         content.x,
@@ -98,13 +102,14 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
         .map(|l| l.name.clone())
         .unwrap_or_default();
 
-    let header = format!(
-        "LEGACY DILEMMA — {}  ·  AUTO-RESOLVE {}s",
-        legacy_name.to_uppercase(),
-        countdown_secs(ctx.decision_remaining)
+    let header = format!("LEGACY DILEMMA — {}", legacy_name.to_uppercase());
+    let content = modal_frame(
+        &header,
+        countdown_secs(ctx.decision_remaining),
+        dilemma.options.len(),
+        term::primary(),
     );
-    let content = modal_frame(&header, dilemma.options.len(), term::primary());
-    let mut y = content.y + 22.0;
+    let mut y = content.y + 30.0;
     draw_ui_text_ex(
         &dilemma.title,
         content.x,
@@ -195,9 +200,10 @@ fn impact_label(lo: i64, hi: i64) -> (String, Color) {
     }
 }
 
-/// Dim the world and draw the modal surface with `header` in the title band;
-/// returns the content rect.
-fn modal_frame(header: &str, option_count: usize, accent: Color) -> Rect {
+/// Dim the world and draw the modal surface with `header` centered in the title
+/// band and the auto-resolve `countdown` right-aligned within it (real-time loop
+/// §2); returns the content rect.
+fn modal_frame(header: &str, countdown: i32, option_count: usize, accent: Color) -> Rect {
     draw_rectangle(
         0.0,
         0.0,
@@ -206,18 +212,19 @@ fn modal_frame(header: &str, option_count: usize, accent: Color) -> Rect {
         Color::new(0.0, 0.0, 0.0, 0.75),
     );
 
-    let height = 240.0 + option_count as f32 * 96.0;
+    let height = 248.0 + option_count as f32 * 96.0;
     let rect = Rect::new(
         LOGICAL_WIDTH / 2.0 - 330.0,
         (LOGICAL_HEIGHT - height) / 2.0,
         660.0,
         height,
     );
+    let header_h = 40.0;
     draw_surface(
         rect,
         &SurfaceStyle::new(Color::new(0.06, 0.05, 0.012, 1.0))
             .with_border(2.0, accent)
-            .with_header(40.0, term::panel_header())
+            .with_header(header_h, term::panel_header())
             .with_header_divider(1.0, accent),
     );
     draw_text_centered_in_box_ex(
@@ -225,8 +232,16 @@ fn modal_frame(header: &str, option_count: usize, accent: Color) -> Rect {
         rect.x,
         rect.y,
         rect.w,
-        40.0,
+        header_h,
         TextStyle::new(15.0, accent),
+    );
+    // The countdown tucks into the right of the header band so it never crowds
+    // the centered title.
+    draw_text_right(
+        &format!("AUTO-RESOLVE {countdown}s"),
+        rect.right() - 16.0,
+        rect.y + header_h * 0.5 + 4.0,
+        TextStyle::new(13.0, accent),
     );
     rect.inset(26.0)
 }

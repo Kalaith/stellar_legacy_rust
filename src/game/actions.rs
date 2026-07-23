@@ -49,13 +49,16 @@ impl Game {
                     }
                     _ => None,
                 };
-                // Seed is random per campaign; determinism holds *within* a
+                // Seed is random per campaign (from the wall-clock-seeded global
+                // generator) unless `fixed_seed` is set for reproducible testing
+                // (real-time loop follow-up). Determinism still holds *within* a
                 // campaign because the seed is stored in the save (GDD §5.6).
+                let seed = self.data.config.fixed_seed.unwrap_or_else(rng::random_u64);
                 match selection {
                     Some((legacy_id, faction_ids)) if faction_ids.len() == starting => {
                         Some(StateTransition::NewCampaign {
                             legacy_id,
-                            seed: rng::random_u64(),
+                            seed,
                             faction_ids,
                         })
                     }
@@ -69,6 +72,28 @@ impl Game {
                 }
             }
             UiAction::ContinueGame => Some(StateTransition::LoadCampaign),
+            UiAction::GoToNewGame => {
+                if let GameState::Menu(menu) = &mut self.state {
+                    menu.phase = crate::state::MenuPhase::NewGame;
+                }
+                None
+            }
+            UiAction::BackToMainMenu => {
+                if let GameState::Menu(menu) = &mut self.state {
+                    menu.phase = crate::state::MenuPhase::Main;
+                }
+                None
+            }
+            UiAction::OpenSettings => {
+                // Reuse the shared display/settings overlay (F1) from the menu.
+                self.settings_open = true;
+                self.help_open = false;
+                None
+            }
+            UiAction::ExitGame => {
+                // Native desktop quit; on WebGL there is no window to close.
+                std::process::exit(0);
+            }
             UiAction::DeleteSave => {
                 match delete_slot(&self.data.config.game_name, &self.data.config.save_slot) {
                     Ok(()) => self.notifications.info("Save slot cleared."),

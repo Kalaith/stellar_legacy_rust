@@ -156,6 +156,14 @@ pub enum UiAction {
     StartNewGame,
     ContinueGame,
     DeleteSave,
+    /// Step from the main menu into the new-game (legacy/faction) picker.
+    GoToNewGame,
+    /// Step back from the new-game picker to the main menu.
+    BackToMainMenu,
+    /// Open the display/settings overlay from the main menu.
+    OpenSettings,
+    /// Quit the application from the main menu.
+    ExitGame,
     // Global
     SaveGame,
     ToMenu,
@@ -304,6 +312,85 @@ pub struct MenuCtx<'a> {
 }
 
 pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
+    match ctx.menu.phase {
+        crate::state::MenuPhase::Main => draw_main_menu(&ctx),
+        crate::state::MenuPhase::NewGame => draw_new_game(&ctx),
+    }
+}
+
+/// The title / main-menu screen (real-time loop follow-up): the game title over
+/// four options — CONTINUE, NEW GAME, SETTINGS, EXIT. The new-game picker is one
+/// step in from here (NEW GAME).
+fn draw_main_menu(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
+    let mut actions = Vec::new();
+    let mouse = ctx.ui.mouse_position();
+
+    draw_text_glow(
+        "STELLAR LEGACY",
+        LOGICAL_WIDTH / 2.0 - 230.0,
+        250.0,
+        TextStyle::new(58.0, term::primary()),
+        0.1,
+        3.0,
+    );
+    draw_text_centered(
+        "// generational starship command //",
+        LOGICAL_WIDTH / 2.0,
+        295.0,
+        TextStyle::new(18.0, term::dim()),
+    );
+
+    // A dynasty inheriting a storied Chronicle begins with a head start (§7).
+    let heritage = crate::heritage::derive(ctx.chronicle, &ctx.data.config.heritage);
+    if heritage.has_bonus() {
+        draw_text_centered(
+            &format!(
+                "HERITAGE: {} · renown {} · +{} cr / +{} inf / +{} tradition",
+                heritage.tier_name,
+                heritage.renown,
+                heritage.credits,
+                heritage.influence,
+                heritage.tradition
+            ),
+            LOGICAL_WIDTH / 2.0,
+            325.0,
+            TextStyle::new(14.0, term::accent()),
+        );
+    }
+
+    // A single centered column of options, most-common action first.
+    let bw = 300.0;
+    let bh = 46.0;
+    let gap = 12.0;
+    let bx = LOGICAL_WIDTH / 2.0 - bw / 2.0;
+    let mut by = 370.0;
+    if term_button(
+        Rect::new(bx, by, bw, bh),
+        "CONTINUE",
+        ctx.menu.save_exists,
+        mouse,
+    ) {
+        actions.push(UiAction::ContinueGame);
+    }
+    by += bh + gap;
+    if term_button(Rect::new(bx, by, bw, bh), "NEW GAME", true, mouse) {
+        actions.push(UiAction::GoToNewGame);
+    }
+    by += bh + gap;
+    if term_button(Rect::new(bx, by, bw, bh), "SETTINGS", true, mouse) {
+        actions.push(UiAction::OpenSettings);
+    }
+    by += bh + gap;
+    if term_button(Rect::new(bx, by, bw, bh), "EXIT GAME", true, mouse) {
+        actions.push(UiAction::ExitGame);
+    }
+
+    actions
+}
+
+/// The new-game screen (W7): legacy + founding-faction selection, reached from
+/// the main menu via NEW GAME. BEGIN VOYAGE launches; BACK returns to the menu.
+fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
     let mut actions = Vec::new();
     let mouse = ctx.ui.mouse_position();
 
@@ -489,11 +576,11 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
     }
     if term_button(
         Rect::new(content.x + btn_w + 10.0, by, btn_w, 44.0),
-        "CONTINUE",
-        ctx.menu.save_exists,
+        "BACK [ESC]",
+        true,
         mouse,
     ) {
-        actions.push(UiAction::ContinueGame);
+        actions.push(UiAction::BackToMainMenu);
     }
     if term_button(
         Rect::new(content.x + (btn_w + 10.0) * 2.0, by, btn_w, 44.0),

@@ -575,5 +575,6 @@
     "impact_variance": 0.4,
     "impact_min_magnitude_for_range": 20
   },
+  "fixed_seed": null,
   "log_limit": 200
 }

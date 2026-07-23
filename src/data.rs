@@ -198,6 +198,12 @@ pub struct GameConfig {
     /// Real-time voyage pacing (real-time loop): auto-advance cadence, decision
     /// auto-resolve timeout, and ranged-impact tuning.
     pub real_time: RealTimeConfig,
+    /// Fixed campaign seed for reproducible testing (real-time loop follow-up).
+    /// When set, every New Game uses this exact seed, so the same events fire in
+    /// the same order run to run. `null` (the default) picks a fresh random seed
+    /// per campaign from the wall-clock-seeded generator.
+    #[serde(default)]
+    pub fixed_seed: Option<u64>,
     /// Gating for installing salvaged parts underway (PLAN M4.4).
     pub field_install: FieldInstallConfig,
     /// Commission-a-new-ship tunables (PLAN M4.5).
