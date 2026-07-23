@@ -2147,5 +2147,106 @@
     "log": "The council began the long, thankless work of earning a different name — the merciful choice taken now and resolved to be taken again, against a reputation a hundred hard decisions had built and only a hundred kind ones could shift. It bought no immediate change; the dark stayed wary a long while yet. But it was a first deliberate entry against a heavy ledger, a ship deciding it would rather spend generations becoming something better than stay, efficiently, what it was."
    }
   ]
+ },
+ {
+  "id": "the_untried_command",
+  "category": "generational_challenge",
+  "family": "legacy_drift",
+  "title": "The Untried Command",
+  "description": "The captain is dead — no long illness, no handoff, only an empty chair by the morning watch. The heir the register names has never held a command, and every deck is watching to see what kind of hand takes the helm.",
+  "requires_decision": true,
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "steady_the_course",
+    "label": "Hold the old course",
+    "description": "The heir governs in continuity — the predecessor's charter and counsel kept whole.",
+    "population_delta": {
+     "unity": 0.06,
+     "legacy_loyalty": 0.05,
+     "adaptation": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.04
+     }
+    ],
+    "log": "The new leader took the chair without changing a line of the standing orders. The ship steadied around a familiar hand, if an untried one."
+   },
+   {
+    "id": "assert_new_vision",
+    "label": "Set a new course",
+    "description": "The heir breaks with the dead and remakes the command in their own image.",
+    "population_delta": {
+     "morale": 0.05,
+     "adaptation": 0.06,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.06
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": -0.02
+     }
+    ],
+    "log": "The heir did not wait to be measured against the dead. New orders, new faces on the council — the ship woke to a different command than it slept under."
+   },
+   {
+    "id": "council_regency",
+    "label": "Rule by council until they are ready",
+    "description": "Hold authority in the council while the heir learns the weight of the helm.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "unity": -0.02
+    },
+    "log": "The council held the helm in trust, teaching the heir a watch at a time. Slower and safer, and it cost the ship a measure of standing to keep the peace while the chair sat half-filled."
+   }
+  ]
+ },
+ {
+  "id": "the_empty_chair",
+  "category": "legacy_moment",
+  "family": "legacy_drift",
+  "title": "The Empty Chair",
+  "description": "The one who is gone led the ship for a lifetime, and the decks feel the absence like a dropped engine note. How a ship buries a captain is how it tells itself who it still is.",
+  "requires_decision": true,
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "state_mourning",
+    "label": "A full ship's mourning",
+    "description": "Stand down the routine and keep the founders' rites in full; let the grief be shared.",
+    "resource_delta": {
+     "influence": -15
+    },
+    "population_delta": {
+     "unity": 0.06,
+     "legacy_loyalty": 0.06,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.02
+     }
+    ],
+    "log": "The ship stood down for the mourning and the old rites were kept whole. Grief shared is grief halved; the decks came back to work bound a little tighter."
+   },
+   {
+    "id": "quiet_burial",
+    "label": "Keep the watch",
+    "description": "Bury the dead without ceremony and keep the voyage moving.",
+    "population_delta": {
+     "adaptation": 0.04,
+     "morale": -0.05,
+     "legacy_loyalty": -0.03
+    },
+    "log": "There was no halt, no rite the founders would have known — a name logged, a watch kept, the voyage unbroken. Some called it strength. Some never forgave it."
+   }
+  ]
  }
 ]

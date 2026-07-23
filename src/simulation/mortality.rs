@@ -14,6 +14,7 @@
 
 use crate::data::{FlavorConfig, GameData, MortalityConfig};
 use crate::simulation::succession;
+use crate::simulation::tick::TickReport;
 use crate::state::sim::{generate_member, CrewMember, DynastyMember, SimState};
 
 /// The chance a character of `age` dies in a given month: a flat accident floor
@@ -96,10 +97,11 @@ pub fn annual_aging(sim: &mut SimState, data: &GameData) {
 }
 
 /// One month of the death roll (real-time loop follow-up): every living dynasty
-/// member and crew officer faces `monthly_death_chance`. Deaths are logged, a
-/// vacated leadership triggers succession, and the return value reports whether
-/// the dynasty has died out (surfaced to the tick so the game ends).
-pub fn monthly_tick(sim: &mut SimState, data: &GameData) -> bool {
+/// member and crew officer faces `monthly_death_chance`. Deaths are logged and a
+/// vacated leadership triggers succession; the report carries out whether the
+/// dynasty died out (so the game ends) and whether a *sitting leader* fell this
+/// month (so the skeleton can force a succession beat).
+pub fn monthly_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport) {
     let max_age = data.config.member_max_age;
     let cfg = &data.config.mortality;
 
@@ -150,6 +152,12 @@ pub fn monthly_tick(sim: &mut SimState, data: &GameData) -> bool {
         sim.push_log(line);
     }
 
+    // A sitting leader falling in office (not a planned retirement handoff) is a
+    // succession the ship did not choose — flag it for the skeleton's beat.
+    if dead.iter().any(|m| m.is_leader) {
+        report.leader_died = true;
+    }
+
     // Succession: the seat is empty (the leader died), or the leader has aged
     // past retirement and an eligible heir is ready to take over.
     let leader_gone = sim.dynasty.leader().is_none();
@@ -179,7 +187,11 @@ pub fn monthly_tick(sim: &mut SimState, data: &GameData) -> bool {
             .unwrap_or_else(|| "The dynasty has no heirs. The line ends here.".to_owned());
         sim.push_log(line);
     }
-    sim.dynasty.extinct
+    if sim.dynasty.extinct {
+        report.dynasty_extinct = true;
+        // Extinction supersedes any succession beat this same month.
+        report.leader_died = false;
+    }
 }
 
 /// A heavy population-loss outcome may also claim a named character (real-time
@@ -277,5 +289,41 @@ mod tests {
         for (officer, before) in sim.crew.iter().zip(&crew_before) {
             assert_eq!(officer.age, before + 1);
         }
+    }
+
+    #[test]
+    fn a_leader_dying_in_office_is_flagged_for_the_succession_beat() {
+        // The succession beat (campaign-skeleton round 18) keys on a sitting
+        // leader falling — so the monthly tick must flag it, and only for a death
+        // in office, not a routine survival.
+        let data = GameData::load().unwrap();
+        let mut sim = crate::state::sim::SimState::new_campaign(
+            &data,
+            "preservers",
+            4,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+
+        // No one due to die: the flag stays down.
+        let mut report = crate::simulation::tick::TickReport::default();
+        monthly_tick(&mut sim, &data, &mut report);
+        assert!(!report.leader_died, "no death in office means no flag");
+
+        // Force the sitting leader to certain death (age at the cap), leaving an
+        // eligible heir among the founders.
+        let max_age = data.config.member_max_age;
+        for member in &mut sim.dynasty.members {
+            if member.is_leader {
+                member.age = max_age;
+            }
+        }
+        let mut report = crate::simulation::tick::TickReport::default();
+        monthly_tick(&mut sim, &data, &mut report);
+        assert!(
+            report.leader_died,
+            "the leader's death in office is flagged"
+        );
+        assert!(!report.dynasty_extinct, "an heir carries the line on");
+        assert!(sim.dynasty.leader().is_some(), "the seat is filled at once");
     }
 }

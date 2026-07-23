@@ -779,6 +779,13 @@ pub struct CampaignSkeletonConfig {
     /// Empty = no power-transition beat.
     #[serde(default)]
     pub power_transition_beat_family: String,
+    /// Succession beat family (content-depth round 18 — the first beat keyed to the
+    /// real-time-loop continuous-mortality system): the month a *sitting leader dies
+    /// in office*, a beat is forced from this family — the ship reckoning with a
+    /// captain lost mid-voyage and an untried heir in the chair. A planned retirement
+    /// handoff does not fire it. Empty = no succession beat.
+    #[serde(default)]
+    pub succession_beat_family: String,
     /// Anniversary cadence (content-depth round 7): every this-many years of the
     /// voyage, a beat is forced from `anniversary_beat_family` — a periodic
     /// archetype (vs the threshold beats), giving the voyage a commemorative
@@ -2011,6 +2018,15 @@ mod tests {
                 families.contains(&sk.anniversary_beat_family),
                 "campaign_skeleton anniversary_beat_family '{}' has no events",
                 sk.anniversary_beat_family
+            );
+        }
+        // Content-depth round 18: the succession beat (a sitting leader dying in
+        // office) needs a family with events when set.
+        if !sk.succession_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.succession_beat_family),
+                "campaign_skeleton succession_beat_family '{}' has no events",
+                sk.succession_beat_family
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

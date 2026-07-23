@@ -27,6 +27,10 @@ pub struct TickReport {
     /// Set when an event fired that needs a council decision (not delegated).
     pub decision_required: bool,
     pub dynasty_extinct: bool,
+    /// Set the month a *sitting leader dies in office* (real-time loop follow-up:
+    /// mortality is continuous now). Reset at the top of each month; read by
+    /// `fire_succession_beat` to force the ship to reckon with an untried command.
+    pub leader_died: bool,
     /// Months actually advanced by this call before it stopped (W3). Less than
     /// the speed step's span whenever a decision hard-stops the advance early.
     pub months_advanced: u32,
@@ -63,11 +67,11 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
         month_of_contract(sim, data, &mut report);
 
         // Monthly death roll (real-time loop follow-up): every living character
-        // faces an age-scaled chance of death, and a vacated seat is filled. An
-        // extinction ends the run — surface it so the loop hard-stops below.
-        if mortality::monthly_tick(sim, data) {
-            report.dynasty_extinct = true;
-        }
+        // faces an age-scaled chance of death, and a vacated seat is filled. Sets
+        // `dynasty_extinct` (loop hard-stops below) and `leader_died` (a beat).
+        // `leader_died` is per-month, so clear last month's before the roll.
+        report.leader_died = false;
+        mortality::monthly_tick(sim, data, &mut report);
 
         // Monthly event step (GDD §5.4), dated to this exact month. Skipped on a
         // month that already produced a blocking dilemma, a completion, or an
@@ -77,6 +81,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
         if sim.pending_dilemma.is_none()
             && report.contract_completed.is_none()
             && !report.dynasty_extinct
+            && !fire_succession_beat(sim, data, &mut report)
             && !fire_scheduled_beat(sim, data, &mut report)
             && !fire_charter_scheduled_beat(sim, data, &mut report)
             && !fire_due_beat(sim, data, &mut report)
@@ -570,6 +575,25 @@ fn fire_anniversary_beat(sim: &mut SimState, data: &GameData, report: &mut TickR
         contract.anniversaries_fired += 1;
     }
     force_family_beat(sim, data, &cfg.anniversary_beat_family, report);
+    true
+}
+
+/// Fire a succession beat (content-depth campaign-skeleton round 18 — the first
+/// beat keyed to the new continuous-mortality system): the month a *sitting
+/// leader dies in office* (`report.leader_died`, set by `mortality::monthly_tick`),
+/// force a beat from the succession family so the ship reckons with an untried
+/// command — a captain lost mid-voyage and an heir taking a chair they weren't
+/// ready for — rather than the loss passing as a lone log line. A planned
+/// retirement handoff does not fire it (only a death does). Fires only during a
+/// voyage; consumes the flag so it fires once per death. Returns whether it
+/// replaced this month's reactive roll.
+fn fire_succession_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let family = data.config.campaign_skeleton.succession_beat_family.clone();
+    if !report.leader_died || family.is_empty() || sim.contract.is_none() {
+        return false;
+    }
+    report.leader_died = false;
+    force_family_beat(sim, data, &family, report);
     true
 }
 

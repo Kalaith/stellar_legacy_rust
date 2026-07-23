@@ -602,6 +602,10 @@ fn contract_completes_at_target_duration() {
         .campaign_skeleton
         .power_transition_beat_family
         .clear();
+    // The succession beat (round 18) forces an event when a sitting leader dies —
+    // continuous mortality can kill one mid-run — so silence it for these
+    // isolated-timeline tests too.
+    data.config.campaign_skeleton.succession_beat_family.clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -1332,6 +1336,10 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
         .campaign_skeleton
         .power_transition_beat_family
         .clear();
+    // The succession beat (round 18) forces an event when a sitting leader dies —
+    // continuous mortality can kill one mid-run — so silence it for these
+    // isolated-timeline tests too.
+    data.config.campaign_skeleton.succession_beat_family.clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -1415,6 +1423,10 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
         .campaign_skeleton
         .power_transition_beat_family
         .clear();
+    // The succession beat (round 18) forces an event when a sitting leader dies —
+    // continuous mortality can kill one mid-run — so silence it for these
+    // isolated-timeline tests too.
+    data.config.campaign_skeleton.succession_beat_family.clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -1882,6 +1894,9 @@ fn dead_air_forces_a_beat_after_too_long_a_silence() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    // The succession beat (round 18) forces an event when a sitting leader dies —
+    // continuous mortality can take one within the gap — so silence it too.
+    data.config.campaign_skeleton.succession_beat_family.clear();
     let dead = data.config.campaign_skeleton.dead_air_years;
     assert!(
         dead > 0 && !data.config.campaign_skeleton.dead_air_pool.is_empty(),
