@@ -419,6 +419,23 @@ pub fn medical_famine_relief(sim: &SimState, data: &GameData) -> f32 {
     condition * data.config.subsystems.medical_famine_relief_per_condition
 }
 
+/// Multiplier on the per-travel-month fuel burn from the engineering bay's state
+/// (content-depth subsystems round 20): a sound bay tunes the drive to burn clean
+/// (factor 1.0), a failing one burns rich and wastes reaction mass
+/// (`1 + engineering_fuel_burn_penalty·(1 - condition)`). Penalty-below-full, so a
+/// pristine bay is the baseline; 1.0 when the coupling is off or the module is gone.
+pub fn engineering_fuel_burn_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.engineering_fuel_burn_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("engineering_bay")
+        .map_or(1.0, |s| s.condition);
+    (1.0 + penalty * (1.0 - condition)).max(1.0)
+}
+
 /// Fraction by which the medical bay lowers each character's monthly age-based
 /// death chance (content-depth subsystems round 18 — the first subsystem coupling
 /// to the real-time-loop mortality system). Scales by *condition*, so keeping the

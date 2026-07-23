@@ -70,6 +70,16 @@ pub struct SubsystemsConfig {
     /// decays at its own rate.
     #[serde(default)]
     pub engineering_decay_swing: f32,
+    /// How much a *degraded* engineering bay wastes reaction mass (content-depth
+    /// subsystems round 20 — the subsystem axis's coupling to *fuel*): a well-tuned
+    /// drive burns clean, a bay running on cannibalized parts and half-remembered
+    /// procedure burns rich, so the per-travel-month fuel burn is scaled by
+    /// `1 + engineering_fuel_burn_penalty·(1 - engineering_condition)`, penalty-below-
+    /// full so a sound bay keeps the baseline burn and a failing one drinks the tank
+    /// faster (compounding the keystone: neglect the bay and it speeds every module's
+    /// decay *and* eats your fuel). 0 = the bay's state does not touch fuel.
+    #[serde(default)]
+    pub engineering_fuel_burn_penalty: f32,
     /// Fraction of famine losses the medical bay itself prevents at full
     /// condition (content-depth subsystems round 9): the two modules that only
     /// ever *cost* the ship now earn their keep, and — unlike the tier-based

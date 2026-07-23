@@ -14,7 +14,7 @@ mod tests;
 use crate::data::contracts::ContractPhase;
 use crate::data::GameData;
 use crate::simulation::contract::SuccessLevel;
-use crate::simulation::{contract, event_resolver, mortality, ship};
+use crate::simulation::{contract, event_resolver, mortality, ship, subsystems};
 use crate::state::sim::SimState;
 
 /// Everything a single year produced that the caller (game.rs) must react
@@ -150,7 +150,10 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
     };
 
     if travel_this_month {
-        let burn = data.config.provisioning.fuel_burn_per_travel_month;
+        // A degraded engineering bay burns rich (content-depth subsystems round 20):
+        // the base travel burn is scaled up as the drive's tuning slips.
+        let burn = data.config.provisioning.fuel_burn_per_travel_month
+            * subsystems::engineering_fuel_burn_factor(sim, data);
         if sim.ship.fuel < burn {
             // A dry tank in transit: the ship coasts. No progress toward the
             // destination this month (the voyage stretches), and this year's

@@ -1536,5 +1536,54 @@
     "log": "The council thanked the Covenant and kept the materials for the hull's own account. The makers understood the arithmetic. They also understood that they had offered the ship the best of themselves and been told, this once, that it was not needed — and a maker remembers that."
    }
   ]
+ },
+ {
+  "id": "the_rich_burn",
+  "category": "immediate_crisis",
+  "family": "engineering",
+  "title": "The Rich Burn",
+  "description": "The drive is running rich. The engineering bay has decayed past the point where the crew can keep the injectors trimmed, and the reaction-mass gauges tell the story every watch: the ship burns noticeably more fuel to make the same distance, the difference going out the tail as waste heat and unburnt mass. On a short hop it would be a nuisance. On a crossing measured in centuries, a drive that drinks too much is a drive that may not reach the far shore.",
+  "requires_decision": true,
+  "phases": [
+   "travel"
+  ],
+  "condition_below": [
+   {
+    "id": "engineering_bay",
+    "below": 0.4
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "overhaul_the_drive",
+    "label": "Overhaul the drive",
+    "description": "Strip the ship for parts and rebuild the injectors and the bay around them — a clean burn is worth the cost.",
+    "resource_delta": {
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -20
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.4
+     }
+    ],
+    "log": "The crews tore the drive down to its mounts and built it back clean, and the reaction-mass gauges steadied for the first time in years. The ship would reach the far shore with fuel to spare that it had been quietly throwing out the tail."
+   },
+   {
+    "id": "limp_on",
+    "label": "Limp on and watch the tanks",
+    "description": "Keep the parts for worse troubles and run the rich drive as it is, trusting the tanks and the ramscoop to cover the waste.",
+    "ship_delta": {
+     "fuel": -0.05
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "log": "The council kept its parts and let the drive burn rich, and the tanks ran lower than they should have the long way out. The engineers logged every wasted tonne and said nothing the council did not already know: a ship that will not maintain its drive pays for it in the one currency the dark does not refund."
+   }
+  ]
  }
 ]

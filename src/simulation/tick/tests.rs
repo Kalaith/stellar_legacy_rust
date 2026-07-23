@@ -2101,6 +2101,31 @@ fn an_enduring_reign_earns_a_long_reign_beat_once() {
 }
 
 #[test]
+fn a_failing_engineering_bay_burns_fuel_faster() {
+    // Content-depth subsystems round 20: a degraded drive burns rich, so the same
+    // travel month drinks more of the tank than a sound bay's would.
+    let (data, mut sound) = provisioned(5, 1.0);
+    let mut wrecked = sound.clone();
+    sound
+        .subsystems
+        .get_mut("engineering_bay")
+        .unwrap()
+        .condition = 1.0;
+    wrecked
+        .subsystems
+        .get_mut("engineering_bay")
+        .unwrap()
+        .condition = 0.0;
+
+    advance_months(&mut sound, &data, 1);
+    advance_months(&mut wrecked, &data, 1);
+    assert!(
+        wrecked.ship.fuel < sound.ship.fuel,
+        "a rotting drive wastes reaction mass a sound one would keep"
+    );
+}
+
+#[test]
 fn a_dwindled_line_forces_a_dynasty_crisis_beat_once() {
     // Content-depth campaign skeleton round 20: when the founding line dwindles to
     // the crisis size, a beat marks the ship's brush with the end of its dynasty.
