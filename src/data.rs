@@ -590,6 +590,25 @@ pub struct FlavorConfig {
     pub loyalty_voice_high: f32,
     #[serde(default)]
     pub loyalty_voice_low: f32,
+    /// The crew's *cohesion* crossing into a fraying band (content-depth voice round 21):
+    /// the fourth internal-state voice, on `unity`. Distinct from the crew's spirits
+    /// (`ship_mood_darkening`), the peoples' contentment (`polity_souring`), and the
+    /// government's order (`stability_fraying`) — this voices the crew *splintering*: one
+    /// people becoming several, wary cliques hardening along deck or trade or bloodline,
+    /// the sense of a single crew thinning out. No name; indexed by year; empty = silence.
+    #[serde(default)]
+    pub unity_fraying: Vec<String>,
+    /// The crew pulling back together (content-depth voice round 21): the positive twin —
+    /// the cliques softening, the ship remembering it is one crew crossing one dark, a
+    /// cohesion that asks no notice because it simply holds. No name; indexed by year.
+    #[serde(default)]
+    pub unity_cohering: Vec<String>,
+    /// Unity at/above which the ship remarks a crew grown close (`_high`) or at/below
+    /// which it remarks one fraying (`_low`) (content-depth voice round 21).
+    #[serde(default)]
+    pub unity_voice_high: f32,
+    #[serde(default)]
+    pub unity_voice_low: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -2351,6 +2370,20 @@ mod tests {
                 fl.loyalty_voice_high < 1.0,
                 "loyalty_voice_high {} must be below 1.0 to be reachable",
                 fl.loyalty_voice_high
+            );
+        }
+        // Content-depth voice round 21: likewise the unity (cohesion) voice needs both
+        // band pools stocked and its thresholds ordered when it is switched on.
+        if fl.unity_voice_high > 0.0 {
+            assert!(
+                !fl.unity_fraying.is_empty() && !fl.unity_cohering.is_empty(),
+                "unity voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.unity_voice_low > 0.0 && fl.unity_voice_low < fl.unity_voice_high,
+                "unity voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.unity_voice_low,
+                fl.unity_voice_high
             );
         }
         // Content-depth voice round 6: the recurring-crisis pools need variety

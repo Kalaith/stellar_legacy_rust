@@ -830,6 +830,43 @@ impl SimState {
         self.loyalty_voice_band = band;
     }
 
+    /// Give the crew's *cohesion* a voice (content-depth voice round 21): the fourth
+    /// internal-state voice, beside the morale (`announce_ship_mood`), governance
+    /// (`announce_stability_mood`), and mission-devotion (`announce_loyalty_mood`) ones,
+    /// on `unity`. Distinct from all three — a crew can be high-spirited, well-governed,
+    /// and sure of its purpose yet quietly *splintering* into cliques, one people
+    /// becoming several. When unity crosses *into* a fraying band (the ship coming apart
+    /// into wary factions) or a cohering one (the crew pulling back together as one), the
+    /// decks remark it once. Distinct too from the it102 unity-*collapse* beat, which is
+    /// the reckoning; this is the quieter thing noticed before and after it. Deterministic
+    /// (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_unity_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.unity_voice_high <= 0.0 {
+            return;
+        }
+        let band = stability_voice_band_for(
+            self.population.unity,
+            fl.unity_voice_high,
+            fl.unity_voice_low,
+        );
+        if band == self.unity_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.unity_cohering,
+            -1 => &fl.unity_fraying,
+            _ => {
+                self.unity_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.unity_voice_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -1704,6 +1741,50 @@ mod tests {
             (0.0, 0.0),
             "a people below the proud threshold tends its module no better than duty"
         );
+    }
+
+    #[test]
+    fn the_ship_remarks_when_the_crew_frays_or_pulls_together() {
+        // Content-depth voice round 21: the unity (cohesion) voice, the fourth
+        // internal-state voice. A founding crew's one-people unity is the silent
+        // baseline; crossing into a fraying band surfaces one pooled line; a return to a
+        // cohering band gets its own, opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(43);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.unity_voice_high > 0.0 && fl.unity_fraying.len() >= 3,
+            "this test needs the unity voice enabled"
+        );
+        let low = fl.unity_voice_low;
+        let high = fl.unity_voice_high;
+        let unity_lines = |sim: &SimState| {
+            let fray = &data.config.flavor.unity_fraying;
+            let cohere = &data.config.flavor.unity_cohering;
+            sim.log
+                .iter()
+                .filter(|l| fray.contains(&l.text) || cohere.contains(&l.text))
+                .count()
+        };
+
+        // A founding crew is one people — the launch band is recorded, silent.
+        sim.announce_unity_mood(&data);
+        assert_eq!(unity_lines(&sim), 0, "a founding crew's unity is silent");
+
+        // The crew frays past the low line: one line.
+        sim.population.unity = low - 0.05;
+        sim.announce_unity_mood(&data);
+        assert_eq!(unity_lines(&sim), 1, "a crew splintering says so once");
+        assert_eq!(sim.unity_voice_band, -1);
+
+        // Still fraying — no reprint.
+        sim.announce_unity_mood(&data);
+        assert_eq!(unity_lines(&sim), 1, "staying frayed is not re-announced");
+
+        // The crew pulls back together: a second, distinct line.
+        sim.population.unity = high + 0.05;
+        sim.announce_unity_mood(&data);
+        assert_eq!(unity_lines(&sim), 2, "the crew cohering says so afresh");
+        assert_eq!(sim.unity_voice_band, 1);
     }
 
     #[test]

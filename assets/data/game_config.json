@@ -460,6 +460,20 @@
     ],
     "loyalty_voice_high": 0.72,
     "loyalty_voice_low": 0.4,
+    "unity_fraying": [
+      "Somewhere in the last stretch the ship stopped being one crew and started being several. Nothing was declared — it is only that people eat now with their own, work now with their own, and speak of the other decks the way one speaks of neighbours rather than kin. The cliques have hardened along the old seams — trade and deck and bloodline — and the sense of a single people crossing a single dark has thinned to something you have to remind yourself of.",
+      "The crew is fraying into factions, quietly and along predictable lines. A dispute that once would have been the whole ship's to settle is now this group's grievance against that one; a shortage is borne not together but negotiated between blocs. It is not yet a rupture, only a wariness — a ship of people who have begun, in the small hours, to think of themselves as us and them.",
+      "It shows in the seating and the rotas and the after-shift gatherings: the ship has sorted itself into its own, and the mixing that once made it one crew has quietly stopped. Each cluster keeps its customs a little more jealously, guards its own a little more closely, and the whole — the single people the founders sealed into the hull — is a fainter thing this year than last.",
+      "A wariness has settled between the decks that was not there a generation ago. The crew still shares an air and a hull and a heading, but it has stopped, in some quiet way, sharing a *self* — the factions drawn tighter, the common ground narrower, the ship more a coalition of peoples now than the one people it left dock as."
+    ],
+    "unity_cohering": [
+      "Something knit the crew back together this stretch. The old seams between the decks — trade, bloodline, custom — softened, and the mixing that makes a single people out of many quietly resumed: shared tables, shared work, shared griefs borne out loud and together. The ship feels, for the first time in a while, like one crew rather than a coalition of them.",
+      "The cliques have loosened their grip. Where the ship had sorted itself into wary blocs, it has begun to sort itself back — a dispute settled as the whole ship's business again, a shortage borne together rather than negotiated between factions. It is the unshowy cohesion of a people who have remembered, without being told, that they are one crew crossing one dark.",
+      "A closeness has returned to the ship that asks no notice and needs none. The decks mix again, the customs blend again, the after-shift gatherings draw from the whole crew and not just one's own — and the single people the founders sealed into the hull is, this year, a little more truly single than it has been in a long time.",
+      "The crew pulled together this stretch in the quiet way that matters most — not against a common threat but simply back toward each other, the factions softening into a whole, the ship recovering the sense of being one people that a long voyage is always, slowly, trying to wear away."
+    ],
+    "unity_voice_high": 0.7,
+    "unity_voice_low": 0.4,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

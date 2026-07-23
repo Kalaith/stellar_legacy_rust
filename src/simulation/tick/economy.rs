@@ -318,6 +318,12 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // remark it once — the identity-side twin of the spirits and governance voices, and
     // the voice that gives the game's core theme (a ship forgetting why it flies) a line.
     sim.announce_loyalty_mood(data);
+    // …and give the crew's *cohesion* a voice (content-depth voice round 21), now that
+    // the year's faction-mood coupling (it100), security recovery, and voyage strain
+    // have all settled on unity: when the crew crosses into fraying into cliques or
+    // pulling back together as one, the decks remark it once — the internal-state voice
+    // beside the spirits, the governance, and the founders' fire.
+    sim.announce_unity_mood(data);
 
     // Founding Day (real-time loop follow-up): everyone gains a year at once, and
     // any officer aged past their term stands down. Aging is yearly; death is the

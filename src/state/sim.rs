@@ -455,6 +455,16 @@ pub struct SimState {
     /// announced. 0 at launch; a return to the middle silently re-arms.
     #[serde(default)]
     pub loyalty_voice_band: i8,
+    /// The last-announced band of the crew's *cohesion* (content-depth voice round 21):
+    /// the fourth internal-state voice beside morale (`morale_band`), governance
+    /// (`stability_voice_band`), and mission-devotion (`loyalty_voice_band`), on the
+    /// `unity` stat. Tracks whether cohesion last crossed into a fraying band (the crew
+    /// splintering into wary cliques, one people becoming several) or a cohering one
+    /// (the ship pulling together as one crew again) so the decks remark the crossing
+    /// once, not every year it holds. The launch band (a founding crew is one people) is
+    /// recorded, not announced. 0 at launch; a return to the middle re-arms.
+    #[serde(default)]
+    pub unity_voice_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -575,6 +585,7 @@ impl SimState {
             reputation_voice_band: 0,
             stability_voice_band: 0,
             loyalty_voice_band: 0,
+            unity_voice_band: 0,
             depopulation_beats_fired: 0,
             subsystem_beats_fired: Vec::new(),
             lean_food_years: 0,
@@ -602,6 +613,14 @@ impl SimState {
             sim.population.legacy_loyalty,
             config.flavor.loyalty_voice_high,
             config.flavor.loyalty_voice_low,
+        );
+        // Likewise record the launch band of the crew's cohesion, so a founding crew's
+        // one-people unity reads as the baseline, not a "cohering" the unity voice
+        // announces (content-depth voice round 21).
+        sim.unity_voice_band = factions::stability_voice_band_for(
+            sim.population.unity,
+            config.flavor.unity_voice_high,
+            config.flavor.unity_voice_low,
         );
         // Founding senior staff fill the configured starting posts.
         for archetype_id in &config.crew.starting_posts {
