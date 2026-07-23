@@ -83,6 +83,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !report.dynasty_extinct
             && !fire_succession_beat(sim, data, &mut report)
             && !fire_long_reign_beat(sim, data, &mut report)
+            && !fire_dynasty_crisis_beat(sim, data, &mut report)
             && !fire_scheduled_beat(sim, data, &mut report)
             && !fire_charter_scheduled_beat(sim, data, &mut report)
             && !fire_due_beat(sim, data, &mut report)
@@ -627,6 +628,36 @@ fn fire_long_reign_beat(sim: &mut SimState, data: &GameData, report: &mut TickRe
     }
     sim.dynasty.long_reign_marked = true;
     let family = cfg.long_reign_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire a dynasty-crisis beat (content-depth campaign-skeleton round 20 — the third
+/// leadership beat, and the first keyed to the *dynasty's* own headcount): when the
+/// founding line dwindles to or below `dynasty_crisis_size` — continuous mortality
+/// outrunning the yearly renewal — force a beat from the crisis family, the ship
+/// reckoning with the near-end of the family that has led it since the founding.
+/// Fires once per brush with extinction; re-arms only once the line is restored to
+/// its target size. Voyage-only. Returns whether it replaced the reactive roll.
+fn fire_dynasty_crisis_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.dynasty_crisis_size == 0
+        || cfg.dynasty_crisis_beat_family.is_empty()
+        || sim.contract.is_none()
+    {
+        return false;
+    }
+    let count = sim.dynasty.members.len() as u32;
+    // The line fully restored re-arms the beat against a future brush.
+    if count >= data.config.mortality.dynasty_target_size {
+        sim.dynasty.dynasty_crisis_marked = false;
+        return false;
+    }
+    if sim.dynasty.dynasty_crisis_marked || count > cfg.dynasty_crisis_size {
+        return false;
+    }
+    sim.dynasty.dynasty_crisis_marked = true;
+    let family = cfg.dynasty_crisis_beat_family.clone();
     force_family_beat(sim, data, &family, report);
     true
 }

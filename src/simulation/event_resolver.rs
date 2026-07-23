@@ -339,6 +339,13 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     if template.max_population > 0 && sim.population.count > template.max_population {
         return false;
     }
+    // Dynasty-crisis gate (content-depth round 20): near-extinction-of-the-line
+    // content waits until the founding *dynasty* has dwindled to its ceiling — the
+    // honest gate for the dynasty-crisis beat's content, distinct from the crew's.
+    if template.max_dynasty_size > 0 && sim.dynasty.members.len() as u32 > template.max_dynasty_size
+    {
+        return false;
+    }
     // Chronic-scarcity gate (content-depth round 13): long-hunger content waits
     // until the shortage has ground on for years, not just this season.
     if sim.lean_food_years < template.min_lean_food_years {
@@ -764,6 +771,25 @@ mod tests {
         assert!(
             passes_gate(&sim, feast),
             "a delighted people offers its feast"
+        );
+    }
+
+    #[test]
+    fn the_dynasty_crisis_gate_waits_for_a_dwindled_line() {
+        // Content-depth campaign skeleton round 20: near-end-of-the-line content
+        // stays out of the pool until the founding dynasty has actually dwindled.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 1, &picks);
+        let evt = data.events.get("the_last_of_the_line").unwrap();
+        assert!(
+            !passes_gate(&sim, evt),
+            "a healthy founding dynasty is no crisis"
+        );
+        sim.dynasty.members.truncate(2);
+        assert!(
+            passes_gate(&sim, evt),
+            "a dwindled line lets the reckoning surface"
         );
     }
 

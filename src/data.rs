@@ -828,6 +828,18 @@ pub struct CampaignSkeletonConfig {
     pub long_reign_years: u32,
     #[serde(default)]
     pub long_reign_beat_family: String,
+    /// Dynasty-crisis beat (content-depth campaign skeleton round 20 — the third
+    /// leadership beat, after succession and long-reign): the first beat keyed to the
+    /// *dynasty's* headcount rather than the population's. When the founding line
+    /// dwindles to or below `dynasty_crisis_size` (continuous mortality outrunning the
+    /// renewal), a beat is forced from `dynasty_crisis_beat_family` — the ship staring
+    /// at the end of the family that has led it since the founding. Fires once per
+    /// brush with extinction; re-arms only once the line is restored to its target
+    /// (`mortality.dynasty_target_size`). 0 / empty = no dynasty-crisis beat.
+    #[serde(default)]
+    pub dynasty_crisis_size: u32,
+    #[serde(default)]
+    pub dynasty_crisis_beat_family: String,
     /// Anniversary cadence (content-depth round 7): every this-many years of the
     /// voyage, a beat is forced from `anniversary_beat_family` — a periodic
     /// archetype (vs the threshold beats), giving the voyage a commemorative
@@ -2096,6 +2108,15 @@ mod tests {
                 families.contains(&sk.long_reign_beat_family),
                 "campaign_skeleton long_reign_beat_family '{}' has no events",
                 sk.long_reign_beat_family
+            );
+        }
+        // Content-depth round 20: the dynasty-crisis beat needs a family with events
+        // when switched on.
+        if sk.dynasty_crisis_size > 0 && !sk.dynasty_crisis_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.dynasty_crisis_beat_family),
+                "campaign_skeleton dynasty_crisis_beat_family '{}' has no events",
+                sk.dynasty_crisis_beat_family
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

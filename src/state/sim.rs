@@ -138,6 +138,12 @@ pub struct Dynasty {
     /// the next succession, so one enduring captaincy is marked once.
     #[serde(default)]
     pub long_reign_marked: bool,
+    /// Whether the dynasty-crisis beat has fired for the *current* near-extinction
+    /// (content-depth campaign skeleton round 20): set when the founding line dwindles
+    /// to the crisis size and a beat marks the ship staring at its own end, cleared
+    /// once the line is fully restored — so one brush with extinction is marked once.
+    #[serde(default)]
+    pub dynasty_crisis_marked: bool,
     /// Set when a generation tick finds no leader and no eligible heir.
     pub extinct: bool,
 }
@@ -694,6 +700,7 @@ fn founding_dynasty(data: &GameData, legacy_id: &str, rng: &mut SeededRng) -> Dy
         births_this_generation: 0,
         leader_reign_years: 0,
         long_reign_marked: false,
+        dynasty_crisis_marked: false,
         extinct: false,
     };
 

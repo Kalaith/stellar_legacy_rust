@@ -389,6 +389,13 @@ pub struct EventTemplate {
     /// 0 = ungated.
     #[serde(default)]
     pub max_population: u32,
+    /// Dynasty-crisis gate (content-depth campaign-skeleton round 20): the event only
+    /// enters the pool while the founding *dynasty* has dwindled to or below this many
+    /// living members — the honest gate for near-end-of-the-line content and the
+    /// dynasty-crisis beat, distinct from `max_population` (the whole crew). So "the
+    /// last of the founding line" cannot surface on a healthy dynasty. 0 = ungated.
+    #[serde(default)]
+    pub max_dynasty_size: u32,
     /// Chronic-scarcity gate (content-depth provisioning round 13): the event only
     /// enters the pool once the food store has sat below the lean line for at least
     /// this many consecutive years (`sim.lean_food_years`) — the honest gate for

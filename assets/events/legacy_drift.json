@@ -2360,5 +2360,50 @@
     "log": "Rather than crown the unready, the council held the ship's authority in common — slower, safer, and a quiet break with the founders' idea of a single hand on the helm that some aboard would never forgive."
    }
   ]
+ },
+ {
+  "id": "the_last_of_the_line",
+  "category": "immediate_crisis",
+  "family": "legacy_drift",
+  "title": "The Last of the Line",
+  "description": "The founding family that has led this ship since it left dock has dwindled to a bare handful — a run of ill luck, hard years, and the slow arithmetic of a sealed hull — and the register of the dynasty now fits on a single page with room to spare. One more bad turn and the name that signed the charter ends. The council must decide what the ship is, if it is soon to be a ship without its founding line.",
+  "requires_decision": true,
+  "max_dynasty_size": 3,
+  "outcomes": [
+   {
+    "id": "guard_the_bloodline",
+    "label": "Guard the bloodline",
+    "description": "Bend the whole ship around its last few founders — the safest quarters, the gentlest posts, every resource spent to see the line survive.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "stability": 0.03,
+     "unity": -0.02
+    },
+    "log": "The ship folded protectively around its last founders — the safest berths, the gentlest duties, a whole crew standing watch over a handful of lives. It bought the line a better chance, and it asked the many to spend themselves guarding the few, which not all of them thought was what a ship was for."
+   },
+   {
+    "id": "open_the_succession",
+    "label": "Open the succession to all",
+    "description": "Accept that the founding line may end, and write into the charter that leadership can pass to any worthy hand, blood or not.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "cultural_drift": 0.05,
+     "legacy_loyalty": -0.07
+    },
+    "long_term_consequences": [
+     "line_opened"
+    ],
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.03
+     }
+    ],
+    "log": "The council did the unthinkable and the overdue at once: it wrote the founding family out of its privileged place and made the first chair open to any hand the ship judged worthy. Some mourned it as the true end of the voyage the founders began. Others said the voyage had just, finally, become the crew's own."
+   }
+  ]
  }
 ]

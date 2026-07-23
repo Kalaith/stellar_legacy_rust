@@ -608,6 +608,10 @@ fn contract_completes_at_target_duration() {
     // enduring leader can trip it on a full voyage).
     data.config.campaign_skeleton.succession_beat_family.clear();
     data.config.campaign_skeleton.long_reign_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .dynasty_crisis_beat_family
+        .clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -1344,6 +1348,10 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     // enduring leader can trip it on a full voyage).
     data.config.campaign_skeleton.succession_beat_family.clear();
     data.config.campaign_skeleton.long_reign_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .dynasty_crisis_beat_family
+        .clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -1433,6 +1441,10 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     // enduring leader can trip it on a full voyage).
     data.config.campaign_skeleton.succession_beat_family.clear();
     data.config.campaign_skeleton.long_reign_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .dynasty_crisis_beat_family
+        .clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too.
     data.config.campaign_skeleton.subsystem_beats.clear();
@@ -2085,6 +2097,27 @@ fn an_enduring_reign_earns_a_long_reign_beat_once() {
     assert!(
         !sim.dynasty.long_reign_marked && sim.dynasty.leader_reign_years == 0,
         "a handoff starts a new, unmarked reign"
+    );
+}
+
+#[test]
+fn a_dwindled_line_forces_a_dynasty_crisis_beat_once() {
+    // Content-depth campaign skeleton round 20: when the founding line dwindles to
+    // the crisis size, a beat marks the ship's brush with the end of its dynasty.
+    let (data, mut sim) = provisioned(3, 1.0);
+    // Thin the line into crisis (the leader stays, so no succession churn).
+    sim.dynasty.members.truncate(2);
+    assert!(
+        (sim.dynasty.members.len() as u32) <= data.config.campaign_skeleton.dynasty_crisis_size
+    );
+    assert!(!sim.dynasty.dynasty_crisis_marked, "not yet marked");
+
+    sim.pending_event = None;
+    sim.pending_dilemma = None;
+    advance_months(&mut sim, &data, 1);
+    assert!(
+        sim.dynasty.dynasty_crisis_marked,
+        "the near-end of the founding line is marked with a beat"
     );
 }
 

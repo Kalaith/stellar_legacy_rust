@@ -224,6 +224,8 @@
     "succession_beat_family": "legacy_drift",
     "long_reign_years": 35,
     "long_reign_beat_family": "legacy_drift",
+    "dynasty_crisis_size": 3,
+    "dynasty_crisis_beat_family": "legacy_drift",
     "anniversary_years": 100,
     "anniversary_beat_family": "legacy_drift",
     "subsystem_beats": [
