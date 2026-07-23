@@ -107,14 +107,22 @@ pub fn monthly_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport
     // A well-kept infirmary thins the reaper's odds (content-depth subsystems round
     // 18): read the bay's relief once, applied to every pre-cap death roll below.
     let relief = subsystems::medical_mortality_relief(sim, data);
+    // A hunger that has ground on for years wears bodies, not just spirits
+    // (content-depth provisioning round 18): a flat monthly toll added to the age
+    // curve while the ship sits in sustained lean past `chronic_hunger_years`.
+    let lean_bonus = if data.config.chronic_hunger_years > 0
+        && sim.lean_food_years >= data.config.chronic_hunger_years
+    {
+        data.config.chronic_hunger_death_bonus
+    } else {
+        0.0
+    };
     let chance_for = |age: u32| {
-        let base = monthly_death_chance(age, cfg, max_age);
-        // The bay eases aging deaths but can never cheat the hard age cap.
+        // The bay eases these deaths but nothing cheats the hard age cap.
         if age >= max_age {
-            base
-        } else {
-            base * (1.0 - relief)
+            return 1.0;
         }
+        ((monthly_death_chance(age, cfg, max_age) + lean_bonus) * (1.0 - relief)).clamp(0.0, 1.0)
     };
 
     // Roll deaths through a local copy of the seeded RNG, then write it back
@@ -337,5 +345,49 @@ mod tests {
         );
         assert!(!report.dynasty_extinct, "an heir carries the line on");
         assert!(sim.dynasty.leader().is_some(), "the seat is filled at once");
+    }
+
+    #[test]
+    fn a_long_hunger_raises_the_death_roll() {
+        // Content-depth provisioning round 18: a sustained lean past
+        // `chronic_hunger_years` adds a monthly death toll on top of the age curve.
+        let mut data = GameData::load().unwrap();
+        // Isolate the hunger toll: no accident floor, a decisive hunger bonus.
+        data.config.mortality.monthly_accident_chance = 0.0;
+        data.config.chronic_hunger_death_bonus = 1.0;
+        let mut sim = crate::state::sim::SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        // Young members (below the age onset) so any death is the hunger's doing,
+        // and a wrecked bay so the toll lands in full.
+        for member in &mut sim.dynasty.members {
+            member.age = 25;
+        }
+        if let Some(bay) = sim.subsystems.get_mut("medical_bay") {
+            bay.condition = 0.0;
+        }
+        let founders = sim.dynasty.members.len();
+
+        // Well-fed: the young are safe.
+        sim.lean_food_years = 0;
+        let mut report = crate::simulation::tick::TickReport::default();
+        monthly_tick(&mut sim, &data, &mut report);
+        assert_eq!(
+            sim.dynasty.members.len(),
+            founders,
+            "a fed ship's young do not die of hunger"
+        );
+
+        // A hunger years past the threshold: it takes even the young.
+        sim.lean_food_years = data.config.chronic_hunger_years.max(1);
+        let mut report = crate::simulation::tick::TickReport::default();
+        monthly_tick(&mut sim, &data, &mut report);
+        assert!(
+            sim.dynasty.members.len() < founders,
+            "a long hunger thins the roster on top of the age curve"
+        );
     }
 }

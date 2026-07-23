@@ -1985,5 +1985,54 @@
     "log": "The ship took what it needed from a hull too weak to keep it, breaking its famine on someone else's stores and deepening, one more notch, the fearsome name that had left it with no gentler option. It was efficient and it was a prophecy fulfilling itself — a ship that no one would help becoming, hunger by hunger, a ship no one dared refuse — and the dark's memory, already cold toward it, grew colder by exactly the width of the theft."
    }
   ]
+ },
+ {
+  "id": "the_winnowing",
+  "category": "generational_challenge",
+  "family": "survival",
+  "title": "The Winnowing",
+  "description": "The hunger is years deep now, and it has stopped being a matter of thin plates. The old go first, then the ailing, then the smallest — the physicians have a word for it they do not say aloud, and every quarter the roster is shorter for it. The council can spend the last of the ship's reserves to carry the weakest through, or keep what remains for the hands that can still work and let the winnowing take its course.",
+  "requires_decision": true,
+  "min_lean_food_years": 8,
+  "outcomes": [
+   {
+    "id": "carry_the_weak",
+    "label": "Carry the weakest through",
+    "description": "Pour the last reserves into the vulnerable — food, medicine, whatever the ship has left to give.",
+    "resource_delta": {
+     "food": -3000,
+     "credits": -400
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.03,
+     "legacy_loyalty": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.04
+     }
+    ],
+    "log": "The council opened the last reserves to the weakest, and the ship went hungrier still for it — but fewer chairs stood empty at the year's end, and the crew saw what kind of ship carried them through the lean."
+   },
+   {
+    "id": "let_it_winnow",
+    "label": "Let the winnowing take its course",
+    "description": "Keep the stores for those who can still work. The weak will not all last the year.",
+    "population_delta": {
+     "count": -60,
+     "morale": -0.05,
+     "legacy_loyalty": -0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.05
+     }
+    ],
+    "log": "The council kept the stores for the working hands and let the hunger take whom it would. The roster came out of the year shorter, and no one who lived through it forgot which side of the ledger they had stood on."
+   }
+  ]
  }
 ]

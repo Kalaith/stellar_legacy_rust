@@ -152,6 +152,16 @@ pub struct GameConfig {
     /// the slow attrition of a hunger that will not end, not a single hard blow.
     #[serde(default)]
     pub chronic_hunger_morale_drain: f32,
+    /// Extra *monthly death chance* added to every character while the ship has been
+    /// lean past `chronic_hunger_years` (content-depth provisioning round 18 — the
+    /// provisioning axis's coupling to the real-time-loop mortality system). Where
+    /// `chronic_hunger_morale_drain` wears the crew's *spirits*, this wears their
+    /// *bodies*: a hunger that grinds on for years thins the roster, the old and weak
+    /// first. Added to the age curve (a well-kept infirmary still eases it, the hard
+    /// age cap still holds). Gentle — the slow toll of long want, not a famine's blow.
+    /// 0 = chronic hunger costs no lives directly.
+    #[serde(default)]
+    pub chronic_hunger_death_bonus: f32,
     pub hull_warning_threshold: f32,
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,

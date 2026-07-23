@@ -25,6 +25,7 @@
   "fat_food_threshold": 15000,
   "chronic_hunger_years": 5,
   "chronic_hunger_morale_drain": 0.004,
+  "chronic_hunger_death_bonus": 0.003,
   "low_energy_threshold": 1000,
   "hull_warning_threshold": 0.7,
   "life_support_warning_threshold": 0.8,
