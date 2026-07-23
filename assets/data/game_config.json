@@ -28,6 +28,10 @@
   "chronic_hunger_death_bonus": 0.003,
   "sustained_plenty_birth_bonus": 0.5,
   "sustained_plenty_morale_lift": 0.004,
+  "surplus_energy_threshold": 4000,
+  "fabrication_energy_cost": 600,
+  "fabrication_minerals_cost": 40,
+  "fabrication_parts_yield": 4,
   "low_energy_threshold": 1000,
   "hull_warning_threshold": 0.7,
   "life_support_warning_threshold": 0.8,
@@ -311,6 +315,12 @@
       "Another year adrift on empty tanks; the ship fell further behind its own schedule, coasting and cold.",
       "No burn this year. The ship drifted on momentum alone while its systems wore at the no-fuel rate.",
       "The dry tanks held the ship becalmed a year longer, every deck a degree colder than the last."
+    ],
+    "fabrication": [
+      "The reactors ran easy this year, and the spare watts went where waste would have — into the fabricators, which worked raw ore into {parts} spare parts against the wear to come.",
+      "With power to burn and ore in the holds, the fabrication decks ran a shift they could not usually afford, and the ship banked {parts} spare parts of its own making.",
+      "The idle reactor output finally earned its keep: fed through the fabricators with a measure of raw minerals, it came out the far end as {parts} spare parts, stacked and logged against the long dark.",
+      "A power-rich year, and the ship spent the surplus wisely — not on comfort but on keeping, the fabricators turning spare energy and ore into {parts} parts the maintenance crews would be glad of later."
     ],
     "crew_death": [
       "{name}, the ship's {post}, died at their post; the roster is one name shorter tonight.",

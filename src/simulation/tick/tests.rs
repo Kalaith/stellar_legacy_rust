@@ -76,6 +76,10 @@ fn a_neglected_generational_voyage_wears_the_ship_to_the_edge() {
     data.config.event_chance_base = 0.0;
     data.config.event_chance_cap = 0.0;
     data.config.dilemma_chance_per_generation = 0.0;
+    // Disable in-flight fabrication (round 21): this test measures the *pure* neglect
+    // wear curve, and a power-rich ship would otherwise refill its own parts from idle
+    // reactor surplus and never run the stores dry.
+    data.config.surplus_energy_threshold = 0;
     let mut sim = SimState::new_campaign(
         &data,
         "preservers",
@@ -2179,6 +2183,56 @@ fn fuel_is_spent_in_travel_but_not_on_station() {
     sim.contract.as_mut().unwrap().months_elapsed = 110 * 12; // end of Travel
     advance_months(&mut sim, &data, 1);
     assert_eq!(sim.ship.fuel, 1.0, "on-station months burn no fuel");
+}
+
+#[test]
+fn a_power_rich_ship_fabricates_its_own_spare_parts() {
+    // Content-depth provisioning round 21: idle reactor surplus — otherwise wasted —
+    // is worked with raw ore into spare parts. A ship above the surplus line converts
+    // each year (energy and minerals down, parts up); one below it does not.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    assert!(
+        data.config.surplus_energy_threshold > 0 && data.config.fabrication_parts_yield > 0,
+        "this test needs the fabrication mechanic enabled"
+    );
+
+    let run = |energy: i64| -> (i64, i64, i64) {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            8,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.resources.food = 1_000_000; // keep famine out of the way
+        sim.resources.energy = energy;
+        sim.resources.minerals = 5_000;
+        let (parts0, min0) = (sim.ship.spare_parts, sim.resources.minerals);
+        advance_year(&mut sim, &data);
+        (
+            sim.ship.spare_parts - parts0,
+            min0 - sim.resources.minerals,
+            sim.resources.energy,
+        )
+    };
+
+    // Above the surplus line vs a power-starved ship (energy 0). Both runs share the
+    // seed, so their yearly production is identical — the difference isolates the
+    // fabrication: net minerals spent differs by exactly the ore feedstock, and the
+    // surplus run banks parts the starved one never gets.
+    let (parts_rich, min_spent_rich, _e) = run(data.config.surplus_energy_threshold + 4_000);
+    let (parts_poor, min_spent_poor, _e) = run(0);
+    assert_eq!(
+        min_spent_rich - min_spent_poor,
+        data.config.fabrication_minerals_cost,
+        "the surplus run spends exactly its ore feedstock more than the starved run"
+    );
+    assert!(
+        parts_rich > parts_poor,
+        "the surplus buys parts the starved ship never gets ({parts_rich} vs {parts_poor})"
+    );
 }
 
 #[test]

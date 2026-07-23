@@ -181,6 +181,32 @@ pub struct GameConfig {
     /// gives no morale lift.
     #[serde(default)]
     pub sustained_plenty_morale_lift: f32,
+    /// Energy level at or above which the ship's surplus reactor output is run into
+    /// the fabricators (content-depth provisioning round 21). Energy, unlike food, has
+    /// no upkeep — it simply *accumulates and sits idle*, the voyage's one wholly
+    /// wasted resource. This gives that idle power a purpose: while energy is above
+    /// this line, the ship converts spare watts and raw minerals into spare parts,
+    /// fabricating its own maintenance stock in flight. The provisioning axis's first
+    /// coupling off *food* — a conversion (energy + minerals → parts), self-throttling
+    /// (the run spends energy back below the line). 0 = the fabricators stay cold.
+    #[serde(default)]
+    pub surplus_energy_threshold: i64,
+    /// Energy spent per year running the fabricators while in surplus (round 21):
+    /// enough that the run draws the idle pile back down, so surplus energy is genuinely
+    /// *used*, not merely checked.
+    #[serde(default)]
+    pub fabrication_energy_cost: i64,
+    /// Raw minerals consumed per fabrication year (round 21): the feedstock the spare
+    /// power works into parts — so the conversion needs both idle watts *and* ore, and
+    /// never runs a mineral-poor ship's stores dry (it is gated on holding at least this
+    /// much).
+    #[serde(default)]
+    pub fabrication_minerals_cost: i64,
+    /// Spare parts a fabrication year yields (round 21): the maintenance stock the
+    /// surplus buys, feeding the it `parts_upkeep_per_year` decay relief — so a
+    /// power-rich ship keeps itself in better repair off its own idle reactors.
+    #[serde(default)]
+    pub fabrication_parts_yield: i64,
     pub hull_warning_threshold: f32,
     pub life_support_warning_threshold: f32,
     pub hull_decay_per_year: f32,
@@ -431,6 +457,12 @@ pub struct FlavorConfig {
     /// fires once per stalled year. Indexed by year; empty falls back.
     #[serde(default)]
     pub fuel_stall: Vec<String>,
+    /// The fabricators working surplus reactor output into spare parts (content-depth
+    /// provisioning round 21): fires the years a power-rich ship converts idle energy
+    /// and raw ore into maintenance stock, so the parts appearing reads as *something
+    /// the ship did*. Placeholder: `{parts}`. Indexed by year; empty falls back.
+    #[serde(default)]
+    pub fabrication: Vec<String>,
     /// The ramscoop/scanners replenishing reaction mass (real-time loop follow-up:
     /// legible stat changes): a periodic in-world report of the fuel the drive has
     /// gathered and processed over the last few travel years, so the fuel gauge's
@@ -2247,6 +2279,21 @@ mod tests {
                 || fl.council_summons.iter().all(|s| s.contains("{title}")),
             "every council_summons flavor line needs its {{title}} slot"
         );
+        // Content-depth provisioning round 21: the fabrication narration carries its
+        // {parts} slot, and if the mechanic is on its costs/yield are sane (a positive
+        // yield, and a mineral gate so it never runs a poor ship's ore dry).
+        assert!(
+            fl.fabrication.is_empty() || fl.fabrication.iter().all(|s| s.contains("{parts}")),
+            "every fabrication flavor line needs its {{parts}} slot"
+        );
+        if data.config.surplus_energy_threshold > 0 {
+            assert!(
+                data.config.fabrication_parts_yield > 0
+                    && data.config.fabrication_minerals_cost > 0
+                    && data.config.fabrication_energy_cost > 0,
+                "the fabrication mechanic is on but its costs/yield are not all positive"
+            );
+        }
         // Content-depth voice round 2: if ambient flavor is switched on, it needs
         // lines to draw from.
         if fl.ambient_gap_years > 0 {

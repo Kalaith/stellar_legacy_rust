@@ -102,6 +102,33 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.fat_food_years = 0;
     }
 
+    // Idle reactor output runs the fabricators (content-depth provisioning round 21):
+    // energy has no upkeep and simply piles up unused, the voyage's one wasted
+    // resource. While the ship holds a real energy surplus *and* the raw minerals to
+    // feed them, the fabricators turn spare watts and ore into spare parts — the ship
+    // making its own maintenance stock in flight, off power it would otherwise waste.
+    // Self-throttling: the run spends energy back toward the line, so it paces itself.
+    if config.surplus_energy_threshold > 0
+        && sim.resources.energy >= config.surplus_energy_threshold
+        && sim.resources.minerals >= config.fabrication_minerals_cost
+        && config.fabrication_parts_yield > 0
+    {
+        sim.resources.energy -= config.fabrication_energy_cost;
+        sim.resources.minerals -= config.fabrication_minerals_cost;
+        sim.ship.spare_parts += config.fabrication_parts_yield;
+        let pool = &data.config.flavor.fabrication;
+        let line = if pool.is_empty() {
+            format!(
+                "The reactors ran easy this year; the fabricators worked spare power and raw ore into {} spare parts.",
+                config.fabrication_parts_yield
+            )
+        } else {
+            pool[sim.year() as usize % pool.len()]
+                .replace("{parts}", &config.fabrication_parts_yield.to_string())
+        };
+        sim.push_log(line);
+    }
+
     // A life-support plant that has failed badly cannot sustain everyone (content-depth
     // subsystems round 15): the module's most fundamental effect. Below the failure
     // threshold the ship thins each year, scaled by how far the plant has collapsed.
