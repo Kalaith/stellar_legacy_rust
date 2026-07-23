@@ -146,4 +146,12 @@ pub struct SubsystemsConfig {
     /// thinning, the pressure to keep the plant alive, not a massacre.
     #[serde(default)]
     pub life_support_failure_mortality: f32,
+    /// Energy store below which the life-support plant begins to starve for power
+    /// (content-depth provisioning round 15): the plant needs current to run, so
+    /// below this the grid's power availability caps the plant's effective condition
+    /// for the mortality check — a well-repaired plant with a near-empty grid is a
+    /// dying one. Set below the brown-out line (`low_energy_threshold`), since power
+    /// starvation is deadlier than a mere dimming. 0 = power does not touch mortality.
+    #[serde(default)]
+    pub life_support_energy_critical: i64,
 }

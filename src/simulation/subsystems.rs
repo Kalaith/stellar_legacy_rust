@@ -350,21 +350,33 @@ pub fn agriculture_condition_food_factor(sim: &SimState, data: &GameData) -> f32
     (1.0 - penalty * (1.0 - condition)).max(0.0)
 }
 
-/// Crew lost this year to a critically-failing life-support/habitat plant
-/// (content-depth subsystems round 15): the module's most fundamental effect. Above
-/// the failure threshold the plant sustains everyone (0 loss); below it, a yearly
-/// attrition scaled linearly from 0 at the threshold to `mortality × population` at
-/// zero condition. Floored, so a barely-failing plant on a small crew may cost none.
+/// Crew lost this year to a life-support/habitat plant that cannot sustain everyone
+/// (content-depth subsystems round 15, provisioning round 15): the module's most
+/// fundamental effect. The plant needs *both* repair and power — so the effective
+/// condition is the worse of its physical state and the grid's power availability,
+/// and a sound plant with an empty grid kills as surely as a broken one with full
+/// power. Above the failure threshold it sustains everyone (0 loss); below it, a
+/// yearly attrition scaled from 0 at the threshold to `mortality × population` at
+/// zero. Floored, so a barely-failing plant on a small crew may cost none.
 pub fn life_support_mortality_loss(sim: &SimState, data: &GameData) -> u32 {
     let cfg = &data.config.subsystems;
     let threshold = cfg.life_support_failure_threshold;
     if threshold <= 0.0 || cfg.life_support_failure_mortality <= 0.0 {
         return 0;
     }
-    let condition = sim
+    let plant = sim
         .subsystems
         .get("life_support_habitat")
         .map_or(1.0, |s| s.condition);
+    // Power starvation (provisioning round 15): a scrubber array with no current to
+    // run it is a dead plant, whatever its repair. Below the critical grid level the
+    // effective condition falls with the energy store; at or above it, full power.
+    let power_avail = if cfg.life_support_energy_critical <= 0 {
+        1.0
+    } else {
+        (sim.resources.energy as f32 / cfg.life_support_energy_critical as f32).clamp(0.0, 1.0)
+    };
+    let condition = plant.min(power_avail);
     if condition >= threshold {
         return 0;
     }
@@ -586,6 +598,44 @@ mod tests {
             fully_failed > half_failed,
             "a fully collapsed plant thins the crew faster than a half-failed one \
              ({fully_failed} vs {half_failed})"
+        );
+    }
+
+    #[test]
+    fn a_power_starved_plant_kills_even_when_well_repaired() {
+        // Content-depth provisioning round 15: a life-support plant needs power as
+        // well as repair. A sound plant on a full grid sustains everyone; the same
+        // sound plant on a near-empty grid thins the crew — power starvation is as
+        // deadly as physical collapse.
+        let data = GameData::load().unwrap();
+        let critical = data.config.subsystems.life_support_energy_critical;
+        assert!(
+            critical > 0,
+            "this test needs the power-starvation coupling"
+        );
+
+        let loss_at_energy = |energy: i64| -> u32 {
+            let (_, mut sim) = campaign(13);
+            sim.population.count = 1000;
+            // A pristine plant — only the grid differs.
+            sim.subsystems
+                .get_mut("life_support_habitat")
+                .unwrap()
+                .condition = 1.0;
+            sim.resources.energy = energy;
+            life_support_mortality_loss(&sim, &data)
+        };
+
+        // A well-powered, sound plant loses no one.
+        assert_eq!(
+            loss_at_energy(critical * 2),
+            0,
+            "a plant with power and repair sustains the ship"
+        );
+        // The same sound plant on a near-dead grid cannot run, and the ship thins.
+        assert!(
+            loss_at_energy(0) > 0,
+            "a sound plant with no current to run it still kills"
         );
     }
 

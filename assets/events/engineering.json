@@ -1343,5 +1343,41 @@
     "log": "The ship did what it had always done: patched the fires it could not ignore and logged the rest for a year that would be leaner still, carrying the whole deferred ledger forward one more generation, a little heavier. The hull settled a permanent degree lower; the bay and the habitat ran a permanent degree worse. The debt did not end. It never ends when it is deferred; it only ever comes due larger, in someone else's watch."
    }
   ]
+ },
+ {
+  "id": "the_cold_equations",
+  "category": "immediate_crisis",
+  "title": "The Cold Equations",
+  "description": "The reactor is failing to keep up and the grid can no longer power everything at once. The arithmetic is brutal and simple: the scrubbers, the heaters, the recyclers — the whole life-support plant — draw more current than the ship now has to spare, and a plant that loses its power stops keeping anyone alive, however sound its machinery. Every other watt on the ship is now, quietly, a watt weighed against the air itself.",
+  "requires_decision": true,
+  "family": "engineering",
+  "energy_below": 1500,
+  "outcomes": [
+   {
+    "id": "everything_to_the_plant",
+    "label": "Every watt to life-support",
+    "description": "There is one load that cannot be shed and it is the one that keeps the crew breathing. Black out the corridors, still the industry, let the quarters go cold and dark, and pour every last ampere into the scrubbers and the heat exchangers — endure a ship reduced to a warm, breathing core surrounded by darkness, because a dark ship full of living people beats a bright one full of the dead.",
+    "resource_delta": {
+     "energy": 400
+    },
+    "population_delta": {
+     "morale": -0.06,
+     "unity": 0.03,
+     "stability": 0.02
+    },
+    "log": "The council shed every load but the one that mattered, and the ship went dark and cold and idle around a single warm, breathing core — the scrubbers running, the air holding, the corridors black. It was a grim and frightened way to live and it kept everyone alive to live it, a people that had done the cold arithmetic and chosen, without flinching, the answer that let them keep breathing."
+   },
+   {
+    "id": "keep_the_ship_livable",
+    "label": "Keep the ship livable — run the plant thin",
+    "description": "A crew that lives in cold darkness stops being a crew and starts being cargo waiting to arrive. Spread the power — keep the lights, the warmth, the work — and let life-support run below its rated draw, trusting a good plant to hold on reduced current. It is a gamble with the thin air, and the thin air, when it is gambled with, collects from the old and the weak first.",
+    "population_delta": {
+     "count": -15,
+     "morale": 0.03,
+     "cultural_drift": 0.02
+    },
+    "log": "The council refused to let the ship go dark and ran the life-support plant below its draw instead, spreading the power to keep the crew warm, lit, and working. The plant held, mostly — the air thinned only at the edges — and the edges, as they always do, were where the old and the frail lived, so the ship stayed a living place at a price paid quietly by those least able to argue it."
+   }
+  ]
  }
 ]
