@@ -1484,5 +1484,57 @@
     "log": "The council refused to let the ship go dark and ran the life-support plant below its draw instead, spreading the power to keep the crew warm, lit, and working. The plant held, mostly — the air thinned only at the edges — and the edges, as they always do, were where the old and the frail lived, so the ship stayed a living place at a price paid quietly by those least able to argue it."
    }
   ]
+ },
+ {
+  "id": "the_volunteered_works",
+  "category": "mission_milestone",
+  "family": "engineering",
+  "title": "The Volunteered Works",
+  "description": "The Steel Covenant's makers are proud of this ship, and a proud maker cannot leave a thing half-mended. Their foremen bring the council a plan drawn up on their own hours: a full overhaul of the engineering bay, done by volunteer crews on rotating shifts, asking only for the materials. It is more than the ship could order and less than it would cost to hire — the goodwill of a people that wants its work to outlast it.",
+  "requires_decision": true,
+  "faction_approval_above": [
+   {
+    "id": "steel_covenant",
+    "at_least": 0.75
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "let_them_build",
+    "label": "Give them the materials",
+    "description": "Release the stores and let the Covenant's volunteers rebuild the bay to a standard the ship could not have paid for.",
+    "resource_delta": {
+     "minerals": -300
+    },
+    "ship_delta": {
+     "spare_parts": -30
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.5
+     }
+    ],
+    "faction_approval_deltas": [
+     {
+      "id": "steel_covenant",
+      "delta": 0.05
+     }
+    ],
+    "log": "The Covenant's volunteers took the materials and the ship's blessing and rebuilt the engineering bay on their own time, to a finish no paid contract would have bought. A people that had wanted its craft to matter was told, plainly, that it did."
+   },
+   {
+    "id": "thank_and_hold",
+    "label": "Thank them, but hold the stores",
+    "description": "The materials are needed elsewhere. Decline the offer as gently as a spurned gift can be declined.",
+    "faction_approval_deltas": [
+     {
+      "id": "steel_covenant",
+      "delta": -0.06
+     }
+    ],
+    "log": "The council thanked the Covenant and kept the materials for the hull's own account. The makers understood the arithmetic. They also understood that they had offered the ship the best of themselves and been told, this once, that it was not needed — and a maker remembers that."
+   }
+  ]
  }
 ]

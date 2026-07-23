@@ -138,6 +138,17 @@ pub struct FactionApprovalGate {
     pub below: f32,
 }
 
+/// A gate keyed to a faction's approval *rising to or above* `at_least`
+/// (content-depth factions round 19): the positive mirror of `FactionApprovalGate`
+/// — the event fires only while the named people is aboard *and* has warmed to at
+/// least this degree, a gift or a volunteered effort from a people that is glad to
+/// be here. The counterpart to the grievance gate: goodwill earned, not spent.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct FactionApprovalFloor {
+    pub id: String,
+    pub at_least: f32,
+}
+
 /// A follow-up an outcome promises to fire at a determined future year
 /// (content-depth event families round 9): the deterministic-timing counterpart
 /// to the opportunistic `long_term_consequences`/`requires_consequence` chain.
@@ -447,6 +458,13 @@ pub struct EventTemplate {
     /// Empty = ungated.
     #[serde(default)]
     pub faction_approval_below: Vec<FactionApprovalGate>,
+    /// Faction-approval *floor* gate (content-depth factions round 19): the positive
+    /// mirror of `faction_approval_below` — the event fires only while every named
+    /// people is aboard *and* has warmed to or above its threshold, so a devoted
+    /// people's gift or volunteered effort surfaces only when goodwill is genuinely
+    /// high. Empty = ungated.
+    #[serde(default)]
+    pub faction_approval_above: Vec<FactionApprovalFloor>,
     /// Knowledge-crisis gates (content-depth iteration): the event only fires
     /// while every listed subsystem's knowledge has decayed to or below its
     /// threshold. Empty = ungated.

@@ -274,6 +274,16 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     }) {
         return false;
     }
+    // Faction-approval *floor* gates (content-depth round 19): the positive mirror —
+    // a gift/volunteered-effort beat fires only while the named people is aboard and
+    // has warmed to at least its threshold.
+    if !template.faction_approval_above.iter().all(|gate| {
+        sim.factions
+            .iter()
+            .any(|f| f.faction_id == gate.id && f.is_aboard() && f.approval >= gate.at_least)
+    }) {
+        return false;
+    }
     if !template.knowledge_below.iter().all(|gate| {
         sim.subsystems
             .get(&gate.id)
@@ -723,6 +733,37 @@ mod tests {
         assert!(
             passes_gate(&sim, schism),
             "the schism enters the pool once drift is high enough"
+        );
+    }
+
+    #[test]
+    fn a_faction_approval_floor_gates_a_gift_only_to_a_delighted_people() {
+        // Content-depth factions round 19: the positive mirror of the grievance
+        // gate — a gift/volunteered-effort beat surfaces only while the named
+        // people is aboard and genuinely warm to the ship.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 1, &picks);
+        let feast = data.events.get("the_hearths_feast").unwrap();
+        assert!(
+            sim.is_faction_aboard("hearth_union"),
+            "the founding set carries the Hearth"
+        );
+
+        // Merely content (launch approval 0.5): no feast is offered.
+        assert!(
+            !passes_gate(&sim, feast),
+            "a merely-content people opens no tables"
+        );
+        // Delighted: the gift beat enters the pool.
+        for faction in &mut sim.factions {
+            if faction.faction_id == "hearth_union" {
+                faction.approval = 0.9;
+            }
+        }
+        assert!(
+            passes_gate(&sim, feast),
+            "a delighted people offers its feast"
         );
     }
 

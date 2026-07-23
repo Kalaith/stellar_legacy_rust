@@ -1260,8 +1260,9 @@ mod tests {
                         .iter()
                         .flat_map(|c| c.requires_factions_aboard.iter()),
                 )
-                // Content-depth round 8: approval gate + approval-delta faction ids.
+                // Content-depth round 8/19: approval gate (both poles) + delta ids.
                 .chain(e.faction_approval_below.iter().map(|g| &g.id))
+                .chain(e.faction_approval_above.iter().map(|g| &g.id))
                 .chain(
                     e.outcomes
                         .iter()

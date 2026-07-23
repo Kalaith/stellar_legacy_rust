@@ -481,5 +481,53 @@
     "log": "The council let the good spirits run to an evening's diversion and no further, and kept the ship's hands to its charter through the fat years as through the lean. The deck-opera folded; the murals stayed, unfinished and fond. The voyage stayed exactly what the founders launched, which some counted a discipline and some a small closed door."
    }
   ]
+ },
+ {
+  "id": "the_hearths_feast",
+  "category": "legacy_moment",
+  "family": "comedy",
+  "title": "The Hearth's Feast",
+  "description": "The Hearth Union has been glad aboard this ship, and gladness in that people takes one form above all others: they want to feed everyone. Their elders come to the council with a proposal to throw open the long tables — a feast for every deck, the grow-stores spent down for one great shared meal, the kind of festival the founders kept to mark a safe passage. It is a gift freely offered; the only question is how big to let it grow.",
+  "requires_decision": true,
+  "faction_approval_above": [
+   {
+    "id": "hearth_union",
+    "at_least": 0.75
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "throw_the_doors_wide",
+    "label": "Throw the doors wide",
+    "description": "Let the whole ship feast — spend the stores, and let the decks remember what plenty feels like.",
+    "resource_delta": {
+     "food": -4000
+    },
+    "population_delta": {
+     "morale": 0.06,
+     "unity": 0.05
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "hearth_union",
+      "delta": 0.05
+     }
+    ],
+    "log": "The Hearth opened every table and the ship came to eat. It cost the grow-stores a season's careful margin, and it was worth it — for a few days the corridors sounded like a people glad to be alive together, and half-remembering why."
+   },
+   {
+    "id": "a_modest_observance",
+    "label": "A modest observance",
+    "description": "Accept the gift, but keep it small — a shared meal, not a feast, the stores mostly held.",
+    "resource_delta": {
+     "food": -800
+    },
+    "population_delta": {
+     "morale": 0.02,
+     "unity": 0.02
+    },
+    "log": "The council thanked the Hearth and kept the feast modest — one good meal, the stores mostly held for leaner days. The gesture landed; the lift was gentler than the Hearth had hoped, but no one went without, and no one starved for it later."
+   }
+  ]
  }
 ]
