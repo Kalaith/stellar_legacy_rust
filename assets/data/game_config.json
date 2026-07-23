@@ -238,6 +238,8 @@
     "midvoyage_beat_family": "legacy_drift",
     "founding_beat_family": "legacy_drift",
     "founding_beat_year": 50,
+    "hull_beat_family": "engineering",
+    "hull_beat_threshold": 0.25,
     "power_transition_beat_family": "legacy_drift",
     "succession_beat_family": "legacy_drift",
     "long_reign_years": 35,

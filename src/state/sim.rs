@@ -483,6 +483,14 @@ pub struct SimState {
     /// announced. 0 at launch; a return to the middle re-arms.
     #[serde(default)]
     pub hull_voice_band: i8,
+    /// The band the skeleton's hull-collapse beat last marked (content-depth campaign-
+    /// skeleton round 23): -1 once the hull has crossed *into* structural failure (the
+    /// beat fires the moment it does), 0 while the hull holds above the red line. The
+    /// beat is the reckoning the it22 hull *voice* only murmurs before; a refit back over
+    /// the line re-arms it, so a ship rebuilt and let fail again reckons anew. 0 at
+    /// launch (a new-built hull is sound).
+    #[serde(default)]
+    pub hull_beat_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -616,6 +624,7 @@ impl SimState {
             loyalty_voice_band: 0,
             unity_voice_band: 0,
             hull_voice_band: 0,
+            hull_beat_band: 0,
             depopulation_beats_fired: 0,
             subsystem_beats_fired: Vec::new(),
             founding_beat_fired: false,

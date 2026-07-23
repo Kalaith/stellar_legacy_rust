@@ -418,6 +418,14 @@ pub struct EventTemplate {
     /// last of the founding line" cannot surface on a healthy dynasty. 0 = ungated.
     #[serde(default)]
     pub max_dynasty_size: u32,
+    /// Hull-failure gate (content-depth campaign-skeleton round 23): the event only
+    /// enters the pool while the ship's `hull_integrity` has fallen to or below this
+    /// fraction — the honest gate for *the ship is breaking up* content and the
+    /// hull-collapse beat, the structural parallel to the it subsystem-collapse beat's
+    /// `condition_below`. So "the frame is failing" cannot surface on a sound hull.
+    /// None = ungated.
+    #[serde(default)]
+    pub hull_below: Option<f32>,
     /// Chronic-scarcity gate (content-depth provisioning round 13): the event only
     /// enters the pool once the food store has sat below the lean line for at least
     /// this many consecutive years (`sim.lean_food_years`) — the honest gate for

@@ -943,6 +943,20 @@ pub struct CampaignSkeletonConfig {
     /// era's close. 0 disables the beat.
     #[serde(default)]
     pub founding_beat_year: u32,
+    /// Hull-collapse beat family (content-depth campaign-skeleton round 23): the
+    /// structural parallel to the it17 subsystem-collapse beat (which watches a *module's*
+    /// condition) — this watches the *ship's own frame*. The moment `hull_integrity`
+    /// falls to or below `hull_beat_threshold`, a beat is forced from this family: the
+    /// crew confronting that the vessel itself is failing, not merely a system aboard it.
+    /// It is the reckoning the it22 hull *voice* only murmurs before. Empty = no hull beat.
+    #[serde(default)]
+    pub hull_beat_family: String,
+    /// Hull integrity at or below which the hull-collapse beat fires (content-depth
+    /// campaign-skeleton round 23): a red line well past the it warning threshold — the
+    /// ship not merely worn but structurally failing. A refit back above it re-arms the
+    /// beat. 0 disables it.
+    #[serde(default)]
+    pub hull_beat_threshold: f32,
     /// Power-transition beat family (content-depth round 11): a beat keyed not to
     /// a stat or a time but to a *political* change — the first tick the dominant
     /// faction differs from the one the skeleton last marked (demographic drift
@@ -2348,6 +2362,26 @@ mod tests {
             assert!(
                 sk.founding_beat_year > 0,
                 "the founding beat needs an early year to fire at"
+            );
+        }
+        // Content-depth campaign-skeleton round 23: the hull-collapse beat needs a family
+        // with events and a red line in (0,1) when switched on, and — like the subsystem
+        // collapse beat — a `hull_below`-gated event to surface so the reckoning lands on
+        // theme.
+        if !sk.hull_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.hull_beat_family),
+                "campaign_skeleton hull_beat_family '{}' has no events",
+                sk.hull_beat_family
+            );
+            assert!(
+                sk.hull_beat_threshold > 0.0 && sk.hull_beat_threshold < 1.0,
+                "hull_beat_threshold {} must be a red line inside (0, 1)",
+                sk.hull_beat_threshold
+            );
+            assert!(
+                data.events.iter().any(|(_, e)| e.hull_below.is_some()),
+                "the hull-collapse beat needs a hull_below-gated event to surface"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

@@ -93,6 +93,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_loyalty_beat(sim, data, &mut report)
             && !fire_stability_beat(sim, data, &mut report)
             && !fire_subsystem_beat(sim, data, &mut report)
+            && !fire_hull_beat(sim, data, &mut report)
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
@@ -362,6 +363,35 @@ fn fire_subsystem_beat(sim: &mut SimState, data: &GameData, report: &mut TickRep
     };
     let family = beat.family.clone();
     sim.subsystem_beats_fired.push(beat.subsystem.clone());
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire a hull-collapse beat (content-depth campaign-skeleton round 23): the structural
+/// twin of the subsystem-collapse beat — where that watches a *module's* condition, this
+/// watches the *ship's own frame*. The month `hull_integrity` first falls to or below the
+/// red line, a beat is forced (the crew confronting that the vessel itself is failing);
+/// a refit back above the line re-arms it, so a ship rebuilt and let fail again reckons
+/// anew. Fires only during a voyage; at most one per crossing.
+fn fire_hull_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.hull_beat_family.is_empty() || cfg.hull_beat_threshold <= 0.0 || sim.contract.is_none() {
+        return false;
+    }
+    let band = if sim.ship.hull_integrity <= cfg.hull_beat_threshold {
+        -1
+    } else {
+        0
+    };
+    if band == sim.hull_beat_band {
+        return false;
+    }
+    sim.hull_beat_band = band;
+    if band == 0 {
+        // The hull recovered above the red line — re-arm, but do not fire.
+        return false;
+    }
+    let family = cfg.hull_beat_family.clone();
     force_family_beat(sim, data, &family, report);
     true
 }

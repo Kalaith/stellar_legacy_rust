@@ -1595,5 +1595,82 @@
     "log": "The council kept its parts and let the drive burn rich, and the tanks ran lower than they should have the long way out. The engineers logged every wasted tonne and said nothing the council did not already know: a ship that will not maintain its drive pays for it in the one currency the dark does not refund."
    }
   ]
+ },
+ {
+  "id": "the_failing_frame",
+  "category": "immediate_crisis",
+  "family": "engineering",
+  "title": "The Failing Frame",
+  "description": "This is past the patching of seams. The ship's structural frame itself — the great load-bearing spine and ribs the founders laid down and no generation since has been able to replace — has crossed from worn into failing. It flexes now where it must be rigid; the engineers can hear it working on every burn, a slow metal fatigue that no amount of sealant reaches. The vessel is not going to break up this year. But it will break up, in time, unless the frame itself is rebuilt — and there is only one place aboard to find that much structural material.",
+  "requires_decision": true,
+  "hull_below": 0.25,
+  "outcomes": [
+   {
+    "id": "strip_decks_to_rebuild",
+    "label": "Strip whole decks to rebuild the frame",
+    "description": "Tear out entire sections — cargo holds, unused quarters, a whole habitat ring — and feed their structural steel into the spine. The ship comes out smaller and more crowded, but sound enough to fly another age.",
+    "ship_delta": {
+     "hull_integrity": 0.4,
+     "spare_parts": -20
+    },
+    "population_delta": {
+     "morale": -0.04,
+     "unity": 0.02
+    },
+    "log": "The ship ate itself to save itself: whole decks came down and went back up as frame, and the crew that had rattled around a large worn vessel now packed close into a smaller sound one. Crowded, and alive, and good for another age of the dark."
+   },
+   {
+    "id": "fly_on_and_fail_slowly",
+    "label": "Fly on, and fail slowly",
+    "description": "There is nowhere to take that much material without gutting the ship, and the crew will not be the generation that tore their home apart. Shore up what can be shored, log the rest, and fly a dying frame as gently as it can be flown.",
+    "ship_delta": {
+     "hull_integrity": 0.08
+    },
+    "population_delta": {
+     "morale": -0.05,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The ship chose to stay whole and worn rather than be cut apart, and flies on now with a frame everyone knows is failing — a little more gently each year, a little more aware that gentleness only buys time it cannot refund."
+   }
+  ]
+ },
+ {
+  "id": "the_condemned_decks",
+  "category": "immediate_crisis",
+  "family": "engineering",
+  "title": "The Condemned Decks",
+  "description": "The failing hull cannot be held all at once. The engineers have marked the worst-gone sections — the decks where the frame is weakest and the plating thinnest — and drawn a hard line: seal them, evacuate them, and let them go, so that the pressure and the load fall only where the ship can still bear them. It would make the vessel sound again, or nearly. It would also mean abandoning a fifth of the ship the crew has always lived in, and finding room for its people in what remains.",
+  "requires_decision": true,
+  "hull_below": 0.25,
+  "outcomes": [
+   {
+    "id": "seal_the_worst_decks",
+    "label": "Seal and abandon the worst decks",
+    "description": "Give up the weakest fifth of the ship. Pull everyone inward, weld the bulkheads, and let the dead sections drift sealed and airless — a smaller, sounder ship, bought by crowding the crew into what holds.",
+    "ship_delta": {
+     "hull_integrity": 0.3
+    },
+    "population_delta": {
+     "count": -40,
+     "morale": -0.05,
+     "stability": 0.03
+    },
+    "log": "The ship pulled in behind welded bulkheads and let its weakest decks go dark and airless behind it. A few who would not leave their homes in time were lost with the sections; the rest crowded into a hull that would, at least, still hold — smaller now, and sound."
+   },
+   {
+    "id": "hold_the_whole_ship",
+    "label": "Hold the whole ship",
+    "description": "Abandon no one and nothing. Brace the failing decks as best the crews can and carry the whole strained vessel onward, betting that careful flying outlasts the fatigue.",
+    "ship_delta": {
+     "hull_integrity": 0.1,
+     "spare_parts": -10
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.02
+    },
+    "log": "The ship refused to cut anyone loose and braced its failing decks instead, carrying the whole worn vessel onward on careful flying and stubborn hope — every soul still aboard, and the frame still, for now, holding."
+   }
+  ]
  }
 ]

@@ -366,6 +366,15 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Hull-failure gate (content-depth round 23): "the ship is breaking up" content waits
+    // until the hull itself has fallen to its red line — the structural parallel to the
+    // subsystem condition_below gate, and the honest gate for the hull-collapse beat.
+    if template
+        .hull_below
+        .is_some_and(|t| sim.ship.hull_integrity > t)
+    {
+        return false;
+    }
     // Chronic-scarcity gate (content-depth round 13): long-hunger content waits
     // until the shortage has ground on for years, not just this season.
     if sim.lean_food_years < template.min_lean_food_years {
