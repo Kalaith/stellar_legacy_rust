@@ -63,6 +63,19 @@ pub struct FactionDef {
     /// Empty = a people with no standing rivals.
     #[serde(default)]
     pub rivals: Vec<String>,
+    /// Peoples this one is bound to in kinship (content-depth factions round 17):
+    /// the positive twin of `rivals`. Where favoring a people *sours* its rivals,
+    /// it *warms* its allies — when an event lifts this people's approval, each
+    /// aboard ally shares a fraction of the goodwill
+    /// (`FactionConfig::ally_approval_spillover`), so the approval meter is not only
+    /// a set of fault lines but a landscape of coalitions: courting one people is a
+    /// gift to its kin as much as a slight to its rivals. Authored symmetric (if A
+    /// names B, B names A) and never overlapping a rivalry. Empty = a people that
+    /// stands alone. (The natural kinships are the r5 merger pairs — the communal
+    /// Hearth and the garden-tending Kin, the Accord's courts and the Covenant's
+    /// forges — peoples the ship has folded into one before.)
+    #[serde(default)]
+    pub allies: Vec<String>,
     /// How this people, while it runs the ship, bends the ship's *reputation* traits
     /// (content-depth factions round 16): a per-trait lean strength (signed), so a
     /// communal, kind majority drifts the ship's `mercy` up over the generations and
@@ -119,6 +132,13 @@ pub struct FactionConfig {
     /// everyone at once. 0 = rivalries do not spill over.
     #[serde(default)]
     pub rival_approval_spillover: f32,
+    /// Fraction of a positive approval gain that a favored people's aboard *allies*
+    /// also receive (content-depth factions round 17): the positive mirror of
+    /// `rival_approval_spillover`. Favoring one people warms its kin, so the meter
+    /// rewards building a coalition, not only pleasing an isolated people. 0 =
+    /// kinships do not spill over.
+    #[serde(default)]
+    pub ally_approval_spillover: f32,
     /// How much the aboard peoples' mood moves the ship's `unity` each year
     /// (content-depth factions round 15): the faction system's first coupling to the
     /// ship's own cohesion. Unity drifts by `approval_unity_coupling · (mean_approval

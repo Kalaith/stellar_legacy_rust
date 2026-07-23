@@ -37,6 +37,7 @@
     },
     "tended_subsystem": "engineering_bay",
     "rivals": ["verdant_kin"],
+    "allies": ["meridian_accord"],
     "reputation_leanings": {"mercy": -0.2}
   },
   {
@@ -58,7 +59,8 @@
       "flavor": "The Meridian Accord came aboard and set up their courts before their quarters, and the ship's uneasy peace acquired, overnight, a body of law and the patient hands to keep it."
     },
     "tended_subsystem": "security",
-    "rivals": ["first_flame"]
+    "rivals": ["first_flame"],
+    "allies": ["steel_covenant"]
   },
   {
     "id": "hearth_union",
@@ -76,6 +78,7 @@
     },
     "tended_subsystem": "life_support_habitat",
     "rivals": ["ascension_circle"],
+    "allies": ["verdant_kin"],
     "reputation_leanings": {"mercy": 0.5}
   },
   {
@@ -97,6 +100,7 @@
     },
     "tended_subsystem": "agriculture",
     "rivals": ["steel_covenant"],
+    "allies": ["hearth_union"],
     "reputation_leanings": {"mercy": 0.3}
   },
   {

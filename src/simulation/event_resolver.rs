@@ -534,6 +534,10 @@ pub fn apply_outcome(
     // round 14): each approval *gain* spills a fraction of resentment onto the
     // favored people's aboard rivals, so the meter cannot be maxed for everyone.
     sim.apply_rival_approval_spillover(data, &outcome.faction_approval_deltas);
+    // …and rewards you with its allies (content-depth factions round 17): the same
+    // approval *gain* shares a fraction of goodwill with the favored people's aboard
+    // kin, so courting a coalition lifts more than the one people you named.
+    sim.apply_ally_approval_spillover(data, &outcome.faction_approval_deltas);
     // …or let the shortage fall on the smallest deck (content-depth provisioning
     // round 8): a rationing triage that spares the many by cutting the fewest
     // sours the people who bore it, resolved dynamically without naming them.

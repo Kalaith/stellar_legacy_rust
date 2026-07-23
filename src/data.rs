@@ -1359,12 +1359,36 @@ mod tests {
                     "rivalry '{id}' <-> '{rival}' is not symmetric"
                 );
             }
+            // Content-depth factions round 17: an ally must likewise be a real, other
+            // people; alliances symmetric; and a pair is never both kin and rival —
+            // the positive and negative spillover would fight over the same relation.
+            for ally in &faction.allies {
+                assert_ne!(ally, id, "faction '{id}' lists itself as an ally");
+                let other = data
+                    .factions
+                    .get(ally)
+                    .unwrap_or_else(|| panic!("faction '{id}' names unknown ally '{ally}'"));
+                assert!(
+                    other.allies.contains(id),
+                    "alliance '{id}' <-> '{ally}' is not symmetric"
+                );
+                assert!(
+                    !faction.rivals.contains(ally),
+                    "'{id}' <-> '{ally}' is listed as both ally and rival"
+                );
+            }
         }
         // Content-depth factions round 14: at least one people should carry a rival,
         // so the spillover mechanic is exercised.
         assert!(
             data.factions.iter().any(|(_, f)| !f.rivals.is_empty()),
             "some faction should have a standing rival"
+        );
+        // Content-depth factions round 17: and at least one a standing ally, so the
+        // positive spillover is exercised too.
+        assert!(
+            data.factions.iter().any(|(_, f)| !f.allies.is_empty()),
+            "some faction should have a standing ally"
         );
 
         // W5: six subsystems load; each non-empty buffered family is one of the

@@ -410,6 +410,49 @@ impl SimState {
         }
     }
 
+    /// Warm the aboard allies of any people an event just favored (content-depth
+    /// factions round 17): the positive twin of `apply_rival_approval_spillover`.
+    /// Each positive approval gain shares a fraction of its goodwill with the favored
+    /// people's aboard allies, so courting one people lifts its kin — the r5 merger
+    /// pairs made a standing coalition the way the friction pairs were made a standing
+    /// rivalry. A slight (a negative delta) does not sour allies; the mechanic is the
+    /// *reward of coalition*, not shared misery. Deterministic, no RNG.
+    pub fn apply_ally_approval_spillover(
+        &mut self,
+        data: &GameData,
+        deltas: &[FactionApprovalDelta],
+    ) {
+        let spill = data.config.factions.ally_approval_spillover;
+        if spill <= 0.0 {
+            return;
+        }
+        // Gather (ally, bonus) from the immutable catalog first, then apply — so the
+        // read of `data.factions.allies` and the mutation of `self.factions` don't
+        // overlap.
+        let mut bonuses: Vec<(String, f32)> = Vec::new();
+        for delta in deltas {
+            if delta.delta <= 0.0 || !self.is_faction_aboard(&delta.id) {
+                continue;
+            }
+            if let Some(def) = data.factions.get(&delta.id) {
+                for ally in &def.allies {
+                    if self.is_faction_aboard(ally) {
+                        bonuses.push((ally.clone(), spill * delta.delta));
+                    }
+                }
+            }
+        }
+        for (ally_id, bonus) in bonuses {
+            if let Some(state) = self
+                .factions
+                .iter_mut()
+                .find(|f| f.faction_id == ally_id && f.is_aboard())
+            {
+                state.adjust_approval(bonus);
+            }
+        }
+    }
+
     /// Drift the ship's reputation by the standing character of whoever runs it
     /// (content-depth factions round 16): the dominant people's `reputation_leanings`
     /// nudge each named trait a little each year, so a ship long-run by a kind people
@@ -1024,6 +1067,81 @@ mod tests {
             approval(&sim, "verdant_kin"),
             kin_before,
             "a slight to a people is not a gift to its rivals"
+        );
+    }
+
+    #[test]
+    fn favoring_a_people_warms_its_aboard_allies() {
+        // Content-depth factions round 17: the positive twin of the rivalry spillover.
+        // Lifting one people's approval shares a fraction of the goodwill with its
+        // aboard allies, so the meter rewards building a coalition; an ally not aboard
+        // is untouched, and slighting a people does not sour its allies (the mechanic
+        // is the reward of coalition, not shared misery).
+        use crate::data::events::FactionApprovalDelta;
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.ally_approval_spillover > 0.0,
+            "this test needs the alliance spillover enabled"
+        );
+        // Hearth Union and Verdant Kin are authored allies (the green hearth); the
+        // Steel Covenant is neither.
+        let def = data.factions.get("hearth_union").unwrap();
+        assert!(def.allies.contains(&"verdant_kin".to_string()));
+
+        let fs = |id: &str| FactionState {
+            faction_id: id.to_string(),
+            members: 400,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        };
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            11,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.factions = vec![fs("hearth_union"), fs("verdant_kin"), fs("steel_covenant")];
+
+        let approval = |sim: &SimState, id: &str| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .unwrap()
+                .approval
+        };
+
+        // Favor the Hearth: its ally the Kin warms, the unrelated Covenant does not.
+        sim.apply_ally_approval_spillover(
+            &data,
+            &[FactionApprovalDelta {
+                id: "hearth_union".to_string(),
+                delta: 0.2,
+            }],
+        );
+        assert!(
+            approval(&sim, "verdant_kin") > 0.5,
+            "the Hearth's ally shares in the goodwill"
+        );
+        assert_eq!(
+            approval(&sim, "steel_covenant"),
+            0.5,
+            "a people that is no ally is untouched"
+        );
+
+        // Slighting the Hearth does not sour its ally (the reward is of coalition).
+        let kin_before = approval(&sim, "verdant_kin");
+        sim.apply_ally_approval_spillover(
+            &data,
+            &[FactionApprovalDelta {
+                id: "hearth_union".to_string(),
+                delta: -0.2,
+            }],
+        );
+        assert_eq!(
+            approval(&sim, "verdant_kin"),
+            kin_before,
+            "a slight to a people is not a wound to its allies"
         );
     }
 
