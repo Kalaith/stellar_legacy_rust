@@ -394,6 +394,12 @@ pub struct SimState {
     /// launch; a return to neutral is silent but remembered.
     #[serde(default)]
     pub polity_mood_band: i8,
+    /// The reputation band the skeleton last marked with a beat (content-depth
+    /// campaign-skeleton round 16): so the ship reckons with its name once when it
+    /// crosses *into* a strong reputation, not every year it holds one. 0 (neutral)
+    /// at launch; a return to the middle silently re-arms it.
+    #[serde(default)]
+    pub reputation_beat_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -503,6 +509,7 @@ impl SimState {
             last_dominant_faction: String::new(),
             morale_band: 0,
             polity_mood_band: 0,
+            reputation_beat_band: 0,
             depopulation_beats_fired: 0,
             lean_food_years: 0,
             fat_food_years: 0,

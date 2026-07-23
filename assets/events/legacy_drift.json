@@ -2044,5 +2044,108 @@
     "log": "The ship met the crisis the way it met everything now — improvised in the moment by whoever was present and willing, a rough consensus hammered out under pressure and, this time, sufficient. The hollow offices stayed hollow, the ship trusting its knack for muddling through over any structure it might rebuild, and it muddled through, one more time, on the strength of that trust and nothing firmer."
    }
   ]
+ },
+ {
+  "id": "the_name_we_carry",
+  "category": "legacy_moment",
+  "title": "The Name We Carry",
+  "description": "A generation grows up learning that the ship is famous — that its name, out in the trade-dark it will never see, means kindness. Strangers trust it on sight; the desperate steer for it; other hulls speak of it the way one speaks of the rare good place. It is a lovely thing to inherit and a heavy one, because a reputation for mercy is not a possession but a promise, made by the dead and the living both, that this ship will keep being the thing everyone believes it is. The council must decide what to do with a name it did not choose but must now live up to.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.72
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "hold_the_name_sacred",
+    "label": "Make the name a creed to live by",
+    "description": "A reputation this good is a gift and a discipline: teach the young that the ship's mercy is not luck but law, a standard every generation is bound to meet, so that the name means the same in a hundred years as it does now. Bind the ship to its own best reputation, and let the promise the name makes be a promise the ship always keeps.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.04,
+     "stability": 0.03,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.04
+     }
+    ],
+    "log": "The council made the ship's good name into a creed — mercy taught not as fortune but as obligation, a standard the young were bound to meet so the name would mean the same for their grandchildren as it did for them. It was a lovely burden to lay on a people and a real one, a ship choosing to be held to its own best reputation, and the trade-dark went on trusting a hull that had decided, deliberately, to deserve it."
+   },
+   {
+    "id": "refuse_the_pedestal",
+    "label": "Refuse to be imprisoned by a reputation",
+    "description": "A name is a cage as much as a crown. A ship bound to be merciful in all things, always, has surrendered its judgment to strangers' expectations — and there will come a day when the merciful choice is the wrong one, and the ship must be free to make it. Honor the reputation without kneeling to it; keep the freedom to be, sometimes, other than kind.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "stability": 0.03,
+     "morale": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.05
+     }
+    ],
+    "log": "The council declined to be imprisoned by its own good name, honoring the reputation without kneeling to it and keeping the freedom to be, when a hard day demanded, other than kind. It cost the ship a little of the shine strangers saw in it, and it kept something the pedestal would have taken: the plain right of a living people to judge each case on its merits rather than perform a mercy the dead had promised on its behalf."
+   }
+  ]
+ },
+ {
+  "id": "the_name_we_earned",
+  "category": "legacy_moment",
+  "title": "The Name We Earned",
+  "description": "There is no avoiding it any longer: the ship has a reputation, and the reputation is fear. Out in the dark it will never see, its name means the hard thing done without flinching — the stores taken and the castaways left, the weak cut to spare the strong, the cold sum always chosen. A generation that made few of those choices itself inherits the sum of them, and must look squarely at what the ship has become, one unflinching decision at a time, and decide whether that is a thing to own or a thing to unmake.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "max_reputation": [
+   {
+    "id": "mercy",
+    "threshold": 0.28
+   }
+  ],
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "own_the_hard_name",
+    "label": "Own the name, and its uses",
+    "description": "Sentiment is a luxury a long voyage cannot always afford, and the ship's hard reputation is not a shame but a tool — it opens the doors fear opens, keeps the predators at a distance, gets the ship what it needs from a dark that respects nothing else. Own it. Be, without apology, the thing the ship's choices have made, and put the fearsome name to the ship's own hard use.",
+    "population_delta": {
+     "stability": 0.05,
+     "unity": 0.03,
+     "legacy_loyalty": 0.02,
+     "morale": -0.04
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.04
+     }
+    ],
+    "log": "The council owned the hard name the ship had earned, calling it a tool rather than a stain — a reputation that opened the doors fear opens and kept the dark's predators at their distance. It was a cold self-knowledge and an unflinching one, a people looking at what its choices had made and declining to flinch even at that, and the trade-dark went on giving a wide, wary berth to a hull that had decided to be exactly as fearsome as it was."
+   },
+   {
+    "id": "begin_to_unmake_it",
+    "label": "Begin the long work of a different name",
+    "description": "A reputation is only the sum of the choices so far, and the next choice is always the ship's to make. Start — knowing it will take a hundred kind acts and years of them to shift a name built by a hundred hard ones — the slow, thankless work of becoming known for something other than the cold sum. Take the merciful path now, and the next time, and the time after, and let the ledger slowly turn.",
+    "population_delta": {
+     "morale": 0.04,
+     "legacy_loyalty": -0.02,
+     "cultural_drift": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.09
+     }
+    ],
+    "log": "The council began the long, thankless work of earning a different name — the merciful choice taken now and resolved to be taken again, against a reputation a hundred hard decisions had built and only a hundred kind ones could shift. It bought no immediate change; the dark stayed wary a long while yet. But it was a first deliberate entry against a heavy ledger, a ship deciding it would rather spend generations becoming something better than stay, efficiently, what it was."
+   }
+  ]
  }
 ]

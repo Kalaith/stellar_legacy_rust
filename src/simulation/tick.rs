@@ -77,6 +77,7 @@ pub fn advance(sim: &mut SimState, data: &GameData) -> TickReport {
             && !fire_crisis_beat(sim, data, &mut report)
             && !fire_loyalty_beat(sim, data, &mut report)
             && !fire_stability_beat(sim, data, &mut report)
+            && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
@@ -306,6 +307,41 @@ fn fire_stability_beat(sim: &mut SimState, data: &GameData, report: &mut TickRep
         contract.stability_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.stability_beat_family, report);
+    true
+}
+
+/// Fire a reputation beat (content-depth round 16): the skeleton's first trigger on
+/// the ship's *cumulative character* (it105), not a population stat. When the named
+/// reputation trait crosses *into* a strong band — famously high or notoriously low —
+/// force a beat, the ship reckoning with the name it has earned; a return to the
+/// middle silently re-arms it. Fires only during a voyage; at most one per month.
+fn fire_reputation_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.reputation_beat_trait.is_empty()
+        || cfg.reputation_beat_family.is_empty()
+        || sim.contract.is_none()
+    {
+        return false;
+    }
+    let value = sim.reputation(&cfg.reputation_beat_trait);
+    let band = if value >= cfg.reputation_beat_high {
+        1
+    } else if value <= cfg.reputation_beat_low {
+        -1
+    } else {
+        0
+    };
+    if band == sim.reputation_beat_band {
+        return false;
+    }
+    // A return to the middle re-arms silently; only crossing *into* a strong name fires.
+    if band == 0 {
+        sim.reputation_beat_band = 0;
+        return false;
+    }
+    sim.reputation_beat_band = band;
+    let family = cfg.reputation_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
     true
 }
 

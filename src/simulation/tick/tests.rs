@@ -536,6 +536,7 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config
@@ -962,6 +963,81 @@ fn a_crisis_beat_fires_as_the_ship_comes_apart() {
 }
 
 #[test]
+fn a_reputation_beat_fires_when_the_ships_name_becomes_defining() {
+    // Content-depth campaign-skeleton round 16: the first beat on the ship's
+    // cumulative character. With reactive rolls and the other beats off, only the
+    // reputation beat can fire — and it must, once the mercy trait crosses into a
+    // strong band, once per crossing, re-arming when the name returns to the middle.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
+    data.config.campaign_skeleton.stability_beats.clear();
+    // Isolate the crossings we set from the dominant-faction reputation drift.
+    data.config.factions.dominant_reputation_lean_per_year = 0.0;
+    let high = data.config.campaign_skeleton.reputation_beat_high;
+    let low = data.config.campaign_skeleton.reputation_beat_low;
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    let resolve_pending = |sim: &mut SimState| {
+        if let Some(p) = sim.pending_event.clone() {
+            let t = data.events.get(&p.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(sim, &data, &t, 0);
+        }
+    };
+
+    // A neutral name marks nothing.
+    sim.reputation.insert("mercy".to_string(), 0.5);
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.reputation_beat_band, 0,
+        "a middling name is no reckoning"
+    );
+
+    // A famously merciful name: the beat fires.
+    sim.reputation.insert("mercy".to_string(), high + 0.05);
+    sim.contract.as_mut().unwrap().beats.clear();
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.reputation_beat_band, 1,
+        "crossing into a merciful name forces the reckoning"
+    );
+    resolve_pending(&mut sim);
+
+    // Back to the middle re-arms silently.
+    sim.reputation.insert("mercy".to_string(), 0.5);
+    sim.contract.as_mut().unwrap().beats.clear();
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.reputation_beat_band, 0,
+        "a return to the middle re-arms"
+    );
+
+    // A feared name: the beat fires afresh, in the other band.
+    sim.reputation.insert("mercy".to_string(), low - 0.05);
+    sim.contract.as_mut().unwrap().beats.clear();
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.reputation_beat_band, -1,
+        "crossing into a feared name reckons anew"
+    );
+}
+
+#[test]
 fn a_stability_beat_fires_as_the_ships_institutions_fail() {
     // Content-depth campaign-skeleton round 15: the last population stat to get a
     // beat. With reactive rolls and the other threshold beats off, the only thing
@@ -1139,6 +1215,7 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config
@@ -1218,6 +1295,7 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     data.config
@@ -1627,6 +1705,7 @@ fn a_depopulation_beat_fires_as_the_crew_thins() {
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     let first = data.config.campaign_skeleton.depopulation_beats[0];
     let founding = data.config.starting_population;

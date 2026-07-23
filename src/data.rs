@@ -619,6 +619,19 @@ pub struct CampaignSkeletonConfig {
     /// The family a governance-collapse stability beat draws from.
     #[serde(default)]
     pub stability_beat_family: String,
+    /// Reputation beat (content-depth round 16): the skeleton's first trigger on the
+    /// ship's *cumulative character* (it105) rather than a population stat. When the
+    /// named reputation trait crosses *into* a strong band — famously high (≥ `high`)
+    /// or notoriously low (≤ `low`) — a beat is forced: the ship reckoning with the
+    /// name it has earned. A return to the middle re-arms it. Empty trait/family = off.
+    #[serde(default)]
+    pub reputation_beat_trait: String,
+    #[serde(default)]
+    pub reputation_beat_high: f32,
+    #[serde(default)]
+    pub reputation_beat_low: f32,
+    #[serde(default)]
+    pub reputation_beat_family: String,
     /// Flourishing thresholds (content-depth round 8): the *positive* pole of the
     /// crisis beat. As the people's `morale` climbs to or past each threshold
     /// (authored low→high) a beat is forced — a thriving ship generates its own
@@ -1674,6 +1687,29 @@ mod tests {
             assert!(
                 sk.loyalty_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton loyalty_beats must be within (0, 1]"
+            );
+        }
+        // Content-depth round 16: the reputation beat's family must have events, its
+        // trait must be one some outcome nudges, and its band thresholds must order.
+        if !sk.reputation_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.reputation_beat_family),
+                "campaign_skeleton reputation_beat_family '{}' has no events",
+                sk.reputation_beat_family
+            );
+            assert!(
+                data.events.iter().any(|(_, e)| e.outcomes.iter().any(|o| o
+                    .reputation_deltas
+                    .iter()
+                    .any(|r| r.id == sk.reputation_beat_trait))),
+                "campaign_skeleton reputation_beat_trait '{}' no outcome nudges",
+                sk.reputation_beat_trait
+            );
+            assert!(
+                sk.reputation_beat_low < sk.reputation_beat_high
+                    && (0.0..=1.0).contains(&sk.reputation_beat_low)
+                    && (0.0..=1.0).contains(&sk.reputation_beat_high),
+                "campaign_skeleton reputation beat bands must order within [0, 1]"
             );
         }
         // Content-depth round 15: stability beats are the DESCENDING governance
