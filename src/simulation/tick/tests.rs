@@ -672,8 +672,10 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     // The mid-voyage beat (round 21) fires once at the deep middle of any full
-    // voyage — silence it for these isolated-timeline runs too.
+    // voyage, and the founding beat (round 22) once early on — silence both for
+    // these isolated-timeline runs too.
     data.config.campaign_skeleton.midvoyage_beat_family.clear();
+    data.config.campaign_skeleton.founding_beat_family.clear();
     data.config
         .campaign_skeleton
         .power_transition_beat_family
@@ -1148,6 +1150,73 @@ fn a_midvoyage_beat_fires_at_the_deep_middle_of_the_voyage() {
 }
 
 #[test]
+fn a_founding_beat_fires_once_as_the_launch_generation_passes() {
+    // Content-depth campaign-skeleton round 22: the early member of the era trio. With
+    // reactive rolls and the other beats off, the campaign must force a founding-era
+    // reckoning the year it passes founding_beat_year — and only once, ever.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
+    data.config.campaign_skeleton.stability_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.subsystem_beats.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
+    data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.campaign_skeleton.long_reign_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .dynasty_crisis_beat_family
+        .clear();
+    data.config
+        .campaign_skeleton
+        .power_transition_beat_family
+        .clear();
+    data.config.campaign_skeleton.dead_air_years = 0;
+    data.config.campaign_skeleton.anniversary_years = 0;
+    // A short founding year so the test flies only a few years, not fifty.
+    data.config.campaign_skeleton.founding_beat_year = 4;
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Before the founding year: no beat.
+    for _ in 0..3 {
+        advance_year(&mut sim, &data);
+    }
+    assert!(
+        !sim.founding_beat_fired,
+        "no founding beat before the launch generation has passed"
+    );
+
+    // Cross the founding year: the beat fires once, and does not re-fire after.
+    for _ in 0..3 {
+        if let Some(pending) = sim.pending_event.clone() {
+            let t = data.events.get(&pending.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+        }
+        advance_year(&mut sim, &data);
+    }
+    assert!(
+        sim.founding_beat_fired,
+        "the founding era's close forces a beat once the launch generation passes"
+    );
+}
+
+#[test]
 fn a_crisis_beat_fires_as_the_ship_comes_apart() {
     // Content-depth campaign-skeleton round 6: the descending mirror of the
     // drift/adaptation beats. With reactive rolls and the other threshold beats
@@ -1491,8 +1560,10 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     // The mid-voyage beat (round 21) fires once at the deep middle of any full
-    // voyage — silence it for these isolated-timeline runs too.
+    // voyage, and the founding beat (round 22) once early on — silence both for
+    // these isolated-timeline runs too.
     data.config.campaign_skeleton.midvoyage_beat_family.clear();
+    data.config.campaign_skeleton.founding_beat_family.clear();
     data.config
         .campaign_skeleton
         .power_transition_beat_family
@@ -1587,8 +1658,10 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
     // The mid-voyage beat (round 21) fires once at the deep middle of any full
-    // voyage — silence it for these isolated-timeline runs too.
+    // voyage, and the founding beat (round 22) once early on — silence both for
+    // these isolated-timeline runs too.
     data.config.campaign_skeleton.midvoyage_beat_family.clear();
+    data.config.campaign_skeleton.founding_beat_family.clear();
     data.config
         .campaign_skeleton
         .power_transition_beat_family

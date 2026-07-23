@@ -232,6 +232,8 @@
     "objective_beat_family": "legacy_drift",
     "homecoming_beat_family": "legacy_drift",
     "midvoyage_beat_family": "legacy_drift",
+    "founding_beat_family": "legacy_drift",
+    "founding_beat_year": 50,
     "power_transition_beat_family": "legacy_drift",
     "succession_beat_family": "legacy_drift",
     "long_reign_years": 35,

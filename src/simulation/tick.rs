@@ -98,6 +98,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
+            && !fire_founding_beat(sim, data, &mut report)
             && !fire_midvoyage_beat(sim, data, &mut report)
             && !fire_homecoming_beat(sim, data, &mut report)
             && !fire_power_transition_beat(sim, data, &mut report)
@@ -538,6 +539,29 @@ fn fire_midvoyage_beat(sim: &mut SimState, data: &GameData, report: &mut TickRep
         contract.midvoyage_beat_fired = true;
     }
     force_family_beat(sim, data, &cfg.midvoyage_beat_family, report);
+    true
+}
+
+/// Fire a founding-era beat (content-depth campaign-skeleton round 22): the early
+/// member of the era trio. The campaign-year the voyage passes `founding_beat_year` —
+/// the founding generation, the ones who chose to leave, having by then largely passed,
+/// and the ship handed for the first time wholly to those born to the void — a single
+/// beat is forced from the founding family. Campaign-scoped: fires once ever (tracked on
+/// `SimState`, not the contract), so a back-to-back second charter does not re-mark it.
+/// Requires an active voyage, like the other beats.
+fn fire_founding_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.founding_beat_family.is_empty()
+        || cfg.founding_beat_year == 0
+        || sim.founding_beat_fired
+        || sim.contract.is_none()
+        || sim.year() < cfg.founding_beat_year
+    {
+        return false;
+    }
+    sim.founding_beat_fired = true;
+    let family = cfg.founding_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
     true
 }
 

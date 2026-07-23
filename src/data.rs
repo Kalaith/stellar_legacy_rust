@@ -901,6 +901,21 @@ pub struct CampaignSkeletonConfig {
     /// lived wholly in transit. Empty = no mid-voyage beat.
     #[serde(default)]
     pub midvoyage_beat_family: String,
+    /// Founding-era beat family (content-depth campaign-skeleton round 22): the early
+    /// member of the era trio, completing what the founding-era pool bias (r5) only
+    /// tilted and the mid-voyage/homecoming beats forced for the later eras. The
+    /// campaign-year the voyage passes `founding_beat_year`, a single beat is forced from
+    /// this family: the founding generation — the ones who chose to leave — having by
+    /// then largely passed, and the ship handed for the first time wholly to those born
+    /// to the void. Empty = no founding beat.
+    #[serde(default)]
+    pub founding_beat_family: String,
+    /// The campaign year the founding-era beat fires (content-depth campaign-skeleton
+    /// round 22): set to when the launch generation has largely died out and the ship is
+    /// crewed by the first fully ship-born cohorts — early enough to read as the founding
+    /// era's close. 0 disables the beat.
+    #[serde(default)]
+    pub founding_beat_year: u32,
     /// Power-transition beat family (content-depth round 11): a beat keyed not to
     /// a stat or a time but to a *political* change — the first tick the dominant
     /// faction differs from the one the skeleton last marked (demographic drift
@@ -2277,6 +2292,19 @@ mod tests {
                 families.contains(&sk.midvoyage_beat_family),
                 "campaign_skeleton midvoyage_beat_family '{}' has no events",
                 sk.midvoyage_beat_family
+            );
+        }
+        // Content-depth campaign-skeleton round 22: the founding-era beat needs a family
+        // with events when switched on, and an early year to fire at.
+        if !sk.founding_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.founding_beat_family),
+                "campaign_skeleton founding_beat_family '{}' has no events",
+                sk.founding_beat_family
+            );
+            assert!(
+                sk.founding_beat_year > 0,
+                "the founding beat needs an early year to fire at"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

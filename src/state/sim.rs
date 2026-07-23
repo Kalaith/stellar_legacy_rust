@@ -478,6 +478,16 @@ pub struct SimState {
     /// let collapse again does not re-mark a reckoning already had. Empty at launch.
     #[serde(default)]
     pub subsystem_beats_fired: Vec<String>,
+    /// Whether the campaign's single *founding-era* beat has fired (content-depth
+    /// campaign-skeleton round 22): the early-voyage member of the era-beat trio (the
+    /// mid-voyage beat it and the homecoming beat cover the other two). Forced once, the
+    /// year the voyage passes `founding_beat_year` — the founding generation, the ones
+    /// who chose to leave, having by then largely passed, and the ship handed for the
+    /// first time wholly to those born to the void. Campaign-scoped (fires once ever, not
+    /// once per voyage), so a back-to-back second charter does not re-mark it. False at
+    /// launch.
+    #[serde(default)]
+    pub founding_beat_fired: bool,
     /// Consecutive years the food store has sat below the *lean* line (content-depth
     /// provisioning round 13): a rolling count of how long scarcity has ground on,
     /// reset the moment the larder recovers. It's what lets content tell a chronic
@@ -588,6 +598,7 @@ impl SimState {
             unity_voice_band: 0,
             depopulation_beats_fired: 0,
             subsystem_beats_fired: Vec::new(),
+            founding_beat_fired: false,
             lean_food_years: 0,
             fat_food_years: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),

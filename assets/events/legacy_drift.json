@@ -2478,5 +2478,75 @@
     "log": "A current set in through the middle decks — the sense that a crew owes its loyalty to the living and not to a chart drawn by the dead. The founders' destination, for the first time, was spoken of as a choice rather than a fate."
    }
   ]
+ },
+ {
+  "id": "the_founders_pass",
+  "category": "legacy_moment",
+  "family": "legacy_drift",
+  "title": "The Founders Pass",
+  "description": "The last of them is gone. The final soul who stood on a world under an open sky, who chose — as an adult, with a whole life behind them — to seal into this hull and never see planetfall again, has died in their bunk of old age. For the first time the ship is crewed entirely by people born to it: no one now living remembers the launch, the leaving, the reason spoken aloud by someone who meant it. The founding is history now, not memory. The council marks the passing.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "keep_the_founding_faith",
+    "label": "Keep the founding faith",
+    "description": "Make the founders' choice a sacrament: teach it, rehearse it, hold the ship to the covenant the dead signed, so that a crew who never knew them still lives by their word.",
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "unity": 0.03,
+     "morale": -0.02
+    },
+    "log": "The ship enshrined its founders in the hour it lost the last of them, binding a void-born crew to a covenant none of them had signed — and holding, by that act, a course the dead had set."
+   },
+   {
+    "id": "let_the_founding_become_history",
+    "label": "Let the founding become history",
+    "description": "Honour them and let them go. The living owe the dead remembrance, not obedience; let the crew that actually flies the ship decide what the ship is now for.",
+    "population_delta": {
+     "adaptation": 0.04,
+     "cultural_drift": 0.03,
+     "morale": 0.03,
+     "legacy_loyalty": -0.05
+    },
+    "long_term_consequences": [
+     "founding_let_go"
+    ],
+    "log": "The ship buried its founders with honour and quietly stopped pretending to be their crew. A people born to the void took up the voyage as its own thing, no longer a promise kept for the dead but a life lived by the living."
+   }
+  ]
+ },
+ {
+  "id": "the_first_void_born",
+  "category": "generational_challenge",
+  "family": "legacy_drift",
+  "title": "The Void-Born Come of Age",
+  "description": "A cohort has come into its majority that is, in a way the ship has not seen before, wholly of the ship: born aboard to parents born aboard, raised on recycled air and corridor light, with no living grandparent who ever felt weather or saw a horizon. To them the voyage is not a journey away from a home — it is home, the only one, and the talk of a distant landfall has the ring of a story about someone else. The elders find them hard to read.",
+  "requires_decision": true,
+  "min_generation": 2,
+  "outcomes": [
+   {
+    "id": "teach_them_the_sky",
+    "label": "Teach them the sky",
+    "description": "Press the memory of open worlds on them — the archives, the founders' logs, the promise of the destination — so the void-born keep faith with a landfall they cannot imagine.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.02,
+     "morale": -0.02
+    },
+    "log": "The ship worked to teach its void-born children a sky they would never see, and held them, for a while longer, to the founders' far horizon."
+   },
+   {
+    "id": "let_them_belong_to_the_ship",
+    "label": "Let them belong to the ship",
+    "description": "Stop grieving that they are not what the founders were. Let the void-born be what they are — the ship's own people, at home in it — and let their ease become the ship's.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "unity": 0.03,
+     "cultural_drift": 0.02,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The ship let its void-born be void-born, at home where their elders had only ever been in transit — and gained, in the bargain, a crew wholly at peace with the only world it had, if a little further from the one it was bound for."
+   }
+  ]
  }
 ]
