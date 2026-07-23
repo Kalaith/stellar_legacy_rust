@@ -1089,5 +1089,95 @@
     "log": "The ship dealt gently with the wary station and took less than its fearsome name would have handed it, spending the immediate advantage to begin buying, at a steep and slow price, a different reputation. One kind dealing does not unmake a hard name — the station stayed wary to the last — but it was a first entry against a long ledger, the ship choosing, deliberately this time, to start becoming something other than what its choices had made it."
    }
   ]
+ },
+ {
+  "id": "the_wary_encounter",
+  "category": "generational_challenge",
+  "title": "The Wary Encounter",
+  "description": "A hull the ship has never met blocks a passage the ship needs, and there is a long, tense silence on the open band while each vessel decides what the other is. Neither has drawn on the other; neither has stood down. Everything now depends on what happens next, and what happens next depends, more than the council quite expects, on what the stranger has already heard about this ship long before the two of them ever met.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "outcomes": [
+   {
+    "id": "withdraw_and_reroute",
+    "label": "Withdraw and reroute",
+    "description": "There is no need to make an encounter of it. Peel off, take the longer passage, and spend the fuel to avoid finding out whether the stranger meant trouble — a small cost against an unknown risk, and no shots fired to spread a story either way.",
+    "resource_delta": {
+     "energy": -300
+    },
+    "ship_delta": {
+     "fuel": -0.05
+    },
+    "population_delta": {
+     "stability": 0.02
+    },
+    "log": "The ship declined the encounter and took the long way round, spending fuel to keep an unknown quantity at arm's length. No shots, no story, no risk — a cautious captain's choice, and the passage cost only a detour and the small nagging wonder of what the stranger would have done."
+   },
+   {
+    "id": "stand_firm_and_deal",
+    "label": "Stand firm and deal hard",
+    "description": "Hold the line and open a hard negotiation from strength — no reputation invoked, no name leaned on, just two wary hulls hammering out terms of passage the old-fashioned way, each watching the other's ports.",
+    "resource_delta": {
+     "credits": -400
+    },
+    "population_delta": {
+     "unity": 0.03,
+     "stability": 0.02
+    },
+    "log": "The ship held its line and dealt hard, two wary hulls hammering out a passage on nothing but mutual caution and a close watch on each other's ports. It cost a little to grease and it settled clean, an encounter met on its own terms by a ship that neither hid from it nor leaned on anything but its own nerve."
+   },
+   {
+    "id": "trade_on_our_good_name",
+    "label": "Trade on the ship's good name",
+    "description": "The stranger has heard of this ship, and what it heard was good — that here is a hull that deals fairly and helps where it can. Invoke that. Open the band, name the ship plainly, and let a reputation for fair dealing do what no threat could: turn a tense standoff into an easy passage between two vessels, one of which already trusts the other.",
+    "requires": {
+     "min_reputation": [
+      {
+       "id": "mercy",
+       "threshold": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "influence": 60,
+     "food": 400
+    },
+    "population_delta": {
+     "unity": 0.04,
+     "morale": 0.03,
+     "legacy_loyalty": 0.02
+    },
+    "log": "The ship named itself plainly on the open band, and the stranger's whole posture eased — for word of this hull had reached it too, and the word was good. What might have been a standoff became an easy passage and a small exchange of gifts between two vessels, one of which had decided, on reputation alone, to trust the other. A good name, the crew noted, opens doors a gun only ever holds shut."
+   },
+   {
+    "id": "let_our_name_intimidate",
+    "label": "Let the ship's feared name do the talking",
+    "description": "The stranger has heard of this ship too, and what it heard was hard — that here is a hull that does not bluff and does not flinch. Use it. Say nothing, do nothing, and let the mere name hang on the open band until the stranger does the sensible thing and clears the passage rather than test a reputation it would rather not learn is earned.",
+    "requires": {
+     "max_reputation": [
+      {
+       "id": "mercy",
+       "threshold": 0.35
+      }
+     ]
+    },
+    "resource_delta": {
+     "minerals": 300,
+     "credits": 300
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": -0.02,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.03
+     }
+    ],
+    "log": "The ship said nothing, and let its name say everything — and the stranger, having heard exactly what that name meant, cleared the passage and threw in a tribute of ore besides rather than test a reputation it plainly believed. It was the easiest passage the ship ever bought, paid for entirely by the fear it had spent generations earning, and the story that spread afterward made the next such encounter easier still, and the ship a little more the thing that story said."
+   }
+  ]
  }
 ]

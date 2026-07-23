@@ -80,12 +80,24 @@ pub struct OutcomeRequirement {
     /// module's knowledge is at or above its threshold.
     #[serde(default)]
     pub min_knowledge: Vec<KnowledgeFloor>,
+    /// Reputation gates (content-depth event families round 17): the outcome appears
+    /// only while the ship's cumulative character meets every named trait — at or
+    /// above (`min_reputation`) or at or below (`max_reputation`) its threshold. So a
+    /// merciful ship can *leverage its good name* for a resolution a no-name ship
+    /// can't, and a feared ship its fearsome one. Unset traits read 0.5.
+    #[serde(default)]
+    pub min_reputation: Vec<ReputationGate>,
+    #[serde(default)]
+    pub max_reputation: Vec<ReputationGate>,
 }
 
 impl OutcomeRequirement {
     /// True when this gate names no requirement (the outcome always shows).
     pub fn is_unconditional(&self) -> bool {
-        self.requires_consequence.is_empty() && self.min_knowledge.is_empty()
+        self.requires_consequence.is_empty()
+            && self.min_knowledge.is_empty()
+            && self.min_reputation.is_empty()
+            && self.max_reputation.is_empty()
     }
 }
 

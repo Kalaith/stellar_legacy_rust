@@ -64,6 +64,18 @@ pub fn outcome_available(sim: &SimState, outcome: &EventOutcome) -> bool {
                 .get(&floor.id)
                 .is_some_and(|s| s.knowledge >= floor.at_least)
         })
+        // Reputation gates (content-depth round 17): a good name or a feared one
+        // unlocks a choice a no-name ship cannot reach.
+        && outcome
+            .requires
+            .min_reputation
+            .iter()
+            .all(|g| sim.reputation(&g.id) >= g.threshold)
+        && outcome
+            .requires
+            .max_reputation
+            .iter()
+            .all(|g| sim.reputation(&g.id) <= g.threshold)
 }
 
 /// The real indices of the outcomes this ship may currently pick, in authored
@@ -1564,6 +1576,53 @@ mod tests {
             shown_description(&sim, contagion),
             contagion.description,
             "the escalation is visible before the choice"
+        );
+    }
+
+    #[test]
+    fn reputation_unlocks_the_choice_a_name_earns() {
+        // Content-depth event families round 17: reputation-gated outcomes. In a
+        // wary encounter, a merciful ship can trade on its good name and a feared
+        // ship can let its name intimidate — options a no-name ship simply lacks,
+        // while the base choices (withdraw / deal hard) are always there.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let event = data.events.get("the_wary_encounter").unwrap();
+        let good = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "trade_on_our_good_name")
+            .unwrap();
+        let feared = event
+            .outcomes
+            .iter()
+            .position(|o| o.id == "let_our_name_intimidate")
+            .unwrap();
+        assert!(good > 0 && feared > 0, "the base choices come first");
+
+        let mut sim = SimState::new_campaign(&data, "preservers", 85, &picks);
+
+        // A no-name ship: only the base options (withdraw / deal), neither leverage.
+        let neutral = available_outcome_indices(&sim, event);
+        assert!(
+            neutral.contains(&0) && !neutral.contains(&good) && !neutral.contains(&feared),
+            "an unknown ship has no name to trade on"
+        );
+
+        // A merciful name unlocks the good-name option, not the intimidation.
+        sim.reputation.insert("mercy".to_string(), 0.7);
+        let kind = available_outcome_indices(&sim, event);
+        assert!(
+            kind.contains(&good) && !kind.contains(&feared),
+            "a merciful ship trades on its good name, it does not intimidate"
+        );
+
+        // A feared name unlocks the intimidation, not the good-name option.
+        sim.reputation.insert("mercy".to_string(), 0.2);
+        let cold = available_outcome_indices(&sim, event);
+        assert!(
+            cold.contains(&feared) && !cold.contains(&good),
+            "a feared ship lets its name do the talking"
         );
     }
 

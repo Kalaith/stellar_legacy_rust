@@ -1199,7 +1199,18 @@ mod tests {
             .flat_map(|o| o.reputation_deltas.iter().map(|r| &r.id))
             .collect();
         for (id, e) in data.events.iter() {
-            for gate in e.min_reputation.iter().chain(e.max_reputation.iter()) {
+            for gate in e
+                .min_reputation
+                .iter()
+                .chain(e.max_reputation.iter())
+                // Content-depth round 17: outcome availability gates on reputation too.
+                .chain(e.outcomes.iter().flat_map(|o| {
+                    o.requires
+                        .min_reputation
+                        .iter()
+                        .chain(o.requires.max_reputation.iter())
+                }))
+            {
                 assert!(
                     rep_produced.contains(&gate.id),
                     "event '{id}' gates on reputation '{}' no outcome nudges",
