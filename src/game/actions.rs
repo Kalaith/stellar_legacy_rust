@@ -489,17 +489,27 @@ impl Game {
                 .and_then(|c| self.data.contracts.get(&c.template_id))
                 .cloned();
             if let Some(template) = &concluded_template {
-                if !template.completion_consequence.is_empty()
-                    && !sim.consequences.contains(&template.completion_consequence)
-                {
-                    sim.consequences
-                        .push(template.completion_consequence.clone());
-                }
-                // The mission's lasting legacy (content-depth charters round 15): a
-                // charter seen through leaves the ship a capability it keeps, beyond
-                // the pay it was flown for.
-                if let Some(line) = contract::apply_completion_reward(sim, template) {
-                    sim.push_log(line);
+                if level == contract::SuccessLevel::Failure {
+                    // A charter defaulted or given up leaves the opposite of a legacy
+                    // (content-depth charters round 18): the negative mirror of the
+                    // completion reward. Only a Failure earns the mark; a genuinely
+                    // completed charter earns the positive legacy below instead.
+                    if let Some(line) = contract::apply_abandonment(sim, template) {
+                        sim.push_log(line);
+                    }
+                } else {
+                    if !template.completion_consequence.is_empty()
+                        && !sim.consequences.contains(&template.completion_consequence)
+                    {
+                        sim.consequences
+                            .push(template.completion_consequence.clone());
+                    }
+                    // The mission's lasting legacy (content-depth charters round 15): a
+                    // charter seen through leaves the ship a capability it keeps, beyond
+                    // the pay it was flown for.
+                    if let Some(line) = contract::apply_completion_reward(sim, template) {
+                        sim.push_log(line);
+                    }
                 }
             }
             sim.contract = None;

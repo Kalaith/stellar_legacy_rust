@@ -123,6 +123,30 @@ pub fn apply_completion_reward(sim: &mut SimState, template: &ContractTemplate) 
     })
 }
 
+/// Mark the ship's name for a charter it did not see through (content-depth charters
+/// round 18): the negative mirror of `apply_completion_reward`, applied once when a
+/// charter concludes at Failure. A defaulted or abandoned mission costs the ship's
+/// *character* — a hardened mercy for a relief run given up, a name for folding
+/// (`resolve`) for any writ quit half-done. Returns the narration line (empty for a
+/// charter whose failure marks nothing). No-op for an ordinary charter.
+pub fn apply_abandonment(sim: &mut SimState, template: &ContractTemplate) -> Option<String> {
+    let ab = &template.abandonment;
+    if ab.is_none() {
+        return None;
+    }
+    for delta in &ab.reputation_deltas {
+        sim.adjust_reputation(&delta.id, delta.delta);
+    }
+    Some(if ab.log.is_empty() {
+        format!(
+            "Word travels the dark that the ship gave up the {}.",
+            template.name
+        )
+    } else {
+        ab.log.clone()
+    })
+}
+
 /// Instantiate an active contract from a template at the current sim state.
 pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveContract {
     ActiveContract {
@@ -488,6 +512,57 @@ mod tests {
         assert!(
             cold.reputation("mercy") < c0,
             "a voyage of cold enforcement hardens it"
+        );
+    }
+
+    #[test]
+    fn abandoning_a_charter_marks_the_ships_name() {
+        // Content-depth charters round 18: the negative mirror of the completion
+        // reward — the first charter effect keyed to failure. Giving up the sanctuary
+        // run hardens the mercy the crew couldn't keep and earns a name for folding;
+        // giving up the hard contract is a *merciful* fold — the ship that would not,
+        // in the end, strip a home comes home kinder but still a hull that folds.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let sanctuary = data.contracts.get("the_sanctuary_run").unwrap();
+        let hard = data.contracts.get("the_hard_contract").unwrap();
+        assert!(
+            !sanctuary.abandonment.is_none() && !hard.abandonment.is_none(),
+            "both relief charters mark the ship's name when defaulted"
+        );
+
+        // Abandon the sanctuary run: mercy hardens and resolve falls.
+        let mut a = SimState::new_campaign(&data, "preservers", 91, &picks);
+        let (m0, r0) = (a.reputation("mercy"), a.reputation("resolve"));
+        apply_abandonment(&mut a, sanctuary);
+        assert!(
+            a.reputation("mercy") < m0,
+            "leaving refugees behind hardens the ship"
+        );
+        assert!(
+            a.reputation("resolve") < r0,
+            "a relief run given up earns a name for folding"
+        );
+
+        // Abandon the hard contract: a merciful fold — mercy rises, resolve still falls.
+        let mut b = SimState::new_campaign(&data, "preservers", 92, &picks);
+        let (m1, r1) = (b.reputation("mercy"), b.reputation("resolve"));
+        apply_abandonment(&mut b, hard);
+        assert!(
+            b.reputation("mercy") > m1,
+            "refusing to finish the cruel job comes home kinder"
+        );
+        assert!(
+            b.reputation("resolve") < r1,
+            "but it is still, to the dark, a hull that folded"
+        );
+
+        // An ordinary charter marks nothing on a failed conclusion.
+        let ordinary = data.contracts.get("deep_vein_survey").unwrap();
+        let mut c = SimState::new_campaign(&data, "preservers", 93, &picks);
+        assert!(
+            apply_abandonment(&mut c, ordinary).is_none(),
+            "an ordinary charter's failure costs only its pay"
         );
     }
 

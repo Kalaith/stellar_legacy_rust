@@ -209,6 +209,36 @@ pub struct ContractTemplate {
     /// charter leaves nothing but its pay.
     #[serde(default)]
     pub completion_reward: CompletionReward,
+    /// The mark a charter leaves when it is *not* seen through — concluded at Failure,
+    /// defaulted or given up (content-depth charters round 18): the negative mirror of
+    /// `completion_reward`, and the first charter effect keyed to *failure* rather than
+    /// success. A relief run abandoned hardens the mercy the crew could not keep; any
+    /// writ quit half-done earns the ship a name for folding (`resolve`) — the ultimate
+    /// yielding. Applied once in the conclude path when the level is Failure (a
+    /// non-failing conclusion instead earns the completion mark and reward). Default
+    /// (empty) = a charter whose failure costs only its pay.
+    #[serde(default)]
+    pub abandonment: Abandonment,
+}
+
+/// The mark a defaulted or abandoned charter leaves on the ship's *name* (content-depth
+/// charters round 18): the negative mirror of `CompletionReward`, applied when a charter
+/// concludes at Failure. Chiefly reputation — a name for folding, a hardened mercy — with
+/// the line that narrates it.
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct Abandonment {
+    #[serde(default)]
+    pub reputation_deltas: Vec<crate::data::events::ReputationDelta>,
+    /// Line narrating the default; empty = a generic line.
+    #[serde(default)]
+    pub log: String,
+}
+
+impl Abandonment {
+    /// True when a failed charter costs the ship's name nothing (only its pay).
+    pub fn is_none(&self) -> bool {
+        self.reputation_deltas.is_empty()
+    }
 }
 
 /// The lasting capability a charter grants on completion (content-depth charters

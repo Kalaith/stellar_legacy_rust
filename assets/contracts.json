@@ -2015,6 +2015,19 @@
      "delta": 0.06
     }
    ]
+  },
+  "abandonment": {
+   "reputation_deltas": [
+    {
+     "id": "mercy",
+     "delta": -0.08
+    },
+    {
+     "id": "resolve",
+     "delta": -0.05
+    }
+   ],
+   "log": "The ship turned for home with its holds far from full and a shore of the frail and the frightened left behind it, and the dark — which had trusted this hull to be the one that came — marked that this time it had not. A relief run given up hardens something in a crew, a kindness they could not in the end keep, and a name for it travels: that here is a ship that will leave you, if the leaving is easier."
   }
  },
  {
@@ -2122,6 +2135,19 @@
     }
    ],
    "log": "Four centuries of stripping a place people still called home left their mark on the ship — a crew grown practiced at the cold thing done without flinching, and a name in the dark grown colder to match."
+  },
+  "abandonment": {
+   "reputation_deltas": [
+    {
+     "id": "mercy",
+     "delta": 0.05
+    },
+    {
+     "id": "resolve",
+     "delta": -0.05
+    }
+   ],
+   "log": "In the end the ship could not finish it — could not go on stripping a place that people still called home — and turned for its own port with the writ undone and the backers unpaid. It cost the ship its fee and its name for hard reliability both; but a crew that discovers, at the last, a line it will not cross has learned something about itself that a colder ship never will, even as the dark marks it down as a hull that folds."
   }
  }
 ]
