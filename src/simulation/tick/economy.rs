@@ -340,6 +340,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // pulling back together as one, the decks remark it once — the internal-state voice
     // beside the spirits, the governance, and the founders' fire.
     sim.announce_unity_mood(data);
+    // …and the ship's *own body* has a voice too (content-depth voice round 22), now that
+    // the year's hull wear (and any refit) has settled: when the hull crosses into a
+    // groaning band or back into a sound one, the decks remark the vessel itself aging or
+    // renewed — the first voice for the machine rather than the crew it carries.
+    sim.announce_hull_condition(data);
 
     // Founding Day (real-time loop follow-up): everyone gains a year at once, and
     // any officer aged past their term stands down. Aging is yearly; death is the

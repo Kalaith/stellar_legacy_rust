@@ -916,6 +916,40 @@ impl SimState {
         self.unity_voice_band = band;
     }
 
+    /// Give the ship's *own body* a voice (content-depth voice round 22): the first that
+    /// speaks for the vessel rather than the crew. Where the morale/unity/stability/
+    /// loyalty voices read the *people*, this reads the aging machine that carries them —
+    /// when `hull_integrity` crosses *into* a groaning band (the plates weeping at the
+    /// seams, the frame complaining on every burn) or a sound one (riding tight and true
+    /// again after a refit), the decks remark it once. Deterministic (indexed by year),
+    /// no RNG; a return to the middle re-arms.
+    pub fn announce_hull_condition(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.hull_voice_high <= 0.0 {
+            return;
+        }
+        let band = stability_voice_band_for(
+            self.ship.hull_integrity,
+            fl.hull_voice_high,
+            fl.hull_voice_low,
+        );
+        if band == self.hull_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.hull_sound,
+            -1 => &fl.hull_groaning,
+            _ => {
+                self.hull_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.hull_voice_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -1847,6 +1881,50 @@ mod tests {
             (0.0, 0.0),
             "a people below the proud threshold tends its module no better than duty"
         );
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_hull_groans_or_rides_sound() {
+        // Content-depth voice round 22: the hull voice, the first for the ship's own
+        // body. A new-built hull is the silent baseline; crossing into a groaning band
+        // surfaces one pooled line; a refit back to a sound band gets its own, opposite
+        // line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(47);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.hull_voice_high > 0.0 && fl.hull_groaning.len() >= 3,
+            "this test needs the hull voice enabled"
+        );
+        let low = fl.hull_voice_low;
+        let high = fl.hull_voice_high;
+        let hull_lines = |sim: &SimState| {
+            let groan = &data.config.flavor.hull_groaning;
+            let sound = &data.config.flavor.hull_sound;
+            sim.log
+                .iter()
+                .filter(|l| groan.contains(&l.text) || sound.contains(&l.text))
+                .count()
+        };
+
+        // A new-built hull is sound — the launch band is recorded, silent.
+        sim.announce_hull_condition(&data);
+        assert_eq!(hull_lines(&sim), 0, "a new-built hull is silent");
+
+        // The hull wears past the low line: one line.
+        sim.ship.hull_integrity = low - 0.05;
+        sim.announce_hull_condition(&data);
+        assert_eq!(hull_lines(&sim), 1, "an aging hull groans once");
+        assert_eq!(sim.hull_voice_band, -1);
+
+        // Still groaning — no reprint.
+        sim.announce_hull_condition(&data);
+        assert_eq!(hull_lines(&sim), 1, "staying worn is not re-announced");
+
+        // A refit brings it back sound: a second, distinct line.
+        sim.ship.hull_integrity = high + 0.05;
+        sim.announce_hull_condition(&data);
+        assert_eq!(hull_lines(&sim), 2, "a refit hull rides sound afresh");
+        assert_eq!(sim.hull_voice_band, 1);
     }
 
     #[test]

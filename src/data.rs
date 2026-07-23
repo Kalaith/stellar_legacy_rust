@@ -618,6 +618,24 @@ pub struct FlavorConfig {
     pub unity_voice_high: f32,
     #[serde(default)]
     pub unity_voice_low: f32,
+    /// The ship's *hull* crossing into a groaning band (content-depth voice round 22):
+    /// the first voice for the vessel's own body rather than the crew's inner life. When
+    /// `hull_integrity` falls into disrepair — the plates weeping at the seams, the frame
+    /// groaning on every burn, patches over patches — one of these surfaces. No name;
+    /// indexed by year; empty = silence.
+    #[serde(default)]
+    pub hull_groaning: Vec<String>,
+    /// The ship's hull crossing back into good order (content-depth voice round 22): the
+    /// positive twin — the seams sealed, the frame riding tight and quiet again after a
+    /// hard refit, a hull that feels, for a while, new. No name; indexed by year.
+    #[serde(default)]
+    pub hull_sound: Vec<String>,
+    /// Hull integrity at/above which the ship remarks a sound body (`_high`) or at/below
+    /// which it remarks one groaning (`_low`) (content-depth voice round 22).
+    #[serde(default)]
+    pub hull_voice_high: f32,
+    #[serde(default)]
+    pub hull_voice_low: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -2452,6 +2470,19 @@ mod tests {
                 "unity voice thresholds must order: 0 < low ({}) < high ({})",
                 fl.unity_voice_low,
                 fl.unity_voice_high
+            );
+        }
+        // Content-depth voice round 22: and the hull (ship's body) voice, the same shape.
+        if fl.hull_voice_high > 0.0 {
+            assert!(
+                !fl.hull_groaning.is_empty() && !fl.hull_sound.is_empty(),
+                "hull voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.hull_voice_low > 0.0 && fl.hull_voice_low < fl.hull_voice_high,
+                "hull voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.hull_voice_low,
+                fl.hull_voice_high
             );
         }
         // Content-depth voice round 6: the recurring-crisis pools need variety

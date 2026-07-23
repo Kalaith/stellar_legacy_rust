@@ -480,6 +480,20 @@
     ],
     "unity_voice_high": 0.7,
     "unity_voice_low": 0.4,
+    "hull_groaning": [
+      "The old hull has begun to talk to itself. On every burn the frame groans somewhere new, a long metal complaint that runs the length of the ship and sets teeth on edge; the plates weep at seams the founders welded once and no one has welded since, and the maintenance logs are a litany of patches over patches. The ship is not failing — not yet — but it has stopped feeling new, and everyone aboard can hear it.",
+      "It is the sound a ship makes when it has been in the dark too long without a proper refit: the ticking of cooling metal that never quite settles, the shudder in the deck on a hard maneuver, the draughts that find their way through seals that used to hold. The hull is worn, and worn audibly, and the crew have learned the particular grammar of its groaning the way you learn the aches of an old house.",
+      "The ship rides heavy and complaining these days. Doors that once sealed with a hiss now need a shoulder; the hull sings a low, wrong note under acceleration that the engineers have stopped trying to silence; there is a smell of old metal and sealant on the lower decks that never entirely clears. A generation ship is a body, and this one has begun, unmistakably, to age.",
+      "Somewhere past the last hard stretch the hull crossed from sound to merely holding. The frame flexes where it should be rigid, the plates are a quilt of repairs, and the crews who keep it running speak of it now the way one speaks of an old and beloved animal that is not quite well — with tenderness, and with a wariness they did not used to feel."
+    ],
+    "hull_sound": [
+      "The hull rides tight and quiet again. A hard refit sealed the weeping seams, trued the flexing frame, and stripped away the quilt of old patches for honest metal, and the ship goes through the dark now without complaint — no groan on the burn, no draught on the lower decks, a body sound enough that the crew stop bracing for the next failure and simply fly.",
+      "Something was set right in the ship's very bones this stretch. The frame holds rigid where it had begun to flex, the plates seal clean, and the low wrong note the hull used to sing under acceleration is simply gone. The vessel feels, for the first time in a long while, less like an old house held together by habit and more like a ship — sound, tight, and equal to the dark.",
+      "The refit took, and the hull answers to it: doors seal with their old clean hiss, the maintenance logs have gone quiet, and the ship rides through a hard burn silent and true. It will not last forever — nothing in the dark does — but for now the crew have the rare and steadying feeling of standing inside a body that is wholly, soundly well.",
+      "The ship is sound again in a way it has not been in years. The engineers walk the hull and find honest metal where they had grown used to patches; the frame is true, the seams are dry, and the vessel carries the quiet confidence of a thing recently and properly mended — a hull the crew can, for this stretch at least, simply trust."
+    ],
+    "hull_voice_high": 0.72,
+    "hull_voice_low": 0.45,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",
