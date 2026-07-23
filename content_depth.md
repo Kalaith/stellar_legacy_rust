@@ -22,13 +22,69 @@ than last iteration, still coherent."
    embedding content. Missions are never hardcoded in Rust. **Events are split one file per
    family under `assets/events/<family>.json`** (merged at load, duplicate-id-guarded) — add a
    new event to its family's file, not one monolith.
-2. **Determinism preserved.** Seeded campaign skeleton at LAUNCH stays reproducible — same
-   seed ⇒ same campaign. New randomness goes through state-owned RNG.
+2. **Determinism of the *tick*, not of a *played run* (relaxed by the real-time loop — read
+   this).** All randomness still flows through the state-owned `sim.rng` (never `get_time` /
+   `miniquad::date::now` / `Math.random` — the one entropy source is the startup `srand`, and
+   `fixed_seed` in `game_config` overrides it for testing). So a **hand-stepped `advance_*`
+   replays identically** for a seed, and the seeded campaign skeleton at LAUNCH is reproducible.
+   But a **live real-time run is no longer a strict seed replay** — the wall-clock auto-advance
+   cadence and the 30 s decision-timeout picks depend on player timing. Do **not** re-assert
+   "same seed ⇒ same *played* run," and do not add a second entropy source. See "Established
+   mechanics" below for the RNG-stream lessons this creates for tests.
 3. **Structure before volume.** If a content idea needs a schema field, add the field
    (`#[serde(default)]`, back-compatible) and one exemplar, then grow the catalog in later
    iterations.
 4. Repo constraints hold: 800-line file limit, no `mod.rs`, UI stays a pure view layer
    pushing `UiAction`, clippy `-D warnings` clean, soak/playthrough tests green.
+
+## Established mechanics (real-time loop) — build on these, do not reverse
+
+A run of mechanics passes (2026-07-23, *after* iteration 121) reshaped the frame the content
+sits in. These are **load-bearing**: the next content round must build on them, not silently
+undo them. Each lives in `game_config` and flows through the seeded tick.
+
+- **Time is real-time while under way; frozen while docked.** The month clock auto-advances
+  (`real_time.seconds_per_month`, with a Pause / 1× / 2× / 3× selector); there is **no manual
+  "advance the year" key or button** anymore. The tick itself is unchanged in *what* it does
+  each simulated month — beats, events, economy all fire exactly as before — only *who drives
+  it* changed. Do not reference "press Space / one press = one year" in content or help text.
+- **Every decision auto-resolves.** A blocking event or dilemma left unanswered for
+  `real_time.decision_timeout_secs` (30 s) auto-picks a **random available option** (through
+  `sim.rng`). So every event must stay **survivable if left to chance**: never author one whose
+  random default is catastrophic-only, and keep the available outcome set sane (autoplay *and*
+  the timeout both draw from `available_outcome_indices`).
+- **Population tolls are ranged, and can take named characters.** `apply_outcome` rolls an
+  outcome's `population_delta.count` within a ±`real_time.impact_variance` band (the modal shows
+  "~X–Y souls may be lost"); a loss ≥ `mortality.event_death_loss_threshold` may also claim a
+  crew officer or relative (`mortality::event_claim`). **Author population deltas as the *centre*
+  of the intended range**, not the worst case — the engine spreads and may escalate it.
+- **Characters age and die continuously.** Aging is a yearly "Founding Day" (`mortality::
+  annual_aging`); death is a monthly age-scaled roll (`mortality::monthly_tick`); the dynasty
+  self-renews toward `mortality.dynasty_target_size` via yearly births. `succession` and crew
+  no longer age or kill — that is `mortality`'s job. Content must **not** assume a static roster
+  or that the founding leader persists. New voice pools exist: `flavor.crew_death`,
+  `flavor.fuel_gain` (periodic fuel-scoop report, `flavor.fuel_report_gap_years`).
+- **Tabs/screens split by voyage state.** `Screen::tabs(in_port)` returns different sets
+  (DRYDOCK + MARKET docked; CONTRACT under way); the SHIP tab is a shipyard docked and a
+  status readout under way. Menu flow is Boot → title/main menu (Continue / New Game / Settings
+  / Exit) → new-game picker. A new screen must honor this split.
+
+### Lessons (apply to every future pass)
+
+- **RNG-stream sensitivity.** `mortality::monthly_tick` consumes `sim.rng` *every month*, so any
+  test or harness that advances many years must (a) **resolve or clear the pending decision each
+  step** (else `advance_months` trips its `has_pending_decision` debug_assert), and (b) **not
+  assert on exact seeded event identity/order** across long spans — assert on *invariants*
+  instead (a living dynasty is always led; a beat eventually fired; a stat crossed a band; a
+  fuel report appeared). The autoplay soaks already follow this — copy their loop.
+- **Any attrition mechanic needs a renewal counterweight.** Continuous death without matching
+  births makes extinction *inevitable* (learned the hard way — every voyage died out until the
+  yearly birth model landed). A new mechanic that kills dynasts (a plague arc, a mortality
+  event, a harsher curve) must be weighed against `dynasty_target_size` / `annual_birth_chance`,
+  or it silently guarantees a game-over. Tune in the `mortality` block, never in Rust.
+- **Docked = timeless is a design lever, not a bug.** Repairs, refit, market, and charter
+  choice happen with the clock stopped; only the crossing runs against the hours. Content that
+  wants to pressure the player with time belongs *under way*, not in port.
 
 ## Baseline
 
@@ -141,6 +197,9 @@ adds depth. One deliberate coupling per iteration is a good bar.
 - No content in Rust; no balance constants in Rust.
 - No breaking the automated playthrough harness — it is the primary playtest channel and
   every iteration leaves it green.
+- **Do not reverse the real-time-loop mechanics** (see "Established mechanics"): no manual
+  time-advance path, no "same seed ⇒ same *played* run" guarantee, no static-roster assumption,
+  no un-splitting the state-dependent tabs. Build content on top of them.
 
 ## Rotation log
 
@@ -269,3 +328,10 @@ adds depth. One deliberate coupling per iteration is a good bar.
 - 2026-07-22 · subsystems (round 4) · **completed condition-breakdown coverage**: round 3 gave physical-failure beats only to life-support, security, and engineering; this pass covers the other three so every module now has *both* a knowledge crisis and a condition breakdown — the-failing-ward (medical bay rotted past patching: strip the ship to rebuild the theatre vs fall back to triage medicine and bury the difference), the-broken-beds (hydroponics seizing: rebuild the beds vs fall back to soil farming), the-crumbling-archive (the record substrate itself dying, distinct from people forgetting: mount a great hand-copying vs let the deep archive fade — dents education knowledge + drift, seeds a `the_lost_archive` consequence). The-broken-beds' soil fall-back is the doc's canonical **cross-coupling expressed in data** — the lean years dent BOTH agriculture and the medical bay (malnutrition load) via a two-subsystem `subsystem_deltas`. Added a data-load coverage assertion mirroring the knowledge one: every subsystem must have a `condition_below` breakdown event. Events 153→**156**. +1 test locking the agriculture→medical cross-coupling (112 total).
 - 2026-07-22 · factions (round 4) · **friction→fracture** — a new combined coupling: an inter-faction quarrel that gates on BOTH factions aboard (`requires_factions_aboard`) *and* whose "let it break" outcome sheds the named one via `faction_loss_id` in the same event (no prior event did both — schisms gated on one faction + solo drift; friction events only shifted stats). Gave the 3 factions that had a signature but no fracture path (Steel Covenant, Meridian Accord, Hearth Union) one each, so every faction can now leave: the-forge-and-the-garden (Covenant×Kin over a deck → the machinists found a foundry-world, taking engineering knowledge with them), the-courts-and-the-creed (Accord×Flame → the arbiters depart a ship ruled by creed, security arbitration lost), the-cold-table (Hearth×Ascension → the Hearth withdraws to a world where all still eat at the table, morale/warmth lost). Plus a reconciliation-texture friction, the-fire-and-the-field (Flame×Kin over reactor power: dim the eternal shrine-burn for the grow-decks vs keep it lit and starve the gardens — friction→agriculture, no schism). Friction pairs 3→6. Events 149→**153**. +1 test proving the fracture sheds the *named* faction even as the largest aboard and carries its subsystem penalty (111 total).
 - 2026-07-22 · event families (round 4) · closed the last parity gap: brought the two thinnest families, **mystery** (9→12) and **comedy** (9→12), to the doc's 12+ bar, so every family is now ≥10 and 8 of 10 at ≥12. All 6 are century-aware (gated on generation/drift/knowledge decay) with genuine two-way choices and system couplings, not flavor one-offs: the-sealed-deck (breach a founder-welded deck for salvage vs keep it a shared mystery — engineering condition + drift), the-second-log (publish a contradicting founding record vs bury it — education knowledge + drift, seeds a `buried_second_log` consequence for a future chain), the-wandering-mind (obey the old nav archive and lose understanding vs rebuild it by hand — knowledge-crisis gate, opposite subsystem-knowledge swings), the-festival-war (rival festivals vs a fused invented holiday), the-reconstructed-feast (canonize a delicious fake vs honor the archive — education knowledge), the-office-of-lost-things (fund an absurd bureau that actually mends the shops vs disband it — engineering condition + spare parts). Events 140→**146**. +1 test locking the wandering-mind divergent-choice coupling (109 total).
+
+### Mechanics passes (2026-07-23, outside the content-axis rotation — see "Established mechanics")
+
+- 2026-07-23 · mechanics (real-time loop) · replaced the manual-advance frame with a **real-time auto-advancing voyage** (GDD Pillar 4 superseded). `SpeedStep` → `GameSpeed { Paused, X1, X2, X3 }`; `tick::advance` → `advance_months(sim, data, n)`; a per-frame accumulator in `game.rs` drives one month per `real_time.seconds_per_month` while under way, frozen while docked; Space-to-advance removed. Blocking events **and** dilemmas auto-resolve to a random available option after `real_time.decision_timeout_secs` (30 s). Event `population_delta.count` is now RNG-rolled within a ±`real_time.impact_variance` band shown in the modal. Completion docks to a new `Screen::Drydock`. Tabs split by state (`Screen::tabs`); SHIP tab is shipyard-docked / status-underway. Determinism relaxed: hand-stepped `advance_*` still replays; a played run does not. 220 tests.
+- 2026-07-23 · mechanics (UX) · fixed the event modal header (countdown right-aligned, title clears the divider); **seeded the global RNG from the wall clock at startup** so new games actually vary (they were identical every launch), with `game_config.fixed_seed` to force a reproducible run for testing; menu flow reworked to Boot → title/main menu (Continue / New Game / Settings / Exit) → new-game picker (`MenuPhase`). 220 tests.
+- 2026-07-23 · mechanics (voice/legibility) · the fuel gauge's burn/scoop sawtooth read as an unexplained twitch; added a **periodic in-world provisioning report** (`flavor.fuel_gain` + `fuel_report_gap_years`) that narrates the drive's actual haul — self-throttling via a `fuel_scooped_accum` that only grows while the tank has room, so it speaks on a crossing and stays silent on a full tank on-station. The same pooled pattern can later voice other silent stat movers. 221 tests.
+- 2026-07-23 · mechanics (mortality) · **characters age and die continuously** (GDD §5.3 rewritten). New `simulation/mortality.rs`: yearly "Founding Day" aging for all; a monthly age-scaled death roll (`mortality` config block — accident floor + doubling past onset 50, certain at `member_max_age`); succession fires on a vacated seat (not a 25-yr batch); a yearly birth model renews the line toward `dynasty_target_size` (the required counterweight — continuous death alone guarantees extinction); a heavy event loss may claim a named character (`event_claim`). Aging/death removed from `succession`/`crew` (now renewal + succession helpers only). New pools `flavor.crew_death`. 224 tests (soak proving the line ages, turns over, and survives).
