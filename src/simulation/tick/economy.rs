@@ -121,6 +121,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.unity = (sim.population.unity + recovery).min(1.0);
     }
 
+    // A functioning security/justice corps also keeps the ship's *institutions*
+    // in order (content-depth subsystems round 16): stability's first maintenance
+    // counterweight, steadying a fracturing government toward the ceiling.
+    let stability_recovery = subsystems::security_stability_recovery(sim, data);
+    if stability_recovery > 0.0 {
+        sim.population.stability = (sim.population.stability + stability_recovery).min(1.0);
+    }
+
     // A ship holds together as well as its peoples are content (content-depth
     // factions round 15): the faction system finally touches the ship's own
     // cohesion. Each year unity drifts by the member-weighted mood of the aboard

@@ -84,6 +84,19 @@ pub struct SubsystemsConfig {
     /// crew recovery ceiling. 0 = no bay-level recovery.
     #[serde(default)]
     pub security_unity_recovery_per_condition: f32,
+    /// Yearly *stability* recovery from a well-kept security/justice corps at full
+    /// condition (content-depth subsystems round 16): the corps' *other* domain —
+    /// where it59's unity recovery is the corps keeping the peace between the
+    /// people, this is it keeping the ship's institutions *functioning*, the first
+    /// maintenance-driven counterweight the it102 stability stat has. Scales by
+    /// condition, only steadies a ship below the ceiling. 0 = no such recovery.
+    #[serde(default)]
+    pub security_stability_recovery_per_condition: f32,
+    /// Stability level at or above which the corps manufactures no more order
+    /// (content-depth subsystems round 16): a functioning security system steadies a
+    /// fracturing government but does not build perfect institutions from nothing.
+    #[serde(default)]
+    pub security_stability_recovery_ceiling: f32,
     /// How much the habitat's state moves the ship's morale each year (content-depth
     /// subsystems round 11): the life-support/habitat is where the people *live*, so
     /// a home kept above the midpoint lifts spirits and one let to fail (cramped,

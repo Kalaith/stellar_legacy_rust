@@ -421,6 +421,22 @@ pub fn security_unity_recovery(sim: &SimState, data: &GameData) -> f32 {
     condition * data.config.subsystems.security_unity_recovery_per_condition
 }
 
+/// Yearly *stability* recovery from a well-kept security/justice corps (content-depth
+/// subsystems round 16): the corps keeping the ship's institutions functioning — the
+/// governance twin of `security_unity_recovery`, and the first maintenance-driven
+/// counterweight the it102 stability stat has. Scales by condition; only steadies a
+/// ship still below the ceiling (the corps does not build perfect order from nothing).
+pub fn security_stability_recovery(sim: &SimState, data: &GameData) -> f32 {
+    let cfg = &data.config.subsystems;
+    if cfg.security_stability_recovery_per_condition <= 0.0
+        || sim.population.stability >= cfg.security_stability_recovery_ceiling
+    {
+        return 0.0;
+    }
+    let condition = sim.subsystems.get("security").map_or(0.0, |s| s.condition);
+    condition * cfg.security_stability_recovery_per_condition
+}
+
 /// Signed yearly morale shift from the state of the habitat (content-depth
 /// subsystems round 11): the life-support/habitat is where the people live, so a
 /// home kept above the midpoint lifts spirits and one let to fail depresses them —
@@ -523,6 +539,40 @@ mod tests {
             security_unity_recovery(&sim, &data),
             0.0,
             "a steady ship needs no steadying"
+        );
+    }
+
+    #[test]
+    fn a_functioning_security_corps_keeps_the_institutions_in_order() {
+        // Content-depth subsystems round 16: the security corps' governance domain.
+        // A sound corps recovers stability toward the ceiling, a wrecked one far
+        // less, and a ship already well-ordered gets no boost.
+        let data = GameData::load().unwrap();
+        let cfg = &data.config.subsystems;
+        assert!(
+            cfg.security_stability_recovery_per_condition > 0.0,
+            "this test needs the security→stability coupling enabled"
+        );
+        let (_, mut sim) = campaign(17);
+
+        // A fracturing government: a sound corps steadies it more than a decayed one.
+        sim.population.stability = 0.3;
+        sim.subsystems.get_mut("security").unwrap().condition = 1.0;
+        let recover_sound = security_stability_recovery(&sim, &data);
+        sim.subsystems.get_mut("security").unwrap().condition = 0.1;
+        let recover_wrecked = security_stability_recovery(&sim, &data);
+        assert!(
+            recover_sound > recover_wrecked && recover_wrecked >= 0.0,
+            "a functioning corps keeps the institutions in better order than a decayed one"
+        );
+
+        // A well-ordered ship at the ceiling gets no manufactured order.
+        sim.population.stability = cfg.security_stability_recovery_ceiling;
+        sim.subsystems.get_mut("security").unwrap().condition = 1.0;
+        assert_eq!(
+            security_stability_recovery(&sim, &data),
+            0.0,
+            "a well-governed ship needs no shoring up"
         );
     }
 

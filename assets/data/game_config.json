@@ -99,6 +99,8 @@
     "engineering_decay_swing": 0.4,
     "medical_famine_relief_per_condition": 0.3,
     "security_unity_recovery_per_condition": 0.006,
+    "security_stability_recovery_per_condition": 0.006,
+    "security_stability_recovery_ceiling": 0.7,
     "habitat_morale_swing": 0.01,
     "tender_approval_decay_scale": 0.3,
     "agriculture_condition_food_penalty": 0.3,
