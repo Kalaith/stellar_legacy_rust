@@ -112,6 +112,8 @@
     "security_unity_recovery_per_condition": 0.006,
     "security_stability_recovery_per_condition": 0.006,
     "security_stability_recovery_ceiling": 0.7,
+    "security_crisis_mitigation": 0.15,
+    "crisis_weight_floor": 0.1,
     "habitat_morale_swing": 0.01,
     "habitat_renewal_penalty": 0.5,
     "tender_approval_decay_scale": 0.3,

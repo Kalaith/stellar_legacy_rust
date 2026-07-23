@@ -1425,5 +1425,55 @@
     "log": "The council kept its chest closed and ran the narrows under fire, trading hull and nerve for money it would not pay. The ship came through scarred and unbowed, and word of a hull that does not pay to pass went ahead of it into the dark."
    }
   ]
+ },
+ {
+  "id": "the_prowlers",
+  "category": "immediate_crisis",
+  "family": "diplomacy",
+  "title": "The Prowlers",
+  "description": "Small craft have begun to shadow the ship at the edge of sensor range — scavengers, reading a fat hull and testing its edges. On a ship with a sharp security corps they would keep their distance and think better of it. This ship's watch is not sharp. The decayed corps stands too few and too green to make the prowlers doubt, and the prowlers can tell.",
+  "requires_decision": true,
+  "condition_below": [
+   {
+    "id": "security",
+    "below": 0.4
+   }
+  ],
+  "outcomes": [
+   {
+    "id": "rebuild_the_watch",
+    "label": "Rebuild the watch",
+    "description": "Pull crew and parts to stand the corps back up — drill the watch, arm the locks, make the ship look like the hard target it stopped being. The prowlers respect nothing but readiness.",
+    "resource_delta": {
+     "minerals": -200
+    },
+    "ship_delta": {
+     "spare_parts": -8
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "condition": 0.3
+     }
+    ],
+    "population_delta": {
+     "unity": 0.02
+    },
+    "log": "The corps was drilled and rearmed and put visibly back on its feet, and within a fortnight the shadows at the sensor edge thinned and were gone. A ship that looks ready is a ship left alone."
+   },
+   {
+    "id": "bluff_and_endure",
+    "label": "Bluff and endure",
+    "description": "There is nothing to rebuild with that the ship can spare. Run dark, run quiet, show no fear, and hope the prowlers tire of a hull that will not flinch before they find the soft place in a watch too thin to hold.",
+    "population_delta": {
+     "morale": -0.04,
+     "unity": 0.03
+    },
+    "long_term_consequences": [
+     "the_prowlers_probed"
+    ],
+    "log": "The ship ran dark and bluffed a strength it did not have, and the prowlers — bored or wary or merely elsewhere-bound — eventually fell away. It worked this time. The crew did not sleep well knowing how thin the watch that had held them was."
+   }
+  ]
  }
 ]

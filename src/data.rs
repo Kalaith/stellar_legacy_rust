@@ -1716,6 +1716,21 @@ mod tests {
                 "subsystem '{id}' has no condition_below breakdown event"
             );
         }
+        // Content-depth subsystems round 21: the security crisis-mitigation is a gentle
+        // positive dampener (a corps quiets danger, never conjures it), and its floor
+        // keeps the crisis category from being dampened out of existence.
+        let subs_cfg = &data.config.subsystems;
+        assert!(
+            (0.0..=0.3).contains(&subs_cfg.security_crisis_mitigation),
+            "security_crisis_mitigation {} out of the gentle range [0, 0.3]",
+            subs_cfg.security_crisis_mitigation
+        );
+        if subs_cfg.security_crisis_mitigation > 0.0 {
+            assert!(
+                subs_cfg.crisis_weight_floor > 0.0,
+                "a crisis-weight floor must be set so security can never silence danger"
+            );
+        }
 
         assert_eq!(data.ship_components.hulls.len(), 5);
         assert_eq!(data.ship_components.engines.len(), 5);

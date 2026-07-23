@@ -116,6 +116,25 @@ pub struct SubsystemsConfig {
     /// fracturing government but does not build perfect institutions from nothing.
     #[serde(default)]
     pub security_stability_recovery_ceiling: f32,
+    /// How much a well-kept security/justice corps *dampens the immediate-crisis event
+    /// weight* (content-depth subsystems round 21): the corps' third domain, and the
+    /// first time any subsystem touches the *event distribution* rather than a stat.
+    /// Where it59 has the corps keep the peace between the people and it108 keep the
+    /// institutions functioning, this has it defend the ship against the crises a
+    /// dangerous route and a distressed hull breed — boardings, riots, breaches
+    /// reaching the council — the maintenance-driven counterweight to the it85 charter
+    /// `hazard`. The crisis category weight is reduced by `condition · this`, floored so
+    /// even a perfect corps only *dampens* danger, never silences it. It is the
+    /// subsystem-side twin of the charters-round-21 combat coupling (guns work a
+    /// contested writ, the corps quiets the crises that writ throws). 0 = the corps does
+    /// not touch how often crises arise.
+    #[serde(default)]
+    pub security_crisis_mitigation: f32,
+    /// The floor the immediate-crisis weight can never be dampened below (content-depth
+    /// subsystems round 21): a well-defended ship faces fewer crises, but the dark is
+    /// never fully safe, so the crisis category always keeps at least this much weight.
+    #[serde(default)]
+    pub crisis_weight_floor: f32,
     /// How much the habitat's state moves the ship's morale each year (content-depth
     /// subsystems round 11): the life-support/habitat is where the people *live*, so
     /// a home kept above the midpoint lifts spirits and one let to fail (cramped,

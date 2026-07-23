@@ -195,6 +195,17 @@ pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory,
     if let Some(contract) = &sim.contract {
         crisis += contract.hazard;
     }
+    // A well-kept security/justice corps (content-depth subsystems round 21) defends
+    // the ship against the crises a dangerous route and a distressed hull breed —
+    // fewer boardings, riots, and breaches reach the council. The corps' condition
+    // dampens the crisis weight (the subsystem-side twin of the charters-round-21
+    // combat coupling), floored so even a perfect corps only quiets danger, never
+    // silences it.
+    let mitigation = config.subsystems.security_crisis_mitigation;
+    if mitigation > 0.0 {
+        let security = sim.subsystems.get("security").map_or(0.0, |s| s.condition);
+        crisis = (crisis - security * mitigation).max(config.subsystems.crisis_weight_floor);
+    }
 
     let milestone = match &sim.contract {
         Some(contract) => {
@@ -1618,6 +1629,42 @@ mod tests {
         assert!(
             sim.subsystems["engineering_bay"].knowledge < before,
             "the machinists' craft leaves with them"
+        );
+    }
+
+    #[test]
+    fn a_well_kept_security_corps_quiets_the_crises_a_route_breeds() {
+        // Content-depth subsystems round 21: the corps' third domain — it defends the
+        // ship against the crises a dangerous route and a distressed hull breed. A
+        // sound corps dampens the immediate-crisis category weight; a wrecked one does
+        // not; and even a perfect corps never dampens below the floor.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.subsystems.security_crisis_mitigation > 0.0,
+            "this test needs the security crisis coupling enabled"
+        );
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 12, &picks);
+
+        let crisis_weight = |sim: &SimState| {
+            category_weights(sim, &data.config)
+                .iter()
+                .find(|(c, _)| matches!(c, EventCategory::ImmediateCrisis))
+                .map(|(_, w)| *w)
+                .unwrap()
+        };
+
+        sim.subsystems.get_mut("security").unwrap().condition = 1.0;
+        let sound = crisis_weight(&sim);
+        sim.subsystems.get_mut("security").unwrap().condition = 0.1;
+        let wrecked = crisis_weight(&sim);
+        assert!(
+            sound < wrecked,
+            "a sound corps breeds fewer crises than a wrecked one: {sound} vs {wrecked}"
+        );
+        assert!(
+            sound >= data.config.subsystems.crisis_weight_floor,
+            "even a perfect corps never dampens the crisis weight below its floor"
         );
     }
 
