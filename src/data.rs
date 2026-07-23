@@ -833,6 +833,16 @@ pub struct CampaignSkeletonConfig {
     /// Empty = no homecoming beat.
     #[serde(default)]
     pub homecoming_beat_family: String,
+    /// Mid-voyage beat family (content-depth campaign-skeleton round 21): the era
+    /// counterpart to the homecoming beat and the founding-era pool bias — the beat
+    /// the "early / mid / homecoming" texture was missing in the middle. Once the
+    /// voyage passes its temporal midpoint *with home still ahead* (before the Return
+    /// leg), a single beat is forced from this family: the deep middle, when the
+    /// founders are generations dead and landfall generations away, and the crew who
+    /// will neither remember the launch nor see the arrival must reckon with a life
+    /// lived wholly in transit. Empty = no mid-voyage beat.
+    #[serde(default)]
+    pub midvoyage_beat_family: String,
     /// Power-transition beat family (content-depth round 11): a beat keyed not to
     /// a stat or a time but to a *political* change — the first tick the dominant
     /// faction differs from the one the skeleton last marked (demographic drift
@@ -2185,6 +2195,15 @@ mod tests {
                 families.contains(&sk.dynasty_crisis_beat_family),
                 "campaign_skeleton dynasty_crisis_beat_family '{}' has no events",
                 sk.dynasty_crisis_beat_family
+            );
+        }
+        // Content-depth campaign-skeleton round 21: the mid-voyage (deep-middle) beat
+        // needs a family with events when switched on.
+        if !sk.midvoyage_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.midvoyage_beat_family),
+                "campaign_skeleton midvoyage_beat_family '{}' has no events",
+                sk.midvoyage_beat_family
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

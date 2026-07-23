@@ -667,6 +667,9 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.reputation_beat_family.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
+    // The mid-voyage beat (round 21) fires once at the deep middle of any full
+    // voyage — silence it for these isolated-timeline runs too.
+    data.config.campaign_skeleton.midvoyage_beat_family.clear();
     data.config
         .campaign_skeleton
         .power_transition_beat_family
@@ -1065,6 +1068,82 @@ fn an_anniversary_beat_fires_on_its_periodic_cadence() {
 }
 
 #[test]
+fn a_midvoyage_beat_fires_at_the_deep_middle_of_the_voyage() {
+    // Content-depth campaign-skeleton round 21: the era beat the "early / mid /
+    // homecoming" texture lacked in the middle. With reactive rolls and the other
+    // threshold beats off, the voyage must force a deep-middle reckoning the first tick
+    // it passes its temporal midpoint with home still ahead — and only once.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
+    data.config.campaign_skeleton.stability_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.subsystem_beats.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
+    data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.campaign_skeleton.long_reign_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .dynasty_crisis_beat_family
+        .clear();
+    data.config
+        .campaign_skeleton
+        .power_transition_beat_family
+        .clear();
+    data.config.campaign_skeleton.dead_air_years = 0;
+    data.config.campaign_skeleton.anniversary_years = 0;
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        5,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    // deep_vein_survey: 340 years, midpoint (170y) safely inside its Operation leg.
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    {
+        let c = sim.contract.as_mut().unwrap();
+        c.beats.clear();
+        // Jump to one year shy of the midpoint — no deep-middle beat yet. Settle the
+        // phase to match the clock so the first advance doesn't register a spurious
+        // Preparation→Operation change and hard-stop before the midpoint.
+        c.months_elapsed = 169 * 12;
+        let (idx, phase) = c.phase_at(c.months_elapsed);
+        c.phase_index = idx;
+        c.phase = phase;
+    }
+    assert_eq!(
+        sim.contract.as_ref().unwrap().phase,
+        crate::data::contracts::ContractPhase::Operation,
+        "a year shy of the midpoint the ship is on station"
+    );
+    assert!(
+        !sim.contract.as_ref().unwrap().midvoyage_beat_fired,
+        "no deep-middle beat before the midpoint"
+    );
+
+    // Cross the midpoint: the beat fires, once, while home is still ahead.
+    advance_year(&mut sim, &data);
+    assert!(
+        sim.contract.as_ref().unwrap().midvoyage_beat_fired,
+        "the voyage marks its deep middle once it passes the halfway point"
+    );
+    assert_ne!(
+        sim.contract.as_ref().unwrap().phase,
+        crate::data::contracts::ContractPhase::Return,
+        "the deep-middle beat fires before the ship turns for home"
+    );
+}
+
+#[test]
 fn a_crisis_beat_fires_as_the_ship_comes_apart() {
     // Content-depth campaign-skeleton round 6: the descending mirror of the
     // drift/adaptation beats. With reactive rolls and the other threshold beats
@@ -1407,6 +1486,9 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.reputation_beat_family.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
+    // The mid-voyage beat (round 21) fires once at the deep middle of any full
+    // voyage — silence it for these isolated-timeline runs too.
+    data.config.campaign_skeleton.midvoyage_beat_family.clear();
     data.config
         .campaign_skeleton
         .power_transition_beat_family
@@ -1500,6 +1582,9 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.reputation_beat_family.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     data.config.campaign_skeleton.homecoming_beat_family.clear();
+    // The mid-voyage beat (round 21) fires once at the deep middle of any full
+    // voyage — silence it for these isolated-timeline runs too.
+    data.config.campaign_skeleton.midvoyage_beat_family.clear();
     data.config
         .campaign_skeleton
         .power_transition_beat_family
@@ -1746,6 +1831,9 @@ fn the_homecoming_beat_fires_when_the_voyage_turns_for_home() {
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
+    // This test jumps the clock past the voyage midpoint, so silence the round-21
+    // mid-voyage beat to isolate the homecoming one.
+    data.config.campaign_skeleton.midvoyage_beat_family.clear();
     assert!(
         !data
             .config

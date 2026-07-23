@@ -2405,5 +2405,78 @@
     "log": "The council did the unthinkable and the overdue at once: it wrote the founding family out of its privileged place and made the first chair open to any hand the ship judged worthy. Some mourned it as the true end of the voyage the founders began. Others said the voyage had just, finally, become the crew's own."
    }
   ]
+ },
+ {
+  "id": "the_middle_dark",
+  "category": "generational_challenge",
+  "family": "legacy_drift",
+  "title": "The Middle Dark",
+  "description": "The navigators mark it without ceremony, a line on a chart no one but they would notice: the ship has passed the midpoint of its voyage. Behind lies a launch none now living remember; ahead, a landfall none now living will see. For the first time the crew are, exactly, in the deep middle — as far from where they began as from where they are bound, and equally unable to reach either. A generation has to decide what a life lived wholly in transit is for.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "the_ship_is_the_world",
+    "label": "The ship is the world",
+    "description": "Stop measuring life against a departure and an arrival no one will witness. This deck, this crew, this passage — let it be a home and not a waiting room, and let the destination be the descendants' problem.",
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.04,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "long_term_consequences": [
+     "the_voyage_became_home"
+    ],
+    "log": "The ship, at its midpoint, quietly stopped thinking of itself as a journey and began thinking of itself as a place. The crew were happier for it, and a little further from the people who had launched them toward somewhere else."
+   },
+   {
+    "id": "hold_for_the_landfall",
+    "label": "Hold for the landfall",
+    "description": "Keep the discipline of a people in transit. The ones who will make planetfall are not yet born, and owe their arrival to a hundred generations who chose to live as a bridge rather than a destination. Be a good length of that bridge.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.03,
+     "morale": -0.03
+    },
+    "log": "The council reaffirmed the voyage over the ship — the landfall none of them would see held above the comfort all of them could. It is a hard thing, to live your whole life as someone else's means of arriving. The crew did it anyway, and were graver for the choosing."
+   }
+  ]
+ },
+ {
+  "id": "the_bridge_generations",
+  "category": "generational_challenge",
+  "family": "legacy_drift",
+  "title": "The Bridge Generations",
+  "description": "A schoolteacher's question, asked in earnest by a child and passed uneasily up to the council, has settled over the deep-middle decks and will not lift: if no one who launched the ship is alive, and no one who lands it is born, then who is the voyage *for* — and what does it owe the generations who will only ever know the corridor between the stars?",
+  "requires_decision": true,
+  "min_generation": 4,
+  "outcomes": [
+   {
+    "id": "honour_the_between",
+    "label": "Honour the ones between",
+    "description": "Make a rite of it: name the middle generations as the true bearers of the voyage, the ones who carry it across the dark for no reward of their own. Give the corridor-born a dignity the destination never offered them.",
+    "population_delta": {
+     "unity": 0.05,
+     "morale": 0.03,
+     "cultural_drift": 0.02
+    },
+    "log": "The ship made a quiet festival of the ones who would only ever know its corridors, and the corridor-born stood a little straighter for being named the voyage's keepers rather than merely its passengers."
+   },
+   {
+    "id": "turn_the_purpose_inward",
+    "label": "Turn the purpose inward",
+    "description": "Refuse to be a mere link. If the living owe nothing to a launch they never saw or a landfall they never will, then let the ship serve the people aboard it now — and let the founders' fixed destination become negotiable.",
+    "population_delta": {
+     "adaptation": 0.04,
+     "morale": 0.03,
+     "legacy_loyalty": -0.05,
+     "stability": -0.03
+    },
+    "long_term_consequences": [
+     "purpose_turned_inward"
+    ],
+    "log": "A current set in through the middle decks — the sense that a crew owes its loyalty to the living and not to a chart drawn by the dead. The founders' destination, for the first time, was spoken of as a choice rather than a fate."
+   }
+  ]
  }
 ]

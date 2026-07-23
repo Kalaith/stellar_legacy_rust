@@ -98,6 +98,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
+            && !fire_midvoyage_beat(sim, data, &mut report)
             && !fire_homecoming_beat(sim, data, &mut report)
             && !fire_power_transition_beat(sim, data, &mut report)
             && !fire_anniversary_beat(sim, data, &mut report)
@@ -510,6 +511,33 @@ fn fire_homecoming_beat(sim: &mut SimState, data: &GameData, report: &mut TickRe
         contract.homecoming_beat_fired = true;
     }
     force_family_beat(sim, data, &cfg.homecoming_beat_family, report);
+    true
+}
+
+/// Fire a mid-voyage beat (content-depth campaign-skeleton round 21): the era
+/// counterpart to the homecoming beat. The tick the voyage passes its temporal
+/// midpoint *with home still ahead* (before the Return leg), a single beat is forced
+/// from the mid-voyage family — the deep middle, when the founders are generations
+/// dead and landfall generations away, and the crew live and die wholly in transit.
+/// Fires at most once per voyage; a return-dominant charter whose midpoint already
+/// falls in its Return leg leaves this to the homecoming beat instead.
+fn fire_midvoyage_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.midvoyage_beat_family.is_empty() {
+        return false;
+    }
+    let past_midpoint = sim.contract.as_ref().is_some_and(|c| {
+        !c.midvoyage_beat_fired
+            && c.phase != crate::data::contracts::ContractPhase::Return
+            && c.months_elapsed * 2 >= c.total_months()
+    });
+    if !past_midpoint {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.midvoyage_beat_fired = true;
+    }
+    force_family_beat(sim, data, &cfg.midvoyage_beat_family, report);
     true
 }
 

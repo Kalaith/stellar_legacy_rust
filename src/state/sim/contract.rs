@@ -131,6 +131,12 @@ pub struct ActiveContract {
     /// 10): forced once the charter enters its Return leg.
     #[serde(default)]
     pub homecoming_beat_fired: bool,
+    /// Whether this voyage's single mid-voyage beat has fired (content-depth
+    /// campaign-skeleton round 21): forced once, at the temporal midpoint of the
+    /// voyage while home is still ahead (before the Return leg) — the deep-middle era
+    /// reckoning, the founding-era pool bias and the homecoming beat's counterpart.
+    #[serde(default)]
+    pub midvoyage_beat_fired: bool,
     /// This charter's scripted timed beats (content-depth charters round 9),
     /// copied from the template at launch; `at_year` is years since this voyage's
     /// launch. Ascending, fired in order.
