@@ -440,6 +440,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // into famed-for-marvels or incurious, the decks remark that too, the companion to the mercy
     // voice on the trait this session made load-bearing.
     sim.announce_wonder_name(data);
+    // …and its *third* name (content-depth voice round 29): completing the mercy/wonder/resolve
+    // voice set — when the `resolve` trait crosses into steadfast or yielding, the decks remark
+    // the ship's growing name for seeing the hard thing through, or for folding.
+    sim.announce_resolve_name(data);
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,

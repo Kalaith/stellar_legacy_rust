@@ -483,6 +483,13 @@ pub struct SimState {
     /// name); a return to the middle re-arms.
     #[serde(default)]
     pub wonder_voice_band: i8,
+    /// The band the ship's *resolve* reputation voice last announced (content-depth voice round
+    /// 29): the third built-trait voice, completing the mercy/wonder/resolve set. Tracks whether
+    /// resolve last crossed into a steadfast band (a hull known to see the grim thing through) or
+    /// a yielding one (a name for folding, for the writ quit half-done), so the decks remark it
+    /// once. 0 at launch (a neutral name); a return to the middle re-arms.
+    #[serde(default)]
+    pub resolve_voice_band: i8,
     /// The last-announced band of the ship's *institutional* order (content-depth
     /// voice round 17): the governance twin of `morale_band`. Tracks whether stability
     /// last crossed into a firm or a fraying band so a government quietly working, or
@@ -714,6 +721,7 @@ impl SimState {
             reputation_beat_band: 0,
             reputation_voice_band: 0,
             wonder_voice_band: 0,
+            resolve_voice_band: 0,
             stability_voice_band: 0,
             loyalty_voice_band: 0,
             adaptation_voice_band: 0,

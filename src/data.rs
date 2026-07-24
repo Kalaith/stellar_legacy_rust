@@ -703,6 +703,23 @@ pub struct FlavorConfig {
     pub wonder_voice_high: f32,
     #[serde(default)]
     pub wonder_voice_low: f32,
+    /// The ship crossing into a *steadfast* reputation (content-depth voice round 29): the third
+    /// built-trait voice, on `resolve` — the ship's name becoming a byword for seeing the hard
+    /// thing through, a hull that does not flinch and does not fold. No name; indexed by year;
+    /// empty = silence.
+    #[serde(default)]
+    pub resolve_steadfast: Vec<String>,
+    /// The ship crossing into a *yielding* reputation (content-depth voice round 29): the mirror —
+    /// a name for folding, for the writ quit half-done, a hull known to buckle when the work turns
+    /// grim. No name; indexed by year.
+    #[serde(default)]
+    pub resolve_yielding: Vec<String>,
+    /// Resolve reputation at/above which the ship remarks a steadfast name (`_high`) or at/below
+    /// which it remarks a yielding one (`_low`) (content-depth voice round 29).
+    #[serde(default)]
+    pub resolve_voice_high: f32,
+    #[serde(default)]
+    pub resolve_voice_low: f32,
     /// The ship's *institutions* crossing into disorder (content-depth voice round 17):
     /// the governance twin of the morale (`ship_mood_darkening`) and polity
     /// (`polity_souring`) voices — distinct from the crew's spirits and from how
@@ -3233,6 +3250,20 @@ mod tests {
                 "wonder voice thresholds must order: 0 < low ({}) < high ({})",
                 fl.wonder_voice_low,
                 fl.wonder_voice_high
+            );
+        }
+        // Content-depth voice round 29: the resolve reputation voice, the same shape — the third
+        // built-trait voice, both pools stocked and the thresholds ordered when enabled.
+        if fl.resolve_voice_high > 0.0 {
+            assert!(
+                !fl.resolve_steadfast.is_empty() && !fl.resolve_yielding.is_empty(),
+                "resolve voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.resolve_voice_low > 0.0 && fl.resolve_voice_low < fl.resolve_voice_high,
+                "resolve voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.resolve_voice_low,
+                fl.resolve_voice_high
             );
         }
         // Content-depth voice round 6: the recurring-crisis pools need variety

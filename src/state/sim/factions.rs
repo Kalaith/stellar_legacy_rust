@@ -917,6 +917,45 @@ impl SimState {
         self.wonder_voice_band = band;
     }
 
+    /// Give the ship's *third* name a voice (content-depth voice round 29): the last of the
+    /// built reputation traits without one, completing the mercy (it16) / wonder (it28) / resolve
+    /// voice set. `resolve` is what a ship earns by doing the hard thing and not flinching — the
+    /// it29 enforcement charter pays for it, the it31 "wear the name" payoff builds it, and the
+    /// it18 abandonment mark *costs* it — so a ship acquires a name for steadfastness or, at the
+    /// low end, for *folding*. When resolve crosses into a steadfast band (a hull known to see
+    /// the grim thing through) or a yielding one (a name for buckling, for the writ quit
+    /// half-done), the decks remark it once. Same shape as the mercy voice, on a third trait.
+    /// Deterministic (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_resolve_name(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.resolve_voice_high <= 0.0 {
+            return;
+        }
+        let value = self.reputation("resolve");
+        let band = if value >= fl.resolve_voice_high {
+            1
+        } else if value <= fl.resolve_voice_low {
+            -1
+        } else {
+            0
+        };
+        if band == self.resolve_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.resolve_steadfast,
+            -1 => &fl.resolve_yielding,
+            _ => {
+                self.resolve_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.resolve_voice_band = band;
+    }
+
     /// Give the ship's *institutions* a voice (content-depth voice round 17): the
     /// governance twin of the morale (`announce_ship_mood`) and polity
     /// (`announce_polity_mood`) voices. Distinct from the crew's spirits and from how
@@ -2158,6 +2197,61 @@ mod tests {
         sim.announce_wonder_name(&data);
         assert_eq!(wonder_lines(&sim), 2, "an incurious name says so afresh");
         assert_eq!(sim.wonder_voice_band, -1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_it_becomes_known_for_resolve_or_folding() {
+        // Content-depth voice round 29: the resolve reputation voice, completing the
+        // mercy/wonder/resolve set. A ship of neutral repute is silent; a name for steadfastness
+        // surfaces one line; a return to the middle re-arms; a name for folding gets its own line.
+        let (data, mut sim, _picks) = armed(31);
+        let fl = &data.config.flavor;
+        let high = fl.resolve_voice_high;
+        let low = fl.resolve_voice_low;
+        assert!(
+            high > 0.0 && fl.resolve_steadfast.len() >= 3,
+            "this test needs the resolve voice enabled"
+        );
+        let resolve_lines = |sim: &SimState| {
+            let steadfast = &data.config.flavor.resolve_steadfast;
+            let yielding = &data.config.flavor.resolve_yielding;
+            sim.log
+                .iter()
+                .filter(|l| steadfast.contains(&l.text) || yielding.contains(&l.text))
+                .count()
+        };
+
+        // A ship of neutral repute says nothing.
+        sim.announce_resolve_name(&data);
+        assert_eq!(
+            resolve_lines(&sim),
+            0,
+            "an unremarkable ship remarks nothing"
+        );
+
+        // A name for steadfastness: one line.
+        sim.reputation.insert("resolve".to_string(), high + 0.05);
+        sim.announce_resolve_name(&data);
+        assert_eq!(
+            resolve_lines(&sim),
+            1,
+            "a growing name for resolve says so once"
+        );
+        assert_eq!(sim.resolve_voice_band, 1);
+
+        // Still steadfast — no reprint.
+        sim.announce_resolve_name(&data);
+        assert_eq!(
+            resolve_lines(&sim),
+            1,
+            "staying steadfast is not re-announced"
+        );
+
+        // A name for folding: a second, distinct line.
+        sim.reputation.insert("resolve".to_string(), low - 0.05);
+        sim.announce_resolve_name(&data);
+        assert_eq!(resolve_lines(&sim), 2, "a name for folding says so afresh");
+        assert_eq!(sim.resolve_voice_band, -1);
     }
 
     #[test]

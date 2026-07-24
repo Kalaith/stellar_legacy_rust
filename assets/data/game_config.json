@@ -514,6 +514,17 @@
     ],
     "wonder_voice_high": 0.66,
     "wonder_voice_low": 0.34,
+    "resolve_steadfast": [
+      "It has settled into the ship's name, the way these things do: that this is a hull that finishes what it starts. Word travels of the hard charters seen through, the grim work not flinched from, the promises kept when keeping them cost — and passing ships deal with the ship now the way you deal with a thing you can rely on, which is a rarer courtesy in the dark than warmth.",
+      "The ship has grown a reputation for steadfastness. Where another hull would cut a losing charter loose, this one is known to grind on to the bitter end, to spend itself rather than break its word — and the name for it precedes the ship into every waystation, a byword for a vessel that does not fold, does not flinch, and does not, whatever the cost, simply give up.",
+      "It is said now, among the hulls that share this dark, that if a thing wants doing and the doing is grim, this is the ship that will not turn back from it. The crew have made a hard virtue of endurance — the chronicle full of writs seen through when the sensible thing was to run — and they wear the name of the unflinching with the flinty pride of a people who have decided that a promise kept is worth what it costs to keep."
+    ],
+    "resolve_yielding": [
+      "It has crept into the ship's name, and no one aboard is proud of it: that this is a hull that folds. Word travels of the charters given up half-done, the hard turns not taken, the promises let go when keeping them got costly — and passing ships deal with the ship now the way you deal with a thing that cannot be counted on when it matters, which in the dark is a quiet kind of contempt.",
+      "The ship has grown a reputation for yielding. Where a steadfast hull would grind on, this one is known to cut its losses and run — to break a writ rather than bleed for it — and the name has gone ahead of the ship into the waystations, a byword for a vessel that buckles when the work turns grim, a hand not to be shaken on anything that might later cost."
+    ],
+    "resolve_voice_high": 0.66,
+    "resolve_voice_low": 0.34,
     "stability_fraying": [
       "The machinery of the ship's government has begun, quietly, to slip its gears. A council meets and cannot make quorum; an office falls vacant and no one is quite appointed to fill it; a decision that ought to take a week takes a season, or takes no one at all. Nothing has collapsed — it is only that the government is a little less a government than it was.",
       "It is a small thing at first and then it is everywhere: the charter cited and then worked around, the standing orders honored in the letter and quietly ignored in the fact, the offices of the ship going through motions whose reason no one now insists upon. The institutions are fraying — not with a crisis but with a shrug.",
