@@ -136,6 +136,7 @@
     "security_stability_recovery_per_condition": 0.006,
     "security_stability_recovery_ceiling": 0.7,
     "security_crisis_mitigation": 0.15,
+    "ideology_spread_security_relief": 0.5,
     "crisis_weight_floor": 0.1,
     "habitat_morale_swing": 0.01,
     "education_morale_swing": 0.008,

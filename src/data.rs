@@ -2130,6 +2130,14 @@ mod tests {
             "education_training_penalty {} must be in [0, 1) so a wrecked academy still teaches",
             subs_cfg.education_training_penalty
         );
+        // Content-depth subsystems round 28: the security→ideology-spread relief must sit
+        // strictly below 1, so even a perfect corps only softens the strain of a divided polity
+        // and never wholly cancels the governance drain a genuine split inflicts.
+        assert!(
+            (0.0..1.0).contains(&subs_cfg.ideology_spread_security_relief),
+            "ideology_spread_security_relief {} must be in [0, 1) so a corps never fully cancels the drain",
+            subs_cfg.ideology_spread_security_relief
+        );
         // Content-depth subsystems round 25: the medical adaptation resistance is a
         // fraction below 1 (even a perfect infirmary only *slows* the shipborn drift, it
         // never wholly stops the bodies adapting to the ship).

@@ -220,16 +220,21 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // ideologically *split* they are — a coalition spanning the tech↔tradition spectrum
     // strains the institutions, eroding `stability` each year its spread runs past the
     // threshold. Distinct from cohesion: a polity can be content yet fractious. A
-    // single-minded ship (spread below the line) governs freely; a well-kept security
-    // corps (it108) can offset the drain. Neutral only within the tolerated spread.
+    // single-minded ship (spread below the line) governs freely. A well-kept security corps
+    // now *directly* softens the strain (content-depth subsystems round 28): the peacekeeping
+    // corps mediating the divided polity, so the drain the it18 spread inflicts is scaled by
+    // `security_spread_relief_factor` — a promise the it18 comment made and this finally wires,
+    // distinct from the corps' it16 general stability *recovery* (which lifts a fallen stability
+    // back) by reducing the drain at its source. Neutral only within the tolerated spread.
     let spread_penalty = data.config.factions.ideology_spread_stability_penalty;
     if spread_penalty > 0.0 {
         let excess = (sim.aboard_ideology_spread(data)
             - data.config.factions.ideology_spread_threshold)
             .max(0.0);
         if excess > 0.0 {
+            let corps_relief = subsystems::security_spread_relief_factor(sim, data);
             sim.population.stability =
-                (sim.population.stability - spread_penalty * excess).max(0.0);
+                (sim.population.stability - spread_penalty * excess * corps_relief).max(0.0);
         }
     }
 

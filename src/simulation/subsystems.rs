@@ -528,6 +528,26 @@ pub fn security_stability_recovery(sim: &SimState, data: &GameData) -> f32 {
     condition * cfg.security_stability_recovery_per_condition
 }
 
+/// Fraction of the ideology-spread governance drain a given security corps lets through
+/// (content-depth subsystems round 28): the peacekeeping corps' *third* role beside its two
+/// recoveries, and the one the it18 factions comment had long promised but never wired — a
+/// corps whose whole craft is mediating a fractious ship *directly* dampens how much the it18
+/// ideological division actually erodes `stability`. Distinct from `security_stability_recovery`
+/// (which lifts a *fallen* stability back toward a ceiling): this reduces the *drain itself* at
+/// its source, so a divided ship with a strong corps governs better not by recovering after the
+/// strain but by feeling less of it. Returns `1 - condition·ideology_spread_security_relief`
+/// (the multiplier applied to the drain), floored at 0 — a corps can soften the strain of a
+/// split polity but, with the relief kept below 1, never wholly cancel it. 1.0 (inert) when the
+/// relief is 0 or the corps is gone.
+pub fn security_spread_relief_factor(sim: &SimState, data: &GameData) -> f32 {
+    let relief = data.config.subsystems.ideology_spread_security_relief;
+    if relief == 0.0 {
+        return 1.0;
+    }
+    let condition = sim.subsystems.get("security").map_or(0.0, |s| s.condition);
+    (1.0 - condition * relief).max(0.0)
+}
+
 /// Fraction of a training cohort's knowledge gain a given academy actually imparts
 /// (content-depth subsystems round 27): the education/culture module *is* the ship's schools,
 /// so its condition scales how much a deliberate `train_subsystem_knowledge` cohort learns —
@@ -799,6 +819,44 @@ mod tests {
         assert!(
             wrecked_gain > 0.0 && wrecked_gain < sound_gain,
             "a wrecked academy trains a fainter cohort ({wrecked_gain} vs {sound_gain})"
+        );
+    }
+
+    #[test]
+    fn a_strong_corps_softens_the_strain_of_a_divided_polity() {
+        // Content-depth subsystems round 28: the peacekeeping corps directly dampens the
+        // ideology-spread governance drain. A full corps lets less of the drain through than a
+        // wrecked one, but never wholly cancels it (the relief is below 1).
+        let (data, mut sim) = campaign(28);
+        let relief = data.config.subsystems.ideology_spread_security_relief;
+        assert!(
+            relief > 0.0,
+            "this test needs the security→spread-relief coupling enabled"
+        );
+
+        sim.subsystems.get_mut("security").unwrap().condition = 1.0;
+        let full = security_spread_relief_factor(&sim, &data);
+        assert!(
+            full < 1.0 && full > 0.0,
+            "a full corps lets less of the drain through, but not none ({full})"
+        );
+        assert!(
+            (full - (1.0 - relief)).abs() < 1e-6,
+            "a full corps lets exactly (1 - relief) of the drain through"
+        );
+
+        sim.subsystems.get_mut("security").unwrap().condition = 0.5;
+        let half = security_spread_relief_factor(&sim, &data);
+        assert!(
+            half > full && half < 1.0,
+            "a half-kept corps softens the strain less ({half})"
+        );
+
+        sim.subsystems.get_mut("security").unwrap().condition = 0.0;
+        assert_eq!(
+            security_spread_relief_factor(&sim, &data),
+            1.0,
+            "no corps softens nothing — the full drain lands"
         );
     }
 

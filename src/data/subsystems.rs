@@ -151,6 +151,17 @@ pub struct SubsystemsConfig {
     /// not touch how often crises arise.
     #[serde(default)]
     pub security_crisis_mitigation: f32,
+    /// Fraction of the it18 ideology-spread governance drain a full-condition security corps
+    /// dampens (content-depth subsystems round 28): the peacekeeping corps' third role, and the
+    /// coupling the factions-round-18 comment promised. A divided polity strains the ship's
+    /// institutions; a corps whose craft is mediating that division reduces the strain at its
+    /// source, so the yearly spread drain is scaled by `1 - condition·this`. Distinct from the
+    /// corps' round-16 general stability *recovery* (which lifts a fallen stability back toward a
+    /// ceiling) — this reduces the *drain itself*. Must sit below 1 so even a perfect corps only
+    /// softens the strain of a genuinely split ship, never wholly cancels it. 0 = the corps does
+    /// not touch how much division erodes governance.
+    #[serde(default)]
+    pub ideology_spread_security_relief: f32,
     /// The floor the immediate-crisis weight can never be dampened below (content-depth
     /// subsystems round 21): a well-defended ship faces fewer crises, but the dark is
     /// never fully safe, so the crisis category always keeps at least this much weight.
