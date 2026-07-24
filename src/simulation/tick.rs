@@ -97,6 +97,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_air_beat(sim, data, &mut report)
             && !fire_becalmed_beat(sim, data, &mut report)
             && !fire_divergence_beat(sim, data, &mut report)
+            && !fire_cultural_divergence_beat(sim, data, &mut report)
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
@@ -492,6 +493,43 @@ fn fire_divergence_beat(sim: &mut SimState, data: &GameData, report: &mut TickRe
         return false;
     }
     let family = cfg.divergence_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire a cultural-divergence beat (content-depth campaign-skeleton round 27): the *cultural*
+/// twin of the it26 adaptation-divergence beat (their *bodies*), and the terminal counterpart
+/// to the gentle ascending `drift_beats` milestones. The month the crew's `cultural_drift`
+/// first rises to or above the red line — drifted so far that the founders' charter is no
+/// longer a living instruction but a dead language, the mission carried by rote by people who
+/// no longer understand its why — a beat is forced; a fall back below (a strong archive
+/// reviving the old ways) re-arms it. Fires only during a voyage; at most one per crossing.
+fn fire_cultural_divergence_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    report: &mut TickReport,
+) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.cultural_divergence_beat_family.is_empty()
+        || cfg.cultural_divergence_beat_threshold <= 0.0
+        || sim.contract.is_none()
+    {
+        return false;
+    }
+    let band = if sim.population.cultural_drift >= cfg.cultural_divergence_beat_threshold {
+        1
+    } else {
+        0
+    };
+    if band == sim.cultural_divergence_band {
+        return false;
+    }
+    sim.cultural_divergence_band = band;
+    if band == 0 {
+        // The culture drifted back below the red line — re-arm, but do not fire.
+        return false;
+    }
+    let family = cfg.cultural_divergence_beat_family.clone();
     force_family_beat(sim, data, &family, report);
     true
 }

@@ -257,6 +257,8 @@
     "becalmed_beat_years": 5,
     "divergence_beat_threshold": 0.82,
     "divergence_beat_family": "legacy_drift",
+    "cultural_divergence_beat_threshold": 0.88,
+    "cultural_divergence_beat_family": "legacy_drift",
     "power_transition_beat_family": "legacy_drift",
     "succession_beat_family": "legacy_drift",
     "long_reign_years": 35,

@@ -1136,6 +1136,22 @@ pub struct CampaignSkeletonConfig {
     /// The family the adaptation-divergence beat draws from.
     #[serde(default)]
     pub divergence_beat_family: String,
+    /// Cultural-divergence beat (content-depth campaign-skeleton round 27): the *cultural* twin
+    /// of `divergence_beat_threshold` (their bodies), and the terminal counterpart to the
+    /// ascending `drift_beats` milestones. Where the adaptation beat fires when the crew's
+    /// bodies can no longer survive a planet, this fires once their *culture* has drifted so far
+    /// the founders' charter is a dead language — the mission carried by rote by people who no
+    /// longer understand its why. The month `cultural_drift` first rises to or above this
+    /// fraction a beat is forced from `cultural_divergence_beat_family`; a fall back below re-arms
+    /// it (a strong archive reviving the old ways can un-fire the reckoning). Set above the top
+    /// `drift_beats` milestone so it is the *terminal* mark, not another rung. 0 disables it.
+    /// Pairs with the it26 cultural-drift voice: the voice murmurs the drift, the beat forces
+    /// its point of no return.
+    #[serde(default)]
+    pub cultural_divergence_beat_threshold: f32,
+    /// The family the cultural-divergence beat draws from.
+    #[serde(default)]
+    pub cultural_divergence_beat_family: String,
     /// Power-transition beat family (content-depth round 11): a beat keyed not to
     /// a stat or a time but to a *political* change — the first tick the dominant
     /// faction differs from the one the skeleton last marked (demographic drift
@@ -2667,6 +2683,33 @@ mod tests {
                     .iter()
                     .any(|(_, e)| e.adaptation_above.is_some()),
                 "the adaptation-divergence beat needs an adaptation_above-gated event to surface"
+            );
+        }
+        // Content-depth campaign-skeleton round 27: the cultural-divergence beat, the cultural
+        // twin, needs a family with events, a red line in (0,1) set above the top drift_beats
+        // milestone (so it is terminal, not another rung), and a high-`min_cultural_drift` event
+        // to surface the reckoning on theme.
+        if !sk.cultural_divergence_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.cultural_divergence_beat_family),
+                "campaign_skeleton cultural_divergence_beat_family '{}' has no events",
+                sk.cultural_divergence_beat_family
+            );
+            assert!(
+                sk.cultural_divergence_beat_threshold > 0.0
+                    && sk.cultural_divergence_beat_threshold < 1.0,
+                "cultural_divergence_beat_threshold {} must be a red line inside (0, 1)",
+                sk.cultural_divergence_beat_threshold
+            );
+            assert!(
+                sk.drift_beats
+                    .iter()
+                    .all(|t| *t <= sk.cultural_divergence_beat_threshold),
+                "the cultural-divergence red line must sit at or above every drift_beats milestone"
+            );
+            assert!(
+                data.events.iter().any(|(_, e)| e.min_cultural_drift >= 0.8),
+                "the cultural-divergence beat needs a high-min_cultural_drift event to surface"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

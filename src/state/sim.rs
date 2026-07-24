@@ -398,6 +398,14 @@ pub struct SimState {
     /// baseline) re-arms it. 0 at launch — a founding crew is planet-born.
     #[serde(default)]
     pub adaptation_divergence_band: i8,
+    /// The band the cultural-divergence beat last marked (content-depth campaign-skeleton
+    /// round 27): 1 once the crew's culture has drifted so far the founders' charter is a dead
+    /// language, 0 while the founding purpose is still intelligible. The cultural twin of the
+    /// it26 adaptation-divergence band (their bodies); a fall back below the red line (a strong
+    /// archive reviving the old ways) re-arms it. 0 at launch — a founding crew keeps the
+    /// founders' meanings.
+    #[serde(default)]
+    pub cultural_divergence_band: i8,
     /// Fuel actually scooped by the drive since the last provisioning report
     /// (real-time loop follow-up: legible stat changes), 0-1 fraction. Accrued
     /// each year by the engine regen (only the part that wasn't capped away), so a
@@ -665,6 +673,7 @@ impl SimState {
             fuel_stall_years: 0,
             becalmed_beat_band: 0,
             adaptation_divergence_band: 0,
+            cultural_divergence_band: 0,
             fuel_scooped_accum: 0.0,
             tutorial_dismissed: false,
             market,

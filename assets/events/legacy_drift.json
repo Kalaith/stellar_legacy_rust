@@ -2745,5 +2745,90 @@
    }
   ],
   "family": "legacy_drift"
+ },
+ {
+  "id": "the_untranslatable_charter",
+  "category": "legacy_moment",
+  "title": "The Untranslatable Charter",
+  "description": "The archivist brings the council a thing no one wanted to be true: the founding charter can no longer be read. Not lost — it is here, whole, in the case it has always been in — but the tongue it is written in has drifted so far from the one the ship now speaks that the young cannot parse it, and the last elder who read it fluently was buried a decade back. The document that names the ship's whole purpose has become, in the mouths of the people it binds, a beautiful noise. It must be translated, or it must become a relic.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_cultural_drift": 0.85,
+  "outcomes": [
+   {
+    "id": "translate_the_charter",
+    "label": "Translate it into the living tongue",
+    "description": "Commission the archivists to render the charter into the tongue the ship now speaks — knowing a translation is an interpretation, that the founders' exact words will be lost and their meaning carried across only as well as living hands can carry it. Better a charter the crew can read than a sacred noise.",
+    "resource_delta": {
+     "influence": -30
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "cultural_drift": -0.02,
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.03
+     }
+    ],
+    "log": "The archivists gave a year to the charter and brought back a version the ship could read — the founders' purpose in the crew's own tongue, exact words traded for living meaning. Something was lost in the crossing that no one could name; but the charter spoke again, and a people who had been carrying a sealed instruction could, for the first time in a generation, hear what it said."
+   },
+   {
+    "id": "enshrine_the_original",
+    "label": "Keep it sacred and unread",
+    "description": "Do not touch it. A translation is a lesser thing; let the charter stand in its own words, revered precisely because it can no longer be read — a holy object, its meaning now a matter of faith and custom rather than instruction. The mission continues by rote; the words remain, untouched, above the ship's understanding.",
+    "population_delta": {
+     "unity": 0.04,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The council let the charter be, and it passed fully from instruction into relic — revered, unread, its exact words a mystery kept behind glass while the ship carried out a purpose it no longer sourced from the text but from habit and inheritance. The founders' voice went silent in the only language that could have carried it, and the crew went on, doing the thing without quite holding the reason."
+   }
+  ]
+ },
+ {
+  "id": "the_rote_mission",
+  "category": "legacy_moment",
+  "title": "The Reason Forgotten",
+  "description": "A young systems officer, bright and unafraid, asks the question aloud in a full council: why are we going where we are going? Not a challenge — a genuine question, and the terrible thing is that no one can quite answer it. The heading is held, the rites are kept, the charter is honored; but the living, articulable reason — the one the founders carried like a fire — has thinned to a set of motions no one remembers the source of. The ship does the thing. It has forgotten why it does the thing.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_cultural_drift": 0.85,
+  "outcomes": [
+   {
+    "id": "reconstruct_the_reason",
+    "label": "Dig the reason back out of the archive",
+    "description": "Set the scholars to the deep archive to reconstruct the founding purpose in full — not the motions but the meaning, the argument the founders made for spending a hundred lifetimes on this crossing — and give it back to the crew as a reason they can hold and not merely obey.",
+    "resource_delta": {
+     "influence": -25,
+     "energy": -30
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.06,
+     "morale": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.04
+     }
+    ],
+    "log": "The scholars went down into the archive and came back up with the founders' reason whole — the fierce, particular argument for the whole mad crossing — and taught it to a ship that had been keeping the founders' motions without their fire. The heading did not change; but the people holding it understood, for the first time in living memory, what they were holding, and stood a little straighter for it."
+   },
+   {
+    "id": "let_the_doing_be_enough",
+    "label": "Let the doing be enough",
+    "description": "Answer the young officer honestly: we do not remember why, and perhaps we do not need to. The mission is what the ship is now — its shape, its discipline, its shared work — and a purpose kept as custom is still a purpose. Let the reason go, and keep the doing.",
+    "population_delta": {
+     "unity": 0.05,
+     "adaptation": 0.03,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.05
+    },
+    "log": "The council told the young officer the truth — that the why was gone, and that the ship would carry on without it — and something settled in the decks that was almost peace: a people who had stopped straining to remember a fire two centuries cold and simply took up the work as their own, the mission become pure custom, meaning enough in the doing. The founders would not have understood it. Their heirs no longer needed them to."
+   }
+  ]
  }
 ]

@@ -737,6 +737,11 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.becalmed_beat_family.clear();
     // …and the round-26 divergence beat, which a long voyage's rising adaptation trips.
     data.config.campaign_skeleton.divergence_beat_family.clear();
+    // …and the round-27 cultural-divergence beat, which a long voyage's rising drift trips.
+    data.config
+        .campaign_skeleton
+        .cultural_divergence_beat_family
+        .clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -1270,6 +1275,52 @@ fn a_divergence_beat_fires_when_the_crew_grows_shipborn_and_rearms_when_held_bac
     sim.population.adaptation = line - 0.05;
     assert!(!fire_divergence_beat(&mut sim, &data, &mut report));
     assert_eq!(sim.adaptation_divergence_band, 0);
+}
+
+#[test]
+fn a_cultural_divergence_beat_fires_when_the_charter_goes_unreadable_and_rearms() {
+    // Content-depth campaign-skeleton round 27: the cultural twin of the divergence beat.
+    // Once the crew's cultural_drift rises to its red line — the founders' charter a dead
+    // language, the mission carried by rote — the reckoning is forced once; a fall back below
+    // (a strong archive reviving the old ways) re-arms it. Sits above the top drift_beats
+    // milestone so it is the terminal mark, not another rung.
+    let data = GameData::load().unwrap();
+    let line = data
+        .config
+        .campaign_skeleton
+        .cultural_divergence_beat_threshold;
+    assert!(
+        line > 0.0,
+        "this test needs the cultural-divergence beat enabled"
+    );
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        13,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+
+    // The founding purpose still intelligible (short of the line): no reckoning.
+    sim.population.cultural_drift = line - 0.05;
+    assert!(!fire_cultural_divergence_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.cultural_divergence_band, 0);
+
+    // Drifted past reading the charter: the beat fires, once.
+    sim.population.cultural_drift = line + 0.02;
+    assert!(fire_cultural_divergence_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.cultural_divergence_band, 1);
+    assert!(
+        !fire_cultural_divergence_beat(&mut sim, &data, &mut report),
+        "fires once per crossing"
+    );
+
+    // A strong archive revives the old ways back below the line — re-arms it (no fire).
+    sim.population.cultural_drift = line - 0.05;
+    assert!(!fire_cultural_divergence_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.cultural_divergence_band, 0);
 }
 
 #[test]
@@ -1849,6 +1900,11 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.becalmed_beat_family.clear();
     // …and the round-26 divergence beat, which a long voyage's rising adaptation trips.
     data.config.campaign_skeleton.divergence_beat_family.clear();
+    // …and the round-27 cultural-divergence beat, which a long voyage's rising drift trips.
+    data.config
+        .campaign_skeleton
+        .cultural_divergence_beat_family
+        .clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -1955,6 +2011,11 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.becalmed_beat_family.clear();
     // …and the round-26 divergence beat, which a long voyage's rising adaptation trips.
     data.config.campaign_skeleton.divergence_beat_family.clear();
+    // …and the round-27 cultural-divergence beat, which a long voyage's rising drift trips.
+    data.config
+        .campaign_skeleton
+        .cultural_divergence_beat_family
+        .clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
