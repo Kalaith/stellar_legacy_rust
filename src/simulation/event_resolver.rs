@@ -942,6 +942,62 @@ mod tests {
     }
 
     #[test]
+    fn a_mortgaged_bond_comes_due_on_the_named_clock() {
+        // Content-depth event families round 25: a *timed* chain (distinct from the
+        // state-based requires_consequence ones). Taking the waystation's bond schedules
+        // the collectors' return to the year; declining schedules nothing, and the payoff
+        // is scheduled_only so it never rolls on its own.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 44, &picks);
+
+        let seed = data.events.get("the_mortgaged_passage").unwrap();
+        let payoff = data.events.get("the_collectors_return").unwrap();
+        assert!(
+            payoff.scheduled_only,
+            "the collectors' return must never roll on its own"
+        );
+        let take = seed
+            .outcomes
+            .iter()
+            .position(|o| o.id == "take_the_bond")
+            .unwrap();
+        let delay = seed.outcomes[take]
+            .schedule_followup
+            .as_ref()
+            .expect("taking the bond schedules the collectors")
+            .delay_years;
+
+        // Taking the bond queues the debt for the year it named.
+        let year0 = sim.year();
+        apply_outcome(&mut sim, &data, seed, take);
+        assert_eq!(
+            sim.scheduled_events.len(),
+            1,
+            "the bond queues its reckoning"
+        );
+        assert_eq!(sim.scheduled_events[0].template_id, "the_collectors_return");
+        assert_eq!(
+            sim.scheduled_events[0].fire_year,
+            year0 + delay,
+            "the debt comes due on the clock the waystation named"
+        );
+
+        // Declining the bond on a fresh ship schedules nothing.
+        let mut clean = SimState::new_campaign(&data, "preservers", 45, &picks);
+        let decline = seed
+            .outcomes
+            .iter()
+            .position(|o| o.id == "decline_the_bond")
+            .unwrap();
+        apply_outcome(&mut clean, &data, seed, decline);
+        assert!(
+            clean.scheduled_events.is_empty(),
+            "declining the bond leaves no debt on the clock"
+        );
+    }
+
+    #[test]
     fn the_ghost_signal_schedules_its_own_appointed_hour() {
         // Content-depth event families round 10: the predestination loop, closed
         // with the round-9 scheduling. Answering the ghost signal — the ship's own

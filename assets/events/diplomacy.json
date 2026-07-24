@@ -1527,5 +1527,101 @@
     "log": "The ship bluffed a strength it still did not have, and this time the watchers did not quite believe it — they took their toll on the hull before breaking off, and the crew understood that a third time would not be bluffed away."
    }
   ]
+ },
+ {
+  "id": "the_mortgaged_passage",
+  "category": "generational_challenge",
+  "family": "diplomacy",
+  "title": "The Mortgaged Passage",
+  "description": "A waystation polity, prosperous and patient, makes the ship an offer with the ease of people who have made it many times: a full and generous resupply now — stores, parts, fuel, no haggling — against the ship's bond to repay it twice over when the polity's collectors come calling, which they will, on a schedule they name to the year. It is a good deal for a ship in need and a trap for a ship that forgets. The collectors always come. The only question is what the ship will have become, and be willing to pay, when they do.",
+  "requires_decision": true,
+  "phases": [
+   "travel",
+   "operation"
+  ],
+  "outcomes": [
+   {
+    "id": "take_the_bond",
+    "label": "Take the bond",
+    "description": "Accept the resupply and sign the debt. The stores are needed now; the reckoning is a lifetime away, and the crew that signs can be fairly sure it will be someone else's to keep.",
+    "resource_delta": {
+     "minerals": 2000,
+     "credits": 1500,
+     "food": 4000
+    },
+    "ship_delta": {
+     "spare_parts": 20
+    },
+    "schedule_followup": {
+     "template_id": "the_collectors_return",
+     "delay_years": 55
+    },
+    "log": "The ship took the waystation's generous hand and signed the bond that came with it — a hold refilled today against a debt the collectors would come for, to the year, in a lifetime the crew signing could be fairly sure of not seeing."
+   },
+   {
+    "id": "decline_the_bond",
+    "label": "Decline the bond",
+    "description": "Owe nothing to no one. Pass on the easy resupply and make do with what the ship can gather and mend by its own hands, and keep the future free of a debt drawn on it.",
+    "population_delta": {
+     "unity": 0.02,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.02
+     }
+    ],
+    "log": "The ship declined the waystation's hand and its hook alike, and went on leaner but unmortgaged — the crew choosing a harder present over a debt they would otherwise have left, unpaid, to grandchildren who never agreed to it."
+   }
+  ]
+ },
+ {
+  "id": "the_collectors_return",
+  "category": "immediate_crisis",
+  "family": "diplomacy",
+  "title": "The Collectors Return",
+  "description": "They came, exactly when the bond said they would. Two generations ago a ship that no longer exists in any living memory — different crew, different leaders, arguably a different people — signed for a resupply against a debt now due, twice the value taken, and the waystation's collectors have matched course to claim it. The crew that must answer had no part in the bargain. The collectors do not especially care.",
+  "requires_decision": true,
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "pay_the_bond",
+    "label": "Pay the bond",
+    "description": "Honour a debt the living never chose but the ship did. Empty the holds of what the bond demands, send the collectors away satisfied, and keep the ship's word good across the generations.",
+    "resource_delta": {
+     "minerals": -3000,
+     "credits": -3000,
+     "food": -2000
+    },
+    "population_delta": {
+     "stability": 0.03,
+     "legacy_loyalty": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship paid a debt older than anyone aboard, emptying its holds to honour a signature two generations cold — and kept, at real cost, a name for a hull whose word outlives its crews."
+   },
+   {
+    "id": "repudiate_the_debt",
+    "label": "Repudiate the debt",
+    "description": "The living owe nothing signed by the dead. Refuse the collectors, keep the holds full, and let the waystation add this ship to the list of hulls it will not deal with — and warn others about.",
+    "population_delta": {
+     "morale": 0.02,
+     "unity": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": -0.04
+     }
+    ],
+    "log": "The ship repudiated a debt its dead had signed and sent the collectors away empty, keeping its holds and losing its word — a hull a long stretch of the dark would now name as one that does not pay what it owes, whoever it was that owed."
+   }
+  ]
  }
 ]
