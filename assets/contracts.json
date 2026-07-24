@@ -996,6 +996,7 @@
   ],
   "objective_target": 40000,
   "objective_unit": "tonnes extracted",
+  "objective_cargo_scaling": 0.0005,
   "milestones": [
    {
     "id": "arrival",
@@ -1831,6 +1832,7 @@
   ],
   "objective_target": 25000,
   "objective_unit": "tonnes brought online",
+  "objective_cargo_scaling": 0.0005,
   "milestones": [
    {
     "id": "arrival",
@@ -2150,6 +2152,7 @@
   ],
   "hazard": 0.12,
   "objective_combat_scaling": 0.04,
+  "objective_cargo_scaling": 0.0005,
   "max_reputation": [
    {
     "id": "mercy",

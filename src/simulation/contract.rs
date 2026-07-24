@@ -231,6 +231,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         scheduled_beats_fired: 0,
         objective_subsystem: template.objective_subsystem.clone(),
         objective_combat_scaling: template.objective_combat_scaling,
+        objective_cargo_scaling: template.objective_cargo_scaling,
         preserve_objective: template.preserve_objective,
         preserve_attrition_per_year: template.preserve_attrition_per_year,
     }
@@ -238,14 +239,16 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
 
 /// Advance the active contract by one month (W2): step the timeline, recompute
 /// the authored phase, accrue objective work while on-station, refresh metrics,
-/// pay any newly reached milestone, and detect completion. `speed` and `combat`
-/// are the ship loadout's aggregate speed and firepower: speed quickens *every*
-/// mission's objective, combat quickens only a *contested* one (charters round 21).
+/// pay any newly reached milestone, and detect completion. `speed`, `combat`, and
+/// `cargo` are the ship loadout's aggregate stats: speed quickens *every* mission's
+/// objective, combat quickens only a *contested* one (charters round 21), and cargo
+/// only a *haul* one (charters round 24).
 pub fn advance_contract(
     sim: &mut SimState,
     config: &crate::data::GameConfig,
     speed: i32,
     combat: i32,
+    cargo: i32,
 ) -> ContractProgress {
     let population_count = sim.population.count;
     let unity = sim.population.unity;
@@ -324,8 +327,16 @@ pub fn advance_contract(
             // mission that sets no combat scaling is indifferent to firepower, so
             // combat_factor is 1.0 and the accrual is unchanged there.
             let combat_factor = 1.0 + combat.max(0) as f32 * contract.objective_combat_scaling;
-            contract.objective_progress +=
-                base_rate * speed_factor * objective_condition * combat_factor * morale_factor;
+            // A haul writ (round 24) is worked faster by a bigger hold; a mission whose
+            // objective is not a quantity of material sets no cargo scaling, so this is
+            // 1.0 there and the accrual is unchanged.
+            let cargo_factor = 1.0 + cargo.max(0) as f32 * contract.objective_cargo_scaling;
+            contract.objective_progress += base_rate
+                * speed_factor
+                * objective_condition
+                * combat_factor
+                * cargo_factor
+                * morale_factor;
         }
 
         let progress = contract.progress();
@@ -473,7 +484,7 @@ mod tests {
             sim.contract.as_mut().unwrap().months_elapsed = ops_start;
             let before = sim.contract.as_ref().unwrap().objective_progress;
             for _ in 0..12 {
-                advance_contract(&mut sim, &data.config, 0, 0);
+                advance_contract(&mut sim, &data.config, 0, 0, 0);
             }
             sim.contract.as_ref().unwrap().objective_progress - before
         };
@@ -907,7 +918,7 @@ mod tests {
         sim.contract = Some(contract);
 
         let before = sim.resources.minerals;
-        advance_contract(&mut sim, &data.config, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0);
         assert_eq!(
             sim.resources.minerals,
             before + 500,
@@ -915,7 +926,7 @@ mod tests {
         );
 
         let after = sim.resources.minerals;
-        advance_contract(&mut sim, &data.config, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0);
         assert_eq!(
             sim.resources.minerals, after,
             "an already-reached milestone does not pay out again"
@@ -947,12 +958,12 @@ mod tests {
         let (data, mut sim) = armed(1, "deep_vein_survey");
 
         // Month 1 crosses the pre-launch Preparation into Travel.
-        let first = advance_contract(&mut sim, &data.config, 0, 0);
+        let first = advance_contract(&mut sim, &data.config, 0, 0, 0);
         assert_eq!(first.phase_changed, Some(ContractPhase::Travel));
 
         // Travel holds until the authored travel years elapse, then Operation.
         let op_start = loop {
-            let p = advance_contract(&mut sim, &data.config, 0, 0);
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
             if let Some(phase) = p.phase_changed {
                 assert_eq!(
                     phase,
@@ -976,7 +987,7 @@ mod tests {
 
         // Nothing accrues in Preparation or Travel.
         loop {
-            let p = advance_contract(&mut sim, &data.config, 0, 0);
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
             if p.phase_changed == Some(ContractPhase::Operation) {
                 break;
             }
@@ -997,6 +1008,39 @@ mod tests {
     }
 
     #[test]
+    fn a_bigger_hold_hauls_a_material_writ_faster_but_not_a_survey() {
+        // Content-depth charters round 24: cargo capacity quickens a *haul* objective (a
+        // mining run measured in tonnes) but is dead weight on a mission whose objective
+        // is not a quantity of material.
+        let first_operation_accrual = |contract_id: &str, cargo: i32| -> f32 {
+            let (data, mut sim) = armed(9, contract_id);
+            loop {
+                let p = advance_contract(&mut sim, &data.config, 0, 0, cargo);
+                if p.phase_changed == Some(ContractPhase::Operation) {
+                    break;
+                }
+            }
+            sim.contract.as_ref().unwrap().objective_progress
+        };
+
+        // the_deep_camp sets objective_cargo_scaling > 0 — a big hold hauls more tonnage.
+        let small_hold = first_operation_accrual("the_deep_camp", 0);
+        let big_hold = first_operation_accrual("the_deep_camp", 400);
+        assert!(
+            big_hold > small_hold + 1e-3,
+            "a haul writ accrues faster with a bigger hold: {big_hold} vs {small_hold}"
+        );
+
+        // deep_vein_survey (proof-of-yield cores) sets no cargo scaling — hold is dead weight.
+        let survey_small = first_operation_accrual("deep_vein_survey", 0);
+        let survey_big = first_operation_accrual("deep_vein_survey", 400);
+        assert!(
+            (survey_big - survey_small).abs() < 1e-4,
+            "a survey is indifferent to hold size: {survey_big} vs {survey_small}"
+        );
+    }
+
+    #[test]
     fn a_high_hearted_crew_works_the_objective_faster() {
         // Content-depth charters round 22: the mission's coupling to the crew's spirits.
         // A devoted crew drives the objective harder than a dispirited one, all else
@@ -1005,7 +1049,7 @@ mod tests {
             let (data, mut sim) = armed(9, "deep_vein_survey");
             sim.population.morale = morale; // advance_contract never moves morale
             loop {
-                let p = advance_contract(&mut sim, &data.config, 0, 0);
+                let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
                 if p.phase_changed == Some(ContractPhase::Operation) {
                     break;
                 }
@@ -1030,7 +1074,7 @@ mod tests {
         let first_operation_accrual = |contract_id: &str, combat: i32| -> f32 {
             let (data, mut sim) = armed(9, contract_id);
             loop {
-                let p = advance_contract(&mut sim, &data.config, 0, combat);
+                let p = advance_contract(&mut sim, &data.config, 0, combat, 0);
                 if p.phase_changed == Some(ContractPhase::Operation) {
                     break;
                 }
@@ -1074,7 +1118,7 @@ mod tests {
 
         // A voyage month erodes it (never accrues): each on-voyage step loses ground.
         let before = sim.contract.as_ref().unwrap().objective_progress;
-        advance_contract(&mut sim, &data.config, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0);
         let after = sim.contract.as_ref().unwrap().objective_progress;
         assert!(
             after < before,
@@ -1114,7 +1158,7 @@ mod tests {
 
         // Make station, then bank a clean quarter of the objective.
         loop {
-            let p = advance_contract(&mut sim, &data.config, 0, 0);
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
             if p.phase_changed == Some(ContractPhase::Operation) {
                 break;
             }
@@ -1132,7 +1176,7 @@ mod tests {
         assert_eq!(sim.contract.as_ref().unwrap().phase, ContractPhase::Return);
         let total = sim.contract.as_ref().unwrap().total_months();
         while sim.contract.as_ref().unwrap().months_elapsed < total {
-            advance_contract(&mut sim, &data.config, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0);
         }
 
         let contract = sim.contract.as_ref().unwrap();
@@ -1168,7 +1212,7 @@ mod tests {
         sim.resources.food = data.config.low_food_threshold + 1_000;
         sim.resources.energy = data.config.low_energy_threshold + 1_000;
         for _ in 0..10 {
-            advance_contract(&mut sim, &data.config, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0);
         }
         assert_eq!(
             efficiency(&sim),
@@ -1180,7 +1224,7 @@ mod tests {
         // so the running fraction settles at (10*2 + 10*1) / (20*2) = 0.75.
         sim.resources.food = 0;
         for _ in 0..10 {
-            advance_contract(&mut sim, &data.config, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0);
         }
         assert!(
             (efficiency(&sim) - 0.75).abs() < 1e-6,
@@ -1190,7 +1234,7 @@ mod tests {
 
         // The lean stretch stays on the record after stores recover.
         sim.resources.food = data.config.low_food_threshold + 1_000;
-        advance_contract(&mut sim, &data.config, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0);
         assert!(
             efficiency(&sim) < 1.0,
             "a famine is not forgotten once the stores refill"
@@ -1204,7 +1248,7 @@ mod tests {
 
         // A few months into Travel — no objective work has happened.
         for _ in 0..50 {
-            advance_contract(&mut sim, &data.config, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0);
         }
         assert_eq!(sim.contract.as_ref().unwrap().phase, ContractPhase::Travel);
 
@@ -1212,7 +1256,7 @@ mod tests {
         assert_eq!(sim.contract.as_ref().unwrap().phase, ContractPhase::Return);
         let total = sim.contract.as_ref().unwrap().total_months();
         while sim.contract.as_ref().unwrap().months_elapsed < total {
-            advance_contract(&mut sim, &data.config, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0);
         }
 
         let contract = sim.contract.as_ref().unwrap();

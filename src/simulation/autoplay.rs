@@ -433,7 +433,7 @@ mod tests {
             sim.contract = Some(start_contract(&template, &sim));
             let total = sim.contract.as_ref().unwrap().total_months();
             while sim.contract.as_ref().unwrap().months_elapsed < total {
-                advance_contract(&mut sim, &data.config, 0, 0);
+                advance_contract(&mut sim, &data.config, 0, 0, 0);
             }
             sim.contract.as_ref().unwrap().objective_fraction()
         };
@@ -448,12 +448,12 @@ mod tests {
             );
             sim.contract = Some(start_contract(&template, &sim));
             while sim.contract.as_ref().unwrap().months_elapsed < 150 * 12 {
-                advance_contract(&mut sim, &data.config, 0, 0);
+                advance_contract(&mut sim, &data.config, 0, 0, 0);
             }
             assert!(jump_to_return(&mut sim), "turning back at year 150");
             let total = sim.contract.as_ref().unwrap().total_months();
             while sim.contract.as_ref().unwrap().months_elapsed < total {
-                advance_contract(&mut sim, &data.config, 0, 0);
+                advance_contract(&mut sim, &data.config, 0, 0, 0);
             }
             sim.contract.as_ref().unwrap().objective_fraction()
         };

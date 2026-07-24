@@ -162,6 +162,11 @@ pub struct ActiveContract {
     /// faster by an armed ship, 0 for a mission indifferent to how the ship is armed.
     #[serde(default)]
     pub objective_combat_scaling: f32,
+    /// How this mission's objective quickens with the ship's *cargo capacity* (content-
+    /// depth charters round 24), copied at launch: a haul writ worked faster by a bigger
+    /// hold, 0 for a mission whose objective is not a quantity of material.
+    #[serde(default)]
+    pub objective_cargo_scaling: f32,
     /// Whether this charter's objective is *preserved* rather than accrued (content-depth
     /// charters round 23), copied at launch: a cargo carried and kept, not built — its
     /// progress starts full and only erodes.

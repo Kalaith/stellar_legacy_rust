@@ -171,7 +171,13 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
     }
 
     let loadout = ship::loadout_stats(sim, data);
-    let progress = contract::advance_contract(sim, &data.config, loadout.speed, loadout.combat);
+    let progress = contract::advance_contract(
+        sim,
+        &data.config,
+        loadout.speed,
+        loadout.combat,
+        loadout.cargo,
+    );
     for milestone in &progress.reached_milestones {
         // Pooled so a voyage's many milestones don't read as a form letter (voice
         // round 19); indexed by log length so consecutive marks vary.

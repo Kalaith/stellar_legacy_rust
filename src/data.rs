@@ -2040,6 +2040,14 @@ mod tests {
                 "charter '{id}' objective_combat_scaling {} out of range [0, 0.2]",
                 c.objective_combat_scaling
             );
+            // Content-depth charters round 24: cargo scaling is a small per-unit rate
+            // (cargo counts in the hundreds, not the single digits combat does), so its
+            // ceiling is far lower — a big hold helps a haul, it does not dominate it.
+            assert!(
+                (0.0..=0.01).contains(&c.objective_cargo_scaling),
+                "charter '{id}' objective_cargo_scaling {} out of range [0, 0.01]",
+                c.objective_cargo_scaling
+            );
             // Content-depth charters round 23: a preserve charter must actually erode
             // (a positive, gentle yearly attrition), or "keep the cargo" is a free win.
             if c.preserve_objective {

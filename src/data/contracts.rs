@@ -223,6 +223,19 @@ pub struct ContractTemplate {
     /// go *well*, not only which dilemmas you win. 0 = an objective indifferent to arms.
     #[serde(default)]
     pub objective_combat_scaling: f32,
+    /// How the ship's *cargo capacity* quickens this mission's objective (content-depth
+    /// charters round 24 — the third and last loadout↔charter accrual lever, after speed
+    /// and combat r21). Until now the ship's aggregate `cargo` did one passive thing (a
+    /// yearly minerals trickle from bigger holds); it never touched a *mission*. On a
+    /// **haul** writ — a mining run measured in tonnes, a salvage stripping a wreck — the
+    /// hold *is* the bottleneck: a big-bellied ship carries more out of every operation
+    /// cycle while a small one fills and must stop. Each point of cargo adds this fraction
+    /// to the accrual rate, exactly as combat does, but *only* where the objective is a
+    /// quantity of material (a survey or a greening sets 0 — a hold hauls no readings and
+    /// lands no settlers faster). So the drydock's hold-vs-guns-vs-engine trade now shapes
+    /// which missions each fitting flies well. 0 = an objective indifferent to hold size.
+    #[serde(default)]
+    pub objective_cargo_scaling: f32,
     /// Reputation gates on the writ (content-depth charters round 16): the mission
     /// is offered only while the ship's cumulative character meets every named trait
     /// — at or above (`min_reputation`) or at or below (`max_reputation`) its
