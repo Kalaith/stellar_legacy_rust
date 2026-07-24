@@ -120,8 +120,8 @@
   "id": "translation_mishap",
   "category": "mission_milestone",
   "title": "Lost in Translation",
-  "description": "An automated relay greeting, kept running for centuries, has been quietly mistranslating the ship's name as something deeply unflattering to everyone who hears it.",
-  "requires_decision": false,
+  "description": "An automated relay greeting, kept running for centuries, has been quietly mistranslating the ship's name as something deeply unflattering to everyone who hears it. It has been doing this the whole voyage. Every passing ship, every relay station, every station master for two hundred years has been too polite to mention it.",
+  "requires_decision": true,
   "family": "comedy",
   "outcomes": [
    {
@@ -132,6 +132,27 @@
      "stability": 0.02
     },
     "log": "The greeting was corrected. Somewhere, a relay operator stopped laughing at last."
+   },
+   {
+    "id": "keep_the_joke",
+    "label": "Keep it — it's ours now",
+    "description": "Two centuries of it. The name is practically an institution. Leave the greeting exactly as it is and let the ship wear its ridiculous title with pride.",
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "log": "The council voted, with feeling, to keep the mistranslation — two hundred years made it less an error than a heritage — and the ship went on introducing itself, to every startled relay in the dark, by a name that meant something deeply stupid, and meaning it."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_crew_can_no_longer_tell_which_tongue_is_wrong",
+    "min_cultural_drift": 0.6,
+    "description_add": "There is, this generation, a genuine difficulty: the ship's own language has drifted so far from the founding tongue the greeting is written in that half the crew cannot actually tell whether the relay is mistranslating the name or whether they themselves have simply forgotten what it was supposed to mean. The joke has quietly turned into a small crisis of memory wearing a clown's nose.",
+    "population_delta": {
+     "cultural_drift": 0.02
+    },
+    "log": "The argument over the greeting foundered on a stranger problem — a crew no longer fluent enough in the founders' tongue to be sure which version was the mistake — and the ship laughed, a little uneasily, at a joke that had become a small measure of how far its own language had travelled."
    }
   ]
  },
@@ -296,6 +317,29 @@
      "cultural_drift": 0.04
     },
     "log": "The council fused the two festivals into a single ship-wide holiday with a new name and older-sounding songs written last month. Within a generation no one will remember it was ever two — which is how all traditions start."
+   },
+   {
+    "id": "recognize_both",
+    "label": "Recognize both, formally",
+    "description": "Neither pick a winner nor blend them into mush. Write both festivals into the ship's calendar as equal and permanent — two decks, two holidays, one hull. A pluralism the founders never planned, but an honest one.",
+    "population_delta": {
+     "stability": 0.05,
+     "unity": 0.02,
+     "cultural_drift": 0.02
+    },
+    "log": "The council did the unglamorous thing and simply wrote both festivals into the calendar, equal and permanent, and let the decks keep their separate weeks in peace. No one won and no one lost, which is the rarest festival outcome of all, and the ship acquired two holidays and one small, durable lesson in living beside people who are not quite you."
+   }
+  ],
+  "complications": [
+   {
+    "id": "two_peoples_who_no_longer_share_a_calendar",
+    "min_cultural_drift": 0.5,
+    "description_add": "And on a ship drifted this far, it is no longer really a scheduling clash: the two decks' festivals have grown so far apart that neither can recognize the other's as the same harvest rite the founders kept, and each honestly believes the other is celebrating something faintly heretical. It is funny until you notice it is two peoples discovering they are two peoples.",
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "unity": -0.03
+    },
+    "log": "The quarrel over the date turned out to be the small visible tip of a larger thing — two decks that had drifted, over the long dark, into genuinely different peoples, each keeping a festival the other could no longer read — and the comedy of the collision had, underneath it, the quiet weight of a ship becoming more than one."
    }
   ]
  },
@@ -333,6 +377,17 @@
      }
     ],
     "log": "The archivists were consulted, the nearest substitute rationed out, and the feast served as the founders meant it — drier, greyer, correct. The old families were satisfied. Everyone else ate quietly and remembered last year's."
+   }
+  ],
+  "complications": [
+   {
+    "id": "a_feast_reconstructed_from_a_lean_larder",
+    "min_lean_food_years": 3,
+    "description_add": "And there is a sharper edge on the joke this year, because the ship is hungry: the cook's cheerful \"reconstruction from ship stores\" is a polite way of saying he made a feast-day dish out of the little there was, and the mess deck's delight is partly the delight of people who have not eaten this well in a long time. It is the best kind of comedy and the saddest, at once.",
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "On a lean ship the reconstructed feast landed twice as hard — a cook conjuring a celebration out of a thin larder, and a hungry crew laughing and eating and not quite letting themselves say how much they had needed it. The founders' recipe was the last thing on anyone's mind."
    }
   ]
  },
@@ -527,6 +582,17 @@
      "unity": 0.02
     },
     "log": "The council thanked the Hearth and kept the feast modest — one good meal, the stores mostly held for leaner days. The gesture landed; the lift was gentler than the Hearth had hoped, but no one went without, and no one starved for it later."
+   }
+  ],
+  "complications": [
+   {
+    "id": "a_feast_offered_in_a_hungry_year",
+    "min_lean_food_years": 3,
+    "description_add": "And the elders know the ship is lean this year — everyone does — which is exactly why they are offering. To the Hearth a feast is not what you throw when you can afford it but what you throw when you cannot, to remind a frightened people that it is still a people; and the council must weigh a gift that is half comfort and half a raid on stores the ship may badly want come winter.",
+    "population_delta": {
+     "morale": 0.02
+    },
+    "log": "The Hearth's feast, offered in a hungry year, was the boldest kind of gift — a people spending down its own thin stores to insist that gladness was still possible — and whatever the council decided, no one aboard forgot that the offer had been made when it cost the most to make it."
    }
   ]
  }

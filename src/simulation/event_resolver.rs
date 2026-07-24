@@ -2054,6 +2054,35 @@ mod tests {
     }
 
     #[test]
+    fn a_drift_gated_comedy_complication_rides_only_on_a_drifted_ship() {
+        // Content-depth event families round 29: comedy's first complications. The Festival
+        // War gains a twist that rides only once the crew's culture has drifted far enough that
+        // the two decks' festivals are no longer recognizably the same rite — the comedy of a
+        // ship quietly becoming more than one people.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 29, &picks);
+        let template = data.events.get("the_festival_war").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| c.min_cultural_drift > 0.0)
+            .expect("the festival war carries a drift reaction");
+
+        // A crew still close to the founders: the twist stays out.
+        sim.population.cultural_drift = comp.min_cultural_drift - 0.1;
+        assert!(active_complication(&sim, template).is_none());
+
+        // A drifted crew: it rides, and the two-peoples weight shows in the modal.
+        sim.population.cultural_drift = comp.min_cultural_drift + 0.05;
+        assert_eq!(
+            active_complication(&sim, template).map(|c| &c.id),
+            Some(&comp.id)
+        );
+        assert!(shown_description(&sim, template).contains("two peoples"));
+    }
+
+    #[test]
     fn a_reputation_gated_complication_rides_only_on_a_ship_of_that_name() {
         // Content-depth event families round 22: the same crisis reads differently by
         // the *name* the ship has earned. The Petitioners gains a twist that rides only
