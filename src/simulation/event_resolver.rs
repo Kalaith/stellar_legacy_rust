@@ -1726,6 +1726,40 @@ mod tests {
     }
 
     #[test]
+    fn a_cryo_ark_crisis_fires_only_on_the_ark_run() {
+        // Content-depth provisioning round 23: the ark run's signature content, gated to
+        // its `cryo_ark` charter tag. The Failing Bank cannot surface on an ordinary
+        // mining charter, only on the sleeper-ark in transit.
+        use crate::data::contracts::ContractPhase;
+        use crate::simulation::contract::start_contract;
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 61, &picks);
+        let tmpl = data.events.get("the_failing_bank").unwrap();
+
+        // An ordinary mining charter, in transit: no cryo-ark tag, so it is barred.
+        let mut ordinary = start_contract(
+            &data.contracts.get("deep_vein_survey").unwrap().clone(),
+            &sim,
+        );
+        ordinary.phase = ContractPhase::Travel;
+        sim.contract = Some(ordinary);
+        assert!(
+            !passes_gate(&sim, tmpl),
+            "the failing bank does not surface on an ordinary run"
+        );
+
+        // The ark run, in transit: carries cryo_ark, so the crisis can fire.
+        let mut ark = start_contract(&data.contracts.get("the_ark_run").unwrap().clone(), &sim);
+        ark.phase = ContractPhase::Travel;
+        sim.contract = Some(ark);
+        assert!(
+            passes_gate(&sim, tmpl),
+            "the failing bank fires on the sleeper-ark in transit"
+        );
+    }
+
+    #[test]
     fn a_convergent_chain_needs_both_its_seeds_on_record() {
         // Content-depth event families round 24: a payoff gated on TWO seed consequences.
         // The Untethered reckons only for a ship that both let its founders go AND turned

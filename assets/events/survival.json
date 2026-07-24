@@ -2087,5 +2087,48 @@
     "log": "The council raised the fat generation as though the larder were empty, and the children learned a hunger they had never felt and a discipline they had not earned. They were readier for the lean years to come, and they never quite forgave the lesson."
    }
   ]
+ },
+ {
+  "id": "the_failing_bank",
+  "category": "immediate_crisis",
+  "family": "survival",
+  "title": "The Failing Bank",
+  "description": "A whole section of the cryo-banks has thrown a fault, the cold creeping up degree by degree toward the line past which its sleepers do not wake. It can be held — but only by pulling power and parts from the rest of the ship and standing a hard emergency watch over it for months. Or it can be let go, and the several hundred souls frozen in it counted, quietly, among the losses the charter always warned would come.",
+  "requires_decision": true,
+  "requires_charter_tag": [
+   "cryo_ark"
+  ],
+  "phases": [
+   "travel"
+  ],
+  "outcomes": [
+   {
+    "id": "hold_the_failing_bank",
+    "label": "Hold the bank",
+    "description": "Pour power, parts, and a round-the-clock watch into the failing section. The rest of the ship goes without for a while, but the sleepers stay cold and whole.",
+    "resource_delta": {
+     "energy": -800
+    },
+    "ship_delta": {
+     "spare_parts": -10
+    },
+    "population_delta": {
+     "morale": -0.02,
+     "unity": 0.02
+    },
+    "log": "The ship stripped itself thin to hold the failing bank, and held it — the cold steadied, the fault contained, and several hundred who would have been lost slept on toward a shore they would never know they nearly missed."
+   },
+   {
+    "id": "let_the_failing_bank_go",
+    "label": "Let the bank go",
+    "description": "There is not enough to hold it without bleeding the living ship dangerously thin. Log the section, seal it, and let the cold take those it will. The charter said this would happen.",
+    "objective_progress_delta": -0.04,
+    "population_delta": {
+     "morale": -0.05,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The failing bank was sealed and let go, and several hundred sleepers entrusted whole to the ship did not, in the end, arrive. The count went down the way the charter had promised it would, and no one aboard found the promise any comfort."
+   }
+  ]
  }
 ]

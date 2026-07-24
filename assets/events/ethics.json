@@ -613,5 +613,47 @@
     "log": "The ship held in the dying star's reach past every safe hour and made run after run off the shore until the hull could bear no more, and it cost — a scorched ship, a lighter tank, a memorial wall grown for the crews lost to the last lifts. But no one reachable was left on that shore, and the people who flew home flew home certain of a thing about themselves that a full hold and a clean escape would never have told them."
    }
   ]
+ },
+ {
+  "id": "the_waking_temptation",
+  "category": "generational_challenge",
+  "family": "ethics",
+  "title": "The Waking Temptation",
+  "description": "Among the ten thousand sleepers are specialists the ship could sorely use — engineers, physicians, hands the strained crew has too few of. They could be woken. It would ease a hundred small crises to have them, and they would live full lives aboard rather than a frozen blink. But a sleeper woken is a colonist who never lands: they belong to the world at the end, not to the voyage, and every one the ship wakes for itself is one the waiting shore will not receive.",
+  "requires_decision": true,
+  "requires_charter_tag": [
+   "cryo_ark"
+  ],
+  "outcomes": [
+   {
+    "id": "wake_the_specialists_we_need",
+    "label": "Wake the specialists we need",
+    "description": "The living ship comes first. Wake a cadre of the skilled to strengthen the crew, and let the colony at the far end be that much smaller for it.",
+    "objective_progress_delta": -0.02,
+    "population_delta": {
+     "morale": 0.03,
+     "stability": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The ship woke the sleepers it needed and was the stronger and steadier for their hands — and the colony at the far end would be founded by that many fewer, a debt the crew told itself was fair and never quite believed."
+   },
+   {
+    "id": "keep_faith_with_the_frozen",
+    "label": "Keep faith with the frozen",
+    "description": "They were entrusted to be delivered, not spent. Leave every sleeper in the cold and make do with the crew the ship has, however stretched.",
+    "population_delta": {
+     "unity": 0.03,
+     "legacy_loyalty": 0.03,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship kept every sleeper cold and carried its own burdens with its own hands, refusing to spend the cargo it was trusted to deliver — a harder voyage for the crew, and a whole colony, undiminished, at the end of it."
+   }
+  ]
  }
 ]

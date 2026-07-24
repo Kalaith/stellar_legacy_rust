@@ -2234,7 +2234,8 @@
   "min_renown": 40,
   "tags": [
    "colony",
-   "long_haul"
+   "long_haul",
+   "cryo_ark"
   ],
   "hazard": 0.1,
   "completion_reward": {
