@@ -500,6 +500,14 @@ pub struct SimState {
     /// launch (a new-built hull is sound).
     #[serde(default)]
     pub hull_beat_band: i8,
+    /// The band the skeleton's air-collapse beat last marked (content-depth campaign-
+    /// skeleton round 24): the atmosphere twin of `hull_beat_band` — -1 once life-support
+    /// has crossed *into* failure (the beat fires the moment it does, the ship
+    /// suffocating), 0 while the air holds above the red line. The reckoning the it23 air
+    /// *voice* only murmurs before; an overhaul back over the line re-arms it. 0 at launch
+    /// (a new ship breathes clean).
+    #[serde(default)]
+    pub air_beat_band: i8,
     /// How many depopulation thresholds the skeleton has already marked
     /// (content-depth campaign-skeleton round 12): the crew-thinning beat fires
     /// once per authored fraction of the founding size across the whole campaign
@@ -635,6 +643,7 @@ impl SimState {
             hull_voice_band: 0,
             air_voice_band: 0,
             hull_beat_band: 0,
+            air_beat_band: 0,
             depopulation_beats_fired: 0,
             subsystem_beats_fired: Vec::new(),
             founding_beat_fired: false,

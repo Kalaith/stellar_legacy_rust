@@ -426,6 +426,13 @@ pub struct EventTemplate {
     /// None = ungated.
     #[serde(default)]
     pub hull_below: Option<f32>,
+    /// Air-failure gate (content-depth campaign-skeleton round 24): the atmosphere twin
+    /// of `hull_below` — the event only enters the pool while the ship's `life_support`
+    /// has fallen to or below this fraction, the honest gate for *the ship is suffocating*
+    /// content and the air-collapse beat. So "the air is failing" cannot surface on a ship
+    /// that breathes clean. None = ungated.
+    #[serde(default)]
+    pub life_support_below: Option<f32>,
     /// Chronic-scarcity gate (content-depth provisioning round 13): the event only
     /// enters the pool once the food store has sat below the lean line for at least
     /// this many consecutive years (`sim.lean_food_years`) — the honest gate for

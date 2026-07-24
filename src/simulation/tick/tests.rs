@@ -692,9 +692,11 @@ fn contract_completes_at_target_duration() {
         .clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too — and
-    // likewise the round-23 hull-collapse beat, which a neglected hull trips.
+    // likewise the round-23 hull-collapse beat, which a neglected hull trips, and the
+    // round-24 air-collapse beat, which a neglected life-support trips.
     data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.hull_beat_family.clear();
+    data.config.campaign_skeleton.air_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -1149,6 +1151,75 @@ fn a_midvoyage_beat_fires_at_the_deep_middle_of_the_voyage() {
         crate::data::contracts::ContractPhase::Return,
         "the deep-middle beat fires before the ship turns for home"
     );
+}
+
+#[test]
+fn an_air_collapse_beat_fires_when_the_life_support_fails_and_rearms_on_overhaul() {
+    // Content-depth campaign-skeleton round 24: the atmosphere twin of the hull-collapse
+    // beat. With rolls and the other beats off, life-support crossing its red line must
+    // force a reckoning once; an overhaul back above the line re-arms it.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
+    data.config.campaign_skeleton.stability_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.subsystem_beats.clear();
+    data.config.campaign_skeleton.hull_beat_family.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
+    data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.campaign_skeleton.long_reign_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .dynasty_crisis_beat_family
+        .clear();
+    data.config
+        .campaign_skeleton
+        .power_transition_beat_family
+        .clear();
+    data.config.campaign_skeleton.founding_beat_family.clear();
+    data.config.campaign_skeleton.dead_air_years = 0;
+    data.config.campaign_skeleton.anniversary_years = 0;
+    let red_line = data.config.campaign_skeleton.air_beat_threshold;
+    assert!(red_line > 0.0, "this test needs the air beat enabled");
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        7,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+
+    // Clean air: no reckoning.
+    sim.ship.life_support = 0.9;
+    advance_year(&mut sim, &data);
+    assert_eq!(sim.air_beat_band, 0, "clean air forces no beat");
+
+    // The air fails past the red line: the beat fires once.
+    sim.ship.life_support = red_line - 0.05;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        sim.air_beat_band, -1,
+        "a ship suffocating past its red line forces the collapse reckoning"
+    );
+
+    // An overhaul clears the air: the beat re-arms.
+    if let Some(pending) = sim.pending_event.clone() {
+        let t = data.events.get(&pending.template_id).cloned().unwrap();
+        crate::simulation::event_resolver::apply_outcome(&mut sim, &data, &t, 0);
+    }
+    sim.ship.life_support = 0.9;
+    advance_year(&mut sim, &data);
+    assert_eq!(sim.air_beat_band, 0, "an overhaul re-arms the air beat");
 }
 
 #[test]
@@ -1650,9 +1721,11 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
         .clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too — and
-    // likewise the round-23 hull-collapse beat, which a neglected hull trips.
+    // likewise the round-23 hull-collapse beat, which a neglected hull trips, and the
+    // round-24 air-collapse beat, which a neglected life-support trips.
     data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.hull_beat_family.clear();
+    data.config.campaign_skeleton.air_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -1750,9 +1823,11 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
         .clear();
     // The subsystem-collapse beat (round 17) also ignores event chance; a full
     // unrepaired voyage rots engineering past its red line, so clear it too — and
-    // likewise the round-23 hull-collapse beat, which a neglected hull trips.
+    // likewise the round-23 hull-collapse beat, which a neglected hull trips, and the
+    // round-24 air-collapse beat, which a neglected life-support trips.
     data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.hull_beat_family.clear();
+    data.config.campaign_skeleton.air_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 

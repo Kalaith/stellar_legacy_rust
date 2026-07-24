@@ -94,6 +94,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_stability_beat(sim, data, &mut report)
             && !fire_subsystem_beat(sim, data, &mut report)
             && !fire_hull_beat(sim, data, &mut report)
+            && !fire_air_beat(sim, data, &mut report)
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
@@ -398,6 +399,34 @@ fn fire_hull_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) 
         return false;
     }
     let family = cfg.hull_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire an air-collapse beat (content-depth campaign-skeleton round 24): the atmosphere
+/// twin of the hull-collapse beat — where that watches the ship's frame, this watches its
+/// air. The month `life_support` first falls to or below the red line, a beat is forced
+/// (the crew confronting that the ship itself is suffocating); an overhaul back above the
+/// line re-arms it. Fires only during a voyage; at most one per crossing.
+fn fire_air_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.air_beat_family.is_empty() || cfg.air_beat_threshold <= 0.0 || sim.contract.is_none() {
+        return false;
+    }
+    let band = if sim.ship.life_support <= cfg.air_beat_threshold {
+        -1
+    } else {
+        0
+    };
+    if band == sim.air_beat_band {
+        return false;
+    }
+    sim.air_beat_band = band;
+    if band == 0 {
+        // The air recovered above the red line — re-arm, but do not fire.
+        return false;
+    }
+    let family = cfg.air_beat_family.clone();
     force_family_beat(sim, data, &family, report);
     true
 }

@@ -375,6 +375,15 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Air-failure gate (content-depth round 24): the atmosphere twin — "the ship is
+    // suffocating" content waits until life-support has fallen to its red line, the
+    // honest gate for the air-collapse beat.
+    if template
+        .life_support_below
+        .is_some_and(|t| sim.ship.life_support > t)
+    {
+        return false;
+    }
     // Chronic-scarcity gate (content-depth round 13): long-hunger content waits
     // until the shortage has ground on for years, not just this season.
     if sim.lean_food_years < template.min_lean_food_years {

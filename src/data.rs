@@ -975,6 +975,20 @@ pub struct CampaignSkeletonConfig {
     /// beat. 0 disables it.
     #[serde(default)]
     pub hull_beat_threshold: f32,
+    /// Air-collapse beat family (content-depth campaign-skeleton round 24): the
+    /// atmosphere twin of the hull-collapse beat — where that watches the ship's frame,
+    /// this watches its *air*. The moment `life_support` falls to or below
+    /// `air_beat_threshold`, a beat is forced from this family: the crew confronting that
+    /// the ship itself is suffocating. The reckoning the it23 air *voice* only murmurs
+    /// before. Empty = no air beat.
+    #[serde(default)]
+    pub air_beat_family: String,
+    /// Life-support at or below which the air-collapse beat fires (content-depth
+    /// campaign-skeleton round 24): a red line past the it warning threshold — the air
+    /// not merely stale but failing. An overhaul back above it re-arms the beat. 0
+    /// disables it.
+    #[serde(default)]
+    pub air_beat_threshold: f32,
     /// Power-transition beat family (content-depth round 11): a beat keyed not to
     /// a stat or a time but to a *political* change — the first tick the dominant
     /// faction differs from the one the skeleton last marked (demographic drift
@@ -2416,6 +2430,26 @@ mod tests {
             assert!(
                 data.events.iter().any(|(_, e)| e.hull_below.is_some()),
                 "the hull-collapse beat needs a hull_below-gated event to surface"
+            );
+        }
+        // Content-depth campaign-skeleton round 24: the air-collapse beat, the same shape,
+        // needs a family with events, a red line in (0,1), and a life_support_below event.
+        if !sk.air_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.air_beat_family),
+                "campaign_skeleton air_beat_family '{}' has no events",
+                sk.air_beat_family
+            );
+            assert!(
+                sk.air_beat_threshold > 0.0 && sk.air_beat_threshold < 1.0,
+                "air_beat_threshold {} must be a red line inside (0, 1)",
+                sk.air_beat_threshold
+            );
+            assert!(
+                data.events
+                    .iter()
+                    .any(|(_, e)| e.life_support_below.is_some()),
+                "the air-collapse beat needs a life_support_below-gated event to surface"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

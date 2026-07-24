@@ -975,5 +975,85 @@
     "log": "The ship spent what it had to give the cold generation, belatedly, the warmth it had gone without — and something in them eased that had been braced a long time. It did not undo the cold years. But it said, at last, that they had been seen."
    }
   ]
+ },
+ {
+  "id": "the_dying_air",
+  "category": "immediate_crisis",
+  "family": "biology_medical",
+  "title": "The Dying Air",
+  "description": "The life-support has crossed the line the engineers had quietly hoped it never would. The scrubbers can no longer clean the air the whole ship breathes; the reclaim loops are failing faster than they can be nursed; and the margin between the atmosphere the ship has and the atmosphere its people need has gone, for the first time, negative. The ship is, in the plainest terms, beginning to suffocate. It can be survived — but only by choosing, now, how.",
+  "requires_decision": true,
+  "life_support_below": 0.25,
+  "outcomes": [
+   {
+    "id": "seal_into_the_sound_decks",
+    "label": "Seal into the soundest decks",
+    "description": "Concentrate everyone into the sections the failing scrubbers can still keep breathable, weld off the rest, and let the ship be smaller and stuffy and alive rather than large and open and slowly asphyxiating.",
+    "ship_delta": {
+     "life_support": 0.35
+    },
+    "population_delta": {
+     "count": -30,
+     "morale": -0.05,
+     "stability": 0.02
+    },
+    "log": "The ship pulled its people into the decks that could still breathe and sealed the rest away behind bulkheads, cramped and stale but alive — a few lost in the closing-down who could not be moved in time, and the rest crowded into an atmosphere the scrubbers could, just barely, hold."
+   },
+   {
+    "id": "hold_the_whole_ship_open",
+    "label": "Hold the whole ship open",
+    "description": "Abandon no deck and no one. Ration exertion, mask the worst sections, and carry the whole ship on a knife-edge of thinning air while the crews fight to bring the scrubbers back, betting lives against the time it takes.",
+    "ship_delta": {
+     "life_support": 0.1
+    },
+    "population_delta": {
+     "count": -70,
+     "morale": -0.03,
+     "unity": 0.03
+    },
+    "log": "The ship refused to close a single deck and fought the dying air across its whole length, masked and rationing breath — and paid for the refusal in the ones the thinning atmosphere took before the scrubbers came halfway back, and in the grim shared knowledge that it had been the harder road."
+   }
+  ]
+ },
+ {
+  "id": "the_green_lungs",
+  "category": "immediate_crisis",
+  "family": "biology_medical",
+  "title": "The Green Lungs",
+  "description": "With the mechanical scrubbers failing, the biologists make a case they would never make in a good year: flood every free volume of the ship — corridors, holds, emptied quarters — with fast-growing algae and biofilm, and let a crash-grown living biosphere breathe for the ship while the machines are rebuilt. It is a gamble. It costs stores and space and weeks of green slime on every surface. But green things have kept air breathable longer than any machine ever built.",
+  "requires_decision": true,
+  "life_support_below": 0.25,
+  "outcomes": [
+   {
+    "id": "flood_the_ship_with_green",
+    "label": "Flood the ship with green",
+    "description": "Turn the whole vessel into a lung. Seed every surface, spend the stores it takes to feed the bloom, and trust the oldest air-maker there is to carry the ship until the scrubbers run again.",
+    "resource_delta": {
+     "food": -3000
+    },
+    "ship_delta": {
+     "life_support": 0.3
+    },
+    "population_delta": {
+     "morale": 0.02,
+     "cultural_drift": 0.02
+    },
+    "log": "The ship became, for a season, a single green lung — algae on every wall, biofilm in every corridor, the air thickening slowly back toward breathable as the oldest technology in the galaxy did the work the machines could not. The crew lived in a jungle of their own desperate making, and breathed."
+   },
+   {
+    "id": "crash_rebuild_the_scrubbers",
+    "label": "Crash-rebuild the scrubbers",
+    "description": "Trust metal over moss. Strip every spare and cannibalizable system for scrubber parts and rebuild the mechanical life-support in a hard crash program, and keep the ship a ship rather than a hothouse.",
+    "ship_delta": {
+     "life_support": 0.3,
+     "spare_parts": -25
+    },
+    "population_delta": {
+     "morale": -0.02,
+     "unity": 0.02
+    },
+    "log": "The ship gutted itself for parts and rebuilt its scrubbers in a hard crash of round-the-clock work, choosing the machine over the moss — and breathed again on rebuilt metal, poorer in spares and prouder in craft, a ship still recognizably a ship."
+   }
+  ]
  }
 ]
