@@ -38,7 +38,19 @@
     "log": "The ship logged the derelict's position, spoke for its dead, and passed on."
    }
   ],
-  "family": "mystery"
+  "family": "mystery",
+  "complications": [
+   {
+    "id": "the_drifted_read_an_omen_in_the_dark_hull",
+    "min_cultural_drift": 0.6,
+    "description_add": "And to a crew drifted far from the founders' matter-of-factness, a silent dead hull on the lane is not salvage-or-not but an omen — a ghost ship, a warning, the dark showing the ship its own possible end. Half the decks would sooner burn wide around it than send a boarding party into a grave, and the talk of stripping it for parts strikes them as the surest way to bring its bad luck aboard.",
+    "population_delta": {
+     "cultural_drift": 0.02,
+     "morale": -0.02
+    },
+    "log": "The derelict was not, to the ship's drifted generations, a windfall — it was an omen, a ghost hull the founders' descendants read as a warning about their own end — and the argument over whether to board it carried an undertow of dread the founders, who would have simply counted the salvage, never felt."
+   }
+  ]
  },
  {
   "id": "dark_stretch",
@@ -157,6 +169,17 @@
      "morale": -0.02
     },
     "log": "The suit was cut from the tether and let drift. It fell away slowly, arms open, as if waving."
+   }
+  ],
+  "complications": [
+   {
+    "id": "one_more_absence_on_an_emptying_ship",
+    "max_population": 400,
+    "description_add": "And on a ship this hollowed out — corridors gone quiet, whole decks closed for want of anyone to fill them — the empty suit lands differently. A crew already watching itself dwindle does not find a sealed, powered, ownerless hardsuit a curiosity; it finds it an omen, one more absence among the many, a shape exactly the size of the people the ship keeps losing.",
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "To a shrinking crew the empty suit was no puzzle but a portent — an absence in the shape of a person, on a ship that had too many of those already — and whatever the council decided to do with it, the thing hung over the thinning decks like a question no one wanted asked aloud: which of us is next to leave a suit and no soul."
    }
   ]
  },
@@ -335,6 +358,37 @@
      "cultural_drift": 0.03
     },
     "log": "The sweep was waved off. The sealed deck stays sealed, and the not-knowing becomes its own small faith — a thing the whole ship agrees not to touch, and is quietly closer for agreeing."
+   },
+   {
+    "id": "open_with_rite",
+    "label": "Open it with the elders' blessing",
+    "description": "Neither breach it as mere salvage nor leave it forever untouched. Open the deck as a ceremony — the elders leading, the founders' names spoken, the space entered with respect rather than a cutting torch and a manifest. Reclaim the volume, but honour whatever made the founders close it.",
+    "ship_delta": {
+     "spare_parts": 40
+    },
+    "population_delta": {
+     "unity": 0.03,
+     "stability": 0.03,
+     "legacy_loyalty": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.03
+     }
+    ],
+    "log": "The sealed deck was opened the way a grave is opened when it must be — slowly, with the elders leading and the founders' names spoken first — and gave up its mothballed workshop to a crew that had reclaimed the space without quite breaking faith with whoever closed it. The ship was the richer for the salvage and, oddly, the calmer for the ceremony."
+   }
+  ],
+  "complications": [
+   {
+    "id": "a_taboo_calcified_into_faith",
+    "min_cultural_drift": 0.6,
+    "description_add": "And on a ship drifted this far, the sealed deck is no longer merely an unexplained door — it has become sacred. Generations of not-knowing have calcified into a genuine taboo, a thing the crew tells its children never to touch, and to a people who have forgotten the founders' reasons but kept their reverence, cutting it open now would feel less like maintenance than sacrilege.",
+    "population_delta": {
+     "cultural_drift": 0.02
+    },
+    "log": "The maintenance sweep ran headlong into faith: to the drifted crew the sealed deck was not a mystery to be solved but a holy thing to be left alone, and the argument over a welded bulkhead became, without anyone quite deciding it should, an argument about what the ship was still allowed to touch of the founders' silence."
    }
   ]
  },
@@ -430,6 +484,18 @@
      }
     ],
     "log": "They purged the archive and re-derived the ship's course by hand from the founding tables — a year of drudgery and one bad wobble before the numbers came right. The crew understands its own heading again, and paid in sweat to."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_drifted_venerate_the_oracle",
+    "min_cultural_drift": 0.6,
+    "description_add": "And on a ship drifted this far, the wandering mind is no longer a failing machine to most aboard — it is an oracle. Generations of trusting its unasked corrections \"the way weather is trusted\" have turned the founders' old navigation archive into something venerated, a voice of the ancestors that speaks the ship's heading, and the proposal to *wipe* it strikes the drifted crew as not a repair but a murder — the silencing of the last thing aboard that still speaks with the founders' certainty.",
+    "population_delta": {
+     "cultural_drift": 0.02,
+     "legacy_loyalty": 0.02
+    },
+    "log": "To the ship's drifted generations the wandering mind was not malfunctioning but *speaking*, an oracle of the founders whose course-notes were closer to scripture than to telemetry — and the engineers who wanted to purge and re-derive it found themselves accused not of overcaution but of impiety, of proposing to silence an ancestor."
    }
   ]
  },

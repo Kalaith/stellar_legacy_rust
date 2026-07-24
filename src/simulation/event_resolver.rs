@@ -2130,6 +2130,36 @@ mod tests {
     }
 
     #[test]
+    fn a_drifted_crew_reads_a_mystery_as_a_taboo() {
+        // Content-depth event families round 32: mystery's first real depth. The Sealed Deck gains
+        // a twist that rides only once the crew's culture has drifted far enough that the
+        // unexplained door has calcified from a curiosity into a genuine taboo — the eerie read as
+        // the sacred.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 32, &picks);
+        sim.dynasty.generation = 4; // clear the event's own min_generation
+        let template = data.events.get("the_sealed_deck").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| c.min_cultural_drift > 0.0)
+            .expect("the sealed deck carries a drift reaction");
+
+        // A crew still close to the founders' matter-of-factness: the taboo stays out.
+        sim.population.cultural_drift = comp.min_cultural_drift - 0.1;
+        assert!(active_complication(&sim, template).is_none());
+
+        // A drifted crew: the not-knowing has become faith, and the twist rides.
+        sim.population.cultural_drift = comp.min_cultural_drift + 0.05;
+        assert_eq!(
+            active_complication(&sim, template).map(|c| &c.id),
+            Some(&comp.id)
+        );
+        assert!(shown_description(&sim, template).contains("sacred"));
+    }
+
+    #[test]
     fn a_shipborn_crew_grieves_a_world_it_can_no_longer_walk() {
         // Content-depth event families round 30: exploration_first_contact's first complications,
         // reactive to the ship's *identity*. The Young World gains a twist that rides only once
