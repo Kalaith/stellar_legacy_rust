@@ -465,6 +465,18 @@ pub fn reputation_reward_multiplier(sim: &SimState, template: &ContractTemplate)
     (1.0 + template.reward_reputation_scale * (rep - 0.5)).max(0.5)
 }
 
+/// The morale shift a concluded mission's *outcome* leaves the crew (content-depth charters round
+/// 31): the crew's emotional stake in the ship's purpose, distinct from the pay (the treasury),
+/// the reputation (the ship's name), and the faction goodwill (the peoples). A mission seen
+/// through lifts spirits (pride in the work), one botched or abandoned dents them (the failure
+/// felt) — `scale · (score − 0.5)`, centred on a middling result so a clean Complete lifts, a
+/// Failure dents, and a break-even Pyrrhic barely moves the needle. Composes with the round-29
+/// despair and round-30 heartening beats: a run of failures can drive the crew toward despair, a
+/// string of wins lift them out. 0 (inert) when the scale is 0.
+pub fn mission_outcome_morale_shift(score: f32, scale: f32) -> f32 {
+    scale * (score - 0.5)
+}
+
 /// Prorate a charter reward by objective completion (W2): pay = reward ×
 /// fraction, rounded toward zero per resource. Every completion pays exactly
 /// this — full-term or truncated; zero objective progress ⇒ zero pay.
@@ -1333,6 +1345,32 @@ mod tests {
         assert!(
             !meets_in_world_gate(&sim, ark),
             "a ship that broke a sanctuary trust is barred from the ark charter"
+        );
+    }
+
+    #[test]
+    fn a_mission_outcome_moves_the_crews_spirits() {
+        // Content-depth charters round 31: the crew feels a mission's outcome. A clean run (a
+        // high success score) lifts morale, a botched one (a low score) dents it, and a
+        // break-even middling result barely moves the needle; a 0 scale leaves spirits untouched.
+        let scale = 0.1;
+        assert!(
+            mission_outcome_morale_shift(1.0, scale) > 0.0,
+            "a mission seen through lifts the crew's spirits"
+        );
+        assert!(
+            mission_outcome_morale_shift(0.1, scale) < 0.0,
+            "a mission botched or abandoned dents them"
+        );
+        assert_eq!(
+            mission_outcome_morale_shift(0.5, scale),
+            0.0,
+            "a break-even result is neutral"
+        );
+        assert_eq!(
+            mission_outcome_morale_shift(1.0, 0.0),
+            0.0,
+            "a zero scale leaves the crew's spirits untouched"
         );
     }
 

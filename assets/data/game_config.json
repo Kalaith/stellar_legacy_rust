@@ -795,6 +795,7 @@
     "morale_objective_swing": 0.4,
     "hazard_combat_mitigation": 0.03,
     "preserve_berth_relief": 0.015,
+    "mission_outcome_morale_scale": 0.1,
     "combat_dilemma_odds_per_point": 0.04,
     "dilemma_odds_cap": 0.95
   },

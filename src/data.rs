@@ -420,6 +420,14 @@ pub struct ShipConfig {
     /// (a preserve charter erodes at its authored rate regardless of the ship).
     #[serde(default)]
     pub preserve_berth_relief: f32,
+    /// How much a concluded mission's *outcome* moves the crew's morale (content-depth charters
+    /// round 31): the crew's emotional stake in the ship's purpose. A mission seen through lifts
+    /// spirits, one botched or abandoned dents them — `this·(score − 0.5)`, applied once at
+    /// conclusion. Distinct from the pay, the reputation, and the faction goodwill an outcome
+    /// earns; it composes with the round-29 despair / round-30 heartening beats. 0 = a mission's
+    /// success or failure leaves the crew's spirits untouched.
+    #[serde(default)]
+    pub mission_outcome_morale_scale: f32,
 }
 
 /// Per-year population drift over a voyage (PLAN M4.1): a long mission changes
@@ -3147,6 +3155,14 @@ mod tests {
             (0.0..=0.05).contains(&data.config.ship.preserve_berth_relief),
             "preserve_berth_relief {} out of the gentle range [0, 0.05]",
             data.config.ship.preserve_berth_relief
+        );
+        // Content-depth charters round 31: the mission-outcome morale scale is a gentle one-time
+        // shift — a clean run lifts spirits and a botched one dents them, but a single mission's
+        // outcome should not, by itself, swing the whole crew's morale.
+        assert!(
+            (0.0..=0.5).contains(&data.config.ship.mission_outcome_morale_scale),
+            "mission_outcome_morale_scale {} out of the gentle range [0, 0.5]",
+            data.config.ship.mission_outcome_morale_scale
         );
         // Content-depth factions round 22: the proud-tender upkeep is a gentle yearly
         // dividend of a delighted people, at a plausible "delighted" approval band — not

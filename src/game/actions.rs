@@ -518,6 +518,19 @@ impl Game {
             if let Some(payout) = payout {
                 sim.resources.apply(&payout);
             }
+            // …and the crew feels the outcome in their own spirits (content-depth charters round
+            // 31): a mission seen through lifts morale (pride in the work), one botched or
+            // abandoned dents it (the failure felt), scaled around a middling score — the crew's
+            // emotional stake in the ship's purpose, distinct from the pay, the name, and the
+            // faction goodwill. Composes with the round-29 despair / round-30 heartening beats: a
+            // run of failures drives the crew toward despair, a string of wins lifts them out.
+            let morale_shift = contract::mission_outcome_morale_shift(
+                score,
+                self.data.config.ship.mission_outcome_morale_scale,
+            );
+            if morale_shift != 0.0 {
+                sim.population.morale = (sim.population.morale + morale_shift).clamp(0.0, 1.0);
+            }
             // A charter seen through to full term leaves its mark (content-depth
             // charters round 14): the seed of an arc — a survey proves the ground a
             // later colony writ needs, so the follow-on appears on the next board.
