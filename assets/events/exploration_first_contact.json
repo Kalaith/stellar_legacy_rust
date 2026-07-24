@@ -437,5 +437,101 @@
     "log": "The salvage crews took the beacon apart for its patient, ancient tech and left the lane silent behind them. The message it had carried for eons ended, unanswered, in a cargo hold."
    }
   ]
+ },
+ {
+  "id": "the_long_watched",
+  "category": "generational_challenge",
+  "family": "exploration_first_contact",
+  "title": "The Long Watched",
+  "description": "The signals analysts find it first, and then everyone knows: the ship has been watched. Not now — for years. Something out in the dark has been quietly observing the vessel's passage, tracking it, listening, and never once announcing itself. There is no threat in it that anyone can point to, and no reassurance either; only the deeply unsettling knowledge that the ship has not been alone in a long time, and that whatever shares the dark with it has chosen, so far, to say nothing. The council must decide who speaks first.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "hail_the_watchers",
+    "label": "Hail them first",
+    "description": "Break the silence the ship did not know it was keeping. Broadcast a greeting, plainly and openly, and announce to whatever has been watching that the ship knows it is there and would rather meet than be studied.",
+    "population_delta": {
+     "unity": 0.03,
+     "morale": 0.02,
+     "cultural_drift": 0.02
+    },
+    "long_term_consequences": [
+     "hailed_the_watchers"
+    ],
+    "log": "The ship hailed the dark that had been watching it, choosing to be a greeter rather than a specimen — and waited, every antenna strained, for whatever would choose to answer a hand extended into a silence that had studied it for years."
+   },
+   {
+    "id": "slip_away_quiet",
+    "label": "Slip away quiet",
+    "description": "Whatever is out there has had every chance to speak and has not. Change nothing, reveal nothing, and carry the ship on as if it had never noticed — and let the watchers keep their silence, and the crew their unease.",
+    "population_delta": {
+     "morale": -0.03,
+     "stability": 0.02
+    },
+    "log": "The ship pretended it had not noticed and flew on unchanged, ceding the first word to the watchers who had never offered it — and carried, from then on, the quiet weight of knowing it was seen, and had chosen not to look back."
+   }
+  ]
+ },
+ {
+  "id": "the_offered_road",
+  "category": "generational_challenge",
+  "family": "exploration_first_contact",
+  "title": "The Offered Road",
+  "description": "A civilization the ship never expected — old, settled, and casually more advanced than anything the founders imagined — makes contact, and makes an offer. They will open a faster road: a corridor through folded space that would cut generations off the crossing, deliver the ship to its destination in a fraction of the dark still ahead. The price is not blood or treasure. It is the ship's archive — the full record of the founding, the voyage, the people it has been — copied into their keeping, to be studied and kept and, they say gently, remembered long after the ship itself is dust. A shortcut home, for the ship's whole story told to strangers.",
+  "requires_decision": true,
+  "outcomes": [
+   {
+    "id": "keep_the_long_road",
+    "label": "Keep the long road",
+    "description": "Some things are not for copying, even to save generations. Thank the strangers, decline the corridor, and keep the ship's story the ship's own — and fly the whole long dark the founders always meant it to.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "unity": 0.03,
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship kept its own story and its own long road, declining a shortcut bought with the whole record of who it had been — a costly pride, generations added back to the crossing, and a people who would arrive as themselves or not at all."
+   },
+   {
+    "id": "trade_the_archive",
+    "label": "Trade the archive for the road",
+    "description": "A story kept and a shortcut taken are worth more than a story hoarded and a voyage that outlasts everyone aboard. Give the strangers the archive, take the folded road, and let the ship's whole history live on in alien keeping while the ship itself, for once, arrives early.",
+    "ship_delta": {
+     "fuel": 0.3
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.04
+    },
+    "long_term_consequences": [
+     "archive_given_to_strangers"
+    ],
+    "log": "The ship gave its whole story into alien hands and took the folded road home, trading the privacy of its history for generations of the dark it would no longer have to cross — its founding now a record in a stranger's library, and its arrival, at last, within a living crew's reach."
+   },
+   {
+    "id": "seek_a_deeper_bargain",
+    "label": "Bargain as their kindred",
+    "description": "The Ascension Circle recognize these strangers as something like what the ship is becoming, and can treat with them accordingly — not as a primitive accepting a gift, but as a lesser kin negotiating terms. Let the augmented deal, and win the road *and* the archive both, at a price paid only in how much further from the founders the bargain leaves the crew.",
+    "requires": {
+     "requires_dominant_faction": "ascension_circle"
+    },
+    "ship_delta": {
+     "fuel": 0.3
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "adaptation": 0.05,
+     "cultural_drift": 0.04,
+     "legacy_loyalty": -0.03
+    },
+    "log": "Under the Ascension Circle the ship met the strangers not as a supplicant but as a lesser kind of kin, and bargained accordingly — winning the folded road while keeping its own archive, and paying only in the further distance the negotiation put between the crew and the baseline humanity the founders had launched."
+   }
+  ]
  }
 ]

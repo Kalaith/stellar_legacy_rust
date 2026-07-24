@@ -1796,6 +1796,42 @@ mod tests {
     }
 
     #[test]
+    fn the_offered_road_reads_who_runs_the_ship() {
+        // Content-depth event families round 26: the deepened first-contact family carries
+        // the faction-outcome coupling — the Ascension can bargain with an advanced
+        // civilization as near-kin, a door the base choices don't open, and one no other
+        // polity gets.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 73, &picks);
+        let tmpl = data.events.get("the_offered_road").unwrap();
+        let bargain = tmpl
+            .outcomes
+            .iter()
+            .position(|o| o.id == "seek_a_deeper_bargain")
+            .unwrap();
+
+        // The two base choices — keep the road, trade the archive — always show.
+        assert!(available_outcome_indices(&sim, tmpl).contains(&0));
+        assert!(available_outcome_indices(&sim, tmpl).len() >= 2);
+
+        // Not under the Hearth Union: no deeper bargain.
+        sim.factions = vec![FactionState {
+            faction_id: "hearth_union".to_string(),
+            members: sim.population.count,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        }];
+        assert!(!available_outcome_indices(&sim, tmpl).contains(&bargain));
+
+        // Under the Ascension Circle: the kindred bargain opens.
+        sim.factions[0].faction_id = "ascension_circle".to_string();
+        assert!(available_outcome_indices(&sim, tmpl).contains(&bargain));
+    }
+
+    #[test]
     fn a_dominant_faction_unlocks_a_choice_others_cannot_take() {
         // Content-depth factions round 25: who runs the ship puts a distinct option on
         // the table. The Wasting's germ-line cure appears only while the Ascension Circle
