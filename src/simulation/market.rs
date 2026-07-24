@@ -38,8 +38,29 @@ fn trade_delta(resource: TradeResource, amount: i64, credits: i64) -> ResourceDe
     delta
 }
 
+/// The factor the ship's *name* puts on a trade price (content-depth provisioning round 30): the
+/// market's regard for who it deals with, on the ship's `mercy` reputation — a well-regarded hull
+/// is dealt with squarely, a feared one draws a risk premium. On a buy the price is scaled by
+/// `1 - scale·(mercy - 0.5)` (a merciful ship pays less), on a sell by `1 + scale·(mercy - 0.5)`
+/// (a merciful ship earns more), floored so no name ever makes a good free or worthless. 1.0
+/// (inert) when the scale is 0 or the name is neutral. Reads reputation only; deterministic.
+fn reputation_trade_factor(sim: &SimState, buying: bool) -> f32 {
+    let scale = sim.market.trade_reputation_scale;
+    if scale == 0.0 {
+        return 1.0;
+    }
+    let standing = sim.reputation("mercy") - 0.5;
+    let factor = if buying {
+        1.0 - scale * standing
+    } else {
+        1.0 + scale * standing
+    };
+    factor.max(0.1)
+}
+
 pub fn buy(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<(), String> {
-    let cost = (price_of(sim, resource) * amount as f32).ceil() as i64;
+    let cost = (price_of(sim, resource) * reputation_trade_factor(sim, true) * amount as f32).ceil()
+        as i64;
     let delta = trade_delta(resource, amount, -cost);
     if !sim.resources.can_afford(&delta) {
         return Err(format!("Need {cost} credits"));
@@ -52,7 +73,8 @@ pub fn buy(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<(
 }
 
 pub fn sell(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<(), String> {
-    let proceeds = (price_of(sim, resource) * amount as f32).floor() as i64;
+    let proceeds = (price_of(sim, resource) * reputation_trade_factor(sim, false) * amount as f32)
+        .floor() as i64;
     let delta = trade_delta(resource, -amount, proceeds);
     if !sim.resources.can_afford(&delta) {
         return Err(format!("Not enough {} to sell", resource.label()));
@@ -167,6 +189,57 @@ mod tests {
         assert!(
             price_of(&sim, TradeResource::Minerals) <= base * 3.0,
             "even a whale trade stays inside the price band"
+        );
+    }
+
+    #[test]
+    fn a_ships_name_bends_its_trade_terms() {
+        // Content-depth provisioning round 30: the market prices for who it deals with. A
+        // merciful, well-regarded hull buys cheaper and sells dearer; a feared one draws a risk
+        // premium (buys dear, sells cheap); a neutral name trades at the base. Isolated by
+        // comparing fresh ships that differ only in reputation, on the same small trade.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.trade_reputation_scale > 0.0,
+            "this test needs the reputation-trade coupling enabled"
+        );
+        let fresh = || {
+            SimState::new_campaign(
+                &data,
+                "wanderers",
+                5,
+                &crate::state::sim::founding_faction_ids(&data),
+            )
+        };
+        let buy_cost = |mercy: f32| -> i64 {
+            let mut sim = fresh();
+            sim.resources.credits = 1_000_000;
+            sim.reputation.insert("mercy".to_string(), mercy);
+            let before = sim.resources.credits;
+            buy(&mut sim, TradeResource::Minerals, 100).unwrap();
+            before - sim.resources.credits
+        };
+        let (merciful, neutral, feared) = (buy_cost(1.0), buy_cost(0.5), buy_cost(0.0));
+        assert!(
+            merciful < neutral,
+            "a well-regarded ship buys cheaper ({merciful} vs {neutral})"
+        );
+        assert!(
+            feared > neutral,
+            "a feared ship pays a risk premium ({feared} vs {neutral})"
+        );
+
+        let sell_proceeds = |mercy: f32| -> i64 {
+            let mut sim = fresh();
+            sim.resources.minerals = 100_000;
+            sim.reputation.insert("mercy".to_string(), mercy);
+            let before = sim.resources.credits;
+            sell(&mut sim, TradeResource::Minerals, 100).unwrap();
+            sim.resources.credits - before
+        };
+        assert!(
+            sell_proceeds(1.0) > sell_proceeds(0.0),
+            "a well-regarded ship sells dearer than a feared one"
         );
     }
 

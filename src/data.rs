@@ -146,6 +146,16 @@ pub struct GameConfig {
     /// `MarketState` at campaign start.
     #[serde(default)]
     pub market_impact_per_unit: f32,
+    /// How much the ship's *reputation* bends its trade terms (content-depth provisioning round
+    /// 30): the market's second responsiveness (the it22 volume coupling was the first). A
+    /// waystation prices for who it is dealing with — a merciful, well-regarded hull is dealt with
+    /// squarely (it buys cheaper and sells dearer), a feared or ruthless one draws a risk premium
+    /// (it buys dear and sells cheap). The effective price is scaled by `1 ∓ this·(mercy − 0.5)`
+    /// (minus on a buy, plus on a sell), so a neutral name (0.5) trades at the base and no
+    /// fresh-campaign path changes. 0 = the market ignores the ship's name. Copied onto
+    /// `MarketState` at campaign start.
+    #[serde(default)]
+    pub trade_reputation_scale: f32,
     /// The food store the ship can keep *fresh* — its carrying capacity (content-depth
     /// provisioning round 24): food is the one resource with no upkeep and no cap, so it
     /// could otherwise pile up without limit. Everything above this line spoils by
@@ -3025,6 +3035,14 @@ mod tests {
             (0.0..=0.01).contains(&data.config.market_impact_per_unit),
             "market_impact_per_unit {} out of the gentle range [0, 0.01]",
             data.config.market_impact_per_unit
+        );
+        // Content-depth provisioning round 30: the reputation trade scale is a gentle bend on
+        // prices — a strong name shades the terms a captain's way but never makes trade free or
+        // ruinous (kept below 1 so even a spotless or infamous name only tilts, never inverts).
+        assert!(
+            (0.0..1.0).contains(&data.config.trade_reputation_scale),
+            "trade_reputation_scale {} must be a gentle fraction in [0, 1)",
+            data.config.trade_reputation_scale
         );
         // Content-depth provisioning round 25: the becalmed morale drain is a gentle
         // yearly attrition, like the chronic-hunger one it mirrors — the slow despair of a

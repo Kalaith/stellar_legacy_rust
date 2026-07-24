@@ -224,6 +224,14 @@ pub struct MarketState {
     /// voyage. 0 = a bottomless market that a single ship's trades never move.
     #[serde(default)]
     pub impact_per_unit: f32,
+    /// How much the ship's *name* bends its trade terms (content-depth provisioning round 30):
+    /// the market's second responsiveness, on the ship's reputation rather than its trade volume
+    /// (it22). A well-regarded (merciful) hull is dealt with squarely — it buys a shade cheaper
+    /// and sells a shade dearer — while a feared, ruthless one draws a risk premium at every
+    /// waystation (it buys dear and sells cheap). Set from `trade_reputation_scale` at campaign
+    /// start. 0 = the waystations price every ship alike, whatever its name.
+    #[serde(default)]
+    pub trade_reputation_scale: f32,
 }
 
 /// Per-category advisor delegation (GDD §5.4): a delegated category's events
@@ -658,6 +666,7 @@ impl SimState {
                 })
                 .collect(),
             impact_per_unit: config.market_impact_per_unit,
+            trade_reputation_scale: config.trade_reputation_scale,
         };
 
         let mut sim = Self {
