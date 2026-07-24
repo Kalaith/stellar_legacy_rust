@@ -229,6 +229,8 @@
       0.18
     ],
     "stability_beat_family": "legacy_drift",
+    "stability_recovery_beat_threshold": 0.55,
+    "stability_recovery_beat_family": "legacy_drift",
     "reputation_beat_trait": "mercy",
     "reputation_beat_high": 0.78,
     "reputation_beat_low": 0.22,

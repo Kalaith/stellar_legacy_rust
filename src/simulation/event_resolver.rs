@@ -409,6 +409,15 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Governance-strength gate (content-depth campaign-skeleton round 28): "the institutions are
+    // strong / rebuilt" content waits until stability has risen to its line — the honest gate for
+    // the governance-recovery beat.
+    if template
+        .stability_above
+        .is_some_and(|t| sim.population.stability < t)
+    {
+        return false;
+    }
     // Chronic-scarcity gate (content-depth round 13): long-hunger content waits
     // until the shortage has ground on for years, not just this season.
     if sim.lean_food_years < template.min_lean_food_years {

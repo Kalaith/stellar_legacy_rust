@@ -1853,6 +1853,56 @@ fn a_recovery_beat_marks_a_ship_pulling_back_from_the_brink() {
 }
 
 #[test]
+fn a_governance_recovery_beat_marks_a_ship_rebuilding_its_institutions() {
+    // Content-depth campaign-skeleton round 28: the stability twin of the unity recovery beat.
+    // A ship whose government never collapsed has nothing to recover; one that fell into a
+    // stability collapse and then climbs back forces a governance-recovery beat, resetting the
+    // stability-collapse counter so a relapse re-arms the collapse beats.
+    let data = GameData::load().unwrap();
+    let threshold = data
+        .config
+        .campaign_skeleton
+        .stability_recovery_beat_threshold;
+    let collapse0 = data.config.campaign_skeleton.stability_beats[0];
+    assert!(
+        threshold > 0.0,
+        "this test needs the governance-recovery beat enabled"
+    );
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        8,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+
+    // A well-governed ship that never collapsed: recovery has nothing to mark.
+    sim.population.stability = threshold + 0.05;
+    assert!(!fire_stability_recovery_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().stability_beats_fired, 0);
+
+    // The institutions collapse: the stability-collapse beat fires.
+    sim.population.stability = collapse0 - 0.02;
+    assert!(fire_stability_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().stability_beats_fired, 1);
+    // …but no recovery while the government is still in anarchy.
+    assert!(!fire_stability_recovery_beat(&mut sim, &data, &mut report));
+
+    // Rebuild it: the recovery beat fires and resets the collapse counter.
+    sim.population.stability = threshold + 0.05;
+    assert!(fire_stability_recovery_beat(&mut sim, &data, &mut report));
+    assert_eq!(
+        sim.contract.as_ref().unwrap().stability_beats_fired,
+        0,
+        "rebuilding the government marks the recovery and re-arms the collapse beats"
+    );
+    // Fires once per collapse episode.
+    assert!(!fire_stability_recovery_beat(&mut sim, &data, &mut report));
+}
+
+#[test]
 fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     // Content-depth charters round 10: the first scripted-narrative charter — a
     // mission architected around a *sequence* of timed beats, an authored arc

@@ -451,6 +451,14 @@ pub struct EventTemplate {
     /// longer survive a planet" cannot surface on a still-baseline crew. None = ungated.
     #[serde(default)]
     pub adaptation_above: Option<f32>,
+    /// Governance-strength gate (content-depth campaign-skeleton round 28): the event only enters
+    /// the pool once the ship's `stability` has risen to or above this fraction — the honest gate
+    /// for *the institutions are strong / rebuilt* content and the governance-recovery beat, so
+    /// "the councils reconvened, the charter re-codified" cannot surface on a ship still in
+    /// anarchy. The high-side twin of the collapse content's implicit low stability. None =
+    /// ungated.
+    #[serde(default)]
+    pub stability_above: Option<f32>,
     /// Chronic-scarcity gate (content-depth provisioning round 13): the event only
     /// enters the pool once the food store has sat below the lean line for at least
     /// this many consecutive years (`sim.lean_food_years`) — the honest gate for

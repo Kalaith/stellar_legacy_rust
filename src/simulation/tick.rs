@@ -100,6 +100,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_cultural_divergence_beat(sim, data, &mut report)
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
+            && !fire_stability_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
@@ -591,6 +592,38 @@ fn fire_recovery_beat(sim: &mut SimState, data: &GameData, report: &mut TickRepo
         contract.crisis_beats_fired = 0;
     }
     force_family_beat(sim, data, &cfg.recovery_beat_family, report);
+    true
+}
+
+/// Fire a governance-recovery beat (content-depth campaign-skeleton round 28): the *stability*
+/// twin of the it13 unity recovery beat, and the hopeful mirror of the it15 stability-collapse
+/// beats. Once the ship's institutions have failed (a stability beat fired) and its `stability`
+/// climbs back to or above the recovery threshold, force a beat — the government rebuilt, the
+/// councils reconvened, a ship pulling its own institutions back from anarchy — and reset the
+/// stability-collapse counter so a relapse re-arms the collapse beats. Fires once per collapse
+/// episode. Fires only during a voyage; at most one per month.
+fn fire_stability_recovery_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    report: &mut TickReport,
+) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.stability_recovery_beat_family.is_empty() || cfg.stability_recovery_beat_threshold <= 0.0
+    {
+        return false;
+    }
+    let recovered = sim.contract.as_ref().is_some_and(|c| {
+        c.stability_beats_fired > 0
+            && sim.population.stability >= cfg.stability_recovery_beat_threshold
+    });
+    if !recovered {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        // The institutions are rebuilt; re-arm the collapse beats against a future relapse.
+        contract.stability_beats_fired = 0;
+    }
+    force_family_beat(sim, data, &cfg.stability_recovery_beat_family, report);
     true
 }
 

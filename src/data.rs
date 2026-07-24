@@ -1039,6 +1039,19 @@ pub struct CampaignSkeletonConfig {
     /// The family a governance-collapse stability beat draws from.
     #[serde(default)]
     pub stability_beat_family: String,
+    /// Governance-recovery threshold (content-depth campaign-skeleton round 28): the stability
+    /// beat's *hopeful mirror*, the exact twin of the it13 unity `recovery_beat_threshold`. Once
+    /// the ship's institutions have collapsed (a stability beat has fired) and its `stability`
+    /// then climbs back to or above this, a beat is forced — the government rebuilt, councils
+    /// reconvened, the charter re-codified, a ship pulling its own institutions back from anarchy
+    /// — and the stability-collapse counter is reset so a relapse re-arms the collapse beats. Set
+    /// above the collapse thresholds for hysteresis. 0 = no governance-recovery beat (the ship
+    /// only ever marks its institutions failing, never their rebuilding).
+    #[serde(default)]
+    pub stability_recovery_beat_threshold: f32,
+    /// The family the governance-recovery beat draws from.
+    #[serde(default)]
+    pub stability_recovery_beat_family: String,
     /// Reputation beat (content-depth round 16): the skeleton's first trigger on the
     /// ship's *cumulative character* (it105) rather than a population stat. When the
     /// named reputation trait crosses *into* a strong band — famously high (≥ `high`)
@@ -2463,6 +2476,31 @@ mod tests {
                 families.contains(&sk.recovery_beat_family),
                 "campaign_skeleton recovery_beat_family '{}' has no events",
                 sk.recovery_beat_family
+            );
+        }
+        // Content-depth campaign-skeleton round 28: the governance-recovery beat, the stability
+        // twin of the it13 unity recovery beat. Its family must have events; its threshold must
+        // sit clear above the worst stability-collapse line (hysteresis) and at most 1.0; and a
+        // `stability_above`-gated event (gated at or below the threshold, so it is eligible the
+        // moment the recovery fires) must exist to surface the reckoning on theme.
+        if !sk.stability_recovery_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.stability_recovery_beat_family),
+                "campaign_skeleton stability_recovery_beat_family '{}' has no events",
+                sk.stability_recovery_beat_family
+            );
+            let worst_stability = sk.stability_beats.iter().cloned().fold(0.0_f32, f32::max);
+            assert!(
+                sk.stability_recovery_beat_threshold > worst_stability
+                    && sk.stability_recovery_beat_threshold <= 1.0,
+                "stability_recovery_beat_threshold {} must sit above the collapse band {worst_stability}",
+                sk.stability_recovery_beat_threshold
+            );
+            assert!(
+                data.events.iter().any(|(_, e)| e
+                    .stability_above
+                    .is_some_and(|t| t <= sk.stability_recovery_beat_threshold)),
+                "the governance-recovery beat needs a stability_above event eligible at its threshold"
             );
         }
         // Content-depth round 14: loyalty-collapse beats are the DESCENDING mirror

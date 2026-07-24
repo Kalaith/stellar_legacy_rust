@@ -2830,5 +2830,86 @@
     "log": "The council told the young officer the truth — that the why was gone, and that the ship would carry on without it — and something settled in the decks that was almost peace: a people who had stopped straining to remember a fire two centuries cold and simply took up the work as their own, the mission become pure custom, meaning enough in the doing. The founders would not have understood it. Their heirs no longer needed them to."
    }
   ]
+ },
+ {
+  "id": "the_quorum_returns",
+  "category": "legacy_moment",
+  "title": "The Quorum Returns",
+  "description": "For the first time in longer than the clerks can cleanly document, the council sat in full quorum, heard its docket, and adjourned having actually decided things. There was no crisis, no charismatic figure, no emergency powers — only the ordinary machinery of a government working the way a government is supposed to, which after the long stretch of empty chairs and un-enforced rulings and offices held by whoever happened to be standing nearby, felt to the whole ship like a kind of miracle. Someone should mark it. The question is how.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "stability_above": 0.5,
+  "outcomes": [
+   {
+    "id": "make_it_law",
+    "label": "Codify what was rebuilt",
+    "description": "Do not let the recovery be an accident that could un-happen. Write the reconstituted procedures into the charter — the quorum rules, the succession of offices, the plain mechanics of deciding — so the next generation inherits a working government and not the memory of one.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.03
+     }
+    ],
+    "log": "The council codified its own hard-won recovery — the quorum rules, the offices, the unglamorous mechanics of governing — and filed it in the archive beside the founders' charter, a second constitution written not by dreamers setting out but by heirs who had watched the first one nearly fail and meant to keep this one working."
+   },
+   {
+    "id": "let_it_stand_quietly",
+    "label": "Let it just be true",
+    "description": "Mark it with nothing louder than relief. A government that works because people have chosen to make it work needs no monument; codify too eagerly and you risk mistaking the paper for the practice. Let the decks simply notice, and keep choosing it.",
+    "population_delta": {
+     "stability": 0.03,
+     "unity": 0.03,
+     "morale": 0.02
+    },
+    "log": "The ship marked its recovered government with nothing grander than a collective, unspoken relief, and went back to work — a polity that held together now not by charter or charisma but by the plain daily choice of people who had seen the alternative and wanted no more of it."
+   }
+  ]
+ },
+ {
+  "id": "the_offices_filled_again",
+  "category": "legacy_moment",
+  "title": "The Offices Filled Again",
+  "description": "The rolls are complete. Every post the charter names — the ones that sat empty through the long institutional drought, their duties done badly or not at all — has a competent, willing soul in it again, trained and accountable and answerable to the rest. It is the least dramatic possible achievement and one of the hardest, and an old clerk who lived through the empty years cannot quite stop reading the roster over, checking that the names are real.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "stability_above": 0.5,
+  "outcomes": [
+   {
+    "id": "invest_in_the_offices",
+    "label": "Train the next set now",
+    "description": "A government is only ever one bad generation from empty chairs again. Spend on the schools and apprenticeships that make officeholders, so the ship never again has to rebuild its institutions from folklore.",
+    "resource_delta": {
+     "credits": -250
+    },
+    "population_delta": {
+     "stability": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.04
+     }
+    ],
+    "log": "The council, remembering the empty years, spent on the making of officeholders — the schools, the apprenticeships, the deliberate cultivation of people who could govern — so that the next drought, if it came, would find a ship with a deep enough bench to fill its own chairs. The institutions had learned to reproduce themselves."
+   },
+   {
+    "id": "savor_the_full_roster",
+    "label": "Just be glad of it",
+    "description": "Accept the quiet triumph without spending against a future that may never come. The offices are filled, the work is done, and a ship that governs itself well today has earned an untroubled breath.",
+    "population_delta": {
+     "stability": 0.02,
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "log": "The ship let itself simply be glad — every office filled, every duty owned, the long institutional drought behind it — and the old clerk finally set the roster down, satisfied at last that the names were real and the ship, for now, was whole in its governing."
+   }
+  ]
  }
 ]
