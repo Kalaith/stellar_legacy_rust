@@ -168,6 +168,15 @@ pub struct FactionConfig {
     /// permanent twin of the it14 event-time spillover. Scaled by the *product* of the
     /// two peoples' shares of the ship, so a rivalry bites only when both are large.
     /// 0 = rivalries carry no standing cohesion cost.
+    /// The cohesion wound of losing a whole people (content-depth factions round 24):
+    /// beyond the headcount (W7) and the craft it carried (it20), a departure — a
+    /// secession into the dark, a settlement that stays on a world — leaves a hole in
+    /// the community the remaining crew feel. Morale and unity both take this much,
+    /// **scaled by the departing people's share of the ship**, so a great secession is a
+    /// real blow while a tiny remnant slipping away barely registers. 0 = a departure
+    /// costs the ship no cohesion beyond the bodies and the knowledge.
+    #[serde(default)]
+    pub departure_cohesion_scar: f32,
     #[serde(default)]
     pub rival_unity_friction: f32,
     /// Unity lifted per year by a pair of aboard *allies* (content-depth factions round

@@ -2472,6 +2472,13 @@ mod tests {
             fac_cfg.rival_unity_friction <= 0.1 && fac_cfg.ally_unity_solidarity <= 0.1,
             "rival/ally unity pressures must be gentle yearly drifts"
         );
+        // Content-depth factions round 24: the departure cohesion scar is a bounded blow
+        // (a full-ship secession, share 1.0, must not empty morale/unity in one stroke).
+        assert!(
+            (0.0..=0.5).contains(&fac_cfg.departure_cohesion_scar),
+            "departure_cohesion_scar {} out of range [0, 0.5]",
+            fac_cfg.departure_cohesion_scar
+        );
         // Content-depth voice round 2: if ambient flavor is switched on, it needs
         // lines to draw from.
         if fl.ambient_gap_years > 0 {

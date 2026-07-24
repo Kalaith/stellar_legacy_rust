@@ -982,6 +982,19 @@ impl SimState {
             FactionLossKind::Departed => FactionStatus::Departed,
         };
         self.population.count = self.population.count.saturating_sub(members);
+        // Losing a whole people wounds the ship's cohesion (content-depth factions round
+        // 24): beyond the bodies and the craft, a departure leaves a hole in the
+        // community — a familiar quarter of the ship gone quiet, the balance upset, the
+        // remaining crew shaken. Scaled by the departing people's share of the ship
+        // *before* they left, so a great secession is a blow and a tiny remnant is not.
+        let scar_scale = data.config.factions.departure_cohesion_scar;
+        if scar_scale > 0.0 && members > 0 {
+            let total_before = self.population.count + members;
+            let share = members as f32 / total_before.max(1) as f32;
+            let scar = scar_scale * share;
+            self.population.morale = (self.population.morale - scar).max(0.0);
+            self.population.unity = (self.population.unity - scar).max(0.0);
+        }
         let name = log_name(&data.factions, &self.factions[idx].faction_id);
         let tail = match kind {
             FactionLossKind::Settled => "made planetfall to stay, and did not come back aboard",
@@ -1764,6 +1777,62 @@ mod tests {
             "the government steadying says so afresh"
         );
         assert_eq!(sim.stability_voice_band, 1);
+    }
+
+    #[test]
+    fn losing_a_whole_people_scars_the_ships_cohesion() {
+        // Content-depth factions round 24: a departure wounds cohesion beyond the bodies
+        // and the craft — morale and unity both take a hit scaled by the departing
+        // people's share of the ship.
+        use crate::state::sim::factions::{FactionLossKind, FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let scar = data.config.factions.departure_cohesion_scar;
+        assert!(
+            scar > 0.0,
+            "this test needs the departure-scar coupling enabled"
+        );
+
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            9,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.population.morale = 0.6;
+        sim.population.unity = 0.6;
+        sim.population.count = 1000;
+        // Two evenly large peoples: one holds half the ship.
+        sim.factions = vec![
+            FactionState {
+                faction_id: "steel_covenant".to_string(),
+                members: 500,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            },
+            FactionState {
+                faction_id: "hearth_union".to_string(),
+                members: 500,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            },
+        ];
+
+        let (m0, u0) = (sim.population.morale, sim.population.unity);
+        sim.apply_faction_loss_by_id(&data, FactionLossKind::Departed, "steel_covenant");
+        assert!(
+            sim.population.morale < m0,
+            "losing a great people wounds morale"
+        );
+        assert!(sim.population.unity < u0, "…and unity");
+        // Half the ship departing scars by scar × 0.5.
+        let expected = scar * 0.5;
+        assert!(
+            (m0 - sim.population.morale - expected).abs() < 1e-4,
+            "the scar scales by the departing share ({} vs {expected})",
+            m0 - sim.population.morale
+        );
     }
 
     #[test]
