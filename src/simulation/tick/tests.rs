@@ -1,7 +1,7 @@
 //! Tests for the advance loop and the economic year — split out of `tick.rs`
 //! to keep it under the size limit.
 
-use super::economy::{apply_voyage_drift, quiet_ambient_pool};
+use super::economy::{apply_voyage_drift, influence_governance_factor, quiet_ambient_pool};
 use super::*;
 use crate::data::GameData;
 use crate::simulation::contract::start_contract;
@@ -2734,6 +2734,50 @@ fn a_power_rich_ship_fabricates_its_own_spare_parts() {
     assert!(
         parts_rich > parts_poor,
         "the surplus buys parts the starved ship never gets ({parts_rich} vs {parts_poor})"
+    );
+}
+
+#[test]
+fn a_governed_ship_mints_full_influence_and_a_collapsing_one_earns_less() {
+    // Content-depth provisioning round 26: influence is political capital, only as real as
+    // the institutions that mint it. A ship at or above the governance line earns full
+    // income (factor 1.0); below it the factor falls proportionally toward the floor at
+    // zero stability — but never to zero, and never above 1.0.
+    let data = GameData::load().unwrap();
+    let threshold = data.config.influence_governance_threshold;
+    let floor = data.config.influence_governance_floor;
+    assert!(threshold > 0.0, "this test needs the coupling enabled");
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+
+    // At and above the line: full income.
+    sim.population.stability = threshold;
+    assert_eq!(influence_governance_factor(&sim, &data.config), 1.0);
+    sim.population.stability = 1.0;
+    assert_eq!(influence_governance_factor(&sim, &data.config), 1.0);
+
+    // Below the line: less than full, and monotonically lower as governance slips.
+    sim.population.stability = threshold * 0.5;
+    let mid = influence_governance_factor(&sim, &data.config);
+    assert!(
+        mid < 1.0 && mid > floor,
+        "a slipping government earns less ({mid})"
+    );
+
+    // Total collapse: the floor exactly, never zero.
+    sim.population.stability = 0.0;
+    let collapsed = influence_governance_factor(&sim, &data.config);
+    assert!(
+        (collapsed - floor).abs() < 1e-6,
+        "an ungoverned ship mints only the floor ({collapsed} vs {floor})"
+    );
+    assert!(
+        collapsed > 0.0,
+        "even a collapsed government mints something"
     );
 }
 

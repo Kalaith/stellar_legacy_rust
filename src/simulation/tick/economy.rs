@@ -4,7 +4,7 @@
 //! out of `tick.rs` to keep the advance loop readable and the file under the
 //! size limit.
 
-use crate::data::{GameData, PopulationDelta, ResourceDelta};
+use crate::data::{GameConfig, GameData, PopulationDelta, ResourceDelta};
 use crate::simulation::{crew, legacy, market, mortality, ship, subsystems, succession};
 use crate::state::sim::SimState;
 
@@ -41,13 +41,18 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // A degraded farm feeds fewer (content-depth subsystems round 12): the food
     // module's condition→output coupling, so upkeep on the hydroponics pays back.
     let agri_condition = subsystems::agriculture_condition_food_factor(sim, data);
+    // A council that cannot govern cannot mint the authority its officers spend
+    // (content-depth provisioning round 26): influence income falls as governance slips
+    // below the line, so a ship in institutional decline earns less of the very political
+    // capital its recovery choices cost — the governance twin of the it26 fabrication trap.
+    let gov_factor = influence_governance_factor(sim, config);
     let produced = ResourceDelta {
         credits: (sim.production.credits * crew_mult.credits).floor() as i64,
         energy: (sim.production.energy * crew_mult.energy).floor() as i64,
         minerals: (sim.production.minerals * crew_mult.minerals).floor() as i64,
         food: (sim.production.food * crew_mult.food * (1.0 + agri_bonus) * agri_condition).floor()
             as i64,
-        influence: (sim.production.influence * crew_mult.influence).floor() as i64,
+        influence: (sim.production.influence * crew_mult.influence * gov_factor).floor() as i64,
     };
     sim.resources.apply(&produced);
 
@@ -558,6 +563,26 @@ pub(super) fn quiet_ambient_pool<'a>(sim: &SimState, data: &'a GameData) -> &'a 
 /// Apply one year of voyage drift to the population (PLAN M4.1). Identity terms
 /// scale by the legacy's multiplier (Adaptors fastest, Preservers slowest); the
 /// morale/unity strain is universal. Clamped to 0-1 by `PopulationState::apply`.
+/// The fraction of its influence income a ship actually mints given its governance
+/// (content-depth provisioning round 26). Influence is political capital, and a council
+/// that cannot reach quorum cannot issue the authority its officers spend: at or above the
+/// governance line the ship earns full income (factor 1.0); below it, the factor falls
+/// linearly from 1.0 at the line toward `influence_governance_floor` at zero stability, so
+/// even an ungoverned ship mints a little raw standing but never zero. Inert (1.0) when the
+/// threshold is 0. Reads `stability` only — deterministic, no RNG.
+pub(super) fn influence_governance_factor(sim: &SimState, config: &GameConfig) -> f32 {
+    let threshold = config.influence_governance_threshold;
+    if threshold <= 0.0 {
+        return 1.0;
+    }
+    let stability = sim.population.stability;
+    if stability >= threshold {
+        return 1.0;
+    }
+    let floor = config.influence_governance_floor;
+    floor + (1.0 - floor) * (stability / threshold)
+}
+
 pub(super) fn apply_voyage_drift(sim: &mut SimState, data: &GameData) {
     let vd = &data.config.voyage_drift;
     let legacy_mult = vd

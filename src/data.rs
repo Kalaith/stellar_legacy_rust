@@ -150,6 +150,22 @@ pub struct GameConfig {
     /// tolerated and only a sustained one wears away.
     #[serde(default)]
     pub food_spoilage_fraction: f32,
+    /// Governance line below which the ship's *influence* income begins to fall
+    /// (content-depth provisioning round 26): influence is political capital, and political
+    /// capital is only as real as the institutions that mint it — a ship whose `stability`
+    /// has slipped below this line generates less of it, a council that cannot reach quorum
+    /// unable to issue the authority its officers spend. At or above the line, full income
+    /// (inert). 0 = the coupling is off (influence income ignores governance).
+    #[serde(default)]
+    pub influence_governance_threshold: f32,
+    /// Fraction of influence income that survives even a total governance collapse
+    /// (content-depth provisioning round 26): the floor the income factor decays toward as
+    /// `stability` falls from the threshold to 0, so even an ungoverned ship mints a little
+    /// political capital (raw standing, not institutional authority) — never zero. Must sit
+    /// in [0, 1); the factor runs `floor + (1 - floor)·(stability / threshold)` below the
+    /// line and clamps to 1.0 at or above it.
+    #[serde(default)]
+    pub influence_governance_floor: f32,
     /// Food store below which a year counts as *lean* (content-depth provisioning
     /// round 13): distinct from the near-famine `low_food_threshold`, this is the
     /// "not comfortably stocked" line whose sustained crossing drives `lean_food_years`
@@ -2724,6 +2740,25 @@ mod tests {
                         .iter()
                         .all(|s| s.contains("{spoiled}")),
                 "every food_spoilage line needs its {{spoiled}} slot"
+            );
+        }
+        // Content-depth provisioning round 26: the influence→governance income coupling. The
+        // line is a fraction in (0,1) when enabled, and the floor a fraction in [0,1) strictly
+        // below it (even a collapsed government mints *some* influence, but a healthy one must
+        // out-earn it) — so the factor is continuous and never inverts.
+        if data.config.influence_governance_threshold > 0.0 {
+            assert!(
+                data.config.influence_governance_threshold < 1.0,
+                "influence_governance_threshold {} must be a fraction inside (0, 1)",
+                data.config.influence_governance_threshold
+            );
+            assert!(
+                (0.0..1.0).contains(&data.config.influence_governance_floor)
+                    && data.config.influence_governance_floor
+                        < data.config.influence_governance_threshold,
+                "influence_governance_floor {} must be in [0, 1) and below the threshold {}",
+                data.config.influence_governance_floor,
+                data.config.influence_governance_threshold
             );
         }
         // Content-depth charters round 22: the crew-morale accrual swing is gentle —
