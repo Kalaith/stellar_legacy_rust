@@ -132,6 +132,19 @@ pub struct FactionConfig {
     /// indifferent to an ally coming aboard.
     #[serde(default)]
     pub recruit_ally_approval_bonus: f32,
+    /// Approval an incumbent aboard people *gains* when a *rival* of theirs departs the ship
+    /// (content-depth factions round 30): the departure mirror of `recruit_rival_approval_penalty`
+    /// — as taking a rival aboard bristles a people, so a rival *leaving* quietly relieves them.
+    /// Read against the same catalog `rivals` lists (either direction). 0 = incumbents are
+    /// indifferent to a rival's departure.
+    #[serde(default)]
+    pub departure_rival_approval_relief: f32,
+    /// Approval an incumbent aboard people *loses* when an *ally* of theirs departs the ship
+    /// (content-depth factions round 30): the departure mirror of `recruit_ally_approval_bonus` —
+    /// a people is saddened to see a friend go. Read against the catalog `allies` lists (either
+    /// direction). 0 = incumbents are indifferent to an ally's departure.
+    #[serde(default)]
+    pub departure_ally_approval_penalty: f32,
     /// Below this condition, a people watching its tended subsystem rot loses
     /// approval each year (content-depth subsystems round 8). 0 disables it.
     #[serde(default)]

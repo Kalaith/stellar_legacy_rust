@@ -1275,6 +1275,40 @@ impl SimState {
                 }
             }
         }
+
+        // The peoples left aboard feel the departure by their standing to the one gone
+        // (content-depth factions round 30): the mirror of the it28 recruitment reactions —
+        // where taking a people aboard stirs the roster's rivalries and friendships, so does one
+        // leaving. A rival of the departed is quietly relieved (approval up); an ally is saddened
+        // (approval down). Read against the same catalog relationships (either direction) the it23
+        // cohesion and it28 recruitment couplings use; the departed people (now not aboard) does
+        // not react to its own going.
+        let fac_cfg = data.config.factions;
+        let relief = fac_cfg.departure_rival_approval_relief;
+        let penalty = fac_cfg.departure_ally_approval_penalty;
+        if relief > 0.0 || penalty > 0.0 {
+            let departed_id = self.factions[idx].faction_id.clone();
+            let related = |a: &str, b: &str, pick: fn(&FactionDef) -> &Vec<String>| -> bool {
+                data.factions
+                    .get(a)
+                    .is_some_and(|d| pick(d).iter().any(|x| x == b))
+                    || data
+                        .factions
+                        .get(b)
+                        .is_some_and(|d| pick(d).iter().any(|x| x == a))
+            };
+            for fstate in &mut self.factions {
+                if !fstate.is_aboard() {
+                    continue;
+                }
+                if relief > 0.0 && related(&fstate.faction_id, &departed_id, |d| &d.rivals) {
+                    fstate.adjust_approval(relief);
+                } else if penalty > 0.0 && related(&fstate.faction_id, &departed_id, |d| &d.allies)
+                {
+                    fstate.adjust_approval(-penalty);
+                }
+            }
+        }
     }
 
     /// On a generation boundary, fold any tiny, drifted faction into the largest
@@ -3206,5 +3240,59 @@ mod tests {
         );
         // The newcomer arrives at neutral approval, reacting to no one.
         assert_eq!(approval("steel_covenant"), default_approval());
+    }
+
+    #[test]
+    fn a_departure_stirs_the_ships_rivalries_and_friendships() {
+        // Content-depth factions round 30: the mirror of the recruitment reactions. When the
+        // Steel Covenant depart, their aboard rival the Verdant Kin are quietly relieved (approval
+        // up by the relief) and their aboard ally the Meridian Accord are saddened (down by the
+        // penalty); the departed people, no longer aboard, reacts to nothing.
+        let (data, mut sim, _picks) = armed(16);
+        let cfg = &data.config.factions;
+        assert!(
+            cfg.departure_rival_approval_relief > 0.0 && cfg.departure_ally_approval_penalty > 0.0,
+            "this test needs the departure-reaction coupling enabled"
+        );
+        // Seat the departing people, their rival, and their ally (all at neutral approval).
+        sim.factions = ["steel_covenant", "verdant_kin", "meridian_accord"]
+            .iter()
+            .map(|id| FactionState {
+                faction_id: (*id).to_string(),
+                members: 300,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            })
+            .collect();
+        let approval = |sim: &SimState, id: &str| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .unwrap()
+                .approval
+        };
+
+        sim.apply_faction_loss_by_id(&data, FactionLossKind::Departed, "steel_covenant");
+
+        // The rival is relieved, by exactly the relief; the ally saddened, by exactly the penalty.
+        assert!(
+            approval(&sim, "verdant_kin") > 0.5,
+            "a rival is relieved to see them go"
+        );
+        assert!(
+            (approval(&sim, "verdant_kin") - 0.5 - cfg.departure_rival_approval_relief).abs()
+                < 1e-6,
+            "the rival's relief is exactly the configured amount"
+        );
+        assert!(
+            approval(&sim, "meridian_accord") < 0.5,
+            "an ally is saddened to see them go"
+        );
+        assert!(
+            (0.5 - approval(&sim, "meridian_accord") - cfg.departure_ally_approval_penalty).abs()
+                < 1e-6,
+            "the ally's grief is exactly the configured amount"
+        );
     }
 }
