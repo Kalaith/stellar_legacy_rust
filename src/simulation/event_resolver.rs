@@ -2236,6 +2236,47 @@ mod tests {
     }
 
     #[test]
+    fn a_scarred_reactor_meets_its_next_scram_worse() {
+        // Content-depth event families round 34: the `scarred_reactor` consequence arc. Hand-patching
+        // a coolant breach or hot-restarting a scrammed core records `scarred_reactor`; a later
+        // Reactor Scram then carries a complication read by the engineers who know the core's history
+        // — the old hand-patches making a second hot restart bite harder, its extra toll targeted to
+        // the hot-override choice that re-gambles the scarred core. A clean core meets the scram fresh.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let template = data.events.get("reactor_scram").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| {
+                c.requires_consequence
+                    .contains(&"scarred_reactor".to_string())
+            })
+            .expect("the reactor scram carries a scarred-core reckoning");
+        assert!(
+            comp.applies_to_outcomes
+                .contains(&"hot_override".to_string()),
+            "the scar's extra toll lands on the hot restart, not the careful cold one"
+        );
+
+        // A core never scarred meets the scram fresh — no reckoning.
+        let mut clean = SimState::new_campaign(&data, "preservers", 21, &picks);
+        assert!(
+            active_complication(&clean, template).is_none(),
+            "an unscarred core meets the scram fresh"
+        );
+
+        // Record the scar the coolant breach or a prior scram leaves: now the core remembers.
+        clean.consequences.push("scarred_reactor".to_string());
+        assert_eq!(
+            active_complication(&clean, template).map(|c| &c.id),
+            Some(&comp.id),
+            "a core that has scarred before meets its next scram worse"
+        );
+        assert!(shown_description(&clean, template).contains("scrammed before"));
+    }
+
+    #[test]
     fn a_reputation_gated_complication_rides_only_on_a_ship_of_that_name() {
         // Content-depth event families round 22: the same crisis reads differently by
         // the *name* the ship has earned. The Petitioners gains a twist that rides only

@@ -382,7 +382,27 @@
     "log": "The council will not gamble the ship on a scarred core. The mission is cut short — the long road home begins on battery and prayer."
    }
   ],
-  "family": "engineering"
+  "family": "engineering",
+  "complications": [
+   {
+    "id": "the_core_remembers_its_scars",
+    "requires_consequence": [
+     "scarred_reactor"
+    ],
+    "applies_to_outcomes": [
+     "hot_override"
+    ],
+    "description_add": "And this core has scrammed before. The engineers who nursed it through its last scarring know every hot patch and hand-weld still holding in the annex, and they will say plainly that the margins that let them gamble last time are gone: a reactor already run past its certification does not forgive a second hot restart the way a sound one might.",
+    "ship_delta": {
+     "hull_integrity": -0.03
+    },
+    "population_delta": {
+     "morale": -0.03,
+     "stability": -0.02
+    },
+    "log": "The scarred core met this scram worse than its first. The old hand-patches in the annex, already holding past their certification, gave a little more under the hot restart — the reactor runs, but the techs who know its history have stopped pretending the ship still flies a machine the founders would recognize."
+   }
+  ]
  },
  {
   "id": "debris_lattice",
