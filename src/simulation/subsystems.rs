@@ -436,6 +436,26 @@ pub fn engineering_fuel_burn_factor(sim: &SimState, data: &GameData) -> f32 {
     (1.0 + penalty * (1.0 - condition)).max(1.0)
 }
 
+/// Multiplier on the ship's yearly *hull* wear from the engineering bay's condition
+/// (content-depth subsystems round 24): the engineering bay is where the ship is
+/// mended, so it should keep not only the modules (the it62 decay keystone) but the
+/// *hull* itself in repair — the welders, the fabricators, the crews who work the frame.
+/// A sound bay holds the hull at its baseline wear (factor 1.0), a failing one lets the
+/// frame rot faster (`1 + engineering_hull_decay_penalty·(1 - condition)`). Penalty-
+/// below-full, floored at 1.0 so a good bay never makes the hull immortal — it only
+/// keeps the normal rate — and 1.0 when the coupling is off or the module is gone.
+pub fn engineering_hull_decay_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.engineering_hull_decay_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("engineering_bay")
+        .map_or(1.0, |s| s.condition);
+    (1.0 + penalty * (1.0 - condition)).max(1.0)
+}
+
 /// Fraction by which the medical bay lowers each character's monthly age-based
 /// death chance (content-depth subsystems round 18 — the first subsystem coupling
 /// to the real-time-loop mortality system). Scales by *condition*, so keeping the
@@ -607,6 +627,39 @@ mod tests {
             habitat_morale_effect(&sim, &data),
             0.0,
             "a middling home neither lifts nor drags"
+        );
+    }
+
+    #[test]
+    fn a_sound_engineering_bay_holds_the_hull_and_a_failing_one_lets_it_rot_faster() {
+        // Content-depth subsystems round 24: the engineering bay maintains the hull, not
+        // just the modules. A sound bay holds hull wear at the baseline (factor 1.0); a
+        // failing one accelerates it; a good bay never drops below the baseline (no
+        // immortal hulls).
+        let (data, mut sim) = campaign(23);
+        let penalty = data.config.subsystems.engineering_hull_decay_penalty;
+        assert!(
+            penalty > 0.0,
+            "this test needs the engineering→hull coupling enabled"
+        );
+
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 1.0;
+        assert_eq!(
+            engineering_hull_decay_factor(&sim, &data),
+            1.0,
+            "a sound bay holds the hull at its baseline wear"
+        );
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.5;
+        let half = engineering_hull_decay_factor(&sim, &data);
+        assert!(
+            half > 1.0,
+            "a failing bay lets the hull rot faster ({half})"
+        );
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.0;
+        let wrecked = engineering_hull_decay_factor(&sim, &data);
+        assert!(
+            wrecked > half,
+            "a wrecked bay wears the hull fastest of all ({wrecked})"
         );
     }
 

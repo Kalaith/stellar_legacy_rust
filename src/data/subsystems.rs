@@ -80,6 +80,16 @@ pub struct SubsystemsConfig {
     /// decay *and* eats your fuel). 0 = the bay's state does not touch fuel.
     #[serde(default)]
     pub engineering_fuel_burn_penalty: f32,
+    /// How much a *degraded* engineering bay accelerates the ship's yearly hull wear
+    /// (content-depth subsystems round 24): the bay is where the ship is mended, so it
+    /// keeps not just the modules (the it62 keystone) but the *hull* itself. Hull decay is
+    /// scaled by `1 + engineering_hull_decay_penalty·(1 - condition)`, penalty-below-full
+    /// and floored at 1.0 — a sound bay holds the baseline wear, a failing one lets the
+    /// frame rot faster (compounding the keystone further: neglect the bay and it speeds
+    /// every module's decay, eats your fuel, *and* hastens the hull toward collapse). 0 =
+    /// the bay's state does not touch hull wear.
+    #[serde(default)]
+    pub engineering_hull_decay_penalty: f32,
     /// Fraction of famine losses the medical bay itself prevents at full
     /// condition (content-depth subsystems round 9): the two modules that only
     /// ever *cost* the ship now earn their keep, and — unlike the tier-based

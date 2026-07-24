@@ -1886,6 +1886,14 @@ mod tests {
             "medical_renewal_penalty {} out of range [0, 0.8]",
             subs_cfg.medical_renewal_penalty
         );
+        // Content-depth subsystems round 24: the engineering→hull decay penalty is a
+        // bounded acceleration (a wrecked bay wears the hull faster, but not so much it
+        // shatters a sound ship in a season).
+        assert!(
+            (0.0..=1.5).contains(&subs_cfg.engineering_hull_decay_penalty),
+            "engineering_hull_decay_penalty {} out of range [0, 1.5]",
+            subs_cfg.engineering_hull_decay_penalty
+        );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(
                 subs_cfg.crisis_weight_floor > 0.0,

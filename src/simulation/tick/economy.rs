@@ -260,8 +260,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     };
     // A stronger life-support/habitat subsystem slows the life-support wear (W5).
     let ls_reduction = subsystems::life_support_decay_reduction(sim, data);
-    sim.ship.hull_integrity =
-        (sim.ship.hull_integrity - config.hull_decay_per_year * wear * fuel_factor).max(0.0);
+    // …and the engineering bay maintains the *hull* too (content-depth subsystems round
+    // 24): the ship is mended where the ship is mended, so a rotting bay lets the frame
+    // wear faster while a sound one holds it at the baseline rate — extending the it62
+    // decay keystone from the modules to the ship's own structure, and compounding the
+    // it hull-collapse spiral (a failed bay hastens the hull toward its red line).
+    let hull_decay_factor = subsystems::engineering_hull_decay_factor(sim, data);
+    sim.ship.hull_integrity = (sim.ship.hull_integrity
+        - config.hull_decay_per_year * wear * fuel_factor * hull_decay_factor)
+        .max(0.0);
     sim.ship.life_support = (sim.ship.life_support
         - config.life_support_decay_per_year * wear * fuel_factor * (1.0 - ls_reduction))
         .max(0.0);
