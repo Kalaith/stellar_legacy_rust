@@ -84,6 +84,8 @@
     "approval_growth_factor": 0.04,
     "rival_approval_spillover": 0.3,
     "ally_approval_spillover": 0.2,
+    "rival_approval_schadenfreude": 0.2,
+    "ally_approval_commiseration": 0.15,
     "approval_unity_coupling": 0.01,
     "dominant_reputation_lean_per_year": 0.008,
     "reputation_alignment_approval_scale": 0.03,

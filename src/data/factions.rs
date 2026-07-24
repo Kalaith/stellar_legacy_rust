@@ -205,6 +205,26 @@ pub struct FactionConfig {
     /// kinships do not spill over.
     #[serde(default)]
     pub ally_approval_spillover: f32,
+    /// Fraction of a *negative* approval delta that a slighted people's aboard *rivals*
+    /// gain in quiet satisfaction (content-depth factions round 32): the mirror the
+    /// it14 favoritism spillover deliberately left out. Where favoring a people sours
+    /// its rivals (`rival_approval_spillover`), *slighting* it warms them — a rival
+    /// humbled is a small victory to those it quarrels with, so an event that wounds one
+    /// people's standing lifts its rivals' by this fraction of the wound. The schadenfreude
+    /// twin of the cost of favoritism, completing the rivalry spillover across both signs.
+    /// 0 = a people's misfortune is no gift to its rivals.
+    #[serde(default)]
+    pub rival_approval_schadenfreude: f32,
+    /// Fraction of a *negative* approval delta that a slighted people's aboard *allies*
+    /// also lose in sympathy (content-depth factions round 32): the mirror the it17
+    /// coalition spillover deliberately left out. Where favoring a people warms its
+    /// allies (`ally_approval_spillover`), *slighting* it stings them — a friend wronged
+    /// is a wound the coalition shares, so an event that hurts one people's standing drags
+    /// its allies' down by this fraction. The commiseration twin of the reward of coalition,
+    /// completing the alliance spillover across both signs. 0 = an ally's misfortune does
+    /// not touch its kin.
+    #[serde(default)]
+    pub ally_approval_commiseration: f32,
     /// Unity ground away per year by a pair of aboard *rivals* (content-depth factions
     /// round 23): the standing friction of two quarreling peoples sharing one hull, the
     /// permanent twin of the it14 event-time spillover. Scaled by the *product* of the

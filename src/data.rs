@@ -2171,6 +2171,19 @@ mod tests {
             data.factions.iter().any(|(_, f)| !f.allies.is_empty()),
             "some faction should have a standing ally"
         );
+        // Content-depth factions round 32: the schadenfreude and commiseration spillovers are
+        // fractions of a slight in [0, 1) — a wounded people's rivals share only *part* of the
+        // relief and its allies only *part* of the sting, never more than the wound itself.
+        assert!(
+            (0.0..1.0).contains(&data.config.factions.rival_approval_schadenfreude),
+            "rival_approval_schadenfreude {} must be a fraction of the slight [0, 1)",
+            data.config.factions.rival_approval_schadenfreude
+        );
+        assert!(
+            (0.0..1.0).contains(&data.config.factions.ally_approval_commiseration),
+            "ally_approval_commiseration {} must be a fraction of the slight [0, 1)",
+            data.config.factions.ally_approval_commiseration
+        );
 
         // W5: six subsystems load; each non-empty buffered family is one of the
         // canonical W6 family strings; tiers are well-formed (3, positive cost).

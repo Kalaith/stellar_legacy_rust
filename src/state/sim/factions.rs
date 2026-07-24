@@ -591,6 +591,92 @@ impl SimState {
         }
     }
 
+    /// Warm the aboard rivals of any people an event just *slighted* (content-depth
+    /// factions round 32): the schadenfreude mirror the it14 favoritism spillover left
+    /// out. Each *negative* approval delta lifts the wounded people's aboard rivals by a
+    /// fraction of the wound — a rival humbled is a small victory to those it quarrels
+    /// with — completing the rivalry spillover across both signs (favoring one people
+    /// sours its rivals; slighting it cheers them). A favor (a positive delta) is handled
+    /// by `apply_rival_approval_spillover`; this fires only on the down-swing. No RNG.
+    pub fn apply_rival_approval_schadenfreude(
+        &mut self,
+        data: &GameData,
+        deltas: &[FactionApprovalDelta],
+    ) {
+        let glee = data.config.factions.rival_approval_schadenfreude;
+        if glee <= 0.0 {
+            return;
+        }
+        // Gather (rival, bonus) from the immutable catalog first, then apply — so the
+        // read of `data.factions.rivals` and the mutation of `self.factions` don't overlap.
+        let mut bonuses: Vec<(String, f32)> = Vec::new();
+        for delta in deltas {
+            if delta.delta >= 0.0 || !self.is_faction_aboard(&delta.id) {
+                continue;
+            }
+            if let Some(def) = data.factions.get(&delta.id) {
+                for rival in &def.rivals {
+                    if self.is_faction_aboard(rival) {
+                        // delta < 0, so `-glee * delta` is a positive lift.
+                        bonuses.push((rival.clone(), -glee * delta.delta));
+                    }
+                }
+            }
+        }
+        for (rival_id, bonus) in bonuses {
+            if let Some(state) = self
+                .factions
+                .iter_mut()
+                .find(|f| f.faction_id == rival_id && f.is_aboard())
+            {
+                state.adjust_approval(bonus);
+            }
+        }
+    }
+
+    /// Sour the aboard allies of any people an event just *slighted* (content-depth
+    /// factions round 32): the commiseration mirror the it17 coalition spillover left
+    /// out. Each *negative* approval delta drags the wounded people's aboard allies down
+    /// by a fraction of the wound — a friend wronged is a hurt the coalition shares —
+    /// completing the alliance spillover across both signs (favoring one people warms its
+    /// allies; slighting it stings them). A favor (a positive delta) is handled by
+    /// `apply_ally_approval_spillover`; this fires only on the down-swing. No RNG.
+    pub fn apply_ally_approval_commiseration(
+        &mut self,
+        data: &GameData,
+        deltas: &[FactionApprovalDelta],
+    ) {
+        let commis = data.config.factions.ally_approval_commiseration;
+        if commis <= 0.0 {
+            return;
+        }
+        // Gather (ally, penalty) from the immutable catalog first, then apply — so the
+        // read of `data.factions.allies` and the mutation of `self.factions` don't overlap.
+        let mut penalties: Vec<(String, f32)> = Vec::new();
+        for delta in deltas {
+            if delta.delta >= 0.0 || !self.is_faction_aboard(&delta.id) {
+                continue;
+            }
+            if let Some(def) = data.factions.get(&delta.id) {
+                for ally in &def.allies {
+                    if self.is_faction_aboard(ally) {
+                        // delta < 0, so `commis * delta` is a negative drag.
+                        penalties.push((ally.clone(), commis * delta.delta));
+                    }
+                }
+            }
+        }
+        for (ally_id, penalty) in penalties {
+            if let Some(state) = self
+                .factions
+                .iter_mut()
+                .find(|f| f.faction_id == ally_id && f.is_aboard())
+            {
+                state.adjust_approval(penalty);
+            }
+        }
+    }
+
     /// Drift the ship's reputation by the standing character of whoever runs it
     /// (content-depth factions round 16): the dominant people's `reputation_leanings`
     /// nudge each named trait a little each year, so a ship long-run by a kind people
@@ -2000,6 +2086,87 @@ mod tests {
             approval(&sim, "verdant_kin"),
             kin_before,
             "a slight to a people is not a wound to its allies"
+        );
+    }
+
+    #[test]
+    fn slighting_a_people_cheers_its_rivals_and_stings_its_allies() {
+        // Content-depth factions round 32: the down-swing mirrors the it14/it17 spillovers
+        // deliberately left out. Where favoring a people sours its rivals and warms its allies,
+        // *slighting* it cheers those rivals (schadenfreude) and stings those allies
+        // (commiseration) — the same relationships spilling over across the opposite sign. The
+        // Verdant Kin carry both a rival (the Steel Covenant) and an ally (the Hearth), so one
+        // wound to the Kin exercises both couplings; a *favor* leaves them to the it14/it17 path.
+        use crate::data::events::FactionApprovalDelta;
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.rival_approval_schadenfreude > 0.0
+                && data.config.factions.ally_approval_commiseration > 0.0,
+            "this test needs the schadenfreude and commiseration spillovers enabled"
+        );
+        // Verdant Kin <-> Steel Covenant are rivals; Verdant Kin <-> Hearth Union are allies.
+        let kin_def = data.factions.get("verdant_kin").unwrap();
+        assert!(kin_def.rivals.contains(&"steel_covenant".to_string()));
+        assert!(kin_def.allies.contains(&"hearth_union".to_string()));
+
+        let fs = |id: &str| FactionState {
+            faction_id: id.to_string(),
+            members: 400,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        };
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            13,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.factions = vec![fs("verdant_kin"), fs("steel_covenant"), fs("hearth_union")];
+        let approval = |sim: &SimState, id: &str| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .unwrap()
+                .approval
+        };
+
+        // Slight the Kin: its rival the Covenant takes quiet satisfaction, its ally the Hearth
+        // shares the sting.
+        let slight = [FactionApprovalDelta {
+            id: "verdant_kin".to_string(),
+            delta: -0.2,
+        }];
+        sim.apply_rival_approval_schadenfreude(&data, &slight);
+        sim.apply_ally_approval_commiseration(&data, &slight);
+        assert!(
+            approval(&sim, "steel_covenant") > 0.5,
+            "the Kin's rival is cheered by its misfortune"
+        );
+        assert!(
+            approval(&sim, "hearth_union") < 0.5,
+            "the Kin's ally is stung by its misfortune"
+        );
+
+        // A *favor* to the Kin runs the it14/it17 path, not these — the down-swing functions
+        // skip positive deltas, so a gain leaves rival and ally untouched by them.
+        let cov_before = approval(&sim, "steel_covenant");
+        let hearth_before = approval(&sim, "hearth_union");
+        let favor = [FactionApprovalDelta {
+            id: "verdant_kin".to_string(),
+            delta: 0.2,
+        }];
+        sim.apply_rival_approval_schadenfreude(&data, &favor);
+        sim.apply_ally_approval_commiseration(&data, &favor);
+        assert_eq!(
+            approval(&sim, "steel_covenant"),
+            cov_before,
+            "a favor to a people is not read by the schadenfreude coupling"
+        );
+        assert_eq!(
+            approval(&sim, "hearth_union"),
+            hearth_before,
+            "a favor to a people is not read by the commiseration coupling"
         );
     }
 

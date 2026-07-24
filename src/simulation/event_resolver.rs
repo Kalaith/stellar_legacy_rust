@@ -688,6 +688,14 @@ pub fn apply_outcome(
     // approval *gain* shares a fraction of goodwill with the favored people's aboard
     // kin, so courting a coalition lifts more than the one people you named.
     sim.apply_ally_approval_spillover(data, &outcome.faction_approval_deltas);
+    // …and slighting a people is a small gift to its rivals (content-depth factions
+    // round 32): the schadenfreude mirror — each approval *loss* lifts the wounded
+    // people's aboard rivals a fraction, completing the rivalry spillover across signs.
+    sim.apply_rival_approval_schadenfreude(data, &outcome.faction_approval_deltas);
+    // …and a wound to it stings its allies (content-depth factions round 32): the
+    // commiseration mirror — each approval *loss* drags the wounded people's aboard kin
+    // down a fraction, so a coalition shares its friends' misfortunes as well as favors.
+    sim.apply_ally_approval_commiseration(data, &outcome.faction_approval_deltas);
     // …or let the shortage fall on the smallest deck (content-depth provisioning
     // round 8): a rationing triage that spares the many by cutting the fewest
     // sours the people who bore it, resolved dynamically without naming them.
