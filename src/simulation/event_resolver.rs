@@ -1996,6 +1996,41 @@ mod tests {
     }
 
     #[test]
+    fn the_young_world_we_woke_comes_back_generations_later() {
+        // Content-depth event families round 31: a chains round closing the exploration family's
+        // two long-dangling first-contact seeds. The World We Woke surfaces only for a ship that
+        // once revealed itself to a young world — its seed on record — and a few generations on.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 46, &picks);
+        sim.dynasty.generation = 4; // clear the min_generation gate
+        let payoff = data.events.get("the_world_we_woke").unwrap();
+
+        assert!(
+            !passes_gate(&sim, payoff),
+            "the woken world's return waits until the ship actually touched one"
+        );
+        sim.consequences.push("touched_a_young_world".to_string());
+        assert!(
+            passes_gate(&sim, payoff),
+            "having touched a young world on record opens its generational reckoning"
+        );
+
+        // …and the frontier-suspicion payoff likewise waits for its own guarded-answers seed.
+        let frontier = data.events.get("the_word_passed_ahead").unwrap();
+        sim.dynasty.generation = 3;
+        assert!(
+            !passes_gate(&sim, frontier),
+            "the word-passed-ahead reckoning waits for the guarded answers that seeded it"
+        );
+        sim.consequences.push("frontier_suspicion".to_string());
+        assert!(
+            passes_gate(&sim, frontier),
+            "a frontier soured by guarded answers brings its suspicion back around"
+        );
+    }
+
+    #[test]
     fn a_convergent_chain_needs_both_its_seeds_on_record() {
         // Content-depth event families round 24: a payoff gated on TWO seed consequences.
         // The Untethered reckons only for a ship that both let its founders go AND turned

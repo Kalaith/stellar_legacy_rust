@@ -586,5 +586,98 @@
     "log": "Under the Ascension Circle the ship met the strangers not as a supplicant but as a lesser kind of kin, and bargained accordingly — winning the folded road while keeping its own archive, and paying only in the further distance the negotiation put between the crew and the baseline humanity the founders had launched."
    }
   ]
+ },
+ {
+  "id": "the_world_we_woke",
+  "category": "legacy_moment",
+  "title": "The World We Woke",
+  "description": "Generations ago the ship descended on a pre-industrial world and let its arrival become that people's founding myth — a thing, the log warned, that could never be taken back. Now the long array catches the proof of it: radio, then the flare of a first orbital launch, from that same world, arriving decades ahead of any natural schedule. The people the ship woke have run for the stars, and the astronomers aboard can read, in the shape of their rise, the mark the ship left — a whole civilization built in a hurry around the memory of a god that came from the sky and did not stay.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "min_generation": 4,
+  "requires_consequence": [
+   "touched_a_young_world"
+  ],
+  "outcomes": [
+   {
+    "id": "answer_the_children",
+    "label": "Answer what we woke",
+    "description": "The ship is far past them now, but not out of reach of a signal. Send the truth — that the god was a ship, the miracle a passing crew, the sky ordinary — and let the people the ship shaped meet their makers as mortals, whatever it costs the myth.",
+    "resource_delta": {
+     "influence": 70
+    },
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship sent the truth back to the world it had woken — here is what descended, here is what we are, no gods, only travelers — and flew on wondering what a people does when it learns its founding miracle was a machine that did not stay. It would be a century before any answer could cross the gulf, and the crew who sent it would not live to hear one."
+   },
+   {
+    "id": "leave_the_myth",
+    "label": "Leave them their sky",
+    "description": "The ship's part in that story is long over, and a truth arriving cold from the dark now would only wound. Say nothing. Let the world keep the myth that lifted it, and let the ship carry, unspoken, the weight of having lit a fire it will never see the end of.",
+    "population_delta": {
+     "unity": 0.03,
+     "morale": -0.02,
+     "legacy_loyalty": 0.02
+    },
+    "log": "The ship watched the world it had woken climb toward the stars on the strength of a story about the ship, and chose to add nothing to it — no correction, no confession, only silence and distance — and carried on with the particular humility of a people who have learned, too late to undo, exactly how much a single passing kindness can weigh on a world."
+   }
+  ]
+ },
+ {
+  "id": "the_word_passed_ahead",
+  "category": "generational_challenge",
+  "title": "The Word Passed Ahead",
+  "description": "The ship reaches a stretch of settled dark it has never sailed — and finds itself already known. Generations back it slipped past a wary frontier on guarded answers, and that frontier, as it warned it would, passed the word ahead: a hull that keeps secrets. The warning has outrun the ship across the intervening years, deck to deck and station to station, hardening at every retelling, so that peoples the ship has never met greet it now with the cold courtesy owed a known liar. A reputation earned in a single cautious hour has become, without the ship's help, a thing that arrives before it does.",
+  "requires_decision": true,
+  "family": "exploration_first_contact",
+  "min_generation": 3,
+  "requires_consequence": [
+   "frontier_suspicion"
+  ],
+  "outcomes": [
+   {
+    "id": "open_the_logs_at_last",
+    "label": "Open the logs, however late",
+    "description": "Throw the ship's records open to everyone who will look — the whole mission, every log the old council kept closed — and let the peoples of this dark judge the truth for themselves, generations after the secrecy that earned the name went to dust.",
+    "resource_delta": {
+     "influence": 50,
+     "credits": -300
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.03
+     }
+    ],
+    "log": "The ship did the thing its ancestors would not: opened every log, mission and all, to a dark that had learned to distrust it. The old suspicion did not vanish — a name that traveled generations does not — but here and there a station warmed a degree, and the ship began the slow work of outliving a reputation it had earned in a single guarded hour."
+   },
+   {
+    "id": "wear_the_name",
+    "label": "Wear the name they gave us",
+    "description": "A reputation this old is not worth the fuel to fight. Let them think the ship keeps secrets; a hull other vessels give a wide, wary berth is a hull rarely troubled. Say nothing, confirm nothing, and let the old warning do the ship the backhanded favor of keeping the curious at arm's length.",
+    "population_delta": {
+     "unity": 0.04,
+     "cultural_drift": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.02
+     }
+    ],
+    "log": "The ship declined to explain itself to a dark that had already made up its mind, and wore the old name — the hull that keeps its secrets — as a kind of armor. The curious kept their distance, the wary kept their peace, and a reputation the founders would have hated became, to their unbothered heirs, simply the shape of how the ship was known."
+   }
+  ]
  }
 ]
