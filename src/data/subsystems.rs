@@ -80,6 +80,15 @@ pub struct SubsystemsConfig {
     /// decay *and* eats your fuel). 0 = the bay's state does not touch fuel.
     #[serde(default)]
     pub engineering_fuel_burn_penalty: f32,
+    /// How much a *degraded* engineering bay reduces the ship's fuel *scooping* (content-depth
+    /// subsystems round 30): the production side of the round-20 burn coupling. The bay maintains
+    /// the drive's intakes and reaction-mass plant, so a rotting one fouls its own scoops — fuel
+    /// regen is scaled by `1 - engineering_fuel_regen_penalty·(1 - condition)`, floored at 0. A
+    /// sound bay scoops at the baseline (factor 1.0). Together with the burn penalty this makes
+    /// engineering→fuel two-sided (neglect the bay and the ship burns more *and* scoops less),
+    /// tightening the becalming spiral from both ends. 0 = the bay's state does not touch scooping.
+    #[serde(default)]
+    pub engineering_fuel_regen_penalty: f32,
     /// How much a *degraded* engineering bay accelerates the ship's yearly hull wear
     /// (content-depth subsystems round 24): the bay is where the ship is mended, so it
     /// keeps not just the modules (the it62 keystone) but the *hull* itself. Hull decay is

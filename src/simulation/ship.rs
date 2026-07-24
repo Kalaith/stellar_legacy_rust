@@ -321,12 +321,17 @@ pub fn apply_loadout_effects(sim: &mut SimState, data: &GameData) {
     sim.resources.apply(&bonus);
 
     if stats.fuel_regen > 0 {
+        // A rotting engineering bay fouls the ship's own scoops (content-depth subsystems round
+        // 30): the production side of the round-20 fuel coupling, so a neglected bay both burns
+        // more and scoops less. Full condition leaves the regen at its baseline.
+        let regen_factor = crate::simulation::subsystems::engineering_fuel_regen_factor(sim, data);
         // Accrue only the fuel the tank actually took (the part above the 1.0 cap
         // is not "scooped"), so the periodic provisioning line reports a real haul
         // and stays silent while the tank simply sits full (real-time loop
         // follow-up: legible stat changes).
         let before = sim.ship.fuel;
-        sim.ship.fuel = (before + stats.fuel_regen as f32 * cfg.fuel_regen_per_point).min(1.0);
+        sim.ship.fuel =
+            (before + stats.fuel_regen as f32 * cfg.fuel_regen_per_point * regen_factor).min(1.0);
         sim.fuel_scooped_accum += sim.ship.fuel - before;
     }
 }

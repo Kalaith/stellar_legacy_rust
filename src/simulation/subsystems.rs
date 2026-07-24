@@ -440,6 +440,27 @@ pub fn engineering_fuel_burn_factor(sim: &SimState, data: &GameData) -> f32 {
     (1.0 + penalty * (1.0 - condition)).max(1.0)
 }
 
+/// Fraction of the drive's fuel scooping the engineering bay's condition lets through
+/// (content-depth subsystems round 30): the *production* side of the it20 fuel coupling, whose
+/// *consumption* side (`engineering_fuel_burn_factor`) the bay already governs. The bay maintains
+/// the drive, so it keeps the scoops and the reaction-mass plant efficient too — a sound bay
+/// regenerates fuel at the full rate (factor 1.0), a rotting one fouls its own intakes and scoops
+/// less (`1 - engineering_fuel_regen_penalty·(1 - condition)`, floored at 0). This makes the
+/// engineering→fuel coupling two-sided: neglect the bay and the ship both *burns more* (round 20)
+/// and *scoops less* (this), tightening the it25 becalming spiral from both ends. 1.0 (inert) at
+/// full condition, when the penalty is 0, or when the bay is gone.
+pub fn engineering_fuel_regen_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.engineering_fuel_regen_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("engineering_bay")
+        .map_or(1.0, |s| s.condition);
+    (1.0 - penalty * (1.0 - condition)).max(0.0)
+}
+
 /// Multiplier on the ship's yearly *hull* wear from the engineering bay's condition
 /// (content-depth subsystems round 24): the engineering bay is where the ship is
 /// mended, so it should keep not only the modules (the it62 decay keystone) but the
@@ -760,6 +781,39 @@ mod tests {
         assert!(
             wrecked < half && wrecked >= 0.0,
             "a wrecked bay fabricates the least, but never a negative yield ({wrecked})"
+        );
+    }
+
+    #[test]
+    fn a_rotting_bay_fouls_the_ships_own_scoops() {
+        // Content-depth subsystems round 30: the engineering bay maintains the drive's intakes,
+        // so its condition scales fuel scooping too — the production side of the burn coupling. A
+        // sound bay scoops at the baseline (factor 1.0); a failing one less; a wrecked one least,
+        // but never a negative.
+        let (data, mut sim) = campaign(30);
+        let penalty = data.config.subsystems.engineering_fuel_regen_penalty;
+        assert!(
+            penalty > 0.0,
+            "this test needs the engineering→fuel-regen coupling enabled"
+        );
+
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 1.0;
+        assert_eq!(
+            engineering_fuel_regen_factor(&sim, &data),
+            1.0,
+            "a sound bay scoops at the full rate"
+        );
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.5;
+        let half = engineering_fuel_regen_factor(&sim, &data);
+        assert!(
+            half < 1.0 && half > 0.0,
+            "a failing bay scoops less ({half})"
+        );
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.0;
+        let wrecked = engineering_fuel_regen_factor(&sim, &data);
+        assert!(
+            wrecked < half && wrecked >= 0.0,
+            "a wrecked bay scoops the least, but never a negative ({wrecked})"
         );
     }
 

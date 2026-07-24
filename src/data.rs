@@ -2213,6 +2213,13 @@ mod tests {
             "engineering_fabrication_penalty {} out of range [0, 1]",
             subs_cfg.engineering_fabrication_penalty
         );
+        // Content-depth subsystems round 30: the engineering→fuel-regen penalty is a fraction in
+        // [0, 1] (a wrecked bay scoops less, but never a negative — fuel regen floors at zero).
+        assert!(
+            (0.0..=1.0).contains(&subs_cfg.engineering_fuel_regen_penalty),
+            "engineering_fuel_regen_penalty {} out of range [0, 1]",
+            subs_cfg.engineering_fuel_regen_penalty
+        );
         // Content-depth subsystems round 27: the education→training penalty must sit strictly
         // below 1, so even a wrecked academy still teaches something and a crew can bootstrap
         // its schools back — a training deadlock (0 gain forever) would be unrecoverable.
