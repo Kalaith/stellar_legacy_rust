@@ -171,6 +171,19 @@ pub struct SubsystemsConfig {
     /// not touch how much division erodes governance.
     #[serde(default)]
     pub ideology_spread_security_relief: f32,
+    /// Fraction of the it23 standing rival-cohesion grind a full-condition security corps cools
+    /// (content-depth subsystems round 32): the peacekeeping corps' fourth role, its most literal —
+    /// the corps *is* "the councils that keep a fractious ship from turning on itself," and the
+    /// it23 grind (two aboard rival peoples wearing at unity year over year by the product of their
+    /// shares) *is* the ship turning on itself. A corps whose craft is mediating that quarrel damps
+    /// it at the source: the yearly rival-friction drain is scaled by `1 - condition·this`. Only the
+    /// *rival* friction is cooled, never the ally *solidarity* (peacekeepers quiet quarrels, they do
+    /// not touch friendships); distinct from the corps' it16 general unity *recovery* (which lifts a
+    /// fallen unity back toward a ceiling) — this reduces the *drain itself*, the cohesion twin of
+    /// the it28 ideology-spread relief. Must sit below 1 so even a perfect corps only softens a real
+    /// rivalry, never abolishes it. 0 = the corps does not touch inter-faction friction.
+    #[serde(default)]
+    pub security_rival_friction_relief: f32,
     /// The floor the immediate-crisis weight can never be dampened below (content-depth
     /// subsystems round 21): a well-defended ship faces fewer crises, but the dark is
     /// never fully safe, so the crisis category always keeps at least this much weight.

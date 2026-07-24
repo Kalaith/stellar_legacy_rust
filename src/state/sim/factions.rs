@@ -488,6 +488,14 @@ impl SimState {
                 .find(|f| f.faction_id == id && f.is_aboard())
                 .map_or(0.0, |f| f.members as f32 / total as f32)
         };
+        // A well-kept peacekeeping corps cools the standing quarrel (content-depth subsystems round
+        // 32): the corps mediates the rival friction at its source, so its condition damps the grind
+        // by `1 - condition·relief`. Only the rivalry is cooled — peacekeepers quiet quarrels, not
+        // friendships — so the ally solidarity below is untouched. A missing corps (condition 0) or
+        // a 0 config leaves the friction to bite full.
+        let security = self.subsystems.get("security").map_or(0.0, |s| s.condition);
+        let friction_scale =
+            (1.0 - data.config.subsystems.security_rival_friction_relief * security).max(0.0);
         let mut net = 0.0f32;
         for fstate in self.factions.iter().filter(|f| f.is_aboard()) {
             let Some(def) = data.factions.get(&fstate.faction_id) else {
@@ -495,7 +503,7 @@ impl SimState {
             };
             let share_f = fstate.members as f32 / total as f32;
             for rival in &def.rivals {
-                net -= cfg.rival_unity_friction * share_f * share(rival);
+                net -= cfg.rival_unity_friction * share_f * share(rival) * friction_scale;
             }
             for ally in &def.allies {
                 net += cfg.ally_unity_solidarity * share_f * share(ally);
@@ -2838,6 +2846,68 @@ mod tests {
         assert!(
             ally_delta > 0.0,
             "a large aboard allied bloc lifts unity ({ally_delta})"
+        );
+    }
+
+    #[test]
+    fn a_kept_peacekeeping_corps_cools_the_standing_rivalry() {
+        // Content-depth subsystems round 32: the security corps damps the round-23 rival-cohesion
+        // grind at its source. Two large aboard rivals wear at unity; a corps in good repair softens
+        // that grind (the councils mediating the quarrel), a wrecked one lets it bite full — but
+        // neither can abolish a real rivalry, since the relief is a fraction below 1. The ally
+        // solidarity is untouched (peacekeepers quiet quarrels, not friendships).
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.rival_unity_friction > 0.0
+                && data.config.subsystems.security_rival_friction_relief > 0.0,
+            "this test needs the rival grind and its security relief enabled"
+        );
+
+        // Two large aboard rivals and nothing else; the one-year rival grind under a given corps.
+        let grind_under = |security: f32| -> f32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                8,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.population.unity = 0.6;
+            sim.factions = vec![
+                FactionState {
+                    faction_id: "ascension_circle".to_string(),
+                    members: 500,
+                    status: FactionStatus::Aboard,
+                    approval: 0.5,
+                    mood_band: 0,
+                },
+                FactionState {
+                    faction_id: "first_flame".to_string(),
+                    members: 500,
+                    status: FactionStatus::Aboard,
+                    approval: 0.5,
+                    mood_band: 0,
+                },
+            ];
+            sim.subsystems.get_mut("security").unwrap().condition = security;
+            let before = sim.population.unity;
+            sim.apply_faction_relationship_cohesion(&data);
+            sim.population.unity - before
+        };
+
+        let wrecked = grind_under(0.0); // no corps: the grind bites full
+        let kept = grind_under(1.0); // corps at full repair: the grind is softened
+        assert!(
+            wrecked < 0.0,
+            "with no corps the rivalry grinds unity full ({wrecked})"
+        );
+        assert!(
+            kept < 0.0,
+            "even a perfect corps cannot abolish a real rivalry ({kept})"
+        );
+        assert!(
+            kept > wrecked,
+            "a kept corps cools the grind — less unity is lost ({kept} vs {wrecked})"
         );
     }
 

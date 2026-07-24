@@ -2345,6 +2345,13 @@ mod tests {
             "ideology_spread_security_relief {} must be in [0, 1) so a corps never fully cancels the drain",
             subs_cfg.ideology_spread_security_relief
         );
+        // Content-depth subsystems round 32: the rival-friction relief is a fraction in [0, 1) —
+        // even a perfect corps only softens a standing rivalry, never abolishes it.
+        assert!(
+            (0.0..1.0).contains(&subs_cfg.security_rival_friction_relief),
+            "security_rival_friction_relief {} must be in [0, 1) so a corps never fully cancels the grind",
+            subs_cfg.security_rival_friction_relief
+        );
         // Content-depth subsystems round 25: the medical adaptation resistance is a
         // fraction below 1 (even a perfect infirmary only *slows* the shipborn drift, it
         // never wholly stops the bodies adapting to the ship).
