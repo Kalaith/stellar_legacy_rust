@@ -1731,6 +1731,35 @@ impl SimState {
                 }
             }
         }
+        // …and the newcomer reacts to who they are joining (content-depth factions round 33): the
+        // newcomer's-eye mirror of the round-28 incumbent reactions. A people taken onto a ship that
+        // already carries its rival boards wary (its starting approval reduced per aboard rival),
+        // one joining its friends boards glad (raised per aboard ally) — so recruiting a rival's foe
+        // costs on both sides. Rivalries/alliances are authored symmetric, so the newcomer's own
+        // lists suffice; applied to its neutral starting approval after it is aboard.
+        let wariness = cfg.recruit_newcomer_rival_wariness;
+        let comfort = cfg.recruit_newcomer_ally_comfort;
+        if wariness > 0.0 || comfort > 0.0 {
+            if let Some(def) = data.factions.get(faction_id) {
+                let aboard_and_other = |id: &str| {
+                    self.factions
+                        .iter()
+                        .any(|f| f.faction_id == id && f.is_aboard() && f.faction_id != faction_id)
+                };
+                let rivals_aboard = def.rivals.iter().filter(|r| aboard_and_other(r)).count();
+                let allies_aboard = def.allies.iter().filter(|a| aboard_and_other(a)).count();
+                let shift = allies_aboard as f32 * comfort - rivals_aboard as f32 * wariness;
+                if shift != 0.0 {
+                    if let Some(newcomer) = self
+                        .factions
+                        .iter_mut()
+                        .find(|f| f.faction_id == faction_id)
+                    {
+                        newcomer.adjust_approval(shift);
+                    }
+                }
+            }
+        }
         Ok(())
     }
 }
@@ -3901,8 +3930,71 @@ mod tests {
             (approval("meridian_accord") - 0.5 - cfg.recruit_ally_approval_bonus).abs() < 1e-6,
             "the ally's warming is exactly the bonus"
         );
-        // The newcomer arrives at neutral approval, reacting to no one.
-        assert_eq!(approval("steel_covenant"), default_approval());
+        // The newcomer no longer arrives neutral (content-depth factions round 33): it boards wary
+        // of its aboard rival the Kin and gladdened by its aboard ally the Accord, so its start is
+        // the default shifted by (one ally's comfort − one rival's wariness).
+        let expected = default_approval() + cfg.recruit_newcomer_ally_comfort
+            - cfg.recruit_newcomer_rival_wariness;
+        assert!(
+            (approval("steel_covenant") - expected).abs() < 1e-6,
+            "the newcomer boards shifted by who it is joining"
+        );
+    }
+
+    #[test]
+    fn a_newcomer_boards_wary_of_a_rival_and_glad_of_a_friend() {
+        // Content-depth factions round 33: the newcomer's-eye mirror of the round-28 incumbent
+        // reactions. The Steel Covenant rivals the Verdant Kin and allies the Meridian Accord, so
+        // it boards a ship carrying its rival warier than the neutral default, and a ship carrying
+        // its ally gladder — where a ship carrying neither leaves it at the default.
+        let data = GameData::load().unwrap();
+        let cfg = &data.config.factions;
+        assert!(
+            cfg.recruit_newcomer_rival_wariness > 0.0 && cfg.recruit_newcomer_ally_comfort > 0.0,
+            "this test needs the newcomer-wariness coupling enabled"
+        );
+
+        // Recruit the Covenant into a roster holding a single named people, and read the approval
+        // it boards with. The Hearth is neither rival nor ally of the Covenant (a neutral witness).
+        let boarded_with = |incumbent: &str| -> f32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                4,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.resources.credits = 100_000;
+            sim.factions = vec![FactionState {
+                faction_id: incumbent.to_string(),
+                members: 300,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            }];
+            sim.recruit_faction_group(&data, "steel_covenant").unwrap();
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == "steel_covenant")
+                .unwrap()
+                .approval
+        };
+
+        let with_rival = boarded_with("verdant_kin"); // its rival is aboard
+        let with_ally = boarded_with("meridian_accord"); // its ally is aboard
+        let with_neutral = boarded_with("hearth_union"); // neither
+
+        assert!(
+            (with_neutral - default_approval()).abs() < 1e-6,
+            "with no rival or ally aboard the newcomer boards at the neutral default ({with_neutral})"
+        );
+        assert!(
+            with_rival < with_neutral,
+            "a newcomer joining a ship that carries its rival boards warier ({with_rival} vs {with_neutral})"
+        );
+        assert!(
+            with_ally > with_neutral,
+            "a newcomer joining a ship that carries its friend boards gladder ({with_ally} vs {with_neutral})"
+        );
     }
 
     #[test]

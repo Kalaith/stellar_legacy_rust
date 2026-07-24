@@ -132,6 +132,23 @@ pub struct FactionConfig {
     /// indifferent to an ally coming aboard.
     #[serde(default)]
     pub recruit_ally_approval_bonus: f32,
+    /// Approval a *newcomer* people arrives with reduced by, for each *rival* of theirs already
+    /// aboard (content-depth factions round 33): the newcomer's-eye mirror of the it28 incumbent
+    /// reactions. Where it28 has the peoples already aboard react to who you bring home, this has
+    /// the newcomer react to who they are joining — a people taken onto a ship that already carries
+    /// its enemy boards wary, its trust in the leadership lower from the first day, per aboard rival.
+    /// So recruiting a rival's foe now costs on *both* sides: the incumbent bristles (it28) and the
+    /// newcomer arrives uneasy (this). Read against the newcomer's own `rivals` list (authored
+    /// symmetric). 0 = a newcomer boards at the neutral default whoever is already aboard.
+    #[serde(default)]
+    pub recruit_newcomer_rival_wariness: f32,
+    /// Approval a newcomer people arrives with raised by, for each *ally* of theirs already aboard
+    /// (content-depth factions round 33): the positive twin — a people taken onto a ship that
+    /// already carries its friends boards glad, more trusting of the leadership from the first day,
+    /// per aboard ally (the newcomer's-eye mirror of the it28 ally welcome). Read against the
+    /// newcomer's own `allies` list. 0 = a newcomer takes no comfort from a friend already aboard.
+    #[serde(default)]
+    pub recruit_newcomer_ally_comfort: f32,
     /// Approval an incumbent aboard people *gains* when a *rival* of theirs departs the ship
     /// (content-depth factions round 30): the departure mirror of `recruit_rival_approval_penalty`
     /// — as taking a rival aboard bristles a people, so a rival *leaving* quietly relieves them.

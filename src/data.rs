@@ -2215,6 +2215,19 @@ mod tests {
             "ally_approval_commiseration {} must be a fraction of the slight [0, 1)",
             data.config.factions.ally_approval_commiseration
         );
+        // Content-depth factions round 33: the newcomer's wariness/comfort are gentle per-relation
+        // shifts to a *starting* approval, in [0, 0.5) — a people boards uneasier or gladder for who
+        // is already aboard, but no single incumbent makes or breaks the newcomer's whole standing.
+        assert!(
+            (0.0..0.5).contains(&data.config.factions.recruit_newcomer_rival_wariness),
+            "recruit_newcomer_rival_wariness {} must be a gentle per-rival shift [0, 0.5)",
+            data.config.factions.recruit_newcomer_rival_wariness
+        );
+        assert!(
+            (0.0..0.5).contains(&data.config.factions.recruit_newcomer_ally_comfort),
+            "recruit_newcomer_ally_comfort {} must be a gentle per-ally shift [0, 0.5)",
+            data.config.factions.recruit_newcomer_ally_comfort
+        );
         // Content-depth charters round 32: the charter pride/letdown are gentle one-shot approval
         // shifts in [0, 0.5) — a mission's outcome moves the crew's politics, but no single writ
         // makes or breaks a people's whole standing with the ship.
