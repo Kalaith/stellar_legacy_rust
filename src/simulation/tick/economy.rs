@@ -323,6 +323,17 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.fuel_stall_years = 0;
     }
     sim.fuel_stalled_this_year = false;
+    // A ship going nowhere loses heart (content-depth provisioning round 25): a chronic
+    // becalming wears the crew's spirits the way a chronic hunger does (it89/round 17),
+    // the standing cost beside the it25 becalmed *beat* — the beat reckons with the
+    // stranding once, this grinds at morale every year it holds. Threshold-gated so a bad
+    // month coasting is inert; only a sustained stranding bites.
+    if config.becalmed_morale_drain > 0.0
+        && config.chronic_hunger_years > 0
+        && sim.fuel_stall_years >= config.chronic_hunger_years
+    {
+        sim.population.morale = (sim.population.morale - config.becalmed_morale_drain).max(0.0);
+    }
 
     // The rest of the ship's subsystems wear with the years too (W5).
     subsystems::decay_subsystems(sim, data, wear);

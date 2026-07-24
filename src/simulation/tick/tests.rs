@@ -2540,6 +2540,51 @@ fn a_failing_life_supports_toll_is_narrated_from_a_varied_pool() {
 }
 
 #[test]
+fn a_chronic_becalming_wears_the_crews_spirits() {
+    // Content-depth provisioning round 25: a ship stalled dry for years loses heart, the
+    // fuel/mobility twin of the chronic-hunger morale drain. A ship that stays becalmed
+    // this year ends it a shade grimmer than one that burns again, the gap the year's
+    // becalmed drain exactly.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    let drain = data.config.becalmed_morale_drain;
+    let years = data.config.chronic_hunger_years;
+    assert!(
+        drain > 0.0 && years > 0,
+        "this test needs the becalming drain enabled"
+    );
+
+    // No contract, so no travel burn touches the stall flag — we set it directly.
+    let run = |stalled_this_year: bool| -> f32 {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.resources.food = 1_000_000;
+        sim.population.morale = 0.6;
+        sim.fuel_stall_years = years; // already chronically becalmed at the year's start
+        sim.fuel_stalled_this_year = stalled_this_year;
+        advance_year(&mut sim, &data);
+        sim.population.morale
+    };
+    let stays_becalmed = run(true); // still stalled → the drain bites
+    let burns_again = run(false); // burns again → counter resets, no drain
+    assert!(
+        stays_becalmed < burns_again,
+        "a ship still going nowhere loses heart where one that burns again does not"
+    );
+    assert!(
+        (burns_again - stays_becalmed - drain).abs() < 1e-4,
+        "the gap is exactly the year's becalmed morale drain ({} vs {burns_again})",
+        stays_becalmed
+    );
+}
+
+#[test]
 fn over_deep_food_stores_spoil_toward_the_carrying_capacity() {
     // Content-depth provisioning round 24: food beyond what the ship can keep fresh
     // rots. A hoard above the carrying capacity loses a fraction of the excess each

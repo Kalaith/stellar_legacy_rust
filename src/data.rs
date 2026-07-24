@@ -176,6 +176,15 @@ pub struct GameConfig {
     /// the slow attrition of a hunger that will not end, not a single hard blow.
     #[serde(default)]
     pub chronic_hunger_morale_drain: f32,
+    /// Morale worn away each year the ship has been *chronically becalmed* — stalled dry
+    /// past `chronic_hunger_years` running (content-depth provisioning round 25): the
+    /// fuel/mobility twin of `chronic_hunger_morale_drain`. Where a hunger that will not
+    /// end wears the crew's spirits, so does a *voyage* that will not move — a ship going
+    /// nowhere for years loses heart. The standing cost beside the it25 becalmed *beat*
+    /// (the reckoning): the beat confronts the stranding once, this grinds at the crew
+    /// every year it holds. Gentle by design; 0 = a becalming costs no morale.
+    #[serde(default)]
+    pub becalmed_morale_drain: f32,
     /// Extra *monthly death chance* added to every character while the ship has been
     /// lean past `chronic_hunger_years` (content-depth provisioning round 18 — the
     /// provisioning axis's coupling to the real-time-loop mortality system). Where
@@ -2613,6 +2622,14 @@ mod tests {
             (0.0..=0.01).contains(&data.config.market_impact_per_unit),
             "market_impact_per_unit {} out of the gentle range [0, 0.01]",
             data.config.market_impact_per_unit
+        );
+        // Content-depth provisioning round 25: the becalmed morale drain is a gentle
+        // yearly attrition, like the chronic-hunger one it mirrors — the slow despair of a
+        // voyage that will not move, not a single hard blow.
+        assert!(
+            (0.0..=0.05).contains(&data.config.becalmed_morale_drain),
+            "becalmed_morale_drain {} must be a gentle yearly attrition [0, 0.05]",
+            data.config.becalmed_morale_drain
         );
         // Content-depth provisioning round 24: the food carrying capacity, if set, must
         // sit above the fat line (a prudent reserve should still read as plenty, not spoil

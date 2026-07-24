@@ -27,6 +27,7 @@
   "food_spoilage_fraction": 0.1,
   "chronic_hunger_years": 5,
   "chronic_hunger_morale_drain": 0.004,
+  "becalmed_morale_drain": 0.005,
   "chronic_hunger_death_bonus": 0.003,
   "sustained_plenty_birth_bonus": 0.5,
   "sustained_plenty_morale_lift": 0.004,
