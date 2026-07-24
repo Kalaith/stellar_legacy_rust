@@ -511,6 +511,12 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // any officer aged past their term stands down. Aging is yearly; death is the
     // separate monthly roll in `mortality::monthly_tick` (driven from the tick).
     mortality::annual_aging(sim, data);
+    // …and give the ship's *headcount* a voice (content-depth voice round 30), now that the
+    // year's aging and mortality have settled on the count: when the crew swells past its founding
+    // complement (the cradles full, new decks opened) or thins below it (corridors gone quiet,
+    // decks closed), the decks remark it once — the gentle crossing the it12 depopulation beat and
+    // the hollow ambient never gave, and the *only* narration the growth side has at all.
+    sim.announce_crew_size_mood(data);
 
     // Generational renewal (GDD §5.3): every interval a new cohort comes of age.
     // Aging, death, and succession are continuous now and live in `mortality`;

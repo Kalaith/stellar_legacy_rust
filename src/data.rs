@@ -893,6 +893,24 @@ pub struct FlavorConfig {
     pub fuel_voice_high: f32,
     #[serde(default)]
     pub fuel_voice_low: f32,
+    /// The crew *swelling* past its founding complement (content-depth voice round 30): the
+    /// growth side of the headcount voice, which no beat or ambient touched — the cradles full,
+    /// new decks opened, a people outgrowing the ship the founders launched. No name; indexed by
+    /// year; empty = silence.
+    #[serde(default)]
+    pub crew_swelling: Vec<String>,
+    /// The crew *thinning* below its founding complement (content-depth voice round 30): the
+    /// quieter twin of the it12 depopulation beat — corridors gone quiet, whole decks closed for
+    /// want of anyone to fill them, a shrinking people. No name; indexed by year.
+    #[serde(default)]
+    pub crew_thinning: Vec<String>,
+    /// Fraction of `starting_population` at/above which the ship remarks a swelling crew
+    /// (`_high_ratio`) or at/below which it remarks a thinning one (`_low_ratio`) (content-depth
+    /// voice round 30). 0 (`_high_ratio`) disables the crew-size voice.
+    #[serde(default)]
+    pub crew_size_voice_high_ratio: f32,
+    #[serde(default)]
+    pub crew_size_voice_low_ratio: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -3308,6 +3326,23 @@ mod tests {
                 "drive voice thresholds must order: 0 < low ({}) < high ({})",
                 fl.fuel_voice_low,
                 fl.fuel_voice_high
+            );
+        }
+        // Content-depth voice round 30: the crew-size voice needs both band pools stocked, and its
+        // ratios must order — a swelling line above the founding complement (> 1) and a thinning
+        // one below it (0 < low < 1 < high) — so the two bands never overlap.
+        if fl.crew_size_voice_high_ratio > 0.0 {
+            assert!(
+                !fl.crew_swelling.is_empty() && !fl.crew_thinning.is_empty(),
+                "crew-size voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.crew_size_voice_low_ratio > 0.0
+                    && fl.crew_size_voice_low_ratio < 1.0
+                    && fl.crew_size_voice_high_ratio > 1.0,
+                "crew-size voice ratios must order: 0 < low ({}) < 1 < high ({})",
+                fl.crew_size_voice_low_ratio,
+                fl.crew_size_voice_high_ratio
             );
         }
         // Content-depth voice round 28: the wonder reputation voice, the same shape — both band

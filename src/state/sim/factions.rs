@@ -1236,6 +1236,46 @@ impl SimState {
         self.fuel_voice_band = band;
     }
 
+    /// Give the ship's *headcount* a voice (content-depth voice round 30): the crew growing or
+    /// dwindling, read against the founding complement (`starting_population`). The it12
+    /// depopulation *beat* reckons when the crew crashes and the hollow ambient colours a
+    /// depleted ship, but the crossing itself — and the *growth* side entirely — went unremarked.
+    /// When the crew crosses *into* a swelling band (the cradles full, new decks opened, a people
+    /// expanding) or a thinning one (corridors gone quiet, whole decks closed, a shrinking
+    /// people), the decks remark it once. The launch band (a ship at its founding complement) is
+    /// recorded not announced; a return to the middle re-arms. Deterministic (indexed by year),
+    /// no RNG.
+    pub fn announce_crew_size_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        let starting = data.config.starting_population;
+        if fl.crew_size_voice_high_ratio <= 0.0 || starting == 0 {
+            return;
+        }
+        let ratio = self.population.count as f32 / starting as f32;
+        let band = if ratio >= fl.crew_size_voice_high_ratio {
+            1
+        } else if ratio <= fl.crew_size_voice_low_ratio {
+            -1
+        } else {
+            0
+        };
+        if band == self.crew_size_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.crew_swelling,
+            -1 => &fl.crew_thinning,
+            _ => {
+                self.crew_size_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.crew_size_voice_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -2632,6 +2672,54 @@ mod tests {
         sim.announce_drive_condition(&data);
         assert_eq!(drive_lines(&sim), 2, "a refilled drive says so afresh");
         assert_eq!(sim.fuel_voice_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_crew_swells_or_thins() {
+        // Content-depth voice round 30: the headcount voice. A ship at its founding complement is
+        // the silent baseline; the crew thinning below the line says so once; swelling above it
+        // gets its own, opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(60);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.crew_size_voice_high_ratio > 0.0 && fl.crew_swelling.len() >= 3,
+            "this test needs the crew-size voice enabled"
+        );
+        let starting = data.config.starting_population as f32;
+        let high = fl.crew_size_voice_high_ratio;
+        let low = fl.crew_size_voice_low_ratio;
+        let crew_lines = |sim: &SimState| {
+            let swell = &data.config.flavor.crew_swelling;
+            let thin = &data.config.flavor.crew_thinning;
+            sim.log
+                .iter()
+                .filter(|l| swell.contains(&l.text) || thin.contains(&l.text))
+                .count()
+        };
+
+        // A ship at its founding complement — the launch band is recorded, silent.
+        sim.announce_crew_size_mood(&data);
+        assert_eq!(
+            crew_lines(&sim),
+            0,
+            "a ship at its founding complement is silent"
+        );
+
+        // The crew thins below the low line: one line.
+        sim.population.count = ((low - 0.05) * starting) as u32;
+        sim.announce_crew_size_mood(&data);
+        assert_eq!(crew_lines(&sim), 1, "a thinning crew says so once");
+        assert_eq!(sim.crew_size_voice_band, -1);
+
+        // Still thin — no reprint.
+        sim.announce_crew_size_mood(&data);
+        assert_eq!(crew_lines(&sim), 1, "staying thin is not re-announced");
+
+        // The crew swells above the high line: a second, distinct line.
+        sim.population.count = ((high + 0.05) * starting) as u32;
+        sim.announce_crew_size_mood(&data);
+        assert_eq!(crew_lines(&sim), 2, "a swelling crew says so afresh");
+        assert_eq!(sim.crew_size_voice_band, 1);
     }
 
     #[test]

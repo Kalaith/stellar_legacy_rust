@@ -641,6 +641,17 @@
     ],
     "fuel_voice_high": 0.7,
     "fuel_voice_low": 0.3,
+    "crew_swelling": [
+      "The ship is fuller than it was built to be. Somewhere in the last generations the numbers turned a corner and kept climbing — more births than burials, year on year, until berths meant for one hold two and the quartermasters have started opening decks the founders mothballed. It is a good problem, the kind a generation ship is supposed to have, and the corridors have the crowded, noisy warmth of a people that is, against all the dark's odds, growing.",
+      "There are simply more people aboard now, and everyone feels it. The creche runs three shifts, the long tables are set twice over, and a hull that echoed in the lean years hums with the press of a crew that has outgrown the ship the founders launched. The engineers speak, half-seriously, of pressures the design never anticipated; the rest of the ship speaks of it the way people speak of good weather — a swelling, living warmth in the decks.",
+      "The census keeps surprising the council: the ship's people are multiplying. Whole quarters that stood dark are lit and lived-in again, the schools are overfull, and the founders' careful complement has been left behind by descendants who have made of a sealed cylinder a genuinely crowded home. A generation ship's oldest fear is the empty ship; this one, for now, has the opposite and much happier trouble."
+    ],
+    "crew_thinning": [
+      "The ship is emptier than it was. Not a crisis, not yet — but the numbers have been sliding, more burials than births across the lean years, and it shows in the quiet: corridors that used to bustle stand still, the long tables have empty seats no one fills, and decks have been closed off, sealed and cold, for simple want of anyone to live in them. A generation ship carries its future in its people, and this one is carrying a little less of it each year.",
+      "There are fewer people aboard now, and the ship has grown quiet with it. The creche runs a single thin shift, familiar faces are missed and not replaced, and whole sections have gone dark — not damaged, just empty, the doors closed on rooms that no longer have anyone to hold. The crew feels the thinning the way a house feels a family shrinking: in the spaces, and the silence where sound used to be."
+    ],
+    "crew_size_voice_high_ratio": 1.15,
+    "crew_size_voice_low_ratio": 0.7,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

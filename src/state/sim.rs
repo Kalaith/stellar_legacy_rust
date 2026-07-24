@@ -572,6 +572,16 @@ pub struct SimState {
     /// 0 at launch; a return to the middle re-arms.
     #[serde(default)]
     pub fuel_voice_band: i8,
+    /// The last-announced band of the ship's *headcount* (content-depth voice round 30): the one
+    /// core dimension with a beat (the it12 depopulation beat) and an ambient (the hollow pool)
+    /// but no crossing-voice — and whose *growth* side no narration touched at all. Tracks whether
+    /// the crew last crossed into a swelling band (the cradles full, new decks opened, a people
+    /// expanding) or a thinning one (corridors gone quiet, whole decks closed, a shrinking
+    /// people), read against `starting_population`, so the decks remark the crossing once. The
+    /// launch band (a ship at its founding complement) is 0, recorded not announced; a return to
+    /// the middle re-arms.
+    #[serde(default)]
+    pub crew_size_voice_band: i8,
     /// The band the skeleton's hull-collapse beat last marked (content-depth campaign-
     /// skeleton round 23): -1 once the hull has crossed *into* structural failure (the
     /// beat fires the moment it does), 0 while the hull holds above the red line. The
@@ -739,6 +749,7 @@ impl SimState {
             hull_voice_band: 0,
             air_voice_band: 0,
             fuel_voice_band: 0,
+            crew_size_voice_band: 0,
             hull_beat_band: 0,
             air_beat_band: 0,
             depopulation_beats_fired: 0,
