@@ -86,6 +86,8 @@
     "ally_approval_spillover": 0.2,
     "rival_approval_schadenfreude": 0.2,
     "ally_approval_commiseration": 0.15,
+    "charter_completion_pride": 0.05,
+    "charter_failure_letdown": 0.08,
     "approval_unity_coupling": 0.01,
     "dominant_reputation_lean_per_year": 0.008,
     "reputation_alignment_approval_scale": 0.03,

@@ -540,6 +540,16 @@ impl Game {
                 .and_then(|c| self.data.contracts.get(&c.template_id))
                 .cloned();
             if let Some(template) = &concluded_template {
+                // …and the people the writ was uniquely called to feel its conclusion
+                // (content-depth charters round 32): a founding people gated onto the charter
+                // (`requires_faction_aboard`) takes pride when it is seen through and is let down
+                // when it is botched — the mission's outcome touching the crew's politics beside
+                // its pay, its name, its morale (round 31), and the deed it leaves on record.
+                sim.apply_charter_outcome_faction_sentiment(
+                    &self.data,
+                    template,
+                    level == contract::SuccessLevel::Failure,
+                );
                 if level == contract::SuccessLevel::Failure {
                     // A charter defaulted or given up leaves the opposite of a legacy
                     // (content-depth charters round 18): the negative mirror of the

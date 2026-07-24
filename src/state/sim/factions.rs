@@ -677,6 +677,38 @@ impl SimState {
         }
     }
 
+    /// Let the people a charter was *uniquely called to* feel its conclusion (content-depth
+    /// charters round 32): each founding people the writ was gated on (`requires_faction_aboard`)
+    /// takes pride when the work is seen through and is let down when it is botched. On a
+    /// completed charter every named aboard faction gains `charter_completion_pride`; on a failed
+    /// one every named aboard faction loses `charter_failure_letdown` — so a mission's outcome
+    /// now moves the crew's *politics* beside its pay, its name, its morale (it31), and the deed
+    /// it leaves on record (it14/it30). The charter→faction pride/letdown coupling. No RNG.
+    pub fn apply_charter_outcome_faction_sentiment(
+        &mut self,
+        data: &GameData,
+        template: &crate::data::contracts::ContractTemplate,
+        failed: bool,
+    ) {
+        let delta = if failed {
+            -data.config.factions.charter_failure_letdown
+        } else {
+            data.config.factions.charter_completion_pride
+        };
+        if delta == 0.0 {
+            return;
+        }
+        for id in &template.requires_faction_aboard {
+            if let Some(state) = self
+                .factions
+                .iter_mut()
+                .find(|f| f.faction_id == *id && f.is_aboard())
+            {
+                state.adjust_approval(delta);
+            }
+        }
+    }
+
     /// Drift the ship's reputation by the standing character of whoever runs it
     /// (content-depth factions round 16): the dominant people's `reputation_leanings`
     /// nudge each named trait a little each year, so a ship long-run by a kind people
@@ -2167,6 +2199,80 @@ mod tests {
             approval(&sim, "hearth_union"),
             hearth_before,
             "a favor to a people is not read by the commiseration coupling"
+        );
+    }
+
+    #[test]
+    fn a_charters_people_take_pride_in_its_success_and_are_let_down_by_its_failure() {
+        // Content-depth charters round 32: the charter→faction pride/letdown coupling. The
+        // Seedbearers' Writ is gated on the Verdant Kin being aboard (requires_faction_aboard), so
+        // it is work the Kin are uniquely called to — seeing it through honors them (approval up),
+        // botching it lets them down (approval down), while a people the writ does not name (the
+        // Steel Covenant) is untouched either way.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.charter_completion_pride > 0.0
+                && data.config.factions.charter_failure_letdown > 0.0,
+            "this test needs the charter pride/letdown coupling enabled"
+        );
+        let template = data.contracts.get("the_seedbearers_writ").unwrap();
+        assert_eq!(template.requires_faction_aboard, vec!["verdant_kin"]);
+
+        let fs = |id: &str| FactionState {
+            faction_id: id.to_string(),
+            members: 400,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        };
+        let approval = |sim: &SimState, id: &str| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .unwrap()
+                .approval
+        };
+
+        // Seeing the writ through: the Kin take pride, the unnamed Covenant is untouched.
+        let mut done = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        done.factions = vec![fs("verdant_kin"), fs("steel_covenant")];
+        done.apply_charter_outcome_faction_sentiment(&data, template, false);
+        assert!(
+            approval(&done, "verdant_kin") > 0.5,
+            "the Kin take pride in the writ they were called to"
+        );
+        assert_eq!(
+            approval(&done, "steel_covenant"),
+            0.5,
+            "a people the writ does not name is untouched by its success"
+        );
+
+        // Botching it: the Kin are let down, and by more than the pride (a failure stings more).
+        let mut failed = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        failed.factions = vec![fs("verdant_kin"), fs("steel_covenant")];
+        failed.apply_charter_outcome_faction_sentiment(&data, template, true);
+        assert!(
+            approval(&failed, "verdant_kin") < 0.5,
+            "the Kin are let down by the writ they could not keep"
+        );
+        assert_eq!(
+            approval(&failed, "steel_covenant"),
+            0.5,
+            "a people the writ does not name is untouched by its failure"
+        );
+        assert!(
+            (0.5 - approval(&failed, "verdant_kin")) > (approval(&done, "verdant_kin") - 0.5),
+            "a failure stings the Kin more than a success pleases them"
         );
     }
 

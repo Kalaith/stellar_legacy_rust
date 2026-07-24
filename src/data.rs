@@ -2184,6 +2184,19 @@ mod tests {
             "ally_approval_commiseration {} must be a fraction of the slight [0, 1)",
             data.config.factions.ally_approval_commiseration
         );
+        // Content-depth charters round 32: the charter pride/letdown are gentle one-shot approval
+        // shifts in [0, 0.5) — a mission's outcome moves the crew's politics, but no single writ
+        // makes or breaks a people's whole standing with the ship.
+        assert!(
+            (0.0..0.5).contains(&data.config.factions.charter_completion_pride),
+            "charter_completion_pride {} must be a gentle approval shift [0, 0.5)",
+            data.config.factions.charter_completion_pride
+        );
+        assert!(
+            (0.0..0.5).contains(&data.config.factions.charter_failure_letdown),
+            "charter_failure_letdown {} must be a gentle approval shift [0, 0.5)",
+            data.config.factions.charter_failure_letdown
+        );
 
         // W5: six subsystems load; each non-empty buffered family is one of the
         // canonical W6 family strings; tiers are well-formed (3, positive cost).

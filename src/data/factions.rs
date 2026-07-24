@@ -225,6 +225,25 @@ pub struct FactionConfig {
     /// not touch its kin.
     #[serde(default)]
     pub ally_approval_commiseration: f32,
+    /// Approval a people gains when a charter it was *uniquely called to* is seen through
+    /// (content-depth charters round 32): the pride half of the charter→faction coupling.
+    /// A writ gated on a founding people being aboard (`requires_faction_aboard`) is work
+    /// that people is trusted with or bound to — a Kin greening, a Covenant salvage — so
+    /// completing it honors them: each named aboard faction gains this on conclusion. The
+    /// charter's outcome now touches the crew's *politics* (this) beside its pay, its
+    /// name, its morale (it31), and its deed-record (it14/it30). 0 = a charter's success
+    /// wins its people no goodwill.
+    #[serde(default)]
+    pub charter_completion_pride: f32,
+    /// Approval a people loses when a charter it was uniquely called to is *botched* —
+    /// concluded at Failure, defaulted or given up (content-depth charters round 32): the
+    /// letdown mirror of `charter_completion_pride`. A people watches the work it was
+    /// trusted with fail and takes it personally, so each named aboard faction sheds this
+    /// on a failed conclusion — the political twin of the it18 reputation smudge and the
+    /// it31 morale dent. Usually set a touch above the pride (a failure stings more than a
+    /// success pleases). 0 = a charter's failure costs its people no goodwill.
+    #[serde(default)]
+    pub charter_failure_letdown: f32,
     /// Unity ground away per year by a pair of aboard *rivals* (content-depth factions
     /// round 23): the standing friction of two quarreling peoples sharing one hull, the
     /// permanent twin of the it14 event-time spillover. Scaled by the *product* of the
