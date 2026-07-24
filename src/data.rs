@@ -360,6 +360,15 @@ pub struct ShipConfig {
     pub combat_dilemma_odds_per_point: f32,
     /// Ceiling on an effective dilemma success chance after the combat bonus.
     pub dilemma_odds_cap: f32,
+    /// How much each point of aggregate *combat* dampens a charter's route `hazard` in the
+    /// crisis-weight roll (content-depth charters round 27): a well-armed ship makes a lawless
+    /// route think twice, so its guns cut into the route's own danger — the direct-firepower
+    /// twin of `security_crisis_mitigation` (which quiets *every* crisis by the corps' internal
+    /// order, where this deters only the *route's* added hazard). The deterred hazard is floored
+    /// at 0, so firepower can neutralize a route's risk but never drop crises below the ship's
+    /// base rate. 0 = the ship's guns do not deter the route (hazard reads as authored).
+    #[serde(default)]
+    pub hazard_combat_mitigation: f32,
 }
 
 /// Per-year population drift over a voyage (PLAN M4.1): a long mission changes
@@ -2768,6 +2777,14 @@ mod tests {
             (0.0..=1.0).contains(&data.config.ship.morale_objective_swing),
             "morale_objective_swing {} out of the gentle range [0, 1]",
             data.config.ship.morale_objective_swing
+        );
+        // Content-depth charters round 27: each point of combat deters route hazard by a
+        // gentle fraction — a moderately-armed ship should meaningfully quiet a lawless route,
+        // not make a single gun cancel the worst hazard outright.
+        assert!(
+            (0.0..=0.2).contains(&data.config.ship.hazard_combat_mitigation),
+            "hazard_combat_mitigation {} out of the gentle range [0, 0.2]",
+            data.config.ship.hazard_combat_mitigation
         );
         // Content-depth factions round 22: the proud-tender upkeep is a gentle yearly
         // dividend of a delighted people, at a plausible "delighted" approval band — not

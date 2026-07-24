@@ -176,7 +176,8 @@ pub fn event_chance(config: &GameConfig, years_since_event: u32, contract_progre
 }
 
 /// Category weights, scaled up by ship/population distress (GDD §5.4).
-pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory, f32); 4] {
+pub fn category_weights(sim: &SimState, data: &GameData) -> [(EventCategory, f32); 4] {
+    let config = &data.config;
     let mut crisis = 0.3;
     if sim.resources.food < config.low_food_threshold {
         crisis += 0.2;
@@ -198,9 +199,18 @@ pub fn category_weights(sim: &SimState, config: &GameConfig) -> [(EventCategory,
     }
     // Route hazard (content-depth charters round 11): a dangerous writ breeds more
     // crises for its whole voyage — the charter's risk profile, not just the ship's
-    // present distress.
+    // present distress. A well-armed ship, though, makes a lawless route think twice
+    // (content-depth charters round 27): the ship's *combat loadout* cuts into the route's
+    // own hazard — scavengers and raiders keep their distance from guns — the direct-firepower
+    // twin of the security corps' internal-order mitigation just below (guns deter the *route's*
+    // danger; the corps quiets *every* crisis). Floored at 0, so firepower can neutralize a
+    // route's added risk but never drive a hazardous writ below the ship's own base crisis rate.
     if let Some(contract) = &sim.contract {
-        crisis += contract.hazard;
+        let combat = crate::simulation::ship::loadout_stats(sim, data)
+            .combat
+            .max(0) as f32;
+        let deterred = (contract.hazard - combat * config.ship.hazard_combat_mitigation).max(0.0);
+        crisis += deterred;
     }
     // A well-kept security/justice corps (content-depth subsystems round 21) defends
     // the ship against the crises a dangerous route and a distressed hull breed —
@@ -496,7 +506,7 @@ pub fn roll_event(sim: &mut SimState, data: &GameData) -> Option<PendingEvent> {
 
     // Pick a category by weight; candidates are that category's gate-cleared
     // templates (W6 phase/year/generation/drift filters).
-    let weights = category_weights(sim, &data.config);
+    let weights = category_weights(sim, data);
     let total: f32 = weights.iter().map(|(_, w)| w).sum();
     let mut pick = sim.rng.next_f32() * total;
     let mut category = EventCategory::ImmediateCrisis;
@@ -1738,7 +1748,7 @@ mod tests {
         let mut sim = SimState::new_campaign(&data, "preservers", 12, &picks);
 
         let crisis_weight = |sim: &SimState| {
-            category_weights(sim, &data.config)
+            category_weights(sim, &data)
                 .iter()
                 .find(|(c, _)| matches!(c, EventCategory::ImmediateCrisis))
                 .map(|(_, w)| *w)
@@ -2107,7 +2117,7 @@ mod tests {
         assert!(dangerous.hazard > 0.0, "a derelict field is a risk profile");
 
         let crisis_weight = |sim: &SimState| {
-            category_weights(sim, &data.config)
+            category_weights(sim, &data)
                 .iter()
                 .find(|(c, _)| *c == EventCategory::ImmediateCrisis)
                 .unwrap()
@@ -2128,6 +2138,55 @@ mod tests {
         assert!(
             (dangerous_w - calm_w - dangerous.hazard).abs() < 1e-5,
             "the crisis bump is exactly the charter's hazard"
+        );
+    }
+
+    #[test]
+    fn a_well_armed_ship_deters_a_lawless_route() {
+        // Content-depth charters round 27: the ship's combat loadout cuts into a charter's
+        // route hazard — a well-armed ship makes scavengers and raiders keep their distance,
+        // so the same dangerous writ breeds fewer crises on a gunship than on an unarmed hull,
+        // and a heavily-armed ship can deter the whole of the route's added risk.
+        let data = GameData::load().unwrap();
+        let mit = data.config.ship.hazard_combat_mitigation;
+        assert!(
+            mit > 0.0,
+            "this test needs the hazard-combat deterrence enabled"
+        );
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 51, &picks);
+        let dangerous = data.contracts.get("hollow_fleet").unwrap().clone();
+        assert!(dangerous.hazard > 0.0, "a derelict field is a risk profile");
+        sim.contract = Some(crate::simulation::contract::start_contract(
+            &dangerous, &sim,
+        ));
+
+        let crisis_weight = |sim: &SimState| {
+            category_weights(sim, &data)
+                .iter()
+                .find(|(c, _)| *c == EventCategory::ImmediateCrisis)
+                .unwrap()
+                .1
+        };
+
+        // Unarmed hull: the route's full hazard lands.
+        sim.ship.weapon = None;
+        let unarmed_w = crisis_weight(&sim);
+
+        // A gun aboard: the route breeds fewer crises.
+        sim.ship.weapon = Some("spinal_railgun".to_string());
+        let combat = crate::simulation::ship::loadout_stats(&sim, &data).combat;
+        assert!(combat > 0, "the railgun arms the ship");
+        let armed_w = crisis_weight(&sim);
+        assert!(
+            armed_w < unarmed_w,
+            "guns deter a lawless route: {armed_w} armed vs {unarmed_w} unarmed"
+        );
+        // The deterrence is exactly combat × mitigation, up to cancelling the whole hazard.
+        let expected_drop = (combat as f32 * mit).min(dangerous.hazard);
+        assert!(
+            ((unarmed_w - armed_w) - expected_drop).abs() < 1e-5,
+            "the crisis drop is combat × mitigation ({expected_drop})"
         );
     }
 

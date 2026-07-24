@@ -719,6 +719,7 @@
     "fuel_regen_per_point": 0.05,
     "contract_progress_per_speed": 0.04,
     "morale_objective_swing": 0.4,
+    "hazard_combat_mitigation": 0.03,
     "combat_dilemma_odds_per_point": 0.04,
     "dilemma_odds_cap": 0.95
   },
