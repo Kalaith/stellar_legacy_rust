@@ -535,6 +535,15 @@ impl Game {
                     if let Some(line) = contract::apply_abandonment(sim, template) {
                         sim.push_log(line);
                     }
+                    // …and a botched charter can leave a lasting deed on the record too
+                    // (content-depth charters round 30): the dark-deed mirror of the
+                    // completion_consequence — a mark later writs can read to bar a ship known
+                    // to have failed the like from being handed it again.
+                    if !template.failure_consequence.is_empty()
+                        && !sim.consequences.contains(&template.failure_consequence)
+                    {
+                        sim.consequences.push(template.failure_consequence.clone());
+                    }
                 } else {
                     if !template.completion_consequence.is_empty()
                         && !sim.consequences.contains(&template.completion_consequence)

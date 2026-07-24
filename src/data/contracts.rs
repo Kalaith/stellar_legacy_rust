@@ -216,6 +216,16 @@ pub struct ContractTemplate {
     /// leaves no such mark.
     #[serde(default)]
     pub completion_consequence: String,
+    /// Consequence recorded when this charter *fails* — concluded at Failure, defaulted or
+    /// given up (content-depth charters round 30): the dark-deed mirror of
+    /// `completion_consequence`. Where seeing a charter through leaves a mark that *unlocks* a
+    /// follow-on (`requires_consequence`), botching one leaves a mark on the ship's record that
+    /// later writs can read — chiefly to *bar* delicate work (`forbidden_consequence`): a ship
+    /// known to have abandoned the vulnerable is not handed their like again. So a failure is no
+    /// longer only a reputation smudge (round 18) but can shape which charters the board will
+    /// ever offer again. Empty = a failure leaves no such deed on record.
+    #[serde(default)]
+    pub failure_consequence: String,
     /// The subsystem this mission's work leans on (content-depth subsystems round
     /// 14): the module whose condition scales how fast the objective accrues
     /// on-station — a mining survey's engineering bay, a greening's agriculture, a

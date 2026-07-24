@@ -1937,6 +1937,7 @@
   "objective": "rescue",
   "reward_reputation_trait": "mercy",
   "reward_reputation_scale": 0.6,
+  "failure_consequence": "broke_a_sanctuary_trust",
   "description": "A failing habitat-world needs its people carried to safety across four centuries of dark, and the consortium arranging it will not hand that trust to just any hull. They want a ship with a name — a reputation for treating the vulnerable as kin, for the sort of mercy that does not calculate — because a people entrusting its children to a passing stranger deserves a stranger already known to be kind.",
   "target_duration_years": 400,
   "phases": [
@@ -2194,6 +2195,9 @@
   "id": "the_ark_run",
   "name": "The Ark Charter: Ten Thousand Sleepers",
   "objective": "colonization",
+  "forbidden_consequence": [
+    "broke_a_sanctuary_trust"
+  ],
   "description": "Ten thousand colonists sleep frozen in the holds — a whole world's founding population, entrusted to this ship to carry across three centuries of dark to a waiting shore. They cannot be replaced and they cannot be woken early. The cold banks will fail here and there no matter how well they are tended, and the dark will take its share; the charter does not ask that none be lost, only that as many as possible arrive alive. Everything the ship does for three hundred years is, in the end, in service of a number that can only ever go down.",
   "target_duration_years": 320,
   "phases": [

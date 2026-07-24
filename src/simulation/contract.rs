@@ -1303,6 +1303,40 @@ mod tests {
     }
 
     #[test]
+    fn a_botched_charter_leaves_a_mark_that_bars_the_like() {
+        // Content-depth charters round 30: a failed charter seeds a dark deed the board reads.
+        // The Sanctuary Run's failure marks the ship as having broken a sanctuary trust; the Ark
+        // Charter then bars that ship — a hull that abandoned refugees is not handed another cargo
+        // of vulnerable lives.
+        let data = GameData::load().unwrap();
+        let sanctuary = data.contracts.get("the_sanctuary_run").unwrap();
+        let ark = data.contracts.get("the_ark_run").unwrap();
+        let tag = sanctuary.failure_consequence.clone();
+        assert!(
+            !tag.is_empty(),
+            "the sanctuary run marks its failure on record"
+        );
+        assert!(
+            ark.forbidden_consequence.contains(&tag),
+            "the ark charter bars a ship carrying that mark"
+        );
+
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 20, &picks);
+        // Before the failure: the ark charter is open to an untarnished ship.
+        assert!(
+            meets_in_world_gate(&sim, ark),
+            "an untarnished ship may take the ark charter"
+        );
+        // Record the failure deed exactly as the conclude path does on a Failure.
+        sim.consequences.push(tag);
+        assert!(
+            !meets_in_world_gate(&sim, ark),
+            "a ship that broke a sanctuary trust is barred from the ark charter"
+        );
+    }
+
+    #[test]
     fn a_mission_done_well_teaches_more_than_one_barely_scraped() {
         // Content-depth charters round 25: the lasting *lessons* of a mission scale with
         // how well it went. deep_vein_survey's completion boon lifts engineering

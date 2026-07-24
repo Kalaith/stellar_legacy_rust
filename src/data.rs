@@ -2471,6 +2471,13 @@ mod tests {
                     .filter(|(_, c)| !c.completion_consequence.is_empty())
                     .map(|(_, c)| &c.completion_consequence),
             )
+            // Content-depth charters round 30: a *failed* charter's deed-mark is a producer too.
+            .chain(
+                data.contracts
+                    .iter()
+                    .filter(|(_, c)| !c.failure_consequence.is_empty())
+                    .map(|(_, c)| &c.failure_consequence),
+            )
             .collect();
         for (id, c) in data.contracts.iter() {
             for tag in c
