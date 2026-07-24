@@ -272,6 +272,17 @@ pub struct GameConfig {
     /// gives no morale lift.
     #[serde(default)]
     pub sustained_plenty_morale_lift: f32,
+    /// Yearly approval each aboard faction gains while a fat spell holds past
+    /// `chronic_hunger_years` (content-depth provisioning round 31). The *political*
+    /// mirror of `chronic_hunger_faction_penalty`, on the same sustained-plenty gate as
+    /// `sustained_plenty_morale_lift`: a people fed well and long comes to trust the
+    /// council that keeps its holds full, so the standing granary warms every aboard
+    /// faction the way a chronic hunger sours it — closing the food→faction pole (hunger
+    /// against, plenty toward) beside the food→morale and food→body poles. Gentle by
+    /// design, and the exact positive counterpart of the penalty's [0, 0.05] guard.
+    /// 0 = plenty wins no goodwill.
+    #[serde(default)]
+    pub sustained_plenty_faction_bonus: f32,
     /// Energy level at or above which the ship's surplus reactor output is run into
     /// the fabricators (content-depth provisioning round 21). Energy, unlike food, has
     /// no upkeep — it simply *accumulates and sits idle*, the voyage's one wholly
@@ -3131,6 +3142,14 @@ mod tests {
             (0.0..=0.05).contains(&data.config.chronic_hunger_faction_penalty),
             "chronic_hunger_faction_penalty {} must be a gentle yearly souring [0, 0.05]",
             data.config.chronic_hunger_faction_penalty
+        );
+        // Content-depth provisioning round 31: the sustained-plenty faction bonus is the positive
+        // mirror of that souring — a gentle yearly warming as a well-fed people learns to trust its
+        // council — so it lives in the same [0, 0.05] band, never a single rupture of goodwill.
+        assert!(
+            (0.0..=0.05).contains(&data.config.sustained_plenty_faction_bonus),
+            "sustained_plenty_faction_bonus {} must be a gentle yearly warming [0, 0.05]",
+            data.config.sustained_plenty_faction_bonus
         );
         // Content-depth provisioning round 29: the low-energy production shed is a fraction in
         // [0, 1) — a power crisis dents industrial output but, kept below 1, never wholly stops

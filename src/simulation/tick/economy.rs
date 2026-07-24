@@ -303,6 +303,26 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.morale =
             (sim.population.morale + config.sustained_plenty_morale_lift).min(1.0);
     }
+    // …and it warms the peoples toward their government (content-depth provisioning
+    // round 31): the *political* mirror of the it28 chronic-hunger faction penalty, on
+    // the same sustained-plenty gate as the morale lift above. A people fed well and
+    // long comes to trust the council that keeps its holds full — a standing granary is
+    // a quiet argument for the leadership — so every aboard faction warms a little each
+    // year the fat spell holds, feeding the same faction machinery hunger sours (the
+    // it100 approval→unity cohesion, the withdrawal beats, the it13 drift). This closes
+    // the food→faction pole (hunger turns them against the council, plenty wins them
+    // back) beside the food→morale pole (it17 drain / it20 lift) and the food→body pole
+    // (it18 death / it19 birth). Same threshold as the drain; one good winter is inert.
+    if config.sustained_plenty_faction_bonus > 0.0
+        && config.chronic_hunger_years > 0
+        && sim.fat_food_years >= config.chronic_hunger_years
+    {
+        for f in &mut sim.factions {
+            if f.is_aboard() {
+                f.adjust_approval(config.sustained_plenty_faction_bonus);
+            }
+        }
+    }
 
     // Ship wear, eased while spare parts remain for upkeep (PLAN M4.2). Once
     // the stores run dry the ship wears at full rate — the "held together on

@@ -777,6 +777,71 @@ fn a_long_hunger_turns_the_peoples_against_the_council() {
 }
 
 #[test]
+fn a_long_plenty_warms_the_peoples_toward_the_council() {
+    // Content-depth provisioning round 31: the political mirror of the it28 hunger souring — a ship
+    // fed well and long warms its aboard peoples, who learn to trust the council that keeps their
+    // holds full, where a larder only just gone fat (no standing plenty yet) leaves them untouched.
+    // Both ships carry the same fat larder and small crew (no famine, no hunger penalty); the only
+    // difference is the *streak* — one has held plenty past the sustained gate, the other has not —
+    // so the sole approval gap is the year's plenty faction bonus on a single tracked faction.
+    let mut data = GameData::load().unwrap();
+    assert!(
+        data.config.sustained_plenty_faction_bonus > 0.0 && data.config.chronic_hunger_years > 0,
+        "this test needs the sustained-plenty faction coupling enabled"
+    );
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.base_production.food = 0.0;
+
+    let make = |fat_years: u32| -> SimState {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            17,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.population.count = 200; // a crew the stores easily feed (no famine)
+        sim.resources.food = data.config.fat_food_threshold + 5000;
+        sim.fat_food_years = fat_years;
+        sim
+    };
+    let approval = |sim: &SimState| {
+        sim.factions
+            .iter()
+            .find(|f| f.is_aboard())
+            .unwrap()
+            .approval
+    };
+
+    // The streak counter is incremented at the top of the year *before* the bonus gate, so a ship
+    // launched at `chronic_hunger_years` clears the gate this year; one launched at 0 reaches only
+    // 1 — a larder just gone fat, not a lifetime of plenty — and wins no goodwill yet.
+    let mut plentiful = make(data.config.chronic_hunger_years);
+    let mut new_plenty = make(0);
+    assert_eq!(
+        approval(&plentiful),
+        approval(&new_plenty),
+        "the two ships launch with the same faction goodwill"
+    );
+
+    advance_year(&mut plentiful, &data);
+    advance_year(&mut new_plenty, &data);
+
+    assert!(
+        approval(&plentiful) > approval(&new_plenty),
+        "a standing plenty warms the peoples where a larder just gone fat does not (long {} vs new {})",
+        approval(&plentiful),
+        approval(&new_plenty)
+    );
+    let gap = approval(&plentiful) - approval(&new_plenty);
+    assert!(
+        (gap - data.config.sustained_plenty_faction_bonus).abs() < 1e-4,
+        "the approval gap is exactly the year's sustained-plenty faction bonus ({gap})"
+    );
+}
+
+#[test]
 fn identical_seeds_produce_identical_decades() {
     let (data, mut a) = fresh(77);
     let (_, mut b) = fresh(77);

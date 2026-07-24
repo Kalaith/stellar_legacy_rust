@@ -35,6 +35,7 @@
   "chronic_hunger_death_bonus": 0.003,
   "sustained_plenty_birth_bonus": 0.5,
   "sustained_plenty_morale_lift": 0.004,
+  "sustained_plenty_faction_bonus": 0.01,
   "surplus_energy_threshold": 4000,
   "fabrication_energy_cost": 600,
   "fabrication_minerals_cost": 40,
