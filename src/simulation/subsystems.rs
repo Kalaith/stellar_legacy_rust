@@ -243,9 +243,13 @@ pub fn train_subsystem_knowledge(
         ));
     }
     sim.resources.apply(&cost);
+    // A cohort learns only as well as the ship's academy can teach (content-depth subsystems
+    // round 27): the education/culture module's condition scales the knowledge a training run
+    // imparts, so a crew that lets its schools rot trains new hands to a fainter craft.
+    let academy = education_training_factor(sim, data);
     let name = def.name.clone();
     if let Some(state) = sim.subsystems.get_mut(id) {
-        state.knowledge = (state.knowledge + cfg.train_knowledge_gain).min(1.0);
+        state.knowledge = (state.knowledge + cfg.train_knowledge_gain * academy).min(1.0);
     }
     let line = crate::data::FlavorConfig::line_with_name(
         &data.config.flavor.subsystem_training,
@@ -524,6 +528,28 @@ pub fn security_stability_recovery(sim: &SimState, data: &GameData) -> f32 {
     condition * cfg.security_stability_recovery_per_condition
 }
 
+/// Fraction of a training cohort's knowledge gain a given academy actually imparts
+/// (content-depth subsystems round 27): the education/culture module *is* the ship's schools,
+/// so its condition scales how much a deliberate `train_subsystem_knowledge` cohort learns —
+/// a true academy trains new crews to the full craft, a crumbling one (rote lessons, lost
+/// method, no masters to apprentice under) teaches them only a fraction. This gives education
+/// a third active role beside its two keystones — the generational `transmit_knowledge` and
+/// the it10 archive drift-resistance — now touching *deliberate* craft-building, not only what
+/// passes on by default. Scales `1 - education_training_penalty·(1 - condition)`; kept above 0
+/// by a penalty below 1, so even a wrecked academy can still bootstrap itself back (no repair
+/// deadlock). 1.0 (inert) when the penalty is 0 or the academy is absent.
+pub fn education_training_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.education_training_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("education_culture")
+        .map_or(1.0, |s| s.condition);
+    (1.0 - penalty * (1.0 - condition)).max(0.0)
+}
+
 /// Signed yearly morale shift from the state of the habitat (content-depth
 /// subsystems round 11): the life-support/habitat is where the people live, so a
 /// home kept above the midpoint lifts spirits and one let to fail depresses them —
@@ -714,6 +740,65 @@ mod tests {
         assert!(
             wrecked < half && wrecked >= 0.0,
             "a wrecked bay fabricates the least, but never a negative yield ({wrecked})"
+        );
+    }
+
+    #[test]
+    fn a_true_academy_trains_a_cohort_whole_and_a_crumbling_one_only_partly() {
+        // Content-depth subsystems round 27: the education/culture module is the ship's
+        // schools, so its condition scales how much a training cohort learns. A true academy
+        // imparts the full gain (factor 1.0); a crumbling one less; a wrecked one least — but
+        // never nothing (the penalty is below 1), so a crew can always bootstrap its schools
+        // back. The actual training run must scale with the factor.
+        let (data, mut sim) = campaign(27);
+        let penalty = data.config.subsystems.education_training_penalty;
+        assert!(
+            penalty > 0.0,
+            "this test needs the education→training coupling enabled"
+        );
+
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .condition = 1.0;
+        assert_eq!(
+            education_training_factor(&sim, &data),
+            1.0,
+            "a true academy trains the full cohort"
+        );
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .condition = 0.0;
+        let wrecked = education_training_factor(&sim, &data);
+        assert!(
+            wrecked > 0.0 && wrecked < 1.0,
+            "a wrecked academy still teaches something, but less ({wrecked})"
+        );
+
+        // The training run itself scales: a wrecked academy imparts less knowledge per cohort
+        // than a sound one, both for the same credits.
+        sim.resources.credits = 1_000_000;
+        let gain = |sim: &mut SimState| {
+            let before = sim.subsystems["security"].knowledge;
+            train_subsystem_knowledge(sim, &data, "security").unwrap();
+            sim.subsystems["security"].knowledge - before
+        };
+        sim.subsystems.get_mut("security").unwrap().knowledge = 0.2;
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .condition = 1.0;
+        let sound_gain = gain(&mut sim);
+        sim.subsystems.get_mut("security").unwrap().knowledge = 0.2;
+        sim.subsystems
+            .get_mut("education_culture")
+            .unwrap()
+            .condition = 0.0;
+        let wrecked_gain = gain(&mut sim);
+        assert!(
+            wrecked_gain > 0.0 && wrecked_gain < sound_gain,
+            "a wrecked academy trains a fainter cohort ({wrecked_gain} vs {sound_gain})"
         );
     }
 

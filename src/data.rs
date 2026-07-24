@@ -2072,6 +2072,14 @@ mod tests {
             "engineering_fabrication_penalty {} out of range [0, 1]",
             subs_cfg.engineering_fabrication_penalty
         );
+        // Content-depth subsystems round 27: the education→training penalty must sit strictly
+        // below 1, so even a wrecked academy still teaches something and a crew can bootstrap
+        // its schools back — a training deadlock (0 gain forever) would be unrecoverable.
+        assert!(
+            (0.0..1.0).contains(&subs_cfg.education_training_penalty),
+            "education_training_penalty {} must be in [0, 1) so a wrecked academy still teaches",
+            subs_cfg.education_training_penalty
+        );
         // Content-depth subsystems round 25: the medical adaptation resistance is a
         // fraction below 1 (even a perfect infirmary only *slows* the shipborn drift, it
         // never wholly stops the bodies adapting to the ship).

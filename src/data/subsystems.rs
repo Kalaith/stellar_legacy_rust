@@ -225,6 +225,18 @@ pub struct SubsystemsConfig {
     /// 0 = the archive's physical state does not touch what the next generation keeps.
     #[serde(default)]
     pub education_transmission_condition_penalty: f32,
+    /// How much a *degraded* education/culture academy weakens a deliberate training cohort's
+    /// knowledge gain (content-depth subsystems round 27): education's third active role, beside
+    /// the generational-transmission keystone (`education_transmission_condition_penalty`) and
+    /// the it10 archive drift-resistance. Where transmission is what passes on *by default* each
+    /// generation, this is what an *active* `train_subsystem_knowledge` run buys — and a real
+    /// academy trains new crews to the full craft where a crumbling one imparts only a fraction.
+    /// The training factor is `1 - education_training_penalty·(1 - condition)`. Must sit below 1
+    /// so even a wrecked academy still teaches *something* (no repair deadlock — a crew can
+    /// bootstrap the schools back). Penalty-below-full so the launch baseline is untouched.
+    /// 0 = the academy's state does not touch what a training cohort learns.
+    #[serde(default)]
+    pub education_training_penalty: f32,
     /// How much a *degraded* mission-key subsystem slows the objective's accrual
     /// (content-depth subsystems round 14): the subsystem axis's first coupling to
     /// the mission itself. A charter names the module its work leans on, and the
