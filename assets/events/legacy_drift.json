@@ -2624,5 +2624,46 @@
     "log": "The ship reached the founders' shore and sailed on past it, saluting the world it would not land on. The home was the hull now, and the people in it, and a destination is no destination when no one aboard wishes to arrive."
    }
   ]
+ },
+ {
+  "id": "the_drift_people",
+  "category": "generational_challenge",
+  "family": "legacy_drift",
+  "title": "The Drift People",
+  "description": "Generations ago, becalmed and unable to burn, the ship stopped fighting the stillness and settled into the long drift — and made, out of necessity, a peace with going nowhere. Now the stillness could end. A passing chance — a fuel source in reach, a way to light the drive and take back a heading — has appeared, and the ship could be a voyage again. But the crew that would seize it are not the crew that was becalmed. They are a drift-people now, born to stillness, at home in a ship that does not go anywhere, and to many of them the chance to move again looks less like rescue than like being asked to give up the only life they have known.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "settled_into_the_drift"
+  ],
+  "min_generation": 3,
+  "outcomes": [
+   {
+    "id": "light_the_drive_again",
+    "label": "Light the drive again",
+    "description": "Take the chance. Burn, move, become a voyage again, and pull the drift-people — willing or not — back into a ship that is going somewhere, because a ship becalmed forever is a ship that has quietly given up.",
+    "ship_delta": {
+     "fuel": 0.35
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "stability": 0.02,
+     "morale": -0.03,
+     "cultural_drift": -0.02
+    },
+    "log": "The ship lit its drive after generations of drift and became a voyage again, dragging a reluctant drift-people back onto a heading — a rescue that felt, to many aboard, like an eviction from the only home they had ever known, and a course regained at the cost of a peace hard-won."
+   },
+   {
+    "id": "stay_in_the_drift",
+    "label": "Stay in the drift",
+    "description": "Let the chance pass. The drift is not a failure to be escaped but a life the ship has made, whole and its own, and a people has the right to stay where it has learned to be at home — moving or not.",
+    "population_delta": {
+     "adaptation": 0.04,
+     "unity": 0.05,
+     "morale": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The ship let the drive stay cold and the chance pass by, choosing the drift it had made a home over a heading it no longer wanted — a drift-people fully become itself, at peace in a stillness the founders would have called a failure and the living called their life."
+   }
+  ]
  }
 ]

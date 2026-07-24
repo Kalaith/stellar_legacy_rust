@@ -546,5 +546,40 @@
     "log": "The ship kept the channel dark on the appointed day and refused to send the message its own past had received, and the impossibility simply stood — a signal with no sender, a loop left open, a hole in the order of things the voyage would carry the rest of the way home. Some nights the crew still heard it in memory, its own voice out of a year that could no longer have happened, asking a question the ship had chosen, for once, not to answer."
    }
   ]
+ },
+ {
+  "id": "the_archive_returns",
+  "category": "generational_challenge",
+  "family": "mystery",
+  "title": "The Archive Returns",
+  "description": "Long ago, for the price of a shorter road, the ship gave its whole archive — its founding, its voyage, the full record of who it had been — into the keeping of strangers. Now a quiet automated craft matches course and offers a gift in return: the archive, come back. But not as it left. The strangers have *studied* it, for generations, and what they return is the ship's own history annotated in an alien hand — its founders analysed, its choices catalogued, its people described with the cool clarity of outsiders who saw patterns the ship never could. It is the ship's own face in a mirror it did not make, and the council is not sure it wants to look.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "archive_given_to_strangers"
+  ],
+  "outcomes": [
+   {
+    "id": "take_the_annotated_mirror",
+    "label": "Take the mirror",
+    "description": "Accept the returned archive and read what the strangers saw. Learn the ship as an outsider learned it — the blind spots, the unadmitted patterns, the shape of a people seen from without — however unsettling the seeing.",
+    "population_delta": {
+     "cultural_drift": 0.04,
+     "adaptation": 0.02,
+     "stability": -0.02
+    },
+    "log": "The ship read its own history as strangers had written it, and saw itself for the first time from outside — the patterns it had never named, the founders as data rather than saints — and was changed by the seeing, a people who could no longer quite believe its own old story about itself."
+   },
+   {
+    "id": "refuse_the_mirror",
+    "label": "Refuse the mirror",
+    "description": "A people has the right to its own account of itself. Thank the strangers, decline their annotated version, and keep the ship's memory of the founding the ship's own — unstudied, unclinical, and believed.",
+    "population_delta": {
+     "legacy_loyalty": 0.04,
+     "unity": 0.03,
+     "cultural_drift": -0.02
+    },
+    "log": "The ship refused to see itself through alien eyes and kept its own account of who it was — a memory of the founding warmer and less true than the strangers' version, and the ship's, and held all the tighter for the refusing."
+   }
+  ]
  }
 ]

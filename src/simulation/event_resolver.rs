@@ -1912,6 +1912,28 @@ mod tests {
     }
 
     #[test]
+    fn a_seeded_payoff_waits_for_its_consequence_on_record() {
+        // Content-depth event families round 27: the payoffs that land this session's
+        // seeded chains. The Drift People reckoning surfaces only for a ship that actually
+        // settled into the becalming — its seed on record — and not before.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 62, &picks);
+        sim.dynasty.generation = 4; // clear the min_generation gate
+        let tmpl = data.events.get("the_drift_people").unwrap();
+
+        assert!(
+            !passes_gate(&sim, tmpl),
+            "the drift-people reckoning waits until the drift was chosen"
+        );
+        sim.consequences.push("settled_into_the_drift".to_string());
+        assert!(
+            passes_gate(&sim, tmpl),
+            "settling into the drift on record opens its payoff"
+        );
+    }
+
+    #[test]
     fn a_convergent_chain_needs_both_its_seeds_on_record() {
         // Content-depth event families round 24: a payoff gated on TWO seed consequences.
         // The Untethered reckons only for a ship that both let its founders go AND turned

@@ -481,5 +481,41 @@
     "log": "The ship pulled back to a distance it could survive and read the star's convulsion from range — a lesser harvest than the founders dreamed, but taken by a crew that lived to carry it home. The dead had wagered the living's lives on the closeness; the living, weighing the same star, decided the founders had booked a debt that was theirs to refuse."
    }
   ]
+ },
+ {
+  "id": "the_watchers_answer",
+  "category": "legacy_moment",
+  "family": "science_anomaly",
+  "title": "The Watchers Answer",
+  "description": "Generations ago the ship broke the silence and hailed the intelligence that had been watching it. Now, at last, the watchers answer — and the answer is not words. It arrives as a structured signal of impossible density, a thing that the analysts can tell is *meaning* the way you can tell a page is writing without being able to read it: patterned, deliberate, addressed to the ship, and utterly beyond the crew's frame to decode. Something out there heard the greeting, considered it for two generations, and has replied in a language the ship has no key to. The council must decide what to do with an answer it cannot understand.",
+  "requires_decision": true,
+  "requires_consequence": [
+   "hailed_the_watchers"
+  ],
+  "outcomes": [
+   {
+    "id": "devote_to_decoding",
+    "label": "Devote the ship to decoding it",
+    "description": "Turn the ship's whole intellectual weight on the signal — the archive, the analysts, a generation of scholars if that is what it takes — and try to learn the language the watchers answered in, whatever it does to the crew that learns it.",
+    "population_delta": {
+     "cultural_drift": 0.04,
+     "adaptation": 0.02,
+     "morale": 0.02,
+     "legacy_loyalty": -0.02
+    },
+    "log": "The ship bent its mind wholly to the watchers' reply, and the long work of learning an alien language changed the ones who learned it — a crew reaching across an unbridgeable gap, and drifting, in the reaching, further from the people who had sent the first hello."
+   },
+   {
+    "id": "log_the_answer_unread",
+    "label": "Log it, unread",
+    "description": "Some conversations are not the ship's to finish. Record the answer in full, preserve it for descendants who may one day hold the key, and let the greeting and its reply stand as a thing begun, not a thing understood.",
+    "population_delta": {
+     "unity": 0.02,
+     "legacy_loyalty": 0.02,
+     "morale": -0.02
+    },
+    "log": "The ship logged the watchers' answer whole and unread, a reply it could neither ignore nor understand, and carried it on — a conversation across generations left, for now, at hello and an incomprehensible reply, for grandchildren to maybe one day finish."
+   }
+  ]
  }
 ]
