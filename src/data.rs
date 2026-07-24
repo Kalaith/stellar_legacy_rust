@@ -1025,6 +1025,20 @@ pub struct CampaignSkeletonConfig {
     /// disables it.
     #[serde(default)]
     pub air_beat_threshold: f32,
+    /// Becalmed beat family (content-depth campaign-skeleton round 25): the *mobility*
+    /// twin of the hull/air *integrity* collapse beats — where those watch the ship
+    /// falling apart or suffocating, this watches it *stranded*. Once the ship has been
+    /// fuel-stalled (a Travel leg dry, unable to burn) for `becalmed_beat_years` running,
+    /// a beat is forced from this family: the crew confronting a ship that cannot make its
+    /// heading. Empty = no becalmed beat.
+    #[serde(default)]
+    pub becalmed_beat_family: String,
+    /// Consecutive stalled years past which the becalmed beat fires (content-depth
+    /// campaign-skeleton round 25): a bad month coasting is not a stranding, so only a
+    /// *sustained* stall forces the reckoning. A year that burns again re-arms it. 0
+    /// disables it.
+    #[serde(default)]
+    pub becalmed_beat_years: u32,
     /// Power-transition beat family (content-depth round 11): a beat keyed not to
     /// a stat or a time but to a *political* change — the first tick the dominant
     /// faction differs from the one the skeleton last marked (demographic drift
@@ -2501,6 +2515,19 @@ mod tests {
                     .iter()
                     .any(|(_, e)| e.life_support_below.is_some()),
                 "the air-collapse beat needs a life_support_below-gated event to surface"
+            );
+        }
+        // Content-depth campaign-skeleton round 25: the becalmed (mobility) beat needs a
+        // family with events and a sustained-stall year count when switched on.
+        if !sk.becalmed_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.becalmed_beat_family),
+                "campaign_skeleton becalmed_beat_family '{}' has no events",
+                sk.becalmed_beat_family
+            );
+            assert!(
+                sk.becalmed_beat_years > 0,
+                "the becalmed beat needs a sustained-stall threshold"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

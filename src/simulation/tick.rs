@@ -95,6 +95,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_subsystem_beat(sim, data, &mut report)
             && !fire_hull_beat(sim, data, &mut report)
             && !fire_air_beat(sim, data, &mut report)
+            && !fire_becalmed_beat(sim, data, &mut report)
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
@@ -427,6 +428,35 @@ fn fire_air_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -
         return false;
     }
     let family = cfg.air_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire a becalmed beat (content-depth campaign-skeleton round 25): the *mobility* twin
+/// of the hull/air *integrity* collapse beats. Once the ship has been fuel-stalled — a
+/// Travel leg dry, unable to burn — for `becalmed_beat_years` running, a beat is forced
+/// (the crew confronting a ship that cannot make its heading); a year that burns again
+/// re-arms it. Fires only during a voyage; at most one per stranding.
+fn fire_becalmed_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.becalmed_beat_family.is_empty() || cfg.becalmed_beat_years == 0 || sim.contract.is_none()
+    {
+        return false;
+    }
+    let band = if sim.fuel_stall_years >= cfg.becalmed_beat_years {
+        -1
+    } else {
+        0
+    };
+    if band == sim.becalmed_beat_band {
+        return false;
+    }
+    sim.becalmed_beat_band = band;
+    if band == 0 {
+        // The ship burns again — re-arm, but do not fire.
+        return false;
+    }
+    let family = cfg.becalmed_beat_family.clone();
     force_family_beat(sim, data, &family, report);
     true
 }

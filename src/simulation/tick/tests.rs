@@ -697,6 +697,8 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.hull_beat_family.clear();
     data.config.campaign_skeleton.air_beat_family.clear();
+    // …and the round-25 becalmed beat, which a fuel-starved voyage trips.
+    data.config.campaign_skeleton.becalmed_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -1151,6 +1153,45 @@ fn a_midvoyage_beat_fires_at_the_deep_middle_of_the_voyage() {
         crate::data::contracts::ContractPhase::Return,
         "the deep-middle beat fires before the ship turns for home"
     );
+}
+
+#[test]
+fn a_becalmed_beat_fires_when_the_ship_is_long_stranded_and_rearms_when_it_burns() {
+    // Content-depth campaign-skeleton round 25: the mobility twin of the hull/air collapse
+    // beats. Once the ship has been fuel-stalled for the threshold years running, the
+    // becalmed reckoning is forced once; a year that burns again re-arms it. Tested
+    // against the fire hook directly, since the stall counter is driven by real stalls.
+    let data = GameData::load().unwrap();
+    let years = data.config.campaign_skeleton.becalmed_beat_years;
+    assert!(years > 0, "this test needs the becalmed beat enabled");
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        7,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+
+    // Still moving (short of the threshold): no reckoning.
+    sim.fuel_stall_years = years - 1;
+    assert!(!fire_becalmed_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.becalmed_beat_band, 0);
+
+    // Long stranded: the beat fires, once.
+    sim.fuel_stall_years = years;
+    assert!(fire_becalmed_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.becalmed_beat_band, -1);
+    assert!(
+        !fire_becalmed_beat(&mut sim, &data, &mut report),
+        "fires once per stranding"
+    );
+
+    // Burning again re-arms it (clears the band, no fire).
+    sim.fuel_stall_years = 0;
+    assert!(!fire_becalmed_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.becalmed_beat_band, 0);
 }
 
 #[test]
@@ -1726,6 +1767,8 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.hull_beat_family.clear();
     data.config.campaign_skeleton.air_beat_family.clear();
+    // …and the round-25 becalmed beat, which a fuel-starved voyage trips.
+    data.config.campaign_skeleton.becalmed_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -1828,6 +1871,8 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.subsystem_beats.clear();
     data.config.campaign_skeleton.hull_beat_family.clear();
     data.config.campaign_skeleton.air_beat_family.clear();
+    // …and the round-25 becalmed beat, which a fuel-starved voyage trips.
+    data.config.campaign_skeleton.becalmed_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 

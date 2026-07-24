@@ -378,6 +378,19 @@ pub struct SimState {
     /// at the year boundary to double that year's systems decay (W4).
     #[serde(default)]
     pub fuel_stalled_this_year: bool,
+    /// Consecutive years the ship has been *becalmed* — a Travel leg stalled dry for
+    /// want of fuel (content-depth campaign-skeleton round 25): a rolling count of how
+    /// long the ship has been unable to make its heading, reset the moment it burns
+    /// again. It's what lets the skeleton tell a bad month coasting from a *stranding*,
+    /// and drives the round-25 becalmed beat. 0 at launch.
+    #[serde(default)]
+    pub fuel_stall_years: u32,
+    /// The band the becalmed beat last marked (content-depth campaign-skeleton round 25):
+    /// -1 once the ship has been stranded long enough to force the reckoning, 0 while it
+    /// still moves. The mobility twin of the it hull/air collapse beats; a return to
+    /// burning re-arms it. 0 at launch.
+    #[serde(default)]
+    pub becalmed_beat_band: i8,
     /// Fuel actually scooped by the drive since the last provisioning report
     /// (real-time loop follow-up: legible stat changes), 0-1 fraction. Accrued
     /// each year by the engine regen (only the part that wasn't capped away), so a
@@ -622,6 +635,8 @@ impl SimState {
             selected_charter: None,
             stalled_months: 0,
             fuel_stalled_this_year: false,
+            fuel_stall_years: 0,
+            becalmed_beat_band: 0,
             fuel_scooped_accum: 0.0,
             tutorial_dismissed: false,
             market,

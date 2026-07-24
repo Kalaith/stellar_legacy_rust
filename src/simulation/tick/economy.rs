@@ -313,6 +313,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         };
         sim.push_log(line);
     }
+    // Track how long the ship has been becalmed (content-depth campaign-skeleton round
+    // 25): a stalled year extends the stranding; a year that burns clears it. This is
+    // what lets a bad month coasting be told from a genuine stranding, and drives the
+    // becalmed beat.
+    if sim.fuel_stalled_this_year {
+        sim.fuel_stall_years = sim.fuel_stall_years.saturating_add(1);
+    } else {
+        sim.fuel_stall_years = 0;
+    }
     sim.fuel_stalled_this_year = false;
 
     // The rest of the ship's subsystems wear with the years too (W5).

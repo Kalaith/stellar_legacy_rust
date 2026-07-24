@@ -2130,5 +2130,45 @@
     "log": "The failing bank was sealed and let go, and several hundred sleepers entrusted whole to the ship did not, in the end, arrive. The count went down the way the charter had promised it would, and no one aboard found the promise any comfort."
    }
   ]
+ },
+ {
+  "id": "the_long_drift",
+  "category": "immediate_crisis",
+  "family": "survival",
+  "title": "The Long Drift",
+  "description": "It has been years now. Not a bad month coasting on a low tank — years, one after another, with the drive cold and the ship falling through the dark on momentum alone, unable to burn, unable to correct, unable to make its heading. The scoops bring in a trickle and the tank swallows it and stays near empty. The ship is not lost; it still moves, in the way a stone thrown into a well still moves. But it moves where it was last pointed, and the crew have begun to understand that they may be a becalmed people — that the drive may not light again in the lifetime of anyone now aboard, and that the ship must decide what to be while it drifts.",
+  "requires_decision": true,
+  "fuel_below": 0.12,
+  "outcomes": [
+   {
+    "id": "mount_the_scavenge",
+    "label": "Mount a desperate scavenge",
+    "description": "Do not accept the drift. Strip the ship of every non-essential mass, rig every scoop and collector the crews can improvise, and mount a hard, all-hands campaign to gather enough reaction mass for one real burn — a burn to light the drive and take back the ship's heading.",
+    "ship_delta": {
+     "fuel": 0.4,
+     "spare_parts": -15
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.04
+    },
+    "log": "The becalmed ship refused to stay becalmed. It stripped itself for mass and rigged its scoops and threw its whole crew at the problem, and after a grinding campaign it lit the drive and burned — back onto its heading, poorer and prouder, a people that had chosen not to drift."
+   },
+   {
+    "id": "settle_into_the_drift",
+    "label": "Settle into the drift",
+    "description": "There is no mass to be had and no burn to be made. Stop fighting a stillness that will not lift, ease the ship into the drift as a way of life, and let the crew make peace with a voyage that has, for now, stopped being a voyage and become simply a place they live, moving or not.",
+    "population_delta": {
+     "morale": -0.02,
+     "adaptation": 0.04,
+     "cultural_drift": 0.03,
+     "stability": 0.02
+    },
+    "long_term_consequences": [
+     "settled_into_the_drift"
+    ],
+    "log": "The ship stopped fighting the stillness and settled into the long drift, a becalmed people learning to live aboard a vessel that had, for a while, ceased to be going anywhere — and finding, to its own surprise, that a home does not have to be moving to be a home."
+   }
+  ]
  }
 ]
