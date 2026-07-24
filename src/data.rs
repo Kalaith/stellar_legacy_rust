@@ -443,6 +443,15 @@ pub struct VoyageDrift {
     /// lets the bodies go shipborn. 0 = the infirmary doesn't touch adaptation.
     #[serde(default)]
     pub medical_adaptation_resistance: f32,
+    /// How much a *living biosphere* slows the shipborn adaptation (content-depth subsystems
+    /// round 29): the environmental twin of `medical_adaptation_resistance`. Where the infirmary
+    /// resists the drift by *knowledge* (the craft of managing the body), a lush agriculture
+    /// resists it by *condition* — real food grown and eaten, green decks walked among, keep a
+    /// crew a little more the kind of creature that could live on a world; `adaptation_per_year`
+    /// scales by `1 - agriculture_adaptation_resistance * agriculture_condition`, stacking
+    /// multiplicatively with the medical resistance. 0 = the biosphere doesn't touch adaptation.
+    #[serde(default)]
+    pub agriculture_adaptation_resistance: f32,
 }
 
 /// Field-vs-port repair tunables (PLAN M4.3). Underway, `field_repair` patches
@@ -2185,6 +2194,13 @@ mod tests {
             (0.0..1.0).contains(&data.config.voyage_drift.medical_adaptation_resistance),
             "medical_adaptation_resistance {} must be a fraction in [0, 1)",
             data.config.voyage_drift.medical_adaptation_resistance
+        );
+        // Content-depth subsystems round 29: the agriculture adaptation resistance, the
+        // biosphere twin, is likewise a fraction below 1 (a living farm only *slows* the drift).
+        assert!(
+            (0.0..1.0).contains(&data.config.voyage_drift.agriculture_adaptation_resistance),
+            "agriculture_adaptation_resistance {} must be a fraction in [0, 1)",
+            data.config.voyage_drift.agriculture_adaptation_resistance
         );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(

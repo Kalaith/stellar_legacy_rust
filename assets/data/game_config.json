@@ -792,7 +792,8 @@
     },
     "dominant_ideology_scale": 0.35,
     "archive_drift_resistance": 0.3,
-    "medical_adaptation_resistance": 0.3
+    "medical_adaptation_resistance": 0.3,
+    "agriculture_adaptation_resistance": 0.25
   },
   "repair": {
     "field_ceiling": 0.75,

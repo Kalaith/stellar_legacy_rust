@@ -694,8 +694,20 @@ pub(super) fn apply_voyage_drift(sim: &mut SimState, data: &GameData) {
         .subsystems
         .get("medical_bay")
         .map_or(0.0, |s| s.knowledge);
-    let adaptation_mult =
-        identity_mult * (1.0 - vd.medical_adaptation_resistance * medical_knowledge).max(0.0);
+    // …and a *living* biosphere holds them planet-like too (content-depth subsystems round 29):
+    // the environmental twin of the infirmary's craft. Where the medical bay slows the shipborn
+    // drift by the *knowledge* of managing the body, a lush agriculture slows it by *condition* —
+    // a crew that grows and eats living food and walks among green decks stays a little more the
+    // kind of creature that could live on a world, while a crew fed vat-paste in sterile holds
+    // goes shipborn faster. Reads condition (the biosphere's living state), not knowledge; stacks
+    // multiplicatively with the medical resistance, so infirmary *and* farm both hold the line.
+    let agriculture_condition = sim
+        .subsystems
+        .get("agriculture")
+        .map_or(0.0, |s| s.condition);
+    let adaptation_mult = identity_mult
+        * (1.0 - vd.medical_adaptation_resistance * medical_knowledge).max(0.0)
+        * (1.0 - vd.agriculture_adaptation_resistance * agriculture_condition).max(0.0);
     sim.population.apply(&PopulationDelta {
         adaptation: vd.adaptation_per_year * adaptation_mult,
         cultural_drift: vd.cultural_drift_per_year * culture_mult,

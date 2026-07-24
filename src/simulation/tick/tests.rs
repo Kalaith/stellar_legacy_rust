@@ -243,6 +243,44 @@ fn a_well_kept_infirmary_slows_the_shipborn_drift_but_never_stops_it() {
 }
 
 #[test]
+fn a_living_biosphere_slows_the_shipborn_drift_but_never_stops_it() {
+    // Content-depth subsystems round 29: the environmental twin of the infirmary's craft. A ship
+    // whose agriculture keeps a living biosphere holds the crew closer to planet-like, adapting
+    // slower — but the bodies still adapt, only less. Isolated from the medical resistance by
+    // zeroing the infirmary's knowledge, so only the biosphere's condition moves the drift.
+    let data = GameData::load().unwrap();
+    assert!(
+        data.config.voyage_drift.agriculture_adaptation_resistance > 0.0,
+        "this test needs the agriculture adaptation coupling enabled"
+    );
+    let drift_over_20y = |agri_condition: f32| -> f32 {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.subsystems.get_mut("agriculture").unwrap().condition = agri_condition;
+        sim.subsystems.get_mut("medical_bay").unwrap().knowledge = 0.0; // isolate the biosphere
+        let a0 = sim.population.adaptation;
+        for _ in 0..20 {
+            apply_voyage_drift(&mut sim, &data);
+        }
+        sim.population.adaptation - a0
+    };
+    let lush = drift_over_20y(1.0); // a living biosphere → slowed adaptation
+    let sterile = drift_over_20y(0.0); // dead grow-decks → the bodies adapt at full rate
+    assert!(
+        lush < sterile,
+        "a living biosphere slows the shipborn drift: {lush} vs {sterile}"
+    );
+    assert!(
+        lush > 0.0,
+        "but the bodies still adapt to the ship, only slower"
+    );
+}
+
+#[test]
 fn a_well_kept_culture_archive_slows_the_cultural_drift_but_not_adaptation() {
     // Content-depth subsystems round 10: the education/culture archive is the
     // ship's memory of the founders. A vivid archive (high knowledge) resists the
