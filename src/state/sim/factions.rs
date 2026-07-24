@@ -1281,6 +1281,22 @@ impl SimState {
             self.population.morale = (self.population.morale - scar).max(0.0);
             self.population.unity = (self.population.unity - scar).max(0.0);
         }
+        // A people that *breaks away* marks the ship's name (content-depth factions round 31):
+        // word spreads that this is a hull peoples flee, and its mercy reputation suffers — the
+        // reputation cost of a rift, distinct from the it24 cohesion scar (the crew) and the it20
+        // knowledge loss (the craft). A `Settled` departure — a people making planetfall to found
+        // a colony — is a parting, not a flight, and marks nothing. Scaled by the departing
+        // people's share, so a great secession is a worse name than a small remnant. Composes with
+        // the it30 reputation-trade coupling (a ship known to drive its peoples off is dealt with
+        // worse) and the it16 mercy voice/beat.
+        if matches!(kind, FactionLossKind::Departed) {
+            let rep_penalty = data.config.factions.departure_reputation_penalty;
+            if rep_penalty > 0.0 && members > 0 {
+                let total_before = self.population.count + members;
+                let share = members as f32 / total_before.max(1) as f32;
+                self.adjust_reputation("mercy", -rep_penalty * share);
+            }
+        }
         let name = log_name(&data.factions, &self.factions[idx].faction_id);
         let tail = match kind {
             FactionLossKind::Settled => "made planetfall to stay, and did not come back aboard",
@@ -3387,6 +3403,37 @@ mod tests {
             (0.5 - approval(&sim, "meridian_accord") - cfg.departure_ally_approval_penalty).abs()
                 < 1e-6,
             "the ally's grief is exactly the configured amount"
+        );
+    }
+
+    #[test]
+    fn a_break_away_marks_the_ships_name_but_a_planetfall_does_not() {
+        // Content-depth factions round 31: a people that *breaks away* (Departed) spreads word
+        // that this is a hull peoples flee, and the ship's mercy reputation suffers; a people that
+        // *settles* a world (a colony founded, not a flight) marks nothing.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.departure_reputation_penalty > 0.0,
+            "this test needs the departure-reputation coupling enabled"
+        );
+        let mercy_after = |kind: FactionLossKind| -> f32 {
+            let (_d, mut sim, _p) = armed(17);
+            // Two aboard peoples so a loss is allowed (never the ship's last).
+            sim.factions = vec![fs("steel_covenant", 300), fs("verdant_kin", 300)];
+            let before = sim.reputation("mercy");
+            sim.apply_faction_loss_by_id(&data, kind, "steel_covenant");
+            before - sim.reputation("mercy")
+        };
+
+        let broke_away = mercy_after(FactionLossKind::Departed);
+        let settled = mercy_after(FactionLossKind::Settled);
+        assert!(
+            broke_away > 0.0,
+            "a break-away costs the ship its merciful name ({broke_away})"
+        );
+        assert_eq!(
+            settled, 0.0,
+            "a people that makes planetfall to settle marks nothing"
         );
     }
 }

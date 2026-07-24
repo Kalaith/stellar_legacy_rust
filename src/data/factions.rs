@@ -219,6 +219,15 @@ pub struct FactionConfig {
     /// costs the ship no cohesion beyond the bodies and the knowledge.
     #[serde(default)]
     pub departure_cohesion_scar: f32,
+    /// Mercy reputation the ship loses when a people *breaks away* (content-depth factions round
+    /// 31): a departure by secession — not a `Settled` planetfall to found a colony, but a
+    /// `Departed` rift — spreads word that this is a hull peoples flee, and its name suffers. The
+    /// reputation cost of a rift, distinct from the round-24 cohesion scar (the crew's morale and
+    /// unity) and the round-20 knowledge loss (the craft). Scaled by the departing people's share
+    /// of the ship, so a great secession is a worse name than a small remnant slipping off. 0 = a
+    /// break-away costs the ship no reputation.
+    #[serde(default)]
+    pub departure_reputation_penalty: f32,
     /// Unity gained when a tiny drifted people is *assimilated* — folded into the largest
     /// at a generation boundary (content-depth factions round 26): the positive mirror of
     /// the `departure_cohesion_scar`. Where a people that *leaves* tears a hole in the
