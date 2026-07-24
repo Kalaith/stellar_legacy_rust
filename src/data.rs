@@ -699,6 +699,25 @@ pub struct FlavorConfig {
     pub adaptation_voice_high: f32,
     #[serde(default)]
     pub adaptation_voice_low: f32,
+    /// The crew crossing into a *new people* in custom and memory (content-depth voice round
+    /// 26): the cultural companion to `crew_shipborn` (their bodies), on `cultural_drift`.
+    /// When the crew's calendars, festivals, and tongue have drifted far enough that the
+    /// founders would not recognise the ship's daily life, one of these surfaces. No name;
+    /// indexed by year; empty = silence.
+    #[serde(default)]
+    pub culture_newfound: Vec<String>,
+    /// The crew holding the founders' *ways* close (content-depth voice round 26): the rarer
+    /// twin — a well-kept archive (education_culture) and a deliberate keeping-of-faith
+    /// holding the old customs against the voyage's drift, so a ship centuries out still keeps
+    /// the founders' calendar. No name; indexed by year.
+    #[serde(default)]
+    pub culture_founders_kept: Vec<String>,
+    /// Cultural drift at/above which the ship remarks a new people (`_high`) or at/below which
+    /// it remarks the founders' ways kept (`_low`) (content-depth voice round 26).
+    #[serde(default)]
+    pub drift_voice_high: f32,
+    #[serde(default)]
+    pub drift_voice_low: f32,
     /// The crew's *cohesion* crossing into a fraying band (content-depth voice round 21):
     /// the fourth internal-state voice, on `unity`. Distinct from the crew's spirits
     /// (`ship_mood_darkening`), the peoples' contentment (`polity_souring`), and the
@@ -2862,6 +2881,20 @@ mod tests {
                 "adaptation voice thresholds must order: 0 < low ({}) < high ({})",
                 fl.adaptation_voice_low,
                 fl.adaptation_voice_high
+            );
+        }
+        // Content-depth voice round 26: the cultural-drift (new-people) voice, the same shape
+        // as the adaptation voice — its cultural twin.
+        if fl.drift_voice_high > 0.0 {
+            assert!(
+                !fl.culture_newfound.is_empty() && !fl.culture_founders_kept.is_empty(),
+                "drift voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.drift_voice_low > 0.0 && fl.drift_voice_low < fl.drift_voice_high,
+                "drift voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.drift_voice_low,
+                fl.drift_voice_high
             );
         }
         // Content-depth voice round 21: likewise the unity (cohesion) voice needs both

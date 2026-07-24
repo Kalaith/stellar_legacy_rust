@@ -493,6 +493,16 @@ pub struct SimState {
     /// recorded, not announced. 0 at launch; a return to the middle re-arms.
     #[serde(default)]
     pub adaptation_voice_band: i8,
+    /// The last-announced band of the crew's *cultural* identity (content-depth voice round
+    /// 26): the cultural companion to the `adaptation_voice_band` (their bodies) — this reads
+    /// `cultural_drift`, how far the crew's customs, calendars, and tongue have drifted from
+    /// the founders'. Tracks whether drift last crossed into a new-people band (a culture the
+    /// founders would not recognise) or a founders-kept one (the old ways held close, the
+    /// rarer crossing a strong archive earns) so the ship remarks the crossing once. The
+    /// launch band (a founding crew keeps the founders' ways) is recorded, not announced.
+    /// 0 at launch; a return to the middle re-arms.
+    #[serde(default)]
+    pub drift_voice_band: i8,
     /// The last-announced band of the crew's *cohesion* (content-depth voice round 21):
     /// the fourth internal-state voice beside morale (`morale_band`), governance
     /// (`stability_voice_band`), and mission-devotion (`loyalty_voice_band`), on the
@@ -673,6 +683,7 @@ impl SimState {
             stability_voice_band: 0,
             loyalty_voice_band: 0,
             adaptation_voice_band: 0,
+            drift_voice_band: 0,
             unity_voice_band: 0,
             hull_voice_band: 0,
             air_voice_band: 0,
@@ -714,6 +725,14 @@ impl SimState {
             sim.population.adaptation,
             config.flavor.adaptation_voice_high,
             config.flavor.adaptation_voice_low,
+        );
+        // Likewise record the launch band of the crew's cultural identity, so a founding
+        // crew's founders-kept ways read as the baseline, not a "new people" the drift voice
+        // announces (content-depth voice round 26).
+        sim.drift_voice_band = factions::stability_voice_band_for(
+            sim.population.cultural_drift,
+            config.flavor.drift_voice_high,
+            config.flavor.drift_voice_low,
         );
         // Likewise record the launch band of the crew's cohesion, so a founding crew's
         // one-people unity reads as the baseline, not a "cohering" the unity voice

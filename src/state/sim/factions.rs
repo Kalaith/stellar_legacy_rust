@@ -954,6 +954,43 @@ impl SimState {
         self.adaptation_voice_band = band;
     }
 
+    /// Give the crew's *cultural* identity a voice (content-depth voice round 26): the
+    /// cultural companion to the adaptation voice (their bodies), on `cultural_drift`. Where
+    /// that reads how far the descendants' *bodies* have left the founders' stock, this reads
+    /// how far their *customs* have — the calendars, festivals, and tongue drifting into
+    /// something the founders would not know. When drift crosses *into* a new-people band (a
+    /// culture the founders would not recognise) or a founders-kept one (the old ways held
+    /// close, the rarer crossing a strong archive earns), the decks remark it once. Distinct
+    /// from the it2 drift *beats* (the reckoning) and the drift-aware *ambient* (the dominant
+    /// people's background flavor); this is the quiet identity crossing, said once.
+    /// Deterministic (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_drift_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.drift_voice_high <= 0.0 {
+            return;
+        }
+        let band = stability_voice_band_for(
+            self.population.cultural_drift,
+            fl.drift_voice_high,
+            fl.drift_voice_low,
+        );
+        if band == self.drift_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.culture_newfound,
+            -1 => &fl.culture_founders_kept,
+            _ => {
+                self.drift_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.drift_voice_band = band;
+    }
+
     /// Give the crew's *cohesion* a voice (content-depth voice round 21): the fourth
     /// internal-state voice, beside the morale (`announce_ship_mood`), governance
     /// (`announce_stability_mood`), and mission-devotion (`announce_loyalty_mood`) ones,
@@ -2356,6 +2393,64 @@ mod tests {
             "a crew held to baseline says so afresh"
         );
         assert_eq!(sim.adaptation_voice_band, -1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_the_crew_becomes_a_new_people_or_keeps_the_old_ways() {
+        // Content-depth voice round 26: the cultural-drift voice, the cultural companion to
+        // the adaptation voice. A founding crew keeps the founders' ways (the silent launch
+        // baseline, band -1 since drift launches below the low line); drifting into a
+        // new-people band surfaces one pooled line; keeping the old ways afresh after a drift
+        // gets its own, opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(57);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.drift_voice_high > 0.0 && fl.culture_newfound.len() >= 3,
+            "this test needs the drift voice enabled"
+        );
+        let low = fl.drift_voice_low;
+        let high = fl.drift_voice_high;
+        let culture_lines = |sim: &SimState| {
+            let new = &data.config.flavor.culture_newfound;
+            let kept = &data.config.flavor.culture_founders_kept;
+            sim.log
+                .iter()
+                .filter(|l| new.contains(&l.text) || kept.contains(&l.text))
+                .count()
+        };
+
+        // A founding crew keeps the founders' ways — the launch band (-1) is recorded, silent.
+        sim.announce_drift_mood(&data);
+        assert_eq!(
+            culture_lines(&sim),
+            0,
+            "a founding crew's culture is silent"
+        );
+        assert_eq!(sim.drift_voice_band, -1);
+
+        // The descendants drift into a new people: one line.
+        sim.population.cultural_drift = high + 0.05;
+        sim.announce_drift_mood(&data);
+        assert_eq!(culture_lines(&sim), 1, "a new people says so once");
+        assert_eq!(sim.drift_voice_band, 1);
+
+        // Still a new people — no reprint.
+        sim.announce_drift_mood(&data);
+        assert_eq!(
+            culture_lines(&sim),
+            1,
+            "staying a new people is not re-announced"
+        );
+
+        // Held back to the founders' ways: a second, distinct line.
+        sim.population.cultural_drift = low - 0.05;
+        sim.announce_drift_mood(&data);
+        assert_eq!(
+            culture_lines(&sim),
+            2,
+            "a crew that keeps the old ways afresh says so"
+        );
+        assert_eq!(sim.drift_voice_band, -1);
     }
 
     #[test]

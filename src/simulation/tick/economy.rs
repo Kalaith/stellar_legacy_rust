@@ -412,6 +412,12 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // the decks remark the crew becoming, or refusing to become, a new kind of people —
     // the physiological companion to the loyalty (their belief) voice above.
     sim.announce_adaptation_mood(data);
+    // …and give the crew's *culture* a voice too (content-depth voice round 26), now that the
+    // year's drift (and the it10 archive resistance to it) has settled on cultural_drift: when
+    // the crew's customs cross into a people the founders would not recognise, or hold the old
+    // ways close, the decks remark it once — the cultural companion to the adaptation (their
+    // bodies) voice just above, the two identity-drift voices side by side.
+    sim.announce_drift_mood(data);
     // …and give the crew's *cohesion* a voice (content-depth voice round 21), now that
     // the year's faction-mood coupling (it100), security recovery, and voyage strain
     // have all settled on unity: when the crew crosses into fraying into cliques or
