@@ -666,6 +666,23 @@ pub struct FlavorConfig {
     pub reputation_voice_high: f32,
     #[serde(default)]
     pub reputation_voice_low: f32,
+    /// The ship crossing into a *famed-for-wonder* reputation (content-depth voice round 28): the
+    /// companion to the mercy reputation voice, on the it28 `wonder` trait — the ship's name
+    /// becoming a byword for marvels, its chronicle thick with charted impossibilities. No name;
+    /// indexed by year; empty = silence.
+    #[serde(default)]
+    pub wonder_famed: Vec<String>,
+    /// The ship crossing into an *incurious* reputation (content-depth voice round 28): the
+    /// mirror — a ship known for keeping its head down, sailing past every strangeness rather
+    /// than chasing it. No name; indexed by year.
+    #[serde(default)]
+    pub wonder_incurious: Vec<String>,
+    /// Wonder reputation at/above which the ship remarks a famed-for-marvels name (`_high`) or
+    /// at/below which it remarks an incurious one (`_low`) (content-depth voice round 28).
+    #[serde(default)]
+    pub wonder_voice_high: f32,
+    #[serde(default)]
+    pub wonder_voice_low: f32,
     /// The ship's *institutions* crossing into disorder (content-depth voice round 17):
     /// the governance twin of the morale (`ship_mood_darkening`) and polity
     /// (`polity_souring`) voices — distinct from the crew's spirits and from how
@@ -3130,6 +3147,20 @@ mod tests {
                 "drive voice thresholds must order: 0 < low ({}) < high ({})",
                 fl.fuel_voice_low,
                 fl.fuel_voice_high
+            );
+        }
+        // Content-depth voice round 28: the wonder reputation voice, the same shape — both band
+        // pools stocked and the thresholds ordered when enabled.
+        if fl.wonder_voice_high > 0.0 {
+            assert!(
+                !fl.wonder_famed.is_empty() && !fl.wonder_incurious.is_empty(),
+                "wonder voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.wonder_voice_low > 0.0 && fl.wonder_voice_low < fl.wonder_voice_high,
+                "wonder voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.wonder_voice_low,
+                fl.wonder_voice_high
             );
         }
         // Content-depth voice round 6: the recurring-crisis pools need variety

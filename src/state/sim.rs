@@ -475,6 +475,14 @@ pub struct SimState {
     /// launch; a return to the middle silently re-arms.
     #[serde(default)]
     pub reputation_voice_band: i8,
+    /// The band the ship's *wonder* reputation voice last announced (content-depth voice round
+    /// 28): the it16 reputation voice reads only the watched mercy trait, so the it28 `wonder`
+    /// trait (a name earned by chasing marvels) got its own. Tracks whether wonder last crossed
+    /// into a famed band (a chronicle of charted impossibilities) or an incurious one (a ship
+    /// that sails past every strangeness), so the decks remark it once. 0 at launch (a neutral
+    /// name); a return to the middle re-arms.
+    #[serde(default)]
+    pub wonder_voice_band: i8,
     /// The last-announced band of the ship's *institutional* order (content-depth
     /// voice round 17): the governance twin of `morale_band`. Tracks whether stability
     /// last crossed into a firm or a fraying band so a government quietly working, or
@@ -705,6 +713,7 @@ impl SimState {
             polity_mood_band: 0,
             reputation_beat_band: 0,
             reputation_voice_band: 0,
+            wonder_voice_band: 0,
             stability_voice_band: 0,
             loyalty_voice_band: 0,
             adaptation_voice_band: 0,

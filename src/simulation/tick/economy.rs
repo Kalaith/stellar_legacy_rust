@@ -430,6 +430,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // voice round 16): a merciful or a feared reputation says so once, at a gentler
     // threshold than the it109 beat — the quiet marker before the defining reckoning.
     sim.announce_reputation_name(data);
+    // …and its *other* name too (content-depth voice round 28): the mercy voice reads only the
+    // one watched trait, but a ship earns a whole character — when the it28 `wonder` trait crosses
+    // into famed-for-marvels or incurious, the decks remark that too, the companion to the mercy
+    // voice on the trait this session made load-bearing.
+    sim.announce_wonder_name(data);
 
     // Voyage drift (PLAN M4.1): a long voyage changes the people, not just the
     // ship — adaptation and cultural drift rise, loyalty to the founders fades,

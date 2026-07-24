@@ -495,6 +495,17 @@
     ],
     "reputation_voice_high": 0.66,
     "reputation_voice_low": 0.34,
+    "wonder_famed": [
+      "It has become a thing the ship is known for, out in the thin traffic of the dark: that this is a hull that chases the strange. Word travels of the anomalies charted, the ruins entered, the impossibilities logged — and passing ships hail now with a particular curiosity, half-expecting the ship to have seen something they have not, and usually right.",
+      "The ship has grown a name as a seeker. Where another hull would log a marvel and hold its course, this one is known to slow, to study, to spend a season on a mystery for no better reason than that it is there — and the chronicle has swelled with charted wonders until the ship's very reputation is its curiosity, a vessel famous for the questions it cannot leave alone.",
+      "It is said now, among the hulls that cross this dark, that if a thing in the deep has never been explained, this is the ship most likely to have tried. The crew have made a quiet creed of wonder — the archive thick with anomalies run to ground — and they wear the name of seekers with the unashamed pride of people who have decided that understanding the dark is reason enough to be out in it."
+    ],
+    "wonder_incurious": [
+      "The ship has earned a name, though not one its founders would have chosen: that this is a hull that keeps its head down. Marvels pass the ports unremarked, anomalies go unlogged, and the crew's steady incuriosity has become, out in the dark, a known quantity — a ship other seekers do not bother to compare notes with, because it never has any.",
+      "Word has gone out, in the way it does, that this is a ship that does not stop for wonders. It holds its heading past every strangeness, banks its curiosity against its schedule, and has made a discipline of not looking too closely at the dark — and it is known for it now, a vessel that will pass a thing no one has ever seen and simply note the time it did."
+    ],
+    "wonder_voice_high": 0.66,
+    "wonder_voice_low": 0.34,
     "stability_fraying": [
       "The machinery of the ship's government has begun, quietly, to slip its gears. A council meets and cannot make quorum; an office falls vacant and no one is quite appointed to fill it; a decision that ought to take a week takes a season, or takes no one at all. Nothing has collapsed — it is only that the government is a little less a government than it was.",
       "It is a small thing at first and then it is everywhere: the charter cited and then worked around, the standing orders honored in the letter and quietly ignored in the fact, the offices of the ship going through motions whose reason no one now insists upon. The institutions are fraying — not with a crisis but with a shrug.",

@@ -878,6 +878,45 @@ impl SimState {
         self.reputation_voice_band = band;
     }
 
+    /// Give the ship's *other* name a voice (content-depth voice round 28): the it16 reputation
+    /// voice reads only the one watched trait (mercy — merciful vs feared), but the ship earns a
+    /// whole character, and this session made `wonder` a load-bearing trait — a name a ship grows
+    /// by chasing marvels (the it28 science family, the it30 first-contact reactions, the it29
+    /// charter that pays for it). When that name crosses *into* a famed-for-wonder band (a
+    /// chronicle thick with charted impossibilities, a crew who have made a creed of curiosity)
+    /// or an incurious one (a ship that keeps its head down and sails past every strangeness),
+    /// the decks remark it once. The same shape as the mercy voice, on a different trait.
+    /// Deterministic (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_wonder_name(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.wonder_voice_high <= 0.0 {
+            return;
+        }
+        let value = self.reputation("wonder");
+        let band = if value >= fl.wonder_voice_high {
+            1
+        } else if value <= fl.wonder_voice_low {
+            -1
+        } else {
+            0
+        };
+        if band == self.wonder_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.wonder_famed,
+            -1 => &fl.wonder_incurious,
+            _ => {
+                self.wonder_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.wonder_voice_band = band;
+    }
+
     /// Give the ship's *institutions* a voice (content-depth voice round 17): the
     /// governance twin of the morale (`announce_ship_mood`) and polity
     /// (`announce_polity_mood`) voices. Distinct from the crew's spirits and from how
@@ -2033,6 +2072,58 @@ mod tests {
         sim.announce_reputation_name(&data);
         assert_eq!(name_lines(&sim), 2, "a feared name says so afresh");
         assert_eq!(sim.reputation_voice_band, -1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_it_becomes_known_for_wonder_or_incuriosity() {
+        // Content-depth voice round 28: the wonder reputation voice, the companion to the mercy
+        // voice on the it28 `wonder` trait. A ship of neutral repute is silent; a name for
+        // marvels surfaces one line; a return to the middle re-arms; an incurious name gets its
+        // own, opposite line.
+        let (data, mut sim, _picks) = armed(28);
+        let fl = &data.config.flavor;
+        let high = fl.wonder_voice_high;
+        let low = fl.wonder_voice_low;
+        assert!(
+            high > 0.0 && fl.wonder_famed.len() >= 3,
+            "this test needs the wonder voice enabled"
+        );
+        let wonder_lines = |sim: &SimState| {
+            let famed = &data.config.flavor.wonder_famed;
+            let incurious = &data.config.flavor.wonder_incurious;
+            sim.log
+                .iter()
+                .filter(|l| famed.contains(&l.text) || incurious.contains(&l.text))
+                .count()
+        };
+
+        // A ship of neutral repute says nothing.
+        sim.announce_wonder_name(&data);
+        assert_eq!(
+            wonder_lines(&sim),
+            0,
+            "an unremarkable ship remarks nothing"
+        );
+
+        // A name for marvels: one line.
+        sim.reputation.insert("wonder".to_string(), high + 0.05);
+        sim.announce_wonder_name(&data);
+        assert_eq!(
+            wonder_lines(&sim),
+            1,
+            "a growing name for wonder says so once"
+        );
+        assert_eq!(sim.wonder_voice_band, 1);
+
+        // Still famed — no reprint.
+        sim.announce_wonder_name(&data);
+        assert_eq!(wonder_lines(&sim), 1, "staying famed is not re-announced");
+
+        // A name for incuriosity: a second, distinct line.
+        sim.reputation.insert("wonder".to_string(), low - 0.05);
+        sim.announce_wonder_name(&data);
+        assert_eq!(wonder_lines(&sim), 2, "an incurious name says so afresh");
+        assert_eq!(sim.wonder_voice_band, -1);
     }
 
     #[test]
