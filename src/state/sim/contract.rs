@@ -117,6 +117,14 @@ pub struct ActiveContract {
     /// as it crashes. Each fires once as spirits fall past a threshold.
     #[serde(default)]
     pub despair_beats_fired: u32,
+    /// How many hull-collapse beats have fired this voyage (content-depth campaign-skeleton
+    /// round 32): the persistent "the frame has failed" flag the hull *recovery* beat reads,
+    /// the way `loyalty_beats_fired` / `despair_beats_fired` gate their recoveries. The it23
+    /// hull-collapse beat re-arms its band the moment the hull clears the red line, so this
+    /// counter — set when the collapse fires, cleared when the recovery does — is what lets a
+    /// *rebuilt* hull (climbing back to the higher recovery line) reckon with its restoration.
+    #[serde(default)]
+    pub hull_beats_fired: u32,
     /// How many anniversary beats have fired (content-depth round 7): the
     /// periodic commemoration cadence. Doubles as the count of anniversaries
     /// observed, so the next fires when the voyage passes the following multiple.

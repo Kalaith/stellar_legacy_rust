@@ -104,6 +104,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_stability_recovery_beat(sim, data, &mut report)
             && !fire_heartening_recovery_beat(sim, data, &mut report)
             && !fire_loyalty_recovery_beat(sim, data, &mut report)
+            && !fire_hull_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
@@ -429,8 +430,41 @@ fn fire_hull_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) 
         // The hull recovered above the red line — re-arm, but do not fire.
         return false;
     }
+    // Record the collapse so the hull-recovery beat (round 32) can reckon with a later refit;
+    // fires only during a voyage, so a contract is present.
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.hull_beats_fired += 1;
+    }
     let family = cfg.hull_beat_family.clone();
     force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire a hull-recovery beat (content-depth campaign-skeleton round 32): the structural twin of
+/// the crew-stat recovery beats (unity it13, stability it28, morale it30, loyalty it31), and the
+/// *ascending* mirror of the it23 hull-collapse beat. Once the ship's frame has failed (a hull
+/// beat fired, `hull_beats_fired > 0`) and `hull_integrity` then climbs back to or above the
+/// recovery threshold — a genuine refit, set above the collapse red line for hysteresis — force a
+/// beat (the crew confronting a vessel dragged back from structural failure and made whole again)
+/// and reset the collapse counter so a later failure reckons anew. It gives the ship's body the
+/// same fall-and-rise the crew's four erodable stats have, so a hull crisis is no longer a door
+/// that only ever opens one way. Fires once per failure episode; at most one per month.
+fn fire_hull_recovery_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.hull_recovery_beat_family.is_empty() || cfg.hull_recovery_beat_threshold <= 0.0 {
+        return false;
+    }
+    let recovered = sim.contract.as_ref().is_some_and(|c| {
+        c.hull_beats_fired > 0 && sim.ship.hull_integrity >= cfg.hull_recovery_beat_threshold
+    });
+    if !recovered {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        // The frame is rebuilt; re-arm the collapse beat against a future failure.
+        contract.hull_beats_fired = 0;
+    }
+    force_family_beat(sim, data, &cfg.hull_recovery_beat_family, report);
     true
 }
 

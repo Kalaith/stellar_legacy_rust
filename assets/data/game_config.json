@@ -282,6 +282,8 @@
     "founding_beat_year": 50,
     "hull_beat_family": "engineering",
     "hull_beat_threshold": 0.25,
+    "hull_recovery_beat_family": "engineering",
+    "hull_recovery_beat_threshold": 0.6,
     "air_beat_family": "biology_medical",
     "air_beat_threshold": 0.25,
     "becalmed_beat_family": "survival",

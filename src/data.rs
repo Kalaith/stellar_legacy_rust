@@ -1306,6 +1306,18 @@ pub struct CampaignSkeletonConfig {
     /// beat. 0 disables it.
     #[serde(default)]
     pub hull_beat_threshold: f32,
+    /// Hull-recovery beat family (content-depth campaign-skeleton round 32): the structural twin
+    /// of the crew-stat recovery beats and the *ascending* mirror of the it23 hull-collapse beat.
+    /// Once the frame has failed (a hull beat fired) and `hull_integrity` climbs back to or above
+    /// `hull_recovery_beat_threshold`, a beat is forced from this family — the crew reckoning with
+    /// a vessel dragged back from structural failure and made whole. Empty = no hull-recovery beat.
+    #[serde(default)]
+    pub hull_recovery_beat_family: String,
+    /// Hull integrity at or above which the hull-recovery beat fires (content-depth campaign-
+    /// skeleton round 32): set *above* `hull_beat_threshold` so a mere wobble over the red line
+    /// does not count as a rebuild — only a genuine refit does (hysteresis). 0 disables it.
+    #[serde(default)]
+    pub hull_recovery_beat_threshold: f32,
     /// Air-collapse beat family (content-depth campaign-skeleton round 24): the
     /// atmosphere twin of the hull-collapse beat — where that watches the ship's frame,
     /// this watches its *air*. The moment `life_support` falls to or below
@@ -2999,6 +3011,23 @@ mod tests {
             assert!(
                 data.events.iter().any(|(_, e)| e.hull_below.is_some()),
                 "the hull-collapse beat needs a hull_below-gated event to surface"
+            );
+        }
+        // Content-depth campaign-skeleton round 32: the hull-recovery beat needs a family with
+        // events and a threshold that sits *above* the collapse red line (hysteresis) and no higher
+        // than a whole hull — a rebuild, not a wobble over the line.
+        if !sk.hull_recovery_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.hull_recovery_beat_family),
+                "campaign_skeleton hull_recovery_beat_family '{}' has no events",
+                sk.hull_recovery_beat_family
+            );
+            assert!(
+                sk.hull_recovery_beat_threshold > sk.hull_beat_threshold
+                    && sk.hull_recovery_beat_threshold <= 1.0,
+                "hull_recovery_beat_threshold {} must sit above the collapse red line {}",
+                sk.hull_recovery_beat_threshold,
+                sk.hull_beat_threshold
             );
         }
         // Content-depth campaign-skeleton round 24: the air-collapse beat, the same shape,
