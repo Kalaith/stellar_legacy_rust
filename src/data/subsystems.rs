@@ -279,6 +279,15 @@ pub struct SubsystemsConfig {
     /// not touch the work.
     #[serde(default)]
     pub objective_condition_penalty: f32,
+    /// Knowledge the objective subsystem gains per on-station (Operation) month of a mission that
+    /// leans on it (content-depth charters round 33): the reverse of `objective_condition_penalty`,
+    /// closing the objective↔subsystem loop. Where the module's *condition* speeds the work (it14),
+    /// the work sharpens the module's *craft* — a long mining survey masters the engineering bay, a
+    /// long greening its agriculture. Knowledge, not condition, so it never feeds back into faster
+    /// accrual (no runaway); a small monthly gain, clamped at a full 1.0. 0 = mission work trains
+    /// no craft.
+    #[serde(default)]
+    pub objective_subsystem_training_per_month: f32,
     /// Condition below which a failing life-support/habitat plant begins to cost
     /// lives (content-depth subsystems round 15): the module's most fundamental
     /// effect, long missing — a plant that literally sustains the crew, when it

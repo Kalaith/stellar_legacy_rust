@@ -165,6 +165,7 @@
     "education_transmission_condition_penalty": 0.5,
     "education_training_penalty": 0.5,
     "objective_condition_penalty": 0.4,
+    "objective_subsystem_training_per_month": 0.002,
     "life_support_failure_threshold": 0.2,
     "life_support_failure_mortality": 0.006,
     "medical_life_support_relief": 0.4,

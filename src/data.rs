@@ -2396,6 +2396,14 @@ mod tests {
             "medical_life_support_relief {} must be a fraction in [0, 1)",
             subs_cfg.medical_life_support_relief
         );
+        // Content-depth charters round 33: mission-training is a *small* per-month knowledge gain in
+        // [0, 0.1) — a mission runs many months, so even a modest rate masters a craft over a long
+        // voyage without a single month vaulting the subsystem to expert.
+        assert!(
+            (0.0..0.1).contains(&subs_cfg.objective_subsystem_training_per_month),
+            "objective_subsystem_training_per_month {} must be a small monthly gain [0, 0.1)",
+            subs_cfg.objective_subsystem_training_per_month
+        );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(
                 subs_cfg.crisis_weight_floor > 0.0,

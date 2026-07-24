@@ -321,6 +321,9 @@ pub fn advance_contract(
         (1.0 + config.ship.morale_objective_swing * (sim.population.morale - 0.5)).max(0.2);
 
     let mut out = ContractProgress::default();
+    // The objective subsystem an Operation month trained (content-depth charters round 33), set
+    // inside the contract-borrow scope and applied after it ends so we can mutate `sim.subsystems`.
+    let mut trained_subsystem: Option<String> = None;
 
     // Mutate the contract in a scope so its borrow ends before we grant any
     // milestone rewards to the shared resource pool.
@@ -383,6 +386,15 @@ pub fn advance_contract(
                 * combat_factor
                 * cargo_factor
                 * morale_factor;
+            // …and the work itself sharpens the craft it leans on (content-depth charters round 33):
+            // the reverse of the round-14 coupling, where the subsystem's condition speeds the
+            // mission — here a month of on-station work builds the objective subsystem's *knowledge*
+            // (a mining survey masters the engineering bay's craft, a greening its agriculture),
+            // closing the loop. Captured here, applied after the contract borrow ends. Knowledge,
+            // not condition, so it never feeds back into faster accrual (no runaway).
+            if !contract.objective_subsystem.is_empty() {
+                trained_subsystem = Some(contract.objective_subsystem.clone());
+            }
         }
 
         let progress = contract.progress();
@@ -427,6 +439,17 @@ pub fn advance_contract(
     // A milestone's reward lands the month it is first reached.
     for reward in rewards {
         sim.resources.apply(&reward);
+    }
+    // The month's on-station work sharpens the objective subsystem's craft (content-depth charters
+    // round 33): a small knowledge gain, applied now the contract borrow has ended. Inert when the
+    // gain is 0 or the mission leans on no subsystem.
+    if let Some(sub_id) = trained_subsystem {
+        let gain = config.subsystems.objective_subsystem_training_per_month;
+        if gain > 0.0 {
+            if let Some(state) = sim.subsystems.get_mut(&sub_id) {
+                state.knowledge = (state.knowledge + gain).min(1.0);
+            }
+        }
     }
     out
 }
@@ -1109,6 +1132,53 @@ mod tests {
         assert!(
             (survey_big - survey_small).abs() < 1e-4,
             "a survey is indifferent to hold size: {survey_big} vs {survey_small}"
+        );
+    }
+
+    #[test]
+    fn working_a_mission_sharpens_the_craft_it_leans_on() {
+        // Content-depth charters round 33: the reverse of the round-14 objective_condition coupling.
+        // A mission's on-station work builds the objective subsystem's knowledge — deep_vein_survey
+        // leans on the engineering bay, so months of it master that craft; work before the ship is
+        // on-station (Travel) trains nothing.
+        let (data, mut sim) = armed(9, "deep_vein_survey");
+        assert!(
+            data.config
+                .subsystems
+                .objective_subsystem_training_per_month
+                > 0.0,
+            "this test needs mission-training enabled"
+        );
+        assert_eq!(
+            sim.contract.as_ref().unwrap().objective_subsystem,
+            "engineering_bay"
+        );
+        // Start the bay's craft below full so the lift is visible.
+        sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.5;
+        let pre_op = sim.subsystems["engineering_bay"].knowledge;
+
+        // Advance to on-station; before Operation the work trains nothing.
+        loop {
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
+            if p.phase_changed == Some(ContractPhase::Operation) {
+                break;
+            }
+            assert_eq!(
+                sim.subsystems["engineering_bay"].knowledge, pre_op,
+                "no craft is built before the ship is on-station"
+            );
+        }
+        // The first on-station month sharpens the bay.
+        let after_first = sim.subsystems["engineering_bay"].knowledge;
+        assert!(
+            after_first > pre_op,
+            "an operation month sharpens the objective subsystem ({after_first} vs {pre_op})"
+        );
+        // And more work builds more craft.
+        advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
+        assert!(
+            sim.subsystems["engineering_bay"].knowledge > after_first,
+            "another operation month builds the craft further"
         );
     }
 
