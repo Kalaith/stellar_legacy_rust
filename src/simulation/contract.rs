@@ -96,19 +96,32 @@ pub fn meets_in_world_gate(sim: &SimState, template: &ContractTemplate) -> bool 
 /// Grant a charter's completion reward (content-depth charters round 15): the
 /// lasting capability a mission leaves the ship — chiefly subsystem boons kept
 /// across voyages — applied once when the charter is seen through to full term.
-/// Returns the narration line (empty if the reward is empty). No-op for an ordinary
-/// charter.
-pub fn apply_completion_reward(sim: &mut SimState, template: &ContractTemplate) -> Option<String> {
+/// `performance` is the mission's success score (content-depth charters round 25):
+/// the *lessons* a mission leaves — the subsystem capability boon — scale with how
+/// *well* it was done, so a barely-scraped Pyrrhic completion teaches the crew far less
+/// than a clean one, closing the loop with the it accrual accelerators (speed/combat/
+/// cargo/morale) that help a ship finish *better*. The deed and the recovery it earns
+/// (reputation, faction goodwill, a salvaged component) are binary — they happened, or
+/// they didn't — so those apply at full. Returns the narration line (empty if the reward
+/// is empty). No-op for an ordinary charter.
+pub fn apply_completion_reward(
+    sim: &mut SimState,
+    template: &ContractTemplate,
+    performance: f32,
+) -> Option<String> {
     let reward = &template.completion_reward;
     if reward.is_none() {
         return None;
     }
+    let scale = performance.clamp(0.0, 1.0);
     sim.resources.apply(&reward.resource);
     sim.population.apply(&reward.population);
+    // The capability *lessons* scale with how well the mission went (round 25); a
+    // scrappy completion leaves the crew a fainter version of the craft a clean one would.
     for delta in &reward.subsystem_deltas {
         if let Some(state) = sim.subsystems.get_mut(&delta.id) {
-            state.condition = (state.condition + delta.condition).clamp(0.0, 1.0);
-            state.knowledge = (state.knowledge + delta.knowledge).clamp(0.0, 1.0);
+            state.condition = (state.condition + delta.condition * scale).clamp(0.0, 1.0);
+            state.knowledge = (state.knowledge + delta.knowledge * scale).clamp(0.0, 1.0);
         }
     }
     // A whole voyage of one kind of work shapes the ship's character (content-depth
@@ -568,7 +581,7 @@ mod tests {
 
         let mut kind = SimState::new_campaign(&data, "preservers", 87, &picks);
         let m0 = kind.reputation("mercy");
-        apply_completion_reward(&mut kind, sanctuary);
+        apply_completion_reward(&mut kind, sanctuary, 1.0);
         assert!(
             kind.reputation("mercy") > m0,
             "a voyage of carrying refugees deepens the ship's mercy"
@@ -576,7 +589,7 @@ mod tests {
 
         let mut cold = SimState::new_campaign(&data, "preservers", 88, &picks);
         let c0 = cold.reputation("mercy");
-        apply_completion_reward(&mut cold, hard);
+        apply_completion_reward(&mut cold, hard, 1.0);
         assert!(
             cold.reputation("mercy") < c0,
             "a voyage of cold enforcement hardens it"
@@ -607,7 +620,7 @@ mod tests {
             .find(|f| f.faction_id == "hearth_union")
             .unwrap()
             .approval;
-        apply_completion_reward(&mut sim, run);
+        apply_completion_reward(&mut sim, run, 1.0);
         let after = sim
             .factions
             .iter()
@@ -642,7 +655,7 @@ mod tests {
             "the hold starts without it"
         );
 
-        apply_completion_reward(&mut sim, tow);
+        apply_completion_reward(&mut sim, tow, 1.0);
         assert!(
             sim.ship.salvage.contains(&comp),
             "the recovered component lands in the salvage hold to install"
@@ -717,7 +730,7 @@ mod tests {
         // Room to grow (a fresh bay is already near full; start it low to see the lift).
         sim.subsystems.get_mut("engineering_bay").unwrap().knowledge = 0.5;
         let before = sim.subsystems["engineering_bay"].knowledge;
-        let line = apply_completion_reward(&mut sim, works);
+        let line = apply_completion_reward(&mut sim, works, 1.0);
         assert!(line.is_some(), "the boon narrates itself");
         assert!(
             sim.subsystems["engineering_bay"].knowledge > before,
@@ -732,7 +745,7 @@ mod tests {
             .find(|c| c.completion_reward.is_none())
             .expect("some charter leaves no legacy");
         let k0 = sim.subsystems["engineering_bay"].knowledge;
-        assert!(apply_completion_reward(&mut sim, ordinary).is_none());
+        assert!(apply_completion_reward(&mut sim, ordinary, 1.0).is_none());
         assert_eq!(sim.subsystems["engineering_bay"].knowledge, k0);
     }
 
@@ -1136,6 +1149,38 @@ mod tests {
             sim2.contract.as_ref().unwrap().objective_progress,
             0.0,
             "an ordinary charter builds its objective from zero"
+        );
+    }
+
+    #[test]
+    fn a_mission_done_well_teaches_more_than_one_barely_scraped() {
+        // Content-depth charters round 25: the lasting *lessons* of a mission scale with
+        // how well it went. deep_vein_survey's completion boon lifts engineering
+        // knowledge; a clean completion (score 1.0) teaches exactly twice what a
+        // barely-scraped one (0.5) does, and both leave the reward's log line.
+        let (data, mut clean) = armed(3, "deep_vein_survey");
+        let (_d, mut scrappy) = armed(3, "deep_vein_survey");
+        let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+        // Hold the bay mid-range so neither gain clamps.
+        clean
+            .subsystems
+            .get_mut("engineering_bay")
+            .unwrap()
+            .knowledge = 0.5;
+        scrappy
+            .subsystems
+            .get_mut("engineering_bay")
+            .unwrap()
+            .knowledge = 0.5;
+
+        apply_completion_reward(&mut clean, &template, 1.0);
+        apply_completion_reward(&mut scrappy, &template, 0.5);
+        let clean_gain = clean.subsystems.get("engineering_bay").unwrap().knowledge - 0.5;
+        let scrappy_gain = scrappy.subsystems.get("engineering_bay").unwrap().knowledge - 0.5;
+        assert!(clean_gain > 0.0, "a completed survey teaches the crew");
+        assert!(
+            (clean_gain - 2.0 * scrappy_gain).abs() < 1e-6,
+            "half the performance, half the lesson: {clean_gain} vs {scrappy_gain}"
         );
     }
 

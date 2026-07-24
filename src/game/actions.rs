@@ -538,7 +538,7 @@ impl Game {
                     // The mission's lasting legacy (content-depth charters round 15): a
                     // charter seen through leaves the ship a capability it keeps, beyond
                     // the pay it was flown for.
-                    if let Some(line) = contract::apply_completion_reward(sim, template) {
+                    if let Some(line) = contract::apply_completion_reward(sim, template, score) {
                         sim.push_log(line);
                     }
                 }
