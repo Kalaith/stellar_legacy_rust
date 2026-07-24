@@ -2408,6 +2408,57 @@ fn fuel_is_spent_in_travel_but_not_on_station() {
 }
 
 #[test]
+fn a_failing_life_supports_toll_is_narrated_from_a_varied_pool() {
+    // Content-depth voice round 24: the life-support mortality line, which once reprinted
+    // one flat string every year the air failed, is now a pool. A crashed plant thins the
+    // crew, and the loss is narrated by a substituted pool line, not a literal.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    assert!(
+        data.config.flavor.life_support_loss.len() >= 3,
+        "this test needs the pooled life-support loss lines"
+    );
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        6,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000; // keep famine out of the way
+                                    // Crash the plant *and* the green decks that would otherwise supplement it
+                                    // (subsystems r17), so the effective air falls well past the failure line.
+    sim.subsystems
+        .get_mut("life_support_habitat")
+        .unwrap()
+        .condition = 0.05;
+    sim.subsystems.get_mut("agriculture").unwrap().condition = 0.0;
+    let before = sim.population.count;
+    advance_year(&mut sim, &data);
+    assert!(
+        sim.population.count < before,
+        "a failed life-support plant thins the crew"
+    );
+
+    // No line reads with the literal placeholder, and the loss matches a pool template.
+    assert!(
+        !sim.log.iter().any(|l| l.text.contains("{losses}")),
+        "the loss line substitutes its count"
+    );
+    let narrated = sim.log.iter().any(|l| {
+        data.config.flavor.life_support_loss.iter().any(|tmpl| {
+            let (pre, post) = tmpl.split_once("{losses}").unwrap();
+            l.text.starts_with(pre)
+                && l.text.ends_with(post)
+                && l.text.len() > pre.len() + post.len()
+        })
+    });
+    assert!(narrated, "the life-support toll is narrated from the pool");
+}
+
+#[test]
 fn over_deep_food_stores_spoil_toward_the_carrying_capacity() {
     // Content-depth provisioning round 24: food beyond what the ship can keep fresh
     // rots. A hoard above the carrying capacity loses a fraction of the excess each

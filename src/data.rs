@@ -494,6 +494,21 @@ pub struct FlavorConfig {
     /// the ship did*. Placeholder: `{parts}`. Indexed by year; empty falls back.
     #[serde(default)]
     pub fabrication: Vec<String>,
+    /// A named officer lost to a *disaster* (content-depth voice round 24): the event
+    /// death-claim's officer line, which fires whenever a heavy event or complication
+    /// takes a soul from the bridge. Was one flat string; pooled for variety.
+    /// Placeholders: `{name}`, `{post}`. Indexed by the log length; empty falls back.
+    #[serde(default)]
+    pub event_loss_officer: Vec<String>,
+    /// A named crew member lost to a disaster (content-depth voice round 24): the
+    /// death-claim's non-officer line. Placeholder: `{name}`. Indexed; empty falls back.
+    #[serde(default)]
+    pub event_loss_member: Vec<String>,
+    /// Souls lost to a *failing life-support* (content-depth voice round 24): the it15
+    /// life-support mortality line, which reprints every year the air is failing — a real
+    /// repetition tell. Placeholder: `{losses}`. Indexed by year; empty falls back.
+    #[serde(default)]
+    pub life_support_loss: Vec<String>,
     /// Over-deep food stores spoiling past the ship's carrying capacity (content-depth
     /// provisioning round 24): fires the years a hoard beyond what the cold-holds can keep
     /// erodes, so the loss reads as *something that happened* rather than an unexplained
@@ -2513,6 +2528,22 @@ mod tests {
             fl.council_summons.is_empty()
                 || fl.council_summons.iter().all(|s| s.contains("{title}")),
             "every council_summons flavor line needs its {{title}} slot"
+        );
+        // Content-depth voice round 24: the pooled disaster-death and failing-air lines
+        // carry their substitution slots, or a loss reads with a literal placeholder.
+        assert!(
+            fl.event_loss_officer
+                .iter()
+                .all(|s| s.contains("{name}") && s.contains("{post}")),
+            "every event_loss_officer line needs its {{name}} and {{post}} slots"
+        );
+        assert!(
+            fl.event_loss_member.iter().all(|s| s.contains("{name}")),
+            "every event_loss_member line needs its {{name}} slot"
+        );
+        assert!(
+            fl.life_support_loss.iter().all(|s| s.contains("{losses}")),
+            "every life_support_loss line needs its {{losses}} slot"
         );
         // Content-depth provisioning round 21: the fabrication narration carries its
         // {parts} slot, and if the mechanic is on its costs/yield are sane (a positive

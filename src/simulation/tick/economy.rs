@@ -156,9 +156,17 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     let ls_loss = subsystems::life_support_mortality_loss(sim, data);
     if ls_loss > 0 {
         sim.population.count = sim.population.count.saturating_sub(ls_loss);
-        sim.push_log(format!(
-            "The failing life-support could not hold the whole ship in breathable air; {ls_loss} were lost to the thinning decks."
-        ));
+        // Pooled so a failing-air stretch doesn't reprint one line every year it holds
+        // (content-depth voice round 24); indexed by year, built-in fallback.
+        let pool = &data.config.flavor.life_support_loss;
+        let line = if pool.is_empty() {
+            format!(
+                "The failing life-support could not hold the whole ship in breathable air; {ls_loss} were lost to the thinning decks."
+            )
+        } else {
+            pool[sim.year() as usize % pool.len()].replace("{losses}", &ls_loss.to_string())
+        };
+        sim.push_log(line);
     }
 
     // A skilled security chief and a well-kept security corps both slowly steady

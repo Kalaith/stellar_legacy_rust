@@ -255,11 +255,18 @@ pub fn event_claim(sim: &mut SimState, data: &GameData, population_lost: u32) {
     if !sim.crew.is_empty() {
         let idx = sim.rng.below(sim.crew.len());
         let officer = sim.crew.remove(idx);
-        let post = post_name(data, &officer.archetype_id);
-        sim.push_log(format!(
-            "{}, the ship's {post}, was among the lost.",
-            officer.name
-        ));
+        let post = post_name(data, &officer.archetype_id).to_owned();
+        // Pooled so a disaster-heavy voyage's many losses don't read as a form letter
+        // (content-depth voice round 24); indexed by log length so consecutive vary.
+        let pool = &data.config.flavor.event_loss_officer;
+        let line = if pool.is_empty() {
+            format!("{}, the ship's {post}, was among the lost.", officer.name)
+        } else {
+            pool[sim.log.len() % pool.len()]
+                .replace("{name}", &officer.name)
+                .replace("{post}", &post)
+        };
+        sim.push_log(line);
         return;
     }
     let candidates: Vec<usize> = sim
@@ -273,10 +280,16 @@ pub fn event_claim(sim: &mut SimState, data: &GameData, population_lost: u32) {
     if !candidates.is_empty() {
         let pick = candidates[sim.rng.below(candidates.len())];
         let member = sim.dynasty.members.remove(pick);
-        sim.push_log(format!(
-            "{} was lost with the others — a name struck from the register.",
-            member.name
-        ));
+        let pool = &data.config.flavor.event_loss_member;
+        let line = if pool.is_empty() {
+            format!(
+                "{} was lost with the others — a name struck from the register.",
+                member.name
+            )
+        } else {
+            pool[sim.log.len() % pool.len()].replace("{name}", &member.name)
+        };
+        sim.push_log(line);
     }
 }
 

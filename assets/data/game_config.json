@@ -340,6 +340,26 @@
       "The idle reactor output finally earned its keep: fed through the fabricators with a measure of raw minerals, it came out the far end as {parts} spare parts, stacked and logged against the long dark.",
       "A power-rich year, and the ship spent the surplus wisely — not on comfort but on keeping, the fabricators turning spare energy and ore into {parts} parts the maintenance crews would be glad of later."
     ],
+    "event_loss_officer": [
+      "{name}, the ship's {post}, was among the lost — a post gone empty in the worst hour, and the work of it scattered to whoever remained.",
+      "The disaster took {name} with it, the ship's {post}; the bridge is one seasoned hand the poorer, and felt it at once.",
+      "Among the dead was {name}, who had been the ship's {post} — a life of hard-won craft ended in a moment that asked no one's rank.",
+      "{name} did not come through it. The {post}'s watch falls now to a successor who will spend years catching up to what was lost in an afternoon.",
+      "The ship's {post}, {name}, was lost in the thick of it — the kind of loss that a crisis makes and a generation feels."
+    ],
+    "event_loss_member": [
+      "{name} was lost with the others — a name struck from the register, and a place at the table gone cold.",
+      "Among the dead was {name}, one more of the ship's own the dark took in a single hard stroke.",
+      "{name} did not survive it. The roster is a line shorter, the bunk reassigned by evening, the grief carried quietly on.",
+      "The ship lost {name} in the disaster — no one important to the wider dark, and everything to the few who knew them.",
+      "{name} was among those the crisis claimed, a soul counted now only in the ship's long ledger of the lost."
+    ],
+    "life_support_loss": [
+      "The failing life-support could not hold the whole ship in breathable air; {losses} were lost to the thinning decks this year.",
+      "The air gave out where the scrubbers could no longer reach, and {losses} were lost on the decks that went unbreathable before the crews could seal them.",
+      "Another year of failing life-support, another {losses} lost to the slow suffocation of the sections the plant can no longer hold.",
+      "The reclaimers lost ground again, and the ship paid for it in the old way: {losses} gone from the decks the air abandoned first."
+    ],
     "food_spoilage": [
       "The holds are fuller than the ship can keep them: {spoiled} units of stored food spoiled this year past the cold-holds' reach, a hoard grown beyond what a sealed hull can actually preserve.",
       "A generation ship can carry only so much before the surplus turns — and this year {spoiled} units of the over-deep stores went off, quietly written down as the cost of hoarding more than the reclaimers can cycle.",
