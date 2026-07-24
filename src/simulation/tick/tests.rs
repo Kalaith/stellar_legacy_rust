@@ -207,6 +207,42 @@ fn the_ordinary_quiet_reads_in_the_dominant_peoples_voice() {
 }
 
 #[test]
+fn a_well_kept_infirmary_slows_the_shipborn_drift_but_never_stops_it() {
+    // Content-depth subsystems round 25: the bodily twin of the archive's cultural
+    // resistance. A ship whose infirmary keeps its medical craft alive holds the crew
+    // closer to baseline-human, adapting slower — but the bodies still adapt, only less.
+    let data = GameData::load().unwrap();
+    assert!(
+        data.config.voyage_drift.medical_adaptation_resistance > 0.0,
+        "this test needs the medical adaptation coupling enabled"
+    );
+    let drift_over_20y = |med_knowledge: f32| -> f32 {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            3,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.subsystems.get_mut("medical_bay").unwrap().knowledge = med_knowledge;
+        let a0 = sim.population.adaptation;
+        for _ in 0..20 {
+            apply_voyage_drift(&mut sim, &data);
+        }
+        sim.population.adaptation - a0
+    };
+    let with_infirmary = drift_over_20y(1.0); // full medical craft → slowed adaptation
+    let without = drift_over_20y(0.0); // no craft → the bodies adapt at full rate
+    assert!(
+        with_infirmary < without,
+        "a well-kept infirmary slows the shipborn drift: {with_infirmary} vs {without}"
+    );
+    assert!(
+        with_infirmary > 0.0,
+        "but the bodies still adapt to the ship, only slower"
+    );
+}
+
+#[test]
 fn a_well_kept_culture_archive_slows_the_cultural_drift_but_not_adaptation() {
     // Content-depth subsystems round 10: the education/culture archive is the
     // ship's memory of the founders. A vivid archive (high knowledge) resists the

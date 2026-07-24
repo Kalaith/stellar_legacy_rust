@@ -563,8 +563,20 @@ pub(super) fn apply_voyage_drift(sim: &mut SimState, data: &GameData) {
         .map_or(0.0, |s| s.knowledge);
     let culture_mult =
         identity_mult * (1.0 - vd.archive_drift_resistance * archive_knowledge).max(0.0);
+    // A well-kept infirmary keeps the crew *physically* baseline (content-depth
+    // subsystems round 25): the bodily twin of the archive's cultural resistance. The
+    // medical bay's living craft (its knowledge) slows the shipborn adaptation the way
+    // the archive slows the cultural drift, so a ship bound for a world can hold its crew
+    // fit to live on one. Reads knowledge, not condition — it is the *craft* of managing
+    // the body, like the archive is the *memory* of the founders.
+    let medical_knowledge = sim
+        .subsystems
+        .get("medical_bay")
+        .map_or(0.0, |s| s.knowledge);
+    let adaptation_mult =
+        identity_mult * (1.0 - vd.medical_adaptation_resistance * medical_knowledge).max(0.0);
     sim.population.apply(&PopulationDelta {
-        adaptation: vd.adaptation_per_year * identity_mult,
+        adaptation: vd.adaptation_per_year * adaptation_mult,
         cultural_drift: vd.cultural_drift_per_year * culture_mult,
         legacy_loyalty: vd.legacy_loyalty_per_year * culture_mult,
         morale: vd.morale_strain_per_year,

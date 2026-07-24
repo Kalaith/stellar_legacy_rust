@@ -368,6 +368,17 @@ pub struct VoyageDrift {
     /// bodies still adapt to the ship regardless. 0 = the archive doesn't matter.
     #[serde(default)]
     pub archive_drift_resistance: f32,
+    /// How much a well-kept medical bay resists the crew's *physiological* adaptation to
+    /// the ship (content-depth subsystems round 25): the bodily twin of
+    /// `archive_drift_resistance`. Where the archive's *knowledge* keeps the people
+    /// *culturally* human (r10), the infirmary's *knowledge* — its living medical craft,
+    /// the monitoring and gene-work a real generation ship's clinic would run — keeps
+    /// them *physically* baseline, slowing the shipborn drift: `adaptation_per_year`
+    /// scales by `1 - medical_adaptation_resistance * medical_bay_knowledge`. So a ship
+    /// bound for a world can hold its crew fit to live on one, and a neglected infirmary
+    /// lets the bodies go shipborn. 0 = the infirmary doesn't touch adaptation.
+    #[serde(default)]
+    pub medical_adaptation_resistance: f32,
 }
 
 /// Field-vs-port repair tunables (PLAN M4.3). Underway, `field_repair` patches
@@ -1950,6 +1961,14 @@ mod tests {
             (0.0..=1.5).contains(&subs_cfg.engineering_hull_decay_penalty),
             "engineering_hull_decay_penalty {} out of range [0, 1.5]",
             subs_cfg.engineering_hull_decay_penalty
+        );
+        // Content-depth subsystems round 25: the medical adaptation resistance is a
+        // fraction below 1 (even a perfect infirmary only *slows* the shipborn drift, it
+        // never wholly stops the bodies adapting to the ship).
+        assert!(
+            (0.0..1.0).contains(&data.config.voyage_drift.medical_adaptation_resistance),
+            "medical_adaptation_resistance {} must be a fraction in [0, 1)",
+            data.config.voyage_drift.medical_adaptation_resistance
         );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(

@@ -712,7 +712,8 @@
       "wanderers": 1.0
     },
     "dominant_ideology_scale": 0.35,
-    "archive_drift_resistance": 0.3
+    "archive_drift_resistance": 0.3,
+    "medical_adaptation_resistance": 0.3
   },
   "repair": {
     "field_ceiling": 0.75,
