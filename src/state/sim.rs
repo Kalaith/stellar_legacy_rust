@@ -540,6 +540,15 @@ pub struct SimState {
     /// announced. 0 at launch; a return to the middle re-arms.
     #[serde(default)]
     pub air_voice_band: i8,
+    /// The last-announced band of the ship's *drive* — its fuel (content-depth voice round
+    /// 27): the third ship-body voice, the motion twin of the it22 hull (structure) and it23
+    /// air (atmosphere) voices. Tracks whether `ship.fuel` last crossed into a thin band (tanks
+    /// low, running on fumes, the drive lit only when it must be) or a full one (deep tanks and
+    /// a free hand on the throttle after a scoop or resupply), so the decks remark the crossing
+    /// once. The launch band (a new ship sets out with full tanks) is recorded, not announced.
+    /// 0 at launch; a return to the middle re-arms.
+    #[serde(default)]
+    pub fuel_voice_band: i8,
     /// The band the skeleton's hull-collapse beat last marked (content-depth campaign-
     /// skeleton round 23): -1 once the hull has crossed *into* structural failure (the
     /// beat fires the moment it does), 0 while the hull holds above the red line. The
@@ -703,6 +712,7 @@ impl SimState {
             unity_voice_band: 0,
             hull_voice_band: 0,
             air_voice_band: 0,
+            fuel_voice_band: 0,
             hull_beat_band: 0,
             air_beat_band: 0,
             depopulation_beats_fired: 0,
@@ -774,6 +784,14 @@ impl SimState {
             sim.ship.life_support,
             config.flavor.air_voice_high,
             config.flavor.air_voice_low,
+        );
+        // Likewise record the launch band of the ship's drive, so a new ship's full tanks read
+        // as the baseline, not a "flying free" the drive voice announces (content-depth voice
+        // round 27).
+        sim.fuel_voice_band = factions::stability_voice_band_for(
+            sim.ship.fuel,
+            config.flavor.fuel_voice_high,
+            config.flavor.fuel_voice_low,
         );
         // Founding senior staff fill the configured starting posts.
         for archetype_id in &config.crew.starting_posts {

@@ -586,6 +586,20 @@
     ],
     "air_voice_high": 0.75,
     "air_voice_low": 0.5,
+    "drive_thin": [
+      "The tanks are running thin. The navigators have stopped burning for comfort and started burning only for need — corrections shaved to the bone, coasting stretches lengthened, the whole ship falling a little quieter as the drive learns to hold its breath. No one says the word becalmed. Everyone is thinking it.",
+      "Fuel is short enough now that the burn schedule is a rationing document. The engineers meter every gram, the pilots plan their coasts weeks ahead, and a ship built to fly free has learned the mean, careful economy of a thing afraid of stopping — the drive lit only when the dark leaves no other choice.",
+      "The reactor mass is low, and the whole ship feels it in the stillness: fewer corrections, longer silences between the deep hum of a real burn, a crew grown watchful of the fuel gauge the way an earlier one might have watched the water. The ship still moves, but it moves like something counting its last coins.",
+      "Running on fumes, the old hands call it, and this generation has learned what they mean — the tanks down to a margin that would not survive a real emergency, the drive husbanded gram by gram, every course correction weighed against the day the ship might need to stop and cannot spare the fuel to."
+    ],
+    "drive_strong": [
+      "The tanks are deep again. After the long lean stretch of metered burns and careful coasts, the ship has fuel to spare — a scoop through a rich field, a resupply, a stroke of luck — and the navigators are burning freely once more, correcting for comfort and not just survival. The drive has its full voice back, and the corridors hum with it.",
+      "Fuel is plentiful, and it changes how the ship carries itself: the pilots plot generous courses, the engineers stop metering every gram, and the deep confident thrum of a drive with mass to burn runs through the decks again. A ship that had learned to hold its breath is flying free.",
+      "The reactor mass is full to the baffles, and the whole ship exhales. Burns are scheduled for speed instead of thrift, the coasting stretches shorten, and a crew that had grown watchful of the gauge lets that particular fear go — the drive strong, the tanks deep, the dark ahead a thing to be crossed rather than merely survived.",
+      "Deep tanks and a free hand on the throttle: the ship is fuelled the way its builders meant it to be, and it shows in every unhurried course correction and every burn made for the joy of making time. The long anxious economy of the lean years is, for now, a memory, and the drive runs full and glad."
+    ],
+    "fuel_voice_high": 0.7,
+    "fuel_voice_low": 0.3,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

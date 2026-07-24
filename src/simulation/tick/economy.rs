@@ -458,6 +458,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // going close or clearing — the structure and the air, the two survival systems, both
     // now speak.
     sim.announce_air_condition(data);
+    // …and the ship's *drive* is the third of its survival systems (content-depth voice round
+    // 27), now that the year's burn and any scooping have settled on the tanks: when the fuel
+    // crosses into a thin band (running on fumes, husbanding every gram) or back into a full
+    // one (tanks deep, the drive free to burn), the decks remark it once — completing the
+    // ship-body voice trio (structure, air, and now motion) to match the it23/it24/it25
+    // hull/air/becalmed crisis-beat trio: the drive murmurs as it thins, the becalmed beat
+    // reckons when the ship is truly stranded.
+    sim.announce_drive_condition(data);
 
     // Founding Day (real-time loop follow-up): everyone gains a year at once, and
     // any officer aged past their term stands down. Aging is yearly; death is the

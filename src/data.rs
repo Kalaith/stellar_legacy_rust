@@ -792,6 +792,24 @@ pub struct FlavorConfig {
     pub air_voice_high: f32,
     #[serde(default)]
     pub air_voice_low: f32,
+    /// The ship's drive running thin (content-depth voice round 27): the third ship-body
+    /// voice, the motion twin of the hull (structure) and air (atmosphere) voices, on
+    /// `ship.fuel`. When the tanks run low — the crew husbanding every gram, the drive lit only
+    /// when it must be, corrections shaved to the bone — one of these surfaces. No name; indexed
+    /// by year; empty = silence.
+    #[serde(default)]
+    pub drive_thin: Vec<String>,
+    /// The ship's drive running full again (content-depth voice round 27): the positive twin —
+    /// deep tanks and a free hand on the throttle after a scoop or a resupply. No name; indexed
+    /// by year.
+    #[serde(default)]
+    pub drive_strong: Vec<String>,
+    /// Fuel at/above which the ship remarks a full drive (`_high`) or at/below which it remarks
+    /// the tanks running thin (`_low`) (content-depth voice round 27).
+    #[serde(default)]
+    pub fuel_voice_high: f32,
+    #[serde(default)]
+    pub fuel_voice_low: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -3022,6 +3040,20 @@ mod tests {
                 "air voice thresholds must order: 0 < low ({}) < high ({})",
                 fl.air_voice_low,
                 fl.air_voice_high
+            );
+        }
+        // Content-depth voice round 27: the drive (fuel) voice, the same shape as the hull and
+        // air voices — the third ship-body voice.
+        if fl.fuel_voice_high > 0.0 {
+            assert!(
+                !fl.drive_thin.is_empty() && !fl.drive_strong.is_empty(),
+                "drive voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.fuel_voice_low > 0.0 && fl.fuel_voice_low < fl.fuel_voice_high,
+                "drive voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.fuel_voice_low,
+                fl.fuel_voice_high
             );
         }
         // Content-depth voice round 6: the recurring-crisis pools need variety

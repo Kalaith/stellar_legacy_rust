@@ -1091,6 +1091,37 @@ impl SimState {
         self.air_voice_band = band;
     }
 
+    /// Give the ship's *drive* a voice (content-depth voice round 27): the third ship-body
+    /// voice, the motion twin of the it22 hull (structure) and it23 air (atmosphere) voices, on
+    /// `ship.fuel`. When the tanks cross *into* a thin band (running on fumes, the crew
+    /// husbanding every gram, the drive lit only when it must be) or a full one (deep tanks and
+    /// a free hand on the throttle again after a scoop or a resupply), the decks remark it once.
+    /// Completes the ship-body voice trio to match the it hull/air/becalmed crisis-beat trio —
+    /// the drive murmurs as it thins, the it25 becalmed beat reckons when it is truly stranded.
+    /// Deterministic (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_drive_condition(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.fuel_voice_high <= 0.0 {
+            return;
+        }
+        let band = stability_voice_band_for(self.ship.fuel, fl.fuel_voice_high, fl.fuel_voice_low);
+        if band == self.fuel_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.drive_strong,
+            -1 => &fl.drive_thin,
+            _ => {
+                self.fuel_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.fuel_voice_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -2286,6 +2317,50 @@ mod tests {
         sim.announce_air_condition(&data);
         assert_eq!(air_lines(&sim), 2, "cleared air says so afresh");
         assert_eq!(sim.air_voice_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_drive_runs_thin_or_full() {
+        // Content-depth voice round 27: the drive (fuel) voice, the third ship-body voice, the
+        // motion twin of the hull and air voices. A new ship's full tanks are the silent
+        // baseline; the tanks running thin surfaces one pooled line; a resupply back to full
+        // gets its own, opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(59);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.fuel_voice_high > 0.0 && fl.drive_thin.len() >= 3,
+            "this test needs the drive voice enabled"
+        );
+        let low = fl.fuel_voice_low;
+        let high = fl.fuel_voice_high;
+        let drive_lines = |sim: &SimState| {
+            let thin = &data.config.flavor.drive_thin;
+            let strong = &data.config.flavor.drive_strong;
+            sim.log
+                .iter()
+                .filter(|l| thin.contains(&l.text) || strong.contains(&l.text))
+                .count()
+        };
+
+        // A new ship sets out with full tanks — the launch band is recorded, silent.
+        sim.announce_drive_condition(&data);
+        assert_eq!(drive_lines(&sim), 0, "a new ship's full drive is silent");
+
+        // The tanks run thin past the low line: one line.
+        sim.ship.fuel = low - 0.05;
+        sim.announce_drive_condition(&data);
+        assert_eq!(drive_lines(&sim), 1, "a thinning drive says so once");
+        assert_eq!(sim.fuel_voice_band, -1);
+
+        // Still thin — no reprint.
+        sim.announce_drive_condition(&data);
+        assert_eq!(drive_lines(&sim), 1, "staying thin is not re-announced");
+
+        // A resupply fills the tanks: a second, distinct line.
+        sim.ship.fuel = high + 0.05;
+        sim.announce_drive_condition(&data);
+        assert_eq!(drive_lines(&sim), 2, "a refilled drive says so afresh");
+        assert_eq!(sim.fuel_voice_band, 1);
     }
 
     #[test]
