@@ -517,5 +517,296 @@
     "log": "The ship logged the watchers' answer whole and unread, a reply it could neither ignore nor understand, and carried it on — a conversation across generations left, for now, at hello and an incomprehensible reply, for grandchildren to maybe one day finish."
    }
   ]
+ },
+ {
+  "id": "the_slow_pulse",
+  "category": "mission_milestone",
+  "title": "The Slow Pulse",
+  "description": "The deep array catches a thing that should not be there: a pulse from far ahead, faint past the edge of noise, too weak to place and far too regular to be a star. Once every eleven hours and a little, patient as a dripping tap, it has been arriving — the analysts think — for longer than anyone thought to look. It is not natural. It may not be anything. To know, the ship would have to turn its whole scientific mind to it for a season.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "commit_the_archive",
+    "label": "Turn the archive to it",
+    "description": "Give the anomaly the ship's full attention — the archivists, the array, a season of computing that could have run a hundred other things. Chase the pulse to its source, whatever the cost in effort and diverted power.",
+    "resource_delta": {
+     "energy": -120,
+     "influence": 40
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "wonder",
+      "delta": 0.03
+     }
+    ],
+    "long_term_consequences": [
+     "chased_the_slow_pulse"
+    ],
+    "log": "The ship turned its whole scientific mind to the pulse — the archive, the array, a season of borrowed power — and settled in to chase a whisper across the dark to whatever was patient enough to be sending it."
+   },
+   {
+    "id": "log_and_hold",
+    "label": "Log it and hold course",
+    "description": "Note the pulse, file it, and keep the schedule. The ship is not a laboratory adrift; it has a charter and a heading, and a curiosity that cannot pay its way waits.",
+    "population_delta": {
+     "unity": 0.02,
+     "stability": 0.02
+    },
+    "log": "The pulse went into the log with a date and a frequency and no answer, and the ship held its heading. Some questions are noted and left for a generation with time to spare."
+   },
+   {
+    "id": "answer_the_pulse",
+    "label": "Answer it in kind",
+    "description": "Do not merely listen — reply. Fold the ship's own signature into a pulse of the same slow cadence and send it ahead, and see whether the dark, given a hello, gives one back.",
+    "resource_delta": {
+     "influence": 25
+    },
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "morale": -0.02
+    },
+    "log": "The ship answered the pulse with a pulse of its own and set the watch to listening down the years — a hello flung into the dark on the chance that patience there was a kind of mind, and a small unease settling over a crew that had, perhaps, just told something where they were."
+   }
+  ],
+  "complications": [
+   {
+    "id": "archive_too_worn_to_read_it",
+    "condition_below": [
+     {
+      "id": "education_culture",
+      "below": 0.4
+     }
+    ],
+    "applies_to_outcomes": [
+     "commit_the_archive"
+    ],
+    "description_add": "The trouble is the archive itself: run down, half its analytic craft lost to the generations, it is no longer sure it could make sense of the pulse even given the season — the ship has the will to chase the whisper but perhaps no longer the ear.",
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The season of study foundered on a decayed archive — the methods half-remembered, the old instruments un-serviced — and the ship learned less of the pulse than it had hoped, a mind reaching for a faint thing with a hand gone unsteady."
+   },
+   {
+    "id": "the_drifted_hear_a_voice",
+    "min_cultural_drift": 0.6,
+    "description_add": "And on a ship drifted this far from the founders, the pulse is not, to most aboard, a signal at all — it is a voice, a summons, the dark clearing its throat, and the analysts' careful talk of frequency and source falls on a crew that has already decided what it means.",
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "unity": -0.02
+    },
+    "log": "The ship's drifted generations did not wait for the analysis: the pulse was a voice, everyone agreed, and the only question was what it wanted — and the archivists' patient work went out over a crew who had already made the slow tap into scripture."
+   }
+  ]
+ },
+ {
+  "id": "what_the_pulse_was",
+  "category": "legacy_moment",
+  "title": "What the Pulse Was",
+  "description": "A generation ago the ship spent a season chasing a slow pulse from the deep. The work has borne its fruit at last, and the archive lays it before the council: the pulse is a beacon, ancient and automatic, marking — the mathematics is not subtle — a grave. A ship like this one, or unlike it, died out here a long time ago, and set its instruments to say so forever, to no one. The ship has caught a message that was only ever a headstone.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "min_generation": 3,
+  "requires_consequence": [
+   "chased_the_slow_pulse"
+  ],
+  "outcomes": [
+   {
+    "id": "chart_the_grave",
+    "label": "Chart it and carry the warning",
+    "description": "Record the dead ship's marker in full and add its lesson to the ship's own deep memory: here is a way the dark kills, and here is a people who wanted, above all, to be remembered having tried.",
+    "resource_delta": {
+     "influence": 60
+    },
+    "population_delta": {
+     "legacy_loyalty": 0.03,
+     "stability": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.04
+     }
+    ],
+    "log": "The ship charted the beacon and the grave it marked, and wrote the dead into its own archive — a warning and a kinship both, one voyage saluting another across the failure that had ended it, and resolving, quietly, to be the one that did not need a headstone."
+   },
+   {
+    "id": "let_the_grave_lie",
+    "label": "Let the dead keep their own counsel",
+    "description": "A headstone is not an invitation. Log the finding, dim the array, and leave the beacon its lonely watch — the ship has enough of its own mortality to think on without adopting a stranger's.",
+    "population_delta": {
+     "unity": 0.03,
+     "morale": 0.02
+    },
+    "log": "The ship logged the grave and looked away, leaving the ancient beacon to mark its dead for whatever else might one day pass — a mercy of sorts, and a refusal to carry one more weight of the dark's making."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_augmented_claim_the_dead",
+    "requires_dominant_faction": "ascension_circle",
+    "description_add": "The Ascension Circle, who run the ship, will not have it called merely a grave: the beacon is a mind still running, they argue, a survival of a kind, and the dead crew's long-dead choice to persist as a signal is precisely the immortality they themselves reach for. They want it answered as kin, not charted as a warning.",
+    "population_delta": {
+     "cultural_drift": 0.03
+    },
+    "log": "The Circle would not let the beacon be a mere headstone — it was, they held, a people who had beaten death by becoming a message, and the ship argued for a generation about whether it had found a grave or an ancestor."
+   }
+  ]
+ },
+ {
+  "id": "the_ringing_hull",
+  "category": "mission_milestone",
+  "title": "The Ringing Hull",
+  "description": "The ship has sailed into a region of space that will not let it be quiet. Something out there — a tide of gravity, a field no instrument names cleanly — has found the hull's own note and will not stop sounding it, so that the whole vessel rings, faint and endless, like a struck bell that never fully dies. It is not dangerous, the engineers say. It is only that no one can sleep, and the ship has begun, very softly, to hum.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "damp_the_ring",
+    "label": "Damp it out",
+    "description": "Set the engineers to killing the resonance — bracing, counter-vibration, whatever the bay can rig — and buy the ship back its silence at the cost of the effort and the parts.",
+    "resource_delta": {
+     "influence": 10
+    },
+    "ship_delta": {
+     "spare_parts": -4
+    },
+    "population_delta": {
+     "morale": 0.03
+    },
+    "log": "The engineers went to war on the note, and after a long fortnight of bracing and counter-signal the great bell of the hull fell quiet at last. The ship slept, and thought no more of the field that had rung it."
+   },
+   {
+    "id": "ride_it_out",
+    "label": "Ride it out",
+    "description": "Spend nothing. The region will pass; the note will fade when the ship clears the field. Endure the sleepless weeks and let physics do the rest.",
+    "population_delta": {
+     "morale": -0.04,
+     "unity": 0.02
+    },
+    "log": "The ship chose to endure, and endured — weeks of a hull that hummed in the teeth and the inner ear, a crew short-tempered and hollow-eyed, until the field thinned and the note guttered out on its own and the silence, when it came, was the sweetest thing anyone could remember."
+   },
+   {
+    "id": "tune_to_it",
+    "label": "Tune the ship to the note",
+    "description": "Do not fight the field — join it. Let the acousticians map the resonance and set the ship's own systems in sympathy with it, turning an affliction into an instrument that reads the invisible field from the inside.",
+    "resource_delta": {
+     "influence": 45,
+     "energy": -60
+    },
+    "population_delta": {
+     "cultural_drift": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "wonder",
+      "delta": 0.03
+     }
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.03
+     }
+    ],
+    "log": "Rather than silence the note the ship learned to sing it — tuned its sensors to the ringing and read, in the shape of its own trembling, a map of the unseen field it swam through. The crew slept badly and learned much, and carried away a science no still ship could have found."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_bay_cannot_damp_it",
+    "condition_below": [
+     {
+      "id": "engineering_bay",
+      "below": 0.4
+     }
+    ],
+    "applies_to_outcomes": [
+     "damp_the_ring"
+    ],
+    "description_add": "But the engineering bay is in no state to fight a hull-wide resonance — under-tooled, under-crewed, its best rigs long since cannibalized — and what damping it can manage will be partial and hard-won, the silence bought only in patches.",
+    "ship_delta": {
+     "spare_parts": -3
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "The run-down bay could only half-master the note, bracing one deck quiet while another still sang, and the ship bought its patchy silence at twice the parts and twice the grief a sound bay would have paid."
+   },
+   {
+    "id": "the_bell_has_rung_before",
+    "min_prior_occurrences": 1,
+    "description_add": "And the old hands have felt this before — the same note, the same sleepless weeks, some crossings back — and the dread of it now is worse than the sound, a ship that has learned this stretch of the dark rings its bones and can only brace to be rung again.",
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "It was not the first time the hull had rung, and the knowing made it worse — a crew bracing for a sleeplessness it remembered in its teeth, the dark playing the same long note on the same tired bell."
+   }
+  ]
+ },
+ {
+  "id": "the_cold_lantern",
+  "category": "mission_milestone",
+  "title": "The Cold Lantern",
+  "description": "There is a light off the bow that has no business shining. The body is cold — the ship has ranged it, and it gives off no heat a dead rock shouldn't — and yet it glows, a steady lantern-yellow, from no fire and no star and no reaction anyone aboard can name. It is the wrongness of it that unsettles the watch: not a danger, not a mystery with an obvious shape, only a cold thing that shines, patiently, as the ship goes by.",
+  "requires_decision": true,
+  "family": "science_anomaly",
+  "outcomes": [
+   {
+    "id": "study_the_lantern",
+    "label": "Slow and study it",
+    "description": "Give up some of the schedule to sit with the impossible thing — every instrument the ship has, trained on a cold light, until it gives up how it shines.",
+    "resource_delta": {
+     "influence": 55,
+     "energy": -50
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "wonder",
+      "delta": 0.04
+     }
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.04
+     }
+    ],
+    "log": "The ship slowed and stared, and stared, and in the end wrestled from the cold lantern a sliver of how it did the thing it should not — not the whole answer, but enough to enrich the archive and to leave the crew with the particular joy of a question that fought back and lost a little."
+   },
+   {
+    "id": "pass_it_by",
+    "label": "Note it and pass by",
+    "description": "The dark is full of things that do not add up, and a ship cannot stop for each. Log the cold lantern, mark its bearing for anyone who follows, and hold the heading.",
+    "population_delta": {
+     "unity": 0.02,
+     "stability": 0.02
+    },
+    "log": "The ship marked the cold lantern's bearing and passed it by, one more wrongness filed against a day with time to wonder — a light that should not shine, shining, dwindling astern, unexplained and let be."
+   }
+  ],
+  "complications": [
+   {
+    "id": "a_ship_that_has_seen_marvels",
+    "min_reputation": [
+     {
+      "id": "wonder",
+      "threshold": 0.6
+     }
+    ],
+    "description_add": "And this is a ship that has made a name for chasing exactly such marvels — its chronicle thick with charted impossibilities — so the watch does not even pretend it will pass the cold lantern by; the only question anyone asks is how long the ship will linger.",
+    "population_delta": {
+     "morale": 0.02,
+     "cultural_drift": 0.02
+    },
+    "log": "A ship famous for its wonders does not sail past a cold light that shines, and no one aboard expected it to — the lantern was studied as a matter of the ship's own character, one more impossibility gathered by a vessel that had made gathering them its name."
+   }
+  ]
  }
 ]

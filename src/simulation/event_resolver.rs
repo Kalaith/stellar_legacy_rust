@@ -1954,6 +1954,36 @@ mod tests {
     }
 
     #[test]
+    fn the_slow_pulse_chain_lands_only_once_it_was_chased() {
+        // Content-depth event families round 28: the science_anomaly family's self-contained
+        // chain. What-the-pulse-was (the beacon over a grave) surfaces only for a ship that
+        // spent the season chasing the slow pulse — its seed on record — and not before.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 44, &picks);
+        sim.dynasty.generation = 3; // clear the min_generation gate
+        let payoff = data.events.get("what_the_pulse_was").unwrap();
+
+        assert!(
+            !passes_gate(&sim, payoff),
+            "the pulse's answer waits until the ship chose to chase it"
+        );
+        sim.consequences.push("chased_the_slow_pulse".to_string());
+        assert!(
+            passes_gate(&sim, payoff),
+            "having chased the slow pulse on record opens its answer"
+        );
+
+        // The seed's own event carries no gate — a fresh ship can meet the pulse at once.
+        let seed = data.events.get("the_slow_pulse").unwrap();
+        let fresh = SimState::new_campaign(&data, "preservers", 45, &picks);
+        assert!(
+            passes_gate(&fresh, seed),
+            "the pulse itself is offered to any ship"
+        );
+    }
+
+    #[test]
     fn a_convergent_chain_needs_both_its_seeds_on_record() {
         // Content-depth event families round 24: a payoff gated on TWO seed consequences.
         // The Untethered reckons only for a ship that both let its founders go AND turned
