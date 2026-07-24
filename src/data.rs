@@ -2697,6 +2697,13 @@ mod tests {
             "departure_cohesion_scar {} out of range [0, 0.5]",
             fac_cfg.departure_cohesion_scar
         );
+        // Content-depth factions round 26: the assimilation unity lift is a gentle
+        // consolidation (share-scaled further down), the positive mirror of the scar.
+        assert!(
+            (0.0..=0.5).contains(&fac_cfg.assimilation_unity_lift),
+            "assimilation_unity_lift {} out of range [0, 0.5]",
+            fac_cfg.assimilation_unity_lift
+        );
         // Content-depth voice round 2: if ambient flavor is switched on, it needs
         // lines to draw from.
         if fl.ambient_gap_years > 0 {

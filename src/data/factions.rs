@@ -177,6 +177,16 @@ pub struct FactionConfig {
     /// costs the ship no cohesion beyond the bodies and the knowledge.
     #[serde(default)]
     pub departure_cohesion_scar: f32,
+    /// Unity gained when a tiny drifted people is *assimilated* — folded into the largest
+    /// at a generation boundary (content-depth factions round 26): the positive mirror of
+    /// the `departure_cohesion_scar`. Where a people that *leaves* tears a hole in the
+    /// community (it24), a people that *merges* — a drifted remnant that has grown so
+    /// faint it blends into the majority — leaves no hole and *consolidates* the polity:
+    /// one fewer faultline, the crew a step more one people. Scaled by the assimilated
+    /// share, so a larger merge knits more together than a vanishing sliver. 0 = an
+    /// assimilation touches cohesion no more than the headcount move it always was.
+    #[serde(default)]
+    pub assimilation_unity_lift: f32,
     #[serde(default)]
     pub rival_unity_friction: f32,
     /// Unity lifted per year by a pair of aboard *allies* (content-depth factions round

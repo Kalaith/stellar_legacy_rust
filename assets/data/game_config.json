@@ -64,6 +64,7 @@
     "proud_tender_condition_bonus": 0.01,
     "proud_tender_knowledge_bonus": 0.005,
     "departure_cohesion_scar": 0.15,
+    "assimilation_unity_lift": 0.08,
     "rival_unity_friction": 0.03,
     "ally_unity_solidarity": 0.02,
     "approval_growth_factor": 0.04,

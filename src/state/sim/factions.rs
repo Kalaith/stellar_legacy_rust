@@ -1114,6 +1114,14 @@ impl SimState {
             self.factions[host].members += moved;
             self.factions[idx].members = 0;
             self.factions[idx].status = FactionStatus::Assimilated;
+            // A people merging into the majority consolidates the polity (content-depth
+            // factions round 26): the positive mirror of the it24 departure scar — no hole
+            // torn, one fewer faultline, so unity lifts a little, scaled by how much of the
+            // ship just folded together.
+            let lift = cfg.assimilation_unity_lift * (moved as f32 / total as f32);
+            if lift > 0.0 {
+                self.population.unity = (self.population.unity + lift).min(1.0);
+            }
             let name = log_name(&data.factions, &self.factions[idx].faction_id);
             self.push_log(format!(
                 "The children of {name} now answer to another name."
@@ -1806,6 +1814,61 @@ mod tests {
             "the government steadying says so afresh"
         );
         assert_eq!(sim.stability_voice_band, 1);
+    }
+
+    #[test]
+    fn a_people_merging_into_the_majority_consolidates_the_polity() {
+        // Content-depth factions round 26: the positive mirror of the departure scar. A
+        // tiny drifted remnant folding into the largest people lifts unity (one fewer
+        // faultline), scaled by how much of the ship just merged.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let cfg = data.config.factions;
+        assert!(
+            cfg.assimilation_unity_lift > 0.0,
+            "this test needs the assimilation-consolidation coupling enabled"
+        );
+
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            9,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.population.unity = 0.5;
+        // High enough drift to assimilate, and a remnant below the share threshold.
+        sim.population.cultural_drift = cfg.assimilation_drift_threshold + 0.05;
+        sim.factions = vec![
+            FactionState {
+                faction_id: "steel_covenant".to_string(),
+                members: 970,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            },
+            FactionState {
+                faction_id: "hearth_union".to_string(),
+                members: 30,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            },
+        ];
+
+        let before = sim.population.unity;
+        sim.assimilate_drifted_factions(&data);
+        assert!(
+            sim.factions
+                .iter()
+                .any(|f| f.faction_id == "hearth_union" && f.status == FactionStatus::Assimilated),
+            "the tiny remnant folds into the majority"
+        );
+        assert!(
+            sim.population.unity > before,
+            "the merge consolidates the polity ({} -> {})",
+            before,
+            sim.population.unity
+        );
     }
 
     #[test]
