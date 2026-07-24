@@ -89,6 +89,16 @@ pub struct OutcomeRequirement {
     pub min_reputation: Vec<ReputationGate>,
     #[serde(default)]
     pub max_reputation: Vec<ReputationGate>,
+    /// Dominant-faction gate (content-depth factions round 25): the outcome appears only
+    /// while this people runs the ship (the largest aboard). The choice-level parallel to
+    /// the it6 `requires_dominant_faction` *event* gate and the it10 dilemma-option
+    /// coloring — where those decide which events fire and shift a gamble's odds, this
+    /// puts a *distinct option on the table* only under a given people's rule: the makers
+    /// offer to rebuild a thing whole, the augmented to augment their way through it, the
+    /// Keepers to answer it by the old rites. Who runs the ship now shapes not just the
+    /// crises it meets but the *choices* it has in them. Empty = ungated by who rules.
+    #[serde(default)]
+    pub requires_dominant_faction: String,
 }
 
 impl OutcomeRequirement {
@@ -98,6 +108,7 @@ impl OutcomeRequirement {
             && self.min_knowledge.is_empty()
             && self.min_reputation.is_empty()
             && self.max_reputation.is_empty()
+            && self.requires_dominant_faction.is_empty()
     }
 }
 

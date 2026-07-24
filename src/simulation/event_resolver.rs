@@ -86,6 +86,11 @@ pub fn outcome_available(sim: &SimState, outcome: &EventOutcome) -> bool {
             .max_reputation
             .iter()
             .all(|g| sim.reputation(&g.id) <= g.threshold)
+        // Dominant-faction gate (content-depth factions round 25): a choice only on the
+        // table while the named people runs the ship.
+        && (outcome.requires.requires_dominant_faction.is_empty()
+            || sim.dominant_faction_id()
+                == Some(outcome.requires.requires_dominant_faction.as_str()))
 }
 
 /// The real indices of the outcomes this ship may currently pick, in authored
@@ -1788,6 +1793,52 @@ mod tests {
             Some(&comp.id)
         );
         assert!(shown_description(&sim, template).contains("Keepers"));
+    }
+
+    #[test]
+    fn a_dominant_faction_unlocks_a_choice_others_cannot_take() {
+        // Content-depth factions round 25: who runs the ship puts a distinct option on
+        // the table. The Wasting's germ-line cure appears only while the Ascension Circle
+        // is dominant, and never for a ship the Steel Covenant runs.
+        use crate::state::sim::factions::{FactionState, FactionStatus};
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 71, &picks);
+        let tmpl = data.events.get("the_wasting").unwrap();
+        let cure = tmpl
+            .outcomes
+            .iter()
+            .position(|o| o.id == "rewrite_the_affliction")
+            .unwrap();
+
+        let set_dominant = |sim: &mut SimState, id: &str| {
+            sim.factions = vec![FactionState {
+                faction_id: id.to_string(),
+                members: sim.population.count,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            }];
+        };
+
+        // Under the Steel Covenant: the Ascension cure is not on the table…
+        set_dominant(&mut sim, "steel_covenant");
+        assert!(
+            !available_outcome_indices(&sim, tmpl).contains(&cure),
+            "the germ-line cure needs the Ascension in charge"
+        );
+        // …but the base choices always are.
+        assert!(
+            available_outcome_indices(&sim, tmpl).contains(&0),
+            "the base choices are always offered"
+        );
+
+        // Under the Ascension Circle: the cure appears.
+        set_dominant(&mut sim, "ascension_circle");
+        assert!(
+            available_outcome_indices(&sim, tmpl).contains(&cure),
+            "the Ascension running the ship unlocks the germ-line cure"
+        );
     }
 
     #[test]

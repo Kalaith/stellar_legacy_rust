@@ -1506,6 +1506,13 @@ mod tests {
                         .map(|c| &c.requires_dominant_faction)
                         .filter(|f| !f.is_empty()),
                 )
+                // Content-depth factions round 25: outcome-level dominant-faction gates.
+                .chain(
+                    e.outcomes
+                        .iter()
+                        .map(|o| &o.requires.requires_dominant_faction)
+                        .filter(|f| !f.is_empty()),
+                )
                 .chain(
                     e.complications
                         .iter()

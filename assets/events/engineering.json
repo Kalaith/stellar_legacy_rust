@@ -1672,5 +1672,62 @@
     "log": "The ship refused to cut anyone loose and braced its failing decks instead, carrying the whole worn vessel onward on careful flying and stubborn hope — every soul still aboard, and the frame still, for now, holding."
    }
   ]
+ },
+ {
+  "id": "the_seized_works",
+  "category": "immediate_crisis",
+  "title": "The Seized Works",
+  "description": "A core mechanism deep in the ship — one of the great old assemblies the founders installed and no generation since has fully replaced — has seized. It can be worked around; the ship will limp. It can be replaced from stores, at cost, with a part that will do. Or, if the right hands happen to run the ship, it can be made into something better than the founders ever fitted. The council weighs which kind of fix this will be.",
+  "requires_decision": true,
+  "family": "engineering",
+  "outcomes": [
+   {
+    "id": "jury_rig_a_bypass",
+    "label": "Jury-rig a bypass",
+    "description": "Route around the seized assembly with whatever comes to hand. The ship runs degraded and the fix is ugly, but it costs almost nothing and it holds — for now.",
+    "ship_delta": {
+     "spare_parts": -3
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "log": "The crews routed around the seized works with a bypass no one was proud of, and the ship limped on — degraded, ugly under the panels, but moving, which was the whole of what the bypass had promised."
+   },
+   {
+    "id": "replace_from_stores",
+    "label": "Replace it from stores",
+    "description": "Pull a replacement from the ship's dwindling stock of great spares and fit it properly. It costs dearly in parts the ship cannot easily make, but the works run right again.",
+    "ship_delta": {
+     "spare_parts": -18
+    },
+    "population_delta": {
+     "morale": 0.02
+    },
+    "log": "The ship spent deep from its store of irreplaceable spares and fitted the seized works anew, running right again at a cost in parts it would feel for a long while."
+   },
+   {
+    "id": "rebuild_it_better",
+    "label": "Rebuild it better than the founders'",
+    "description": "The Steel Covenant do not replace — they improve. Give the makers the seized assembly and the run of the fabrication decks, and they will hand back not the founders' design restored but a better one: sounder, more efficient, a mechanism the ship will be glad of for generations.",
+    "requires": {
+     "requires_dominant_faction": "steel_covenant"
+    },
+    "ship_delta": {
+     "spare_parts": -10
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.15,
+      "knowledge": 0.05
+     }
+    ],
+    "population_delta": {
+     "unity": 0.03,
+     "morale": 0.03
+    },
+    "log": "Under the Steel Covenant the seized works came back not restored but reborn — the makers handing over a mechanism better than any the founders drew, and taking, in the doing of it, a visible pride that ran through the whole engineering deck and left the bay itself the sharper for the work."
+   }
+  ]
  }
 ]

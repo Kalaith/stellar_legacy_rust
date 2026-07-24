@@ -1055,5 +1055,52 @@
     "log": "The ship gutted itself for parts and rebuilt its scrubbers in a hard crash of round-the-clock work, choosing the machine over the moss — and breathed again on rebuilt metal, poorer in spares and prouder in craft, a ship still recognizably a ship."
    }
   ]
+ },
+ {
+  "id": "the_wasting",
+  "category": "generational_challenge",
+  "title": "The Wasting",
+  "description": "A slow degenerative illness has appeared in the crew — not fast, not yet fatal, but progressive and, by every test the medics can run, incurable with the tools the ship carries. It thins the strong and stiffens the young, and it is spreading through the bloodlines the way a sealed population spreads everything, patiently and completely. The council must decide how to live with a sickness that will not, by ordinary means, be lived down.",
+  "requires_decision": true,
+  "family": "biology_medical",
+  "outcomes": [
+   {
+    "id": "quarantine_the_afflicted",
+    "label": "Quarantine the afflicted",
+    "description": "Isolate the sick, slow the spread, and buy the ship time it may or may not know what to do with. Hard on the quarantined, and no cure — but the disease at least stops gaining ground.",
+    "population_delta": {
+     "count": -20,
+     "morale": -0.04,
+     "stability": 0.02
+    },
+    "log": "The ship walled the wasting off behind quarantine, slowing a sickness it could not cure and paying for the reprieve in the loneliness of the sealed wards and the ones who did not last them."
+   },
+   {
+    "id": "palliate_and_endure",
+    "label": "Palliate and endure",
+    "description": "There is no cure and no walling it off from a sealed bloodline. Ease what can be eased, care for the afflicted openly, and let the ship carry its sickness the way it carries everything else — together, and onward.",
+    "population_delta": {
+     "morale": -0.02,
+     "unity": 0.03,
+     "legacy_loyalty": 0.02
+    },
+    "log": "The ship chose to carry the wasting rather than wall it away, tending its sick in the open and enduring — a people that would not quarantine its own, and was, in the enduring, a little more one people for it."
+   },
+   {
+    "id": "rewrite_the_affliction",
+    "label": "Rewrite the affliction",
+    "description": "The Ascension Circle can end it — not treat it, end it, at the root, by rewriting the very sequence the sickness rides. It means taking the gene-work into the germ line, remaking the crew a shade further from the baseline the founders sealed aboard. But the wasting would be gone, and gone for good.",
+    "requires": {
+     "requires_dominant_faction": "ascension_circle"
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "adaptation": 0.05,
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.03
+    },
+    "log": "Under the Ascension Circle the ship did what no baseline crew could: it reached into its own germ line and rewrote the wasting out of existence, curing the sickness and, in the same stroke, stepping a measured pace further from the human stock the founders had sealed into the hull — a people who would not merely endure their afflictions but edit them, and become, each time, someone new."
+   }
+  ]
  }
 ]
