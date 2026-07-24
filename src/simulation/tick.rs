@@ -102,6 +102,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_stability_recovery_beat(sim, data, &mut report)
+            && !fire_heartening_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
@@ -648,6 +649,39 @@ fn fire_stability_recovery_beat(
         contract.stability_beats_fired = 0;
     }
     force_family_beat(sim, data, &cfg.stability_recovery_beat_family, report);
+    true
+}
+
+/// Fire a heartening-recovery beat (content-depth campaign-skeleton round 30): the *morale* twin
+/// of the it13 unity and it28 stability recovery beats, and the hopeful mirror of the it29 despair
+/// beat. Once the crew has sunk into despair (a despair beat fired) and its `morale` then climbs
+/// back to or above the recovery threshold, force a beat — a crew that had lost heart finding it
+/// again, spirits lifting from the depths — and reset the despair counter so a relapse re-arms the
+/// collapse beats. Distinct from the it8 flourish beat (which marks morale reaching a *golden age*
+/// from any starting point): this marks the narrower, more moving thing of a crew climbing back to
+/// a livable baseline *from the bottom*. Fires once per despair episode; at most one per month.
+fn fire_heartening_recovery_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    report: &mut TickReport,
+) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.heartening_recovery_beat_family.is_empty()
+        || cfg.heartening_recovery_beat_threshold <= 0.0
+    {
+        return false;
+    }
+    let recovered = sim.contract.as_ref().is_some_and(|c| {
+        c.despair_beats_fired > 0 && sim.population.morale >= cfg.heartening_recovery_beat_threshold
+    });
+    if !recovered {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        // The crew has found its heart again; re-arm the despair beats against a relapse.
+        contract.despair_beats_fired = 0;
+    }
+    force_family_beat(sim, data, &cfg.heartening_recovery_beat_family, report);
     true
 }
 

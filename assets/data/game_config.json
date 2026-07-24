@@ -252,6 +252,8 @@
       0.15
     ],
     "despair_beat_family": "legacy_drift",
+    "heartening_recovery_beat_threshold": 0.5,
+    "heartening_recovery_beat_family": "legacy_drift",
     "depopulation_beats": [
       0.6,
       0.4,

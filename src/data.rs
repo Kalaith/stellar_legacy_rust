@@ -1152,6 +1152,20 @@ pub struct CampaignSkeletonConfig {
     /// The family a morale-collapse despair beat draws from.
     #[serde(default)]
     pub despair_beat_family: String,
+    /// Heartening-recovery threshold (content-depth campaign-skeleton round 30): the despair
+    /// beat's *hopeful mirror*, the morale twin of the it13 unity and it28 stability recovery
+    /// beats. Once the crew has sunk into despair (a despair beat has fired) and its `morale` then
+    /// climbs back to or above this, a beat is forced — spirits lifting from the depths, a crew
+    /// that had lost heart finding it again — and the despair counter is reset so a relapse
+    /// re-arms the collapse beats. Set above the worst despair threshold for hysteresis, and below
+    /// the golden-age flourish band (this marks a climb back to a *livable* baseline, not a
+    /// triumph). 0 = no heartening-recovery beat (the ship only ever marks the sinking, never the
+    /// lifting).
+    #[serde(default)]
+    pub heartening_recovery_beat_threshold: f32,
+    /// The family the heartening-recovery beat draws from.
+    #[serde(default)]
+    pub heartening_recovery_beat_family: String,
     /// Depopulation thresholds (content-depth round 12): the crew's *headcount*
     /// finally gets a beat — the one major state dimension none watched. As the
     /// population falls to or below each fraction of its *founding* size (authored
@@ -2604,6 +2618,23 @@ mod tests {
             assert!(
                 sk.despair_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
                 "campaign_skeleton despair_beats must be within (0, 1]"
+            );
+        }
+        // Content-depth campaign-skeleton round 30: the heartening-recovery beat, the morale twin
+        // of the it13/it28 recovery beats. Its family must have events, and its threshold must sit
+        // clear above the worst despair-collapse line (hysteresis) and at most 1.0.
+        if !sk.heartening_recovery_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.heartening_recovery_beat_family),
+                "campaign_skeleton heartening_recovery_beat_family '{}' has no events",
+                sk.heartening_recovery_beat_family
+            );
+            let worst_despair = sk.despair_beats.iter().cloned().fold(0.0_f32, f32::max);
+            assert!(
+                sk.heartening_recovery_beat_threshold > worst_despair
+                    && sk.heartening_recovery_beat_threshold <= 1.0,
+                "heartening_recovery_beat_threshold {} must sit above the despair band {worst_despair}",
+                sk.heartening_recovery_beat_threshold
             );
         }
         // Content-depth campaign-skeleton round 28: the governance-recovery beat, the stability

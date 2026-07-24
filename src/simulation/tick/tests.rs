@@ -2066,6 +2066,56 @@ fn a_despair_beat_marks_a_crew_that_has_lost_its_heart() {
 }
 
 #[test]
+fn a_heartening_recovery_beat_marks_a_crew_that_finds_its_heart_again() {
+    // Content-depth campaign-skeleton round 30: the morale twin of the unity/stability recovery
+    // beats, the hopeful mirror of the despair beat. A crew that never despaired has nothing to
+    // recover; one that sank into despair and then climbs back forces a heartening reckoning,
+    // resetting the despair counter so a relapse re-arms the collapse beats.
+    let data = GameData::load().unwrap();
+    let threshold = data
+        .config
+        .campaign_skeleton
+        .heartening_recovery_beat_threshold;
+    let despair0 = data.config.campaign_skeleton.despair_beats[0];
+    assert!(
+        threshold > 0.0,
+        "this test needs the heartening-recovery beat enabled"
+    );
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        10,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+
+    // A high-hearted crew that never despaired: recovery has nothing to mark.
+    sim.population.morale = threshold + 0.05;
+    assert!(!fire_heartening_recovery_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().despair_beats_fired, 0);
+
+    // The crew sinks into despair: the despair beat fires.
+    sim.population.morale = despair0 - 0.02;
+    assert!(fire_despair_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().despair_beats_fired, 1);
+    // …but no recovery while spirits are still in the depths.
+    assert!(!fire_heartening_recovery_beat(&mut sim, &data, &mut report));
+
+    // Spirits climb back: the recovery beat fires and resets the despair counter.
+    sim.population.morale = threshold + 0.05;
+    assert!(fire_heartening_recovery_beat(&mut sim, &data, &mut report));
+    assert_eq!(
+        sim.contract.as_ref().unwrap().despair_beats_fired,
+        0,
+        "finding its heart again marks the recovery and re-arms the despair beats"
+    );
+    // Fires once per despair episode.
+    assert!(!fire_heartening_recovery_beat(&mut sim, &data, &mut report));
+}
+
+#[test]
 fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     // Content-depth charters round 10: the first scripted-narrative charter — a
     // mission architected around a *sequence* of timed beats, an authored arc
