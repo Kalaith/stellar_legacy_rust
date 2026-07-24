@@ -591,6 +591,13 @@ pub struct SimState {
     /// generation raised never knowing want — from one bumper year. 0 at launch.
     #[serde(default)]
     pub fat_food_years: u32,
+    /// Consecutive years the ship has run without the spare-parts stock to keep its upkeep
+    /// (content-depth provisioning round 27): a rolling count of how long the ship has gone
+    /// unmended, reset the moment the stores can cover a year's maintenance again. It's what
+    /// lets content and the morale drain tell a *chronic* disrepair — a ship held together
+    /// with tape for a generation — from one lean year between resupplies. 0 at launch.
+    #[serde(default)]
+    pub lean_parts_years: u32,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -702,6 +709,7 @@ impl SimState {
             subsystem_beats_fired: Vec::new(),
             founding_beat_fired: false,
             lean_food_years: 0,
+            lean_parts_years: 0,
             fat_food_years: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),

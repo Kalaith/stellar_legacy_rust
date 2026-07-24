@@ -291,6 +291,29 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     } else {
         1.0
     };
+    // Track how long the ship has gone unmended (content-depth provisioning round 27): a year
+    // short of the upkeep stock extends the disrepair, a year that can cover it clears the
+    // count. This is what lets a bad year between resupplies be told from a chronic disrepair
+    // — a ship held together with tape for a generation — and drives the disrepair morale
+    // drain below.
+    if maintained {
+        sim.lean_parts_years = 0;
+    } else {
+        sim.lean_parts_years = sim.lean_parts_years.saturating_add(1);
+    }
+    // A ship where nothing gets fixed wears the crew's heart (content-depth provisioning round
+    // 27): a chronic disrepair grinds at morale the way a chronic hunger (it89/round 17) and a
+    // chronic becalming (round 25) do — the third of the sustained-privation morale costs,
+    // completing the trio of larder, drive, and toolroom. Threshold-gated on the same
+    // "years-to-chronic" line, so one lean year between resupplies is inert; only a sustained
+    // disrepair — deck plates left buckled, seals left weeping, the crew watching their home
+    // slowly come apart with nothing to mend it — bites.
+    if config.disrepair_morale_drain > 0.0
+        && config.chronic_hunger_years > 0
+        && sim.lean_parts_years >= config.chronic_hunger_years
+    {
+        sim.population.morale = (sim.population.morale - config.disrepair_morale_drain).max(0.0);
+    }
     // A year spent coasting on empty tanks strains the ship harder — systems
     // shut down and wear runs at the no-fuel multiplier (W4).
     let fuel_factor = if sim.fuel_stalled_this_year {

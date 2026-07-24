@@ -2692,6 +2692,52 @@ fn a_chronic_becalming_wears_the_crews_spirits() {
 }
 
 #[test]
+fn a_chronic_disrepair_wears_the_crews_spirits() {
+    // Content-depth provisioning round 27: a ship left unmended for years loses heart, the
+    // toolroom twin of the chronic-hunger and becalming morale drains. A ship that stays short
+    // of its maintenance stock this year ends it a shade grimmer than one that can cover it,
+    // the gap the year's disrepair drain exactly.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.fabrication_parts_yield = 0; // no fabrication topping up the parts mid-year
+    let drain = data.config.disrepair_morale_drain;
+    let years = data.config.chronic_hunger_years;
+    let upkeep = data.config.parts_upkeep_per_year;
+    assert!(
+        drain > 0.0 && years > 0,
+        "this test needs the disrepair drain enabled"
+    );
+
+    let run = |unmended: bool| -> f32 {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.resources.food = 1_000_000; // keep famine out of the way
+        sim.population.morale = 0.6;
+        sim.lean_parts_years = years; // already chronically unmended at the year's start
+                                      // Short of upkeep → stays unmended; stocked → covers upkeep and the count resets.
+        sim.ship.spare_parts = if unmended { 0 } else { upkeep + 100 };
+        advance_year(&mut sim, &data);
+        sim.population.morale
+    };
+    let stays_broken = run(true); // still unmended → the drain bites
+    let mended = run(false); // stores cover upkeep → counter resets, no drain
+    assert!(
+        stays_broken < mended,
+        "a ship still falling apart loses heart where one it can maintain does not"
+    );
+    assert!(
+        (mended - stays_broken - drain).abs() < 1e-4,
+        "the gap is exactly the year's disrepair morale drain ({stays_broken} vs {mended})"
+    );
+}
+
+#[test]
 fn over_deep_food_stores_spoil_toward_the_carrying_capacity() {
     // Content-depth provisioning round 24: food beyond what the ship can keep fresh
     // rots. A hoard above the carrying capacity loses a fraction of the excess each

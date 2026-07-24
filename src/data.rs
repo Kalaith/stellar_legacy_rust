@@ -201,6 +201,16 @@ pub struct GameConfig {
     /// every year it holds. Gentle by design; 0 = a becalming costs no morale.
     #[serde(default)]
     pub becalmed_morale_drain: f32,
+    /// Morale worn away each year the ship has been *chronically unmended* — short of its
+    /// spare-parts upkeep past `chronic_hunger_years` running (content-depth provisioning round
+    /// 27): the third sustained-privation morale cost, beside `chronic_hunger_morale_drain`
+    /// (the larder) and `becalmed_morale_drain` (the drive). Where a hunger that will not end
+    /// and a voyage that will not move each wear the crew's spirits, so does a *home that will
+    /// not stay whole* — a ship where the deck plates buckle and the seals weep and there is
+    /// nothing to fix them with grinds the heart down year over year. Gentle by design; 0 = a
+    /// long disrepair costs no morale.
+    #[serde(default)]
+    pub disrepair_morale_drain: f32,
     /// Extra *monthly death chance* added to every character while the ship has been
     /// lean past `chronic_hunger_years` (content-depth provisioning round 18 — the
     /// provisioning axis's coupling to the real-time-loop mortality system). Where
@@ -2792,6 +2802,14 @@ mod tests {
             (0.0..=0.05).contains(&data.config.becalmed_morale_drain),
             "becalmed_morale_drain {} must be a gentle yearly attrition [0, 0.05]",
             data.config.becalmed_morale_drain
+        );
+        // Content-depth provisioning round 27: the disrepair morale drain is a gentle yearly
+        // attrition too, the third of the sustained-privation costs — the slow demoralization
+        // of a home coming apart, not a single hard blow.
+        assert!(
+            (0.0..=0.05).contains(&data.config.disrepair_morale_drain),
+            "disrepair_morale_drain {} must be a gentle yearly attrition [0, 0.05]",
+            data.config.disrepair_morale_drain
         );
         // Content-depth provisioning round 24: the food carrying capacity, if set, must
         // sit above the fat line (a prudent reserve should still read as plenty, not spoil
