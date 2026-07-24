@@ -103,6 +103,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_stability_recovery_beat(sim, data, &mut report)
             && !fire_heartening_recovery_beat(sim, data, &mut report)
+            && !fire_loyalty_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
@@ -682,6 +683,37 @@ fn fire_heartening_recovery_beat(
         contract.despair_beats_fired = 0;
     }
     force_family_beat(sim, data, &cfg.heartening_recovery_beat_family, report);
+    true
+}
+
+/// Fire a covenant-recovery beat (content-depth campaign-skeleton round 31): the *loyalty* twin
+/// of the it13/it28/it30 recovery beats, and the last of the four decline stats to get one. Once
+/// the founders' covenant has lapsed (a loyalty beat fired) and `legacy_loyalty` then climbs back
+/// to or above the recovery threshold, force a beat — the covenant renewed, a generation that had
+/// drifted from the founding cause returning to it, the charter re-embraced as binding — and reset
+/// the loyalty-collapse counter so a relapse re-arms the collapse beats. Fires once per lapse
+/// episode; at most one per month.
+fn fire_loyalty_recovery_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    report: &mut TickReport,
+) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.loyalty_recovery_beat_family.is_empty() || cfg.loyalty_recovery_beat_threshold <= 0.0 {
+        return false;
+    }
+    let recovered = sim.contract.as_ref().is_some_and(|c| {
+        c.loyalty_beats_fired > 0
+            && sim.population.legacy_loyalty >= cfg.loyalty_recovery_beat_threshold
+    });
+    if !recovered {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        // The covenant is renewed; re-arm the collapse beats against a future lapse.
+        contract.loyalty_beats_fired = 0;
+    }
+    force_family_beat(sim, data, &cfg.loyalty_recovery_beat_family, report);
     true
 }
 

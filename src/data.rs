@@ -1129,6 +1129,20 @@ pub struct CampaignSkeletonConfig {
     /// The family a loyalty-collapse beat draws from.
     #[serde(default)]
     pub loyalty_beat_family: String,
+    /// Covenant-recovery threshold (content-depth campaign-skeleton round 31): the loyalty beat's
+    /// *hopeful mirror*, and the last of the four decline stats to get a recovery beat (after
+    /// unity it13, stability it28, and morale/despair it30). Once the founders' covenant has
+    /// lapsed (a loyalty beat has fired) and `legacy_loyalty` then climbs back to or above this, a
+    /// beat is forced — the covenant *renewed*, a generation that had drifted from the founding
+    /// cause returning to it, the charter re-embraced as binding — and the loyalty-collapse
+    /// counter is reset so a relapse re-arms the collapse beats. Set above the worst loyalty
+    /// threshold for hysteresis. 0 = no covenant-recovery beat (the ship only ever marks the
+    /// covenant lapsing, never its renewal).
+    #[serde(default)]
+    pub loyalty_recovery_beat_threshold: f32,
+    /// The family the covenant-recovery beat draws from.
+    #[serde(default)]
+    pub loyalty_recovery_beat_family: String,
     /// Governance-collapse thresholds (content-depth round 15): the last population
     /// stat without a beat. As `stability` falls to or below each threshold (high→
     /// low), a beat is forced — not the *people* fracturing (the crisis beat) nor
@@ -2678,6 +2692,23 @@ mod tests {
                     && sk.heartening_recovery_beat_threshold <= 1.0,
                 "heartening_recovery_beat_threshold {} must sit above the despair band {worst_despair}",
                 sk.heartening_recovery_beat_threshold
+            );
+        }
+        // Content-depth campaign-skeleton round 31: the covenant-recovery beat, the loyalty twin
+        // of the it13/it28/it30 recovery beats. Its family must have events, and its threshold must
+        // sit clear above the worst loyalty-collapse line (hysteresis) and at most 1.0.
+        if !sk.loyalty_recovery_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.loyalty_recovery_beat_family),
+                "campaign_skeleton loyalty_recovery_beat_family '{}' has no events",
+                sk.loyalty_recovery_beat_family
+            );
+            let worst_loyalty = sk.loyalty_beats.iter().cloned().fold(0.0_f32, f32::max);
+            assert!(
+                sk.loyalty_recovery_beat_threshold > worst_loyalty
+                    && sk.loyalty_recovery_beat_threshold <= 1.0,
+                "loyalty_recovery_beat_threshold {} must sit above the collapse band {worst_loyalty}",
+                sk.loyalty_recovery_beat_threshold
             );
         }
         // Content-depth campaign-skeleton round 28: the governance-recovery beat, the stability

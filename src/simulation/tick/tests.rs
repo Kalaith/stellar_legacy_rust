@@ -2116,6 +2116,56 @@ fn a_heartening_recovery_beat_marks_a_crew_that_finds_its_heart_again() {
 }
 
 #[test]
+fn a_covenant_recovery_beat_marks_a_crew_that_renews_the_founding_cause() {
+    // Content-depth campaign-skeleton round 31: the loyalty twin of the unity/stability/morale
+    // recovery beats, the last of the four decline stats to get one. A crew that never lapsed has
+    // nothing to renew; one whose covenant lapsed and then climbs back forces a recovery beat,
+    // resetting the loyalty-collapse counter so a relapse re-arms the collapse beats.
+    let data = GameData::load().unwrap();
+    let threshold = data
+        .config
+        .campaign_skeleton
+        .loyalty_recovery_beat_threshold;
+    let collapse0 = data.config.campaign_skeleton.loyalty_beats[0];
+    assert!(
+        threshold > 0.0,
+        "this test needs the covenant-recovery beat enabled"
+    );
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        11,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+
+    // A faithful crew that never lapsed: recovery has nothing to mark.
+    sim.population.legacy_loyalty = threshold + 0.05;
+    assert!(!fire_loyalty_recovery_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().loyalty_beats_fired, 0);
+
+    // The covenant lapses: the loyalty-collapse beat fires.
+    sim.population.legacy_loyalty = collapse0 - 0.02;
+    assert!(fire_loyalty_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().loyalty_beats_fired, 1);
+    // …but no renewal while the covenant is still lapsed.
+    assert!(!fire_loyalty_recovery_beat(&mut sim, &data, &mut report));
+
+    // The crew re-embraces the founding cause: the recovery beat fires and resets the counter.
+    sim.population.legacy_loyalty = threshold + 0.05;
+    assert!(fire_loyalty_recovery_beat(&mut sim, &data, &mut report));
+    assert_eq!(
+        sim.contract.as_ref().unwrap().loyalty_beats_fired,
+        0,
+        "renewing the covenant marks the recovery and re-arms the collapse beats"
+    );
+    // Fires once per lapse episode.
+    assert!(!fire_loyalty_recovery_beat(&mut sim, &data, &mut report));
+}
+
+#[test]
 fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     // Content-depth charters round 10: the first scripted-narrative charter — a
     // mission architected around a *sequence* of timed beats, an authored arc

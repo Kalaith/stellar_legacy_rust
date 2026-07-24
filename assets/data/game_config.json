@@ -234,6 +234,8 @@
       0.2
     ],
     "loyalty_beat_family": "legacy_drift",
+    "loyalty_recovery_beat_threshold": 0.55,
+    "loyalty_recovery_beat_family": "legacy_drift",
     "stability_beats": [
       0.3,
       0.18
