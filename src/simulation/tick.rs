@@ -92,6 +92,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_crisis_beat(sim, data, &mut report)
             && !fire_loyalty_beat(sim, data, &mut report)
             && !fire_stability_beat(sim, data, &mut report)
+            && !fire_despair_beat(sim, data, &mut report)
             && !fire_subsystem_beat(sim, data, &mut report)
             && !fire_hull_beat(sim, data, &mut report)
             && !fire_air_beat(sim, data, &mut report)
@@ -348,6 +349,29 @@ fn fire_stability_beat(sim: &mut SimState, data: &GameData, report: &mut TickRep
         contract.stability_beats_fired += 1;
     }
     force_family_beat(sim, data, &cfg.stability_beat_family, report);
+    true
+}
+
+/// Fire a morale-collapse *despair* beat (content-depth campaign-skeleton round 29): the
+/// descending negative pole of the round-8 flourish beat. Where flourish forces a golden-age
+/// reckoning as morale climbs past its high thresholds, this forces one as morale *crashes* past
+/// its low ones — the crew sinking into a collective despair no other beat marked (the crisis
+/// beat watches the ship *fracturing*, this watches it simply *losing heart*). As `morale` falls
+/// to or below each authored threshold (high→low), a beat is forced. Fires at most one threshold
+/// per month.
+fn fire_despair_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    let crossed = sim.contract.as_ref().is_some_and(|c| {
+        (c.despair_beats_fired as usize) < cfg.despair_beats.len()
+            && sim.population.morale <= cfg.despair_beats[c.despair_beats_fired as usize]
+    });
+    if !crossed {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.despair_beats_fired += 1;
+    }
+    force_family_beat(sim, data, &cfg.despair_beat_family, report);
     true
 }
 

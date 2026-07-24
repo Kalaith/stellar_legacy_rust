@@ -111,6 +111,12 @@ pub struct ActiveContract {
     /// fires once as the ship's institutions fail past a threshold.
     #[serde(default)]
     pub stability_beats_fired: u32,
+    /// How many morale-collapse *despair* beats have fired (content-depth campaign-skeleton
+    /// round 29): the *descending* negative pole of the round-8 flourish beat — where flourish
+    /// marks a golden age as morale climbs, this marks the crew sinking into a collective despair
+    /// as it crashes. Each fires once as spirits fall past a threshold.
+    #[serde(default)]
+    pub despair_beats_fired: u32,
     /// How many anniversary beats have fired (content-depth round 7): the
     /// periodic commemoration cadence. Doubles as the count of anniversaries
     /// observed, so the next fires when the voyage passes the following multiple.

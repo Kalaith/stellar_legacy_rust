@@ -255,6 +255,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         crisis_beats_fired: 0,
         loyalty_beats_fired: 0,
         stability_beats_fired: 0,
+        despair_beats_fired: 0,
         anniversaries_fired: 0,
         flourish_beats_fired: 0,
         objective_beats_fired: 0,

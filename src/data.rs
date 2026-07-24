@@ -1103,6 +1103,18 @@ pub struct CampaignSkeletonConfig {
     /// The family a golden-age flourish beat draws from.
     #[serde(default)]
     pub flourish_beat_family: String,
+    /// Despair thresholds (content-depth campaign-skeleton round 29): the *descending* negative
+    /// pole of the `flourish_beats` — where flourish marks morale climbing into a golden age,
+    /// this marks it *crashing* into a collective despair. As the crew's `morale` falls to or
+    /// below each threshold (authored high→low) a beat is forced — the missing morale-collapse
+    /// beat, distinct from the it6 crisis beat (which watches `unity` *fracturing*, not spirits
+    /// *sinking*). So a ship that loses heart, not only one that comes apart, surfaces its own
+    /// reckoning rather than waiting on a reactive roll. Empty = no despair beats.
+    #[serde(default)]
+    pub despair_beats: Vec<f32>,
+    /// The family a morale-collapse despair beat draws from.
+    #[serde(default)]
+    pub despair_beat_family: String,
     /// Depopulation thresholds (content-depth round 12): the crew's *headcount*
     /// finally gets a beat — the one major state dimension none watched. As the
     /// population falls to or below each fraction of its *founding* size (authored
@@ -2523,6 +2535,24 @@ mod tests {
                 families.contains(&sk.recovery_beat_family),
                 "campaign_skeleton recovery_beat_family '{}' has no events",
                 sk.recovery_beat_family
+            );
+        }
+        // Content-depth campaign-skeleton round 29: despair beats are the descending
+        // morale-collapse pole of the flourish beats — a family with events, and strictly
+        // descending thresholds in (0, 1], each fired once as spirits sink past it.
+        if !sk.despair_beats.is_empty() {
+            assert!(
+                families.contains(&sk.despair_beat_family),
+                "campaign_skeleton despair_beat_family '{}' has no events",
+                sk.despair_beat_family
+            );
+            assert!(
+                sk.despair_beats.windows(2).all(|w| w[0] > w[1]),
+                "campaign_skeleton despair_beats must be strictly descending"
+            );
+            assert!(
+                sk.despair_beats.iter().all(|&t| (0.0..=1.0).contains(&t)),
+                "campaign_skeleton despair_beats must be within (0, 1]"
             );
         }
         // Content-depth campaign-skeleton round 28: the governance-recovery beat, the stability

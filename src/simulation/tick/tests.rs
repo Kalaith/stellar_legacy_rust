@@ -304,6 +304,7 @@ fn a_far_drifted_ships_quiet_reads_alien() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     let threshold = data.config.flavor.ambient_drift_threshold;
     assert!(
@@ -358,6 +359,7 @@ fn a_hollowed_out_ships_quiet_reads_empty() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.depopulation_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     let ceiling = data.config.flavor.ambient_population_threshold;
@@ -427,6 +429,7 @@ fn a_long_hungry_ships_quiet_reads_lean() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.depopulation_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     let lean_years = data.config.flavor.ambient_lean_years_threshold;
@@ -498,6 +501,7 @@ fn a_long_prosperous_ships_quiet_reads_fat() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     let fat_years = data.config.flavor.ambient_fat_years_threshold;
@@ -768,6 +772,7 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.reputation_beat_family.clear();
@@ -1082,6 +1087,7 @@ fn a_multi_year_famine_reads_with_variety() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
 
     let mut sim = SimState::new_campaign(
         &data,
@@ -1150,6 +1156,7 @@ fn an_anniversary_beat_fires_on_its_periodic_cadence() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     // A short cadence so the test does not fly a full century.
     data.config.campaign_skeleton.anniversary_years = 5;
 
@@ -1201,6 +1208,7 @@ fn a_midvoyage_beat_fires_at_the_deep_middle_of_the_voyage() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.stability_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
@@ -1401,6 +1409,7 @@ fn an_air_collapse_beat_fires_when_the_life_support_fails_and_rearms_on_overhaul
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.stability_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
@@ -1470,6 +1479,7 @@ fn a_hull_collapse_beat_fires_when_the_frame_fails_and_rearms_on_refit() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.stability_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
@@ -1538,6 +1548,7 @@ fn a_founding_beat_fires_once_as_the_launch_generation_passes() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.stability_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
@@ -1642,6 +1653,7 @@ fn a_reputation_beat_fires_when_the_ships_name_becomes_defining() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.stability_beats.clear();
     // Isolate the crossings we set from the dominant-faction reputation drift.
@@ -1717,6 +1729,7 @@ fn a_stability_beat_fires_as_the_ships_institutions_fail() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     let first = data.config.campaign_skeleton.stability_beats[0];
 
     let mut sim = SimState::new_campaign(
@@ -1762,6 +1775,7 @@ fn a_subsystem_collapse_beat_fires_when_a_keystone_truly_fails() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     let beat = data
         .config
         .campaign_skeleton
@@ -1813,6 +1827,7 @@ fn a_loyalty_beat_fires_as_the_founders_covenant_lapses() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     let first = data.config.campaign_skeleton.loyalty_beats[0];
 
     let mut sim = SimState::new_campaign(
@@ -1969,6 +1984,48 @@ fn a_governance_recovery_beat_marks_a_ship_rebuilding_its_institutions() {
 }
 
 #[test]
+fn a_despair_beat_marks_a_crew_that_has_lost_its_heart() {
+    // Content-depth campaign-skeleton round 29: the descending morale-collapse pole of the
+    // flourish beat. A ship of decent spirits fires nothing; as morale crashes past each despair
+    // threshold in turn, a beat is forced once per level — the reckoning a crew that simply loses
+    // heart never had, distinct from the crisis beat that watches unity fracture.
+    let data = GameData::load().unwrap();
+    let beats = data.config.campaign_skeleton.despair_beats.clone();
+    assert!(
+        beats.len() >= 2,
+        "this test needs at least two despair thresholds"
+    );
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        9,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+
+    // Decent spirits (above the first line): no reckoning.
+    sim.population.morale = beats[0] + 0.05;
+    assert!(!fire_despair_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().despair_beats_fired, 0);
+
+    // Spirits crash past the first line: one beat, and staying there does not reprint.
+    sim.population.morale = beats[0] - 0.01;
+    assert!(fire_despair_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().despair_beats_fired, 1);
+    assert!(
+        !fire_despair_beat(&mut sim, &data, &mut report),
+        "the next (lower) despair threshold has not been crossed"
+    );
+
+    // Crash past the second, lower line: the next beat fires.
+    sim.population.morale = beats[1] - 0.01;
+    assert!(fire_despair_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.contract.as_ref().unwrap().despair_beats_fired, 2);
+}
+
+#[test]
 fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     // Content-depth charters round 10: the first scripted-narrative charter — a
     // mission architected around a *sequence* of timed beats, an authored arc
@@ -1981,6 +2038,7 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.reputation_beat_family.clear();
@@ -2092,6 +2150,7 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.reputation_beat_family.clear();
@@ -2202,6 +2261,7 @@ fn a_scheduled_followup_fires_on_its_determined_year_not_before() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
 
     let setup = data.events.get("the_sealed_capsule").unwrap();
     let payoff = data.events.get("the_capsule_opens").unwrap();
@@ -2287,6 +2347,7 @@ fn a_power_transition_beat_fires_when_the_ship_changes_hands() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     assert!(
         !data
@@ -2360,6 +2421,7 @@ fn the_homecoming_beat_fires_when_the_voyage_turns_for_home() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.objective_beats.clear();
     // This test jumps the clock past the voyage midpoint, so silence the round-21
     // mid-voyage beat to isolate the homecoming one.
@@ -2443,6 +2505,7 @@ fn an_objective_beat_fires_as_the_mission_crosses_its_milestone() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     let first = data.config.campaign_skeleton.objective_beats[0];
 
     let mut sim = SimState::new_campaign(
@@ -2490,6 +2553,7 @@ fn a_flourish_beat_fires_as_the_ship_reaches_its_golden_age() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     let first = data.config.campaign_skeleton.flourish_beats[0];
 
     let mut sim = SimState::new_campaign(
@@ -2536,6 +2600,7 @@ fn a_depopulation_beat_fires_as_the_crew_thins() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.loyalty_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     data.config.campaign_skeleton.reputation_beat_family.clear();
@@ -2599,6 +2664,7 @@ fn dead_air_forces_a_beat_after_too_long_a_silence() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     data.config.campaign_skeleton.flourish_beats.clear();
     // The succession beat (round 18) forces an event when a sitting leader dies —
     // continuous mortality can take one within the gap — so silence it too. The
@@ -2657,6 +2723,7 @@ fn ambient_flavor_surfaces_during_a_long_quiet_stretch() {
     data.config.campaign_skeleton.drift_beats.clear();
     data.config.campaign_skeleton.adaptation_beats.clear();
     data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
     let gap = data.config.flavor.ambient_gap_years;
     assert!(gap > 0, "this test needs ambient flavor enabled");
     without_faction_voices(&mut data);
