@@ -2201,6 +2201,41 @@ mod tests {
     }
 
     #[test]
+    fn a_robbed_grave_answers_the_ships_own_ghost() {
+        // Content-depth event families round 33: the `grave_robbed` consequence arc closes. Boarding
+        // and stripping a derelict (the Silent Hull) records `grave_robbed`; years later the Ghost
+        // Signal — the ship's own call sign out of a year unlived — gains a complication gated on
+        // that deed, read by the crew who plundered the dead as the grave answering. So the crime
+        // comes home on a ship that committed it and passes clean over one that spoke for its dead.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let template = data.events.get("ghost_signal").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| c.requires_consequence.contains(&"grave_robbed".to_string()))
+            .expect("the ghost signal carries a robbed-grave reckoning");
+
+        // A ship innocent of grave-robbing (and undrifted, so the omen twist stays out too) meets
+        // the ghost as a puzzle, not a debt.
+        let mut clean = SimState::new_campaign(&data, "preservers", 19, &picks);
+        clean.population.cultural_drift = 0.0;
+        assert!(
+            active_complication(&clean, template).is_none(),
+            "a ship that never robbed a grave hears no reckoning in the ghost signal"
+        );
+
+        // Record the deed the Silent Hull leaves: now the grave answers on the dead channel.
+        clean.consequences.push("grave_robbed".to_string());
+        assert_eq!(
+            active_complication(&clean, template).map(|c| &c.id),
+            Some(&comp.id),
+            "the derelict the ship stripped answers its own ghost"
+        );
+        assert!(shown_description(&clean, template).contains("debt called in"));
+    }
+
+    #[test]
     fn a_reputation_gated_complication_rides_only_on_a_ship_of_that_name() {
         // Content-depth event families round 22: the same crisis reads differently by
         // the *name* the ship has earned. The Petitioners gains a twist that rides only

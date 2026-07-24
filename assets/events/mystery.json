@@ -138,6 +138,19 @@
      "cultural_drift": 0.03
     },
     "log": "The ghost signal fell on a crew that had drifted past explanations into signs and portents, and it became, within a season, a thing the ship believed rather than a thing the ship investigated — one more article of a faith the founders never wrote."
+   },
+   {
+    "id": "the_grave_answers",
+    "requires_consequence": [
+     "grave_robbed"
+    ],
+    "description_add": "And there are those aboard who remember the other silent hull — the derelict the ship once boarded and stripped, left a little more dead for the salvage still lashed in the hold — and to them this is no anomaly of physics but a debt called in. The ship's own voice on a dead channel, out of a year not yet come, is the grave they robbed answering at last, and what it promises them is the same drifting silence they once plundered and passed by.",
+    "population_delta": {
+     "morale": -0.04,
+     "stability": -0.02,
+     "cultural_drift": 0.02
+    },
+    "log": "The ghost signal fell hardest on the hands that had once stripped a derelict for parts. To them the ship's own call sign, timestamped for a year unlived, was no puzzle but a reckoning — the robbed grave answering, the dark promising the ship the same drifting silence it had once plundered — and no engineer's explanation ever quite lifted the debt they felt had come due."
    }
   ]
  },
