@@ -1299,6 +1299,35 @@ impl SimState {
                 self.push_log(boon.flavor.clone());
             }
         }
+        // The peoples already aboard notice who you bring home (content-depth factions round
+        // 28): recruiting is a political act, so the newcomer's aboard rivals bristle and its
+        // aboard allies are glad — read against the same catalog relationships (either
+        // direction) the it23 cohesion coupling uses. Applied after the newcomer is aboard;
+        // the newcomer itself, arriving at neutral approval, does not react to its own coming.
+        let rival_penalty = cfg.recruit_rival_approval_penalty;
+        let ally_bonus = cfg.recruit_ally_approval_bonus;
+        if rival_penalty > 0.0 || ally_bonus > 0.0 {
+            let related = |a: &str, b: &str, pick: fn(&FactionDef) -> &Vec<String>| -> bool {
+                data.factions
+                    .get(a)
+                    .is_some_and(|d| pick(d).iter().any(|x| x == b))
+                    || data
+                        .factions
+                        .get(b)
+                        .is_some_and(|d| pick(d).iter().any(|x| x == a))
+            };
+            for fstate in &mut self.factions {
+                if fstate.faction_id == faction_id || !fstate.is_aboard() {
+                    continue;
+                }
+                if rival_penalty > 0.0 && related(&fstate.faction_id, faction_id, |d| &d.rivals) {
+                    fstate.adjust_approval(-rival_penalty);
+                } else if ally_bonus > 0.0 && related(&fstate.faction_id, faction_id, |d| &d.allies)
+                {
+                    fstate.adjust_approval(ally_bonus);
+                }
+            }
+        }
         Ok(())
     }
 }
@@ -2859,5 +2888,68 @@ mod tests {
             sim.log.iter().any(|e| e.text.contains("engineering bay")),
             "the recruit logs the people's signature arrival"
         );
+    }
+
+    #[test]
+    fn recruiting_a_people_stirs_the_ships_old_rivalries_and_friendships() {
+        // Content-depth factions round 28: taking on a new people is a political act. The
+        // Steel Covenant rivals the Verdant Kin and allies the Meridian Accord, so bringing the
+        // makers aboard bristles the gardeners and gladdens the arbiters — the incumbent peoples
+        // react to who you bring home, by the same catalog relationships the cohesion coupling
+        // uses.
+        let (data, mut sim, _picks) = armed(15);
+        let cfg = &data.config.factions;
+        assert!(
+            cfg.recruit_rival_approval_penalty > 0.0 && cfg.recruit_ally_approval_bonus > 0.0,
+            "this test needs the recruit-reaction coupling enabled"
+        );
+        sim.resources.credits = 100_000;
+        // Seat the newcomer's rival and ally, leaving a slot open for the newcomer.
+        sim.factions = vec![
+            FactionState {
+                faction_id: "verdant_kin".to_string(),
+                members: 300,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            },
+            FactionState {
+                faction_id: "meridian_accord".to_string(),
+                members: 300,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            },
+        ];
+        assert!(!sim.is_faction_aboard("steel_covenant"));
+
+        sim.recruit_faction_group(&data, "steel_covenant").unwrap();
+
+        let approval = |id: &str| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == id)
+                .unwrap()
+                .approval
+        };
+        // The rival bristles, by exactly the penalty; the ally warms, by exactly the bonus.
+        assert!(
+            approval("verdant_kin") < 0.5,
+            "a rival bristles at the newcomer"
+        );
+        assert!(
+            (0.5 - approval("verdant_kin") - cfg.recruit_rival_approval_penalty).abs() < 1e-6,
+            "the rival's souring is exactly the penalty"
+        );
+        assert!(
+            approval("meridian_accord") > 0.5,
+            "an ally welcomes the newcomer"
+        );
+        assert!(
+            (approval("meridian_accord") - 0.5 - cfg.recruit_ally_approval_bonus).abs() < 1e-6,
+            "the ally's warming is exactly the bonus"
+        );
+        // The newcomer arrives at neutral approval, reacting to no one.
+        assert_eq!(approval("steel_covenant"), default_approval());
     }
 }

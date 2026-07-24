@@ -118,6 +118,20 @@ pub struct FactionConfig {
     pub assimilation_drift_threshold: f32,
     pub recruit_group_cost_credits: i64,
     pub recruit_group_size: u32,
+    /// Approval an incumbent aboard people loses when a *rival* of theirs is recruited aboard
+    /// (content-depth factions round 28): taking on a new people is a political act, not a
+    /// neutral transaction — the peoples already aboard notice who you bring home. A rival of
+    /// the newcomer bristles at sharing the hull with them. Read against the same catalog
+    /// `rivals` lists the it23 cohesion coupling uses (either direction counts). 0 = incumbents
+    /// are indifferent to a rival coming aboard.
+    #[serde(default)]
+    pub recruit_rival_approval_penalty: f32,
+    /// Approval an incumbent aboard people *gains* when an *ally* of theirs is recruited aboard
+    /// (content-depth factions round 28): the positive twin — a people welcomes its friends to
+    /// the ship. Read against the catalog `allies` lists (either direction). 0 = incumbents are
+    /// indifferent to an ally coming aboard.
+    #[serde(default)]
+    pub recruit_ally_approval_bonus: f32,
     /// Below this condition, a people watching its tended subsystem rot loses
     /// approval each year (content-depth subsystems round 8). 0 disables it.
     #[serde(default)]
