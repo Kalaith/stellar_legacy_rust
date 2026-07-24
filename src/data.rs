@@ -165,6 +165,20 @@ pub struct GameConfig {
     /// `MarketState` at campaign start. 0 = the market charges the same however empty the hold.
     #[serde(default)]
     pub market_desperation_premium: f32,
+    /// The discount the market takes on a *sell* made while the ship is broke (content-depth
+    /// provisioning round 33): the sell-side mirror of `market_desperation_premium`. A ship selling
+    /// its stores because the coffers are bare — credits below `distress_credit_floor` — is
+    /// lowballed by `1 - this`, the trader smelling a fire sale. Together with the buy premium the
+    /// market now reads the ship's position from both sides: gouged buying what it lacks, lowballed
+    /// selling because it is broke. Applies to sells only; copied onto `MarketState` at campaign
+    /// start. 0 = the market pays the same however empty the treasury.
+    #[serde(default)]
+    pub market_distress_discount: f32,
+    /// The credit level below which a *sell* reads as a distress sale (content-depth provisioning
+    /// round 33): the treasury-bare line the it33 sell discount bites below. Copied onto
+    /// `MarketState` at campaign start. 0 = no sell is ever distressed.
+    #[serde(default)]
+    pub distress_credit_floor: i64,
     /// The food store the ship can keep *fresh* — its carrying capacity (content-depth
     /// provisioning round 24): food is the one resource with no upkeep and no cap, so it
     /// could otherwise pile up without limit. Everything above this line spoils by
@@ -3287,6 +3301,13 @@ mod tests {
             (0.0..1.0).contains(&data.config.market_desperation_premium),
             "market_desperation_premium {} must be a gentle markup in [0, 1)",
             data.config.market_desperation_premium
+        );
+        // Content-depth provisioning round 33: the distress discount is a fraction in [0, 1) — a
+        // fire sale pays less, but a broke ship's stores are never taken for nothing.
+        assert!(
+            (0.0..1.0).contains(&data.config.market_distress_discount),
+            "market_distress_discount {} must be a fraction in [0, 1)",
+            data.config.market_distress_discount
         );
         // Content-depth provisioning round 25: the becalmed morale drain is a gentle
         // yearly attrition, like the chronic-hunger one it mirrors — the slow despair of a

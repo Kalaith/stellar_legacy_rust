@@ -100,8 +100,31 @@ pub fn buy(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<(
     Ok(())
 }
 
+/// The discount the market takes on a *sell* the ship makes while its treasury is critically bare
+/// (content-depth provisioning round 33): the sell-side mirror of the it32 buy desperation. Where a
+/// ship *buying* what it is low on is gouged, a ship *selling* its stores because it is broke —
+/// credits below `distress_credit_floor` — is lowballed: the trader smells a fire sale and pays
+/// `1 - distress_discount`. It reads the ship's *credits*, not the good on offer (a distress sale is
+/// about the seller's need for cash, whatever they are selling), so it applies to every resource.
+/// 1.0 (inert) when the discount is 0, the floor unset, or the treasury still comfortable.
+fn distress_factor(sim: &SimState) -> f32 {
+    let discount = sim.market.distress_discount;
+    let floor = sim.market.distress_credit_floor;
+    if discount == 0.0 || floor <= 0 {
+        return 1.0;
+    }
+    if sim.resources.credits < floor {
+        (1.0 - discount).max(0.0)
+    } else {
+        1.0
+    }
+}
+
 pub fn sell(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<(), String> {
-    let proceeds = (price_of(sim, resource) * reputation_trade_factor(sim, false) * amount as f32)
+    let proceeds = (price_of(sim, resource)
+        * reputation_trade_factor(sim, false)
+        * distress_factor(sim)
+        * amount as f32)
         .floor() as i64;
     let delta = trade_delta(resource, -amount, proceeds);
     if !sim.resources.can_afford(&delta) {
@@ -215,6 +238,47 @@ mod tests {
             mineral_cost_at(0),
             mineral_cost_at(100_000),
             "a mineral buy reads no desperation, however empty the hold"
+        );
+    }
+
+    #[test]
+    fn a_broke_ship_sells_at_a_distress_discount() {
+        // Content-depth provisioning round 33: the sell-side mirror of the buy desperation. A ship
+        // selling its stores because the coffers are bare earns less than a solvent one selling the
+        // same lot — the trader smells a fire sale. The discount reads the ship's credits, not the
+        // good, so it would bite whatever the ship sells.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.market_distress_discount > 0.0,
+            "this test needs the distress discount enabled"
+        );
+        let floor = data.config.distress_credit_floor;
+
+        // The proceeds of a 100-unit food sell at a given starting credit level (fresh sim each
+        // time, so the round-22 price shift never bleeds between sales).
+        let proceeds_at = |credits: i64| -> i64 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "wanderers",
+                11,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.resources.food = 10_000;
+            sim.resources.credits = credits;
+            let before = sim.resources.credits;
+            sell(&mut sim, TradeResource::Food, 100).unwrap();
+            sim.resources.credits - before
+        };
+
+        let solvent = proceeds_at(floor + 5_000); // comfortable coffers: full price
+        let broke = proceeds_at(0); // bare coffers: the fire-sale discount bites
+        assert!(
+            broke < solvent,
+            "a broke ship's fire sale earns less than a solvent ship's ({broke} vs {solvent})"
+        );
+        assert!(
+            broke > 0,
+            "but the stores are not taken for nothing ({broke})"
         );
     }
 

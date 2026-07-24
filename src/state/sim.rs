@@ -254,6 +254,18 @@ pub struct MarketState {
     /// buying power to keep the lights on. 0 = energy buys are never desperate.
     #[serde(default)]
     pub desperation_energy_floor: i64,
+    /// The discount the market takes on a *sell* made while the treasury is bare (content-depth
+    /// provisioning round 33): the sell-side mirror of the it32 buy desperation. A ship selling its
+    /// stores because it is broke — credits below `distress_credit_floor` — is lowballed by
+    /// `1 - this`, the trader smelling a fire sale. Set from `market_distress_discount` at campaign
+    /// start; applies to every resource (a distress sale is about the seller's need for cash, not
+    /// the good). 0 = the market pays the same however empty the coffers.
+    #[serde(default)]
+    pub distress_discount: f32,
+    /// Credit level below which a *sell* reads as a distress sale (content-depth provisioning
+    /// round 33): set from `distress_credit_floor` at campaign start. 0 = no sell is ever distressed.
+    #[serde(default)]
+    pub distress_credit_floor: i64,
 }
 
 /// Per-category advisor delegation (GDD §5.4): a delegated category's events
@@ -721,6 +733,8 @@ impl SimState {
             desperation_premium: config.market_desperation_premium,
             desperation_food_floor: config.low_food_threshold,
             desperation_energy_floor: config.low_energy_threshold,
+            distress_discount: config.market_distress_discount,
+            distress_credit_floor: config.distress_credit_floor,
         };
 
         let mut sim = Self {
