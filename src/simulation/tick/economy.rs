@@ -46,10 +46,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // below the line, so a ship in institutional decline earns less of the very political
     // capital its recovery choices cost — the governance twin of the it26 fabrication trap.
     let gov_factor = influence_governance_factor(sim, config);
+    // Power runs the factories and refineries (content-depth provisioning round 29): a reactor
+    // short of reserve cannot keep the industry at full output, so the ship's *industrial* yield
+    // (credits + minerals) is shed while energy sits below its line — food (the grow-lamps, spared
+    // first) and energy itself are untouched, so a power crisis cannot cascade into famine.
+    let power_factor = energy_production_factor(sim, config);
     let produced = ResourceDelta {
-        credits: (sim.production.credits * crew_mult.credits).floor() as i64,
+        credits: (sim.production.credits * crew_mult.credits * power_factor).floor() as i64,
         energy: (sim.production.energy * crew_mult.energy).floor() as i64,
-        minerals: (sim.production.minerals * crew_mult.minerals).floor() as i64,
+        minerals: (sim.production.minerals * crew_mult.minerals * power_factor).floor() as i64,
         food: (sim.production.food * crew_mult.food * (1.0 + agri_bonus) * agri_condition).floor()
             as i64,
         influence: (sim.production.influence * crew_mult.influence * gov_factor).floor() as i64,
@@ -654,6 +659,25 @@ pub(super) fn influence_governance_factor(sim: &SimState, config: &GameConfig) -
     }
     let floor = config.influence_governance_floor;
     floor + (1.0 - floor) * (stability / threshold)
+}
+
+/// The fraction of its *industrial* production a ship keeps given its power reserve (content-depth
+/// provisioning round 29). Power runs the factories and refineries, not only the life-support and
+/// the fabricators — so while the energy store sits below `low_energy_threshold` the ship's
+/// credits-and-minerals output is shed, scaled `1 - shed·(1 - energy/threshold)`: full at the
+/// line, `1 - shed` at empty tanks. At or above the line, full output. Inert (1.0) when the shed
+/// is 0 or the threshold unset. Reads energy only — deterministic, no RNG.
+pub(super) fn energy_production_factor(sim: &SimState, config: &GameConfig) -> f32 {
+    let shed = config.low_energy_production_shed;
+    let threshold = config.low_energy_threshold;
+    if shed <= 0.0 || threshold <= 0 {
+        return 1.0;
+    }
+    let energy = sim.resources.energy.max(0);
+    if energy >= threshold {
+        return 1.0;
+    }
+    1.0 - shed * (1.0 - energy as f32 / threshold as f32)
 }
 
 pub(super) fn apply_voyage_drift(sim: &mut SimState, data: &GameData) {

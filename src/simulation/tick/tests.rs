@@ -1,7 +1,9 @@
 //! Tests for the advance loop and the economic year — split out of `tick.rs`
 //! to keep it under the size limit.
 
-use super::economy::{apply_voyage_drift, influence_governance_factor, quiet_ambient_pool};
+use super::economy::{
+    apply_voyage_drift, energy_production_factor, influence_governance_factor, quiet_ambient_pool,
+};
 use super::*;
 use crate::data::GameData;
 use crate::simulation::contract::start_contract;
@@ -3024,6 +3026,9 @@ fn a_power_rich_ship_fabricates_its_own_spare_parts() {
     data.config.event_chance_base = 0.0;
     data.config.event_chance_cap = 0.0;
     data.config.dilemma_chance_per_generation = 0.0;
+    // Isolate fabrication from the round-29 low-energy production shed: this test's poor run
+    // (energy 0) would otherwise dent its own minerals production, confounding the comparison.
+    data.config.low_energy_production_shed = 0.0;
     assert!(
         data.config.surplus_energy_threshold > 0 && data.config.fabrication_parts_yield > 0,
         "this test needs the fabrication mechanic enabled"
@@ -3106,6 +3111,52 @@ fn a_governed_ship_mints_full_influence_and_a_collapsing_one_earns_less() {
     assert!(
         collapsed > 0.0,
         "even a collapsed government mints something"
+    );
+}
+
+#[test]
+fn a_power_starved_ship_runs_its_industry_cold() {
+    // Content-depth provisioning round 29: power runs the factories, so a ship below its
+    // low-energy line sheds industrial output — full at the line, less as the tanks empty, but
+    // never to zero (the shed is a fraction).
+    let data = GameData::load().unwrap();
+    let shed = data.config.low_energy_production_shed;
+    let threshold = data.config.low_energy_threshold;
+    assert!(
+        shed > 0.0 && threshold > 0,
+        "this test needs the low-energy production coupling enabled"
+    );
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        4,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+
+    // At and above the line: full industry.
+    sim.resources.energy = threshold;
+    assert_eq!(energy_production_factor(&sim, &data.config), 1.0);
+    sim.resources.energy = threshold * 4;
+    assert_eq!(energy_production_factor(&sim, &data.config), 1.0);
+
+    // Empty tanks: shed to exactly (1 - shed), and never below.
+    sim.resources.energy = 0;
+    let empty = energy_production_factor(&sim, &data.config);
+    assert!(
+        (empty - (1.0 - shed)).abs() < 1e-6,
+        "empty tanks shed exactly the configured fraction ({empty})"
+    );
+    assert!(
+        empty > 0.0,
+        "even a dead reactor keeps some industry running"
+    );
+
+    // Half-starved: between the empty floor and full.
+    sim.resources.energy = threshold / 2;
+    let half = energy_production_factor(&sim, &data.config);
+    assert!(
+        half > empty && half < 1.0,
+        "a half-starved reactor sheds some but not all ({half})"
     );
 }
 

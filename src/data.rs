@@ -126,6 +126,17 @@ pub struct GameConfig {
     pub food_per_person_per_year: f32,
     pub low_food_threshold: i64,
     pub low_energy_threshold: i64,
+    /// Fraction of *industrial* production (credits + minerals) shed at zero energy while the
+    /// ship is below `low_energy_threshold` (content-depth provisioning round 29): power runs the
+    /// whole ship, not only its life-support (it15) and its fabricators (it21) — a reactor short
+    /// of reserve cannot keep the factories and refineries at full output, so a power-starved ship
+    /// *earns and mines less*. The industrial output is scaled by `1 - this·(1 - energy/threshold)`
+    /// below the line (full at the line, `1 - this` at empty tanks). Food is spared — a crew sheds
+    /// the factory before the grow-lamps — so this cannot cascade into famine. 0 = power scarcity
+    /// does not touch production (the default; energy stays purely a life-support/fabrication
+    /// resource).
+    #[serde(default)]
+    pub low_energy_production_shed: f32,
     /// How much a unit of a bulk trade moves the local price against the ship
     /// (content-depth provisioning round 22): the market's first responsiveness to the
     /// ship's own actions — a lone generation ship is a whale in a thin waypoint market,
@@ -2976,6 +2987,14 @@ mod tests {
             (0.0..=0.05).contains(&data.config.chronic_hunger_faction_penalty),
             "chronic_hunger_faction_penalty {} must be a gentle yearly souring [0, 0.05]",
             data.config.chronic_hunger_faction_penalty
+        );
+        // Content-depth provisioning round 29: the low-energy production shed is a fraction in
+        // [0, 1) — a power crisis dents industrial output but, kept below 1, never wholly stops
+        // the factories, so a starved reactor slows the ship's earnings without freezing them.
+        assert!(
+            (0.0..1.0).contains(&data.config.low_energy_production_shed),
+            "low_energy_production_shed {} must be in [0, 1) so power scarcity never zeroes production",
+            data.config.low_energy_production_shed
         );
         // Content-depth provisioning round 24: the food carrying capacity, if set, must
         // sit above the fat line (a prudent reserve should still read as plenty, not spoil
