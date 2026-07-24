@@ -90,6 +90,17 @@ pub struct SubsystemsConfig {
     /// the bay's state does not touch hull wear.
     #[serde(default)]
     pub engineering_hull_decay_penalty: f32,
+    /// Fraction of the surplus-energy fabrication yield lost to a degraded engineering bay
+    /// (content-depth subsystems round 26): the bay *is* the fabrication hall, so its
+    /// condition scales the it21 fabrication run — the year's yield is multiplied by
+    /// `1 - engineering_fabrication_penalty·(1 - condition)`, floored at 0 (and the run
+    /// itself floored at one part). A sharp bay fabricates the full run; a neglected one
+    /// turns out less; a wrecked one, only what improvised hands can. The condition→output
+    /// coupling the food module has (`agriculture_condition_food_penalty`), now on the ship's
+    /// own manufacturing — one more reason the it62 engineering keystone pays for its upkeep.
+    /// 0 = the bay's state does not touch fabrication.
+    #[serde(default)]
+    pub engineering_fabrication_penalty: f32,
     /// Fraction of famine losses the medical bay itself prevents at full
     /// condition (content-depth subsystems round 9): the two modules that only
     /// ever *cost* the ship now earn their keep, and — unlike the tier-based

@@ -2004,6 +2004,14 @@ mod tests {
             "engineering_hull_decay_penalty {} out of range [0, 1.5]",
             subs_cfg.engineering_hull_decay_penalty
         );
+        // Content-depth subsystems round 26: the engineering→fabrication penalty is a
+        // fraction in [0, 1] (a wrecked bay fabricates less, but never a negative yield;
+        // 1 means a fully wrecked bay fabricates nothing beyond the one-part floor).
+        assert!(
+            (0.0..=1.0).contains(&subs_cfg.engineering_fabrication_penalty),
+            "engineering_fabrication_penalty {} out of range [0, 1]",
+            subs_cfg.engineering_fabrication_penalty
+        );
         // Content-depth subsystems round 25: the medical adaptation resistance is a
         // fraction below 1 (even a perfect infirmary only *slows* the shipborn drift, it
         // never wholly stops the bodies adapting to the ship).

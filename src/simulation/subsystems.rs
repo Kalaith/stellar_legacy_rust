@@ -456,6 +456,27 @@ pub fn engineering_hull_decay_factor(sim: &SimState, data: &GameData) -> f32 {
     (1.0 + penalty * (1.0 - condition)).max(1.0)
 }
 
+/// Fraction of the full fabrication yield a given engineering bay can actually turn out
+/// (content-depth subsystems round 26): the engineering bay *is* the fabrication hall —
+/// its top tier "remanufactures nearly anything the ship is made of" — yet the it21
+/// surplus-energy fabrication run (spare watts + ore → spare parts) took a flat yield no
+/// matter the bay's state. This couples the two: a sharp bay fabricates the full run, a
+/// neglected one turns out less, a wrecked one only what hands and improvised tools can
+/// manage. Scales `1 - penalty·(1 - condition)`, floored at 0 — the condition→output
+/// coupling the food module already has (`agriculture_condition_food_factor`), now on the
+/// ship's own manufacturing. 1.0 (inert) when the penalty is 0 or the bay is absent.
+pub fn engineering_fabrication_factor(sim: &SimState, data: &GameData) -> f32 {
+    let penalty = data.config.subsystems.engineering_fabrication_penalty;
+    if penalty == 0.0 {
+        return 1.0;
+    }
+    let condition = sim
+        .subsystems
+        .get("engineering_bay")
+        .map_or(1.0, |s| s.condition);
+    (1.0 - penalty * (1.0 - condition)).max(0.0)
+}
+
 /// Fraction by which the medical bay lowers each character's monthly age-based
 /// death chance (content-depth subsystems round 18 — the first subsystem coupling
 /// to the real-time-loop mortality system). Scales by *condition*, so keeping the
@@ -660,6 +681,39 @@ mod tests {
         assert!(
             wrecked > half,
             "a wrecked bay wears the hull fastest of all ({wrecked})"
+        );
+    }
+
+    #[test]
+    fn a_sharp_fabrication_hall_turns_out_the_full_run_and_a_wrecked_one_only_a_trickle() {
+        // Content-depth subsystems round 26: the engineering bay is the fabrication hall,
+        // so its condition scales the fabrication yield. A sharp bay fabricates the full
+        // run (factor 1.0); a failing one turns out less; a wrecked one only a fraction —
+        // but never a negative, and (with the caller's floor) never quite nothing.
+        let (data, mut sim) = campaign(26);
+        let penalty = data.config.subsystems.engineering_fabrication_penalty;
+        assert!(
+            penalty > 0.0,
+            "this test needs the engineering→fabrication coupling enabled"
+        );
+
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 1.0;
+        assert_eq!(
+            engineering_fabrication_factor(&sim, &data),
+            1.0,
+            "a sharp bay fabricates the full run"
+        );
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.5;
+        let half = engineering_fabrication_factor(&sim, &data);
+        assert!(
+            half < 1.0 && half > 0.0,
+            "a failing bay turns out less ({half})"
+        );
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.0;
+        let wrecked = engineering_fabrication_factor(&sim, &data);
+        assert!(
+            wrecked < half && wrecked >= 0.0,
+            "a wrecked bay fabricates the least, but never a negative yield ({wrecked})"
         );
     }
 

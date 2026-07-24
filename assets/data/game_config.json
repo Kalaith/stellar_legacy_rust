@@ -123,6 +123,7 @@
     "engineering_decay_swing": 0.4,
     "engineering_fuel_burn_penalty": 0.5,
     "engineering_hull_decay_penalty": 0.5,
+    "engineering_fabrication_penalty": 0.6,
     "medical_famine_relief_per_condition": 0.3,
     "medical_mortality_relief_per_condition": 0.35,
     "security_unity_recovery_per_condition": 0.006,

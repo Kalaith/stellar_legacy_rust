@@ -108,6 +108,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // feed them, the fabricators turn spare watts and ore into spare parts — the ship
     // making its own maintenance stock in flight, off power it would otherwise waste.
     // Self-throttling: the run spends energy back toward the line, so it paces itself.
+    // The fabrication hall does the fabricating (content-depth subsystems round 26): the
+    // engineering bay's condition scales the run's yield, so a neglected hall turns spare
+    // power and ore into fewer parts than a sharp one — the coupling that makes the
+    // fabricators part of the engineering bay they physically are, not a free background
+    // process. Floored at one part when a run happens at all (even improvised hands make
+    // something), so a degraded bay slows but never wholly stops the flow.
+    let fab_factor = subsystems::engineering_fabrication_factor(sim, data);
+    let fab_yield = ((config.fabrication_parts_yield as f32 * fab_factor).round() as i64).max(1);
     if config.surplus_energy_threshold > 0
         && sim.resources.energy >= config.surplus_energy_threshold
         && sim.resources.minerals >= config.fabrication_minerals_cost
@@ -115,16 +123,14 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     {
         sim.resources.energy -= config.fabrication_energy_cost;
         sim.resources.minerals -= config.fabrication_minerals_cost;
-        sim.ship.spare_parts += config.fabrication_parts_yield;
+        sim.ship.spare_parts += fab_yield;
         let pool = &data.config.flavor.fabrication;
         let line = if pool.is_empty() {
             format!(
-                "The reactors ran easy this year; the fabricators worked spare power and raw ore into {} spare parts.",
-                config.fabrication_parts_yield
+                "The reactors ran easy this year; the fabricators worked spare power and raw ore into {fab_yield} spare parts."
             )
         } else {
-            pool[sim.year() as usize % pool.len()]
-                .replace("{parts}", &config.fabrication_parts_yield.to_string())
+            pool[sim.year() as usize % pool.len()].replace("{parts}", &fab_yield.to_string())
         };
         sim.push_log(line);
     }
