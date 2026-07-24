@@ -397,10 +397,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // (content-depth subsystems round 8): sustained neglect of a faction's
     // tended subsystem erodes its approval, feeding the round-8 withdrawal.
     sim.apply_subsystem_neglect_sentiment(data);
-    // …and its bright mirror (content-depth factions round 22): a people *delighted*
-    // with its lot tends its module with pride, keeping it a shade sharper than duty
-    // alone would — so a kept module keeps its people content and content people keep
-    // the module kept, a virtuous circle across the faction↔subsystem boundary.
+    // …and its bright mirror on the approval side (content-depth factions round 29): a people
+    // whose module the ship keeps *excellent* is pleased to see its craft honored, gaining a
+    // little approval — the condition→approval *up* direction the it neglect penalty (which only
+    // ran condition→approval *down*) never drew, completing the two-sided coupling.
+    sim.apply_honored_tender_sentiment(data);
+    // …and its bright mirror on the condition side (content-depth factions round 22): a people
+    // *delighted* with its lot tends its module with pride, keeping it a shade sharper than duty
+    // alone would — so a kept module keeps its people content (it29 above) and content people
+    // keep the module kept (this), a virtuous circle across the faction↔subsystem boundary.
     sim.apply_proud_tender_upkeep(data);
 
     // …and give the approval meter a voice (content-depth voice round 8): a people

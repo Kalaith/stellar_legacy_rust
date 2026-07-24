@@ -141,6 +141,21 @@ pub struct FactionConfig {
     /// is what drives a people toward the door.
     #[serde(default)]
     pub neglect_approval_penalty: f32,
+    /// At or above this condition, a tending people whose module the ship keeps *excellent*
+    /// gains approval each year (content-depth factions round 29): the missing bright mirror of
+    /// the neglect coupling — where a rotting module *sours* its people (condition→approval down),
+    /// a well-kept one *pleases* them (condition→approval up), a domain honored. Set well above
+    /// `neglect_condition_threshold` so a middle band (kept but not gleaming) moves no one either
+    /// way. Distinct from `proud_tender_*` (which runs approval→condition, the delighted people
+    /// keeping the module sharper) — this runs the *other* direction, closing the two-sided
+    /// condition↔approval loop the neglect penalty only half-drew. 0 disables it.
+    #[serde(default)]
+    pub honored_tender_condition_threshold: f32,
+    /// Approval a tending people gains per year while its module sits at or above the honor
+    /// threshold (content-depth factions round 29). Gentle by design — a steady contentment at
+    /// seeing one's craft valued, not a windfall. 0 disables the coupling.
+    #[serde(default)]
+    pub honored_tender_approval_bonus: f32,
     /// At or above this approval, a *delighted* tending people keeps its module extra
     /// sharp (content-depth factions round 22): the bright mirror of the neglect
     /// coupling above. A people this content tends its subsystem with pride, lifting its

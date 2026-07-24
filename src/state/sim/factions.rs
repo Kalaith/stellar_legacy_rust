@@ -382,6 +382,42 @@ impl SimState {
         }
     }
 
+    /// The bright mirror of `apply_subsystem_neglect_sentiment` (content-depth factions round
+    /// 29): where a people whose tended module *rots* sours (condition→approval down), a people
+    /// whose module the ship keeps *excellent* is pleased (condition→approval up) — its craft
+    /// honored, its domain valued. Each year an aboard tending faction's module sits at or above
+    /// the honor threshold, it gains a little approval. It closes the two-sided condition↔approval
+    /// loop the neglect penalty only half-drew, and is the *other* direction from `apply_proud_
+    /// tender_upkeep` (which runs approval→condition): together they make investing in a people's
+    /// module a virtuous circle — a kept module pleases its people (this) and pleased people keep
+    /// it kept (r22). The honor threshold sits well above the neglect one, so a middle band moves
+    /// no one. Deterministic, no RNG.
+    pub fn apply_honored_tender_sentiment(&mut self, data: &GameData) {
+        let cfg = data.config.factions;
+        if cfg.honored_tender_approval_bonus <= 0.0 || cfg.honored_tender_condition_threshold <= 0.0
+        {
+            return;
+        }
+        for fstate in &mut self.factions {
+            if !fstate.is_aboard() {
+                continue;
+            }
+            let Some(def) = data.factions.get(&fstate.faction_id) else {
+                continue;
+            };
+            if def.tended_subsystem.is_empty() {
+                continue;
+            }
+            let honored = self
+                .subsystems
+                .get(&def.tended_subsystem)
+                .is_some_and(|s| s.condition >= cfg.honored_tender_condition_threshold);
+            if honored {
+                fstate.adjust_approval(cfg.honored_tender_approval_bonus);
+            }
+        }
+    }
+
     /// The bright mirror of `apply_subsystem_neglect_sentiment` (content-depth factions
     /// round 22): where a people whose tended module rots *sours* (r12), a people
     /// *delighted* with its lot tends its module with pride — the makers keeping the
@@ -2712,6 +2748,59 @@ mod tests {
                 assert_eq!(g1, g0, "a people whose module is sound is not soured");
             }
         }
+    }
+
+    #[test]
+    fn a_module_kept_excellent_pleases_the_people_who_tend_it() {
+        // Content-depth factions round 29: the bright mirror of the neglect penalty. The people
+        // whose craft is a subsystem gain approval each year it is kept excellent (condition at
+        // or above the honor line), while a merely-adequate module leaves them unmoved — the
+        // condition→approval *up* direction the neglect coupling (which ran only down) never drew.
+        let (data, mut sim, _picks) = armed(12);
+        let cfg = &data.config.factions;
+        assert!(
+            cfg.honored_tender_approval_bonus > 0.0 && cfg.honored_tender_condition_threshold > 0.0,
+            "this test needs the honored-tender coupling enabled"
+        );
+        // The Steel Covenant tend the engineering bay; ensure they are aboard.
+        if sim
+            .factions
+            .iter()
+            .all(|f| f.faction_id != "steel_covenant")
+        {
+            sim.factions.push(fs("steel_covenant", 300));
+        }
+        let cov_approval = |sim: &SimState| {
+            sim.factions
+                .iter()
+                .find(|f| f.faction_id == "steel_covenant")
+                .unwrap()
+                .approval
+        };
+
+        // A merely-adequate bay (kept, but below the honor line): no pride, no grievance.
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition =
+            cfg.honored_tender_condition_threshold - 0.1;
+        let before = cov_approval(&sim);
+        sim.apply_honored_tender_sentiment(&data);
+        assert_eq!(
+            cov_approval(&sim),
+            before,
+            "a merely-adequate module wins no pride"
+        );
+
+        // An excellent bay: the makers gain approval, by exactly the honor bonus.
+        sim.subsystems.get_mut("engineering_bay").unwrap().condition = 1.0;
+        let before = cov_approval(&sim);
+        sim.apply_honored_tender_sentiment(&data);
+        assert!(
+            cov_approval(&sim) > before,
+            "the makers warm to see their bay kept excellent"
+        );
+        assert!(
+            (cov_approval(&sim) - before - cfg.honored_tender_approval_bonus).abs() < 1e-6,
+            "the lift is exactly the honor bonus"
+        );
     }
 
     #[test]
