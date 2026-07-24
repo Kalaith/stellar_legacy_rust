@@ -655,6 +655,25 @@ pub struct FlavorConfig {
     pub loyalty_voice_high: f32,
     #[serde(default)]
     pub loyalty_voice_low: f32,
+    /// The crew crossing into a *shipborn* body (content-depth voice round 25): the
+    /// physiological companion to the loyalty voice, on `adaptation`. When the
+    /// descendants have drifted far enough from the baseline-human stock — longer, leaner,
+    /// their bones gone light, a people fitted to the ship and no longer to a world — one
+    /// of these surfaces. No name; indexed by year; empty = silence.
+    #[serde(default)]
+    pub crew_shipborn: Vec<String>,
+    /// The crew holding to the founders' *baseline* shape (content-depth voice round 25):
+    /// the rarer twin — a well-kept infirmary (it25) and a deliberate discipline holding
+    /// the bodies human against the ship's pull, so a crew bound for a world stays fit for
+    /// one. No name; indexed by year.
+    #[serde(default)]
+    pub crew_baseline: Vec<String>,
+    /// Adaptation at/above which the ship remarks a shipborn crew (`_high`) or at/below
+    /// which it remarks one held to baseline (`_low`) (content-depth voice round 25).
+    #[serde(default)]
+    pub adaptation_voice_high: f32,
+    #[serde(default)]
+    pub adaptation_voice_low: f32,
     /// The crew's *cohesion* crossing into a fraying band (content-depth voice round 21):
     /// the fourth internal-state voice, on `unity`. Distinct from the crew's spirits
     /// (`ship_mood_darkening`), the peoples' contentment (`polity_souring`), and the
@@ -2735,6 +2754,19 @@ mod tests {
                 fl.loyalty_voice_high < 1.0,
                 "loyalty_voice_high {} must be below 1.0 to be reachable",
                 fl.loyalty_voice_high
+            );
+        }
+        // Content-depth voice round 25: the adaptation (shipborn) voice, the same shape.
+        if fl.adaptation_voice_high > 0.0 {
+            assert!(
+                !fl.crew_shipborn.is_empty() && !fl.crew_baseline.is_empty(),
+                "adaptation voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.adaptation_voice_low > 0.0 && fl.adaptation_voice_low < fl.adaptation_voice_high,
+                "adaptation voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.adaptation_voice_low,
+                fl.adaptation_voice_high
             );
         }
         // Content-depth voice round 21: likewise the unity (cohesion) voice needs both

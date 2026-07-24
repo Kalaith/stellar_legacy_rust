@@ -390,6 +390,12 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // remark it once — the identity-side twin of the spirits and governance voices, and
     // the voice that gives the game's core theme (a ship forgetting why it flies) a line.
     sim.announce_loyalty_mood(data);
+    // …and give the crew's *bodies* a voice too (content-depth voice round 25), now that
+    // the year's drift (and the it25 medical resistance to it) has settled on adaptation:
+    // when the descendants cross into a shipborn body or hold to the founders' baseline,
+    // the decks remark the crew becoming, or refusing to become, a new kind of people —
+    // the physiological companion to the loyalty (their belief) voice above.
+    sim.announce_adaptation_mood(data);
     // …and give the crew's *cohesion* a voice (content-depth voice round 21), now that
     // the year's faction-mood coupling (it100), security recovery, and voyage strain
     // have all settled on unity: when the crew crosses into fraying into cliques or

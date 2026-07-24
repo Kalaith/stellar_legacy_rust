@@ -879,6 +879,41 @@ impl SimState {
         self.loyalty_voice_band = band;
     }
 
+    /// Give the crew's *physiological* identity a voice (content-depth voice round 25):
+    /// the bodily companion to the loyalty voice, on `adaptation`. When the descendants'
+    /// bodies cross *into* a shipborn band (longer, leaner, fitted to the ship and no
+    /// longer to a world) or a baseline one (held human by a well-kept infirmary, it25),
+    /// the decks remark it once — the crew becoming, or refusing to become, a new kind of
+    /// people in the flesh, distinct from the it167 loyalty voice (their belief) and the
+    /// drift-aware ambient (their culture). Deterministic (indexed by year), no RNG; a
+    /// return to the middle re-arms.
+    pub fn announce_adaptation_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.adaptation_voice_high <= 0.0 {
+            return;
+        }
+        let band = stability_voice_band_for(
+            self.population.adaptation,
+            fl.adaptation_voice_high,
+            fl.adaptation_voice_low,
+        );
+        if band == self.adaptation_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.crew_shipborn,
+            -1 => &fl.crew_baseline,
+            _ => {
+                self.adaptation_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.adaptation_voice_band = band;
+    }
+
     /// Give the crew's *cohesion* a voice (content-depth voice round 21): the fourth
     /// internal-state voice, beside the morale (`announce_ship_mood`), governance
     /// (`announce_stability_mood`), and mission-devotion (`announce_loyalty_mood`) ones,
@@ -2174,6 +2209,54 @@ mod tests {
         sim.announce_unity_mood(&data);
         assert_eq!(unity_lines(&sim), 2, "the crew cohering says so afresh");
         assert_eq!(sim.unity_voice_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_the_crew_turns_shipborn_or_holds_baseline() {
+        // Content-depth voice round 25: the adaptation voice, the physiological companion
+        // to the loyalty voice. A founding crew's baseline body is the silent baseline;
+        // crossing into a shipborn band surfaces one pooled line; holding to baseline gets
+        // its own, opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(53);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.adaptation_voice_high > 0.0 && fl.crew_shipborn.len() >= 3,
+            "this test needs the adaptation voice enabled"
+        );
+        let low = fl.adaptation_voice_low;
+        let high = fl.adaptation_voice_high;
+        let body_lines = |sim: &SimState| {
+            let ship = &data.config.flavor.crew_shipborn;
+            let base = &data.config.flavor.crew_baseline;
+            sim.log
+                .iter()
+                .filter(|l| ship.contains(&l.text) || base.contains(&l.text))
+                .count()
+        };
+
+        // A founding crew is baseline-human — the launch band is recorded, silent.
+        sim.announce_adaptation_mood(&data);
+        assert_eq!(body_lines(&sim), 0, "a founding crew's bodies are silent");
+
+        // The descendants cross into shipborn: one line.
+        sim.population.adaptation = high + 0.05;
+        sim.announce_adaptation_mood(&data);
+        assert_eq!(body_lines(&sim), 1, "a shipborn crew says so once");
+        assert_eq!(sim.adaptation_voice_band, 1);
+
+        // Still shipborn — no reprint.
+        sim.announce_adaptation_mood(&data);
+        assert_eq!(body_lines(&sim), 1, "staying shipborn is not re-announced");
+
+        // Held back to baseline: a second, distinct line.
+        sim.population.adaptation = low - 0.05;
+        sim.announce_adaptation_mood(&data);
+        assert_eq!(
+            body_lines(&sim),
+            2,
+            "a crew held to baseline says so afresh"
+        );
+        assert_eq!(sim.adaptation_voice_band, -1);
     }
 
     #[test]

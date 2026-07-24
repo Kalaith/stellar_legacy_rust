@@ -476,6 +476,16 @@ pub struct SimState {
     /// announced. 0 at launch; a return to the middle silently re-arms.
     #[serde(default)]
     pub loyalty_voice_band: i8,
+    /// The last-announced band of the crew's *physiological* identity (content-depth
+    /// voice round 25): the bodily companion to the it167 loyalty voice (their belief in
+    /// the founders' cause) — this reads `adaptation`, how far the descendants' *bodies*
+    /// have drifted from the baseline-human stock the founders launched. Tracks whether
+    /// adaptation last crossed into a shipborn band (a crew longer, leaner, ill-suited to
+    /// a world) or a baseline one (held human by a well-kept infirmary, it25) so the ship
+    /// remarks the crossing once. The launch band (a founding crew is baseline-human) is
+    /// recorded, not announced. 0 at launch; a return to the middle re-arms.
+    #[serde(default)]
+    pub adaptation_voice_band: i8,
     /// The last-announced band of the crew's *cohesion* (content-depth voice round 21):
     /// the fourth internal-state voice beside morale (`morale_band`), governance
     /// (`stability_voice_band`), and mission-devotion (`loyalty_voice_band`), on the
@@ -654,6 +664,7 @@ impl SimState {
             reputation_voice_band: 0,
             stability_voice_band: 0,
             loyalty_voice_band: 0,
+            adaptation_voice_band: 0,
             unity_voice_band: 0,
             hull_voice_band: 0,
             air_voice_band: 0,
@@ -687,6 +698,14 @@ impl SimState {
             sim.population.legacy_loyalty,
             config.flavor.loyalty_voice_high,
             config.flavor.loyalty_voice_low,
+        );
+        // Likewise record the launch band of the crew's physiological identity, so a
+        // founding crew's baseline-human bodies read as the baseline, not a "shipborn"
+        // the adaptation voice announces (content-depth voice round 25).
+        sim.adaptation_voice_band = factions::stability_voice_band_for(
+            sim.population.adaptation,
+            config.flavor.adaptation_voice_high,
+            config.flavor.adaptation_voice_low,
         );
         // Likewise record the launch band of the crew's cohesion, so a founding crew's
         // one-people unity reads as the baseline, not a "cohering" the unity voice
