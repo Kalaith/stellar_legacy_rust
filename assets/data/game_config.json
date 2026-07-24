@@ -667,6 +667,17 @@
     ],
     "crew_size_voice_high_ratio": 1.15,
     "crew_size_voice_low_ratio": 0.7,
+    "treasury_flush": [
+      "The ship's accounts have not looked like this in generations. A run of well-paid charters and shrewd trades has filled the coffers past anything the founders budgeted for, and for once the council debates not what to cut but what to build. There is a particular ease to a ship that can afford its own repairs: the quartermasters stop rationing spare parts, the drydock requisitions clear without a fight, and the old dread of arriving somewhere broke has lifted, at least for this generation.",
+      "For the first time in living memory the treasury is genuinely full. The ledger that spent decades in careful deficit has turned, and the surplus shows in small comforts and large ambitions alike — projects the founders shelved for want of funds are quietly back on the council's table. Wealth is not the mission, the elders remind everyone, but a ship that can pay its own way meets the dark with one fewer thing to fear.",
+      "The coffers are flush, and the whole ship carries itself a little differently for it. Trades that once meant haggling over every credit are settled with a shrug; the market's habit of gouging a desperate buyer is somebody else's problem now. It will not last forever — nothing aboard does — but a well-funded ship is a calmer one, and the crew has the rare luxury of planning past the next resupply."
+    ],
+    "treasury_bare": [
+      "The treasury is nearly empty. Whatever the ship earned has gone to the dark — repairs, resupply, the endless price of keeping a hundred systems running — and the council now counts every credit twice. Requisitions stall, the drydock defers what it safely can and some of what it cannot, and the quartermasters have the pinched look of people asked to make a voyage out of nothing. A generation ship can survive poor; it simply cannot survive poor for long without something breaking that money would have fixed.",
+      "The accounts have run dry, and everyone who deals with them knows it. The ship is not destitute in the way that kills quickly, but it is broke in the way that grinds: the upgrades that would ease the voyage go unbought, the traders smell the empty hold and price accordingly, and the council spends its meetings deciding which necessary things to do without. Poverty on a ship this far out is not a number in a ledger — it is a slow narrowing of what the crew is allowed to hope for."
+    ],
+    "treasury_voice_high_ratio": 1.8,
+    "treasury_voice_low_ratio": 0.3,
     "ruling_people_change": [
       "Somewhere in the last generations the ship changed hands. No vote was called and no charter rewritten, but the census tells a quiet truth the corridors already knew: the {name} are the many now, the largest people aboard, and the ship has begun — slowly, in a hundred small ways — to keep their calendar, defer to their elders, and answer its questions in their voice. The founders drew up a ship; their descendants are deciding, generation by generation, whose ship it becomes.",
       "The balance has tipped. For a long time the ship was run, in the way that matters — whose customs set the tone, whose people fill the councils and the long watches — by one folk; now, without anyone quite marking the day, it is run by the {name}. Births and burials did what no mutiny could, and the ship the founders launched is passing, peacefully and completely, into new hands that will shape its next centuries after their own fashion.",

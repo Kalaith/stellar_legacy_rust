@@ -604,6 +604,15 @@ pub struct SimState {
     /// the middle re-arms.
     #[serde(default)]
     pub crew_size_voice_band: i8,
+    /// The last-announced band of the ship's *treasury* (content-depth voice round 32): the
+    /// material-fortune voice, read against `starting_resources.credits` the way the it30 crew-size
+    /// band is read against `starting_population`. Tracks whether the coffers last crossed into a
+    /// flush band (well-paid charters filling the accounts, the council debating what to build) or a
+    /// bare one (every credit counted twice, requisitions stalled), so the ledger's turning is
+    /// remarked once. The launch band (a ship at its founding stake, ratio 1.0) is 0, not announced;
+    /// a return to the middle re-arms.
+    #[serde(default)]
+    pub treasury_voice_band: i8,
     /// The id of the people last announced as *running the ship* (content-depth voice round 31):
     /// the first voice keyed not to a stat crossing a band but to a *change in which faction is
     /// dominant* — the largest aboard, "who runs the ship" for the it10 dilemma odds, the it16
@@ -785,6 +794,7 @@ impl SimState {
             air_voice_band: 0,
             fuel_voice_band: 0,
             crew_size_voice_band: 0,
+            treasury_voice_band: 0,
             ruling_people_voice: None,
             hull_beat_band: 0,
             air_beat_band: 0,

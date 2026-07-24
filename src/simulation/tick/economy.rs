@@ -537,6 +537,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // decks closed), the decks remark it once — the gentle crossing the it12 depopulation beat and
     // the hollow ambient never gave, and the *only* narration the growth side has at all.
     sim.announce_crew_size_mood(data);
+    // …and when the ship's material fortune turns (content-depth voice round 32): the treasury
+    // crossing into flush (the coffers full, the council debating what to build) or bare (every
+    // credit counted twice), read against the founding stake — the ledger's turning remarked once.
+    sim.announce_treasury_mood(data);
     // …and when the demographic drift finally hands the ship from one people to another (content-
     // depth voice round 31): who runs the ship — the largest aboard — bends the it10 dilemma odds,
     // the it16 reputation lean, and the it21 ambient, but the turning itself went unremarked. When

@@ -1402,6 +1402,44 @@ impl SimState {
         self.crew_size_voice_band = band;
     }
 
+    /// Remark when the ship's coffers cross into flush or bare (content-depth voice round 32): the
+    /// material-fortune voice, read against `starting_resources.credits` the way the it30 crew-size
+    /// voice reads against `starting_population`. When the treasury crosses *into* a flush band (a
+    /// run of well-paid charters, the council debating what to build) or a bare one (every credit
+    /// counted twice, requisitions stalled), the ledger's turning is remarked once. The launch band
+    /// (a ship at its founding stake, ratio 1.0) is recorded not announced; a return to the middle
+    /// re-arms. Deterministic (indexed by year), no RNG.
+    pub fn announce_treasury_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        let starting = data.config.starting_resources.credits;
+        if fl.treasury_voice_high_ratio <= 0.0 || starting <= 0 {
+            return;
+        }
+        let ratio = self.resources.credits as f32 / starting as f32;
+        let band = if ratio >= fl.treasury_voice_high_ratio {
+            1
+        } else if ratio <= fl.treasury_voice_low_ratio {
+            -1
+        } else {
+            0
+        };
+        if band == self.treasury_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.treasury_flush,
+            -1 => &fl.treasury_bare,
+            _ => {
+                self.treasury_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.treasury_voice_band = band;
+    }
+
     /// Remark when the ship passes into a new people's hands (content-depth voice round 31): the
     /// first voice keyed not to a stat crossing a band but to a change in *which faction is
     /// dominant* — the largest aboard, the "who runs the ship" that the it10 dilemma odds, the it16
@@ -3134,6 +3172,55 @@ mod tests {
         sim.announce_crew_size_mood(&data);
         assert_eq!(crew_lines(&sim), 2, "a swelling crew says so afresh");
         assert_eq!(sim.crew_size_voice_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_coffers_run_flush_or_bare() {
+        // Content-depth voice round 32: the treasury voice. A ship at its founding stake is the
+        // silent baseline; the coffers running bare below the low line say so once; flush above the
+        // high line gets its own, opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(62);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.treasury_voice_high_ratio > 0.0 && fl.treasury_flush.len() >= 2,
+            "this test needs the treasury voice enabled"
+        );
+        let starting = data.config.starting_resources.credits as f32;
+        let high = fl.treasury_voice_high_ratio;
+        let low = fl.treasury_voice_low_ratio;
+        let treasury_lines = |sim: &SimState| {
+            let flush = &data.config.flavor.treasury_flush;
+            let bare = &data.config.flavor.treasury_bare;
+            sim.log
+                .iter()
+                .filter(|l| flush.contains(&l.text) || bare.contains(&l.text))
+                .count()
+        };
+
+        // A ship at its founding stake — the launch band is recorded, silent.
+        sim.resources.credits = starting as i64;
+        sim.announce_treasury_mood(&data);
+        assert_eq!(
+            treasury_lines(&sim),
+            0,
+            "a ship at its founding stake is silent"
+        );
+
+        // The coffers run bare below the low line: one line.
+        sim.resources.credits = ((low - 0.05) * starting) as i64;
+        sim.announce_treasury_mood(&data);
+        assert_eq!(treasury_lines(&sim), 1, "a bare treasury says so once");
+        assert_eq!(sim.treasury_voice_band, -1);
+
+        // Still bare — no reprint.
+        sim.announce_treasury_mood(&data);
+        assert_eq!(treasury_lines(&sim), 1, "staying bare is not re-announced");
+
+        // A run of pay fills the coffers past the high line: a second, distinct line.
+        sim.resources.credits = ((high + 0.2) * starting) as i64;
+        sim.announce_treasury_mood(&data);
+        assert_eq!(treasury_lines(&sim), 2, "a flush treasury says so afresh");
+        assert_eq!(sim.treasury_voice_band, 1);
     }
 
     #[test]

@@ -941,6 +941,27 @@ pub struct FlavorConfig {
     pub crew_size_voice_high_ratio: f32,
     #[serde(default)]
     pub crew_size_voice_low_ratio: f32,
+    /// The ship's coffers grown *flush* (content-depth voice round 32): the material-fortune voice,
+    /// read against `starting_resources.credits` the way the crew-size voice reads against
+    /// `starting_population`. A run of well-paid charters and shrewd trades fills the treasury past
+    /// anything the founders budgeted, and the council debates what to build rather than what to
+    /// cut — the ease of a ship that can afford its own repairs, the it32 desperation premium a
+    /// worry for other captains. No name; indexed by year; empty = wealth passes unremarked.
+    #[serde(default)]
+    pub treasury_flush: Vec<String>,
+    /// The ship's coffers run *bare* (content-depth voice round 32): the low twin — whatever the
+    /// ship earned has gone to the dark (repairs, resupply, the price of a hundred running systems),
+    /// and the council counts every credit twice. A generation ship can survive poor, but not poor
+    /// for long without something breaking that money would have fixed. No name; indexed by year.
+    #[serde(default)]
+    pub treasury_bare: Vec<String>,
+    /// Fraction of `starting_resources.credits` at/above which the ship remarks a flush treasury
+    /// (`_high_ratio`) or at/below which it remarks a bare one (`_low_ratio`) (content-depth voice
+    /// round 32). 0 (`_high_ratio`) disables the treasury voice.
+    #[serde(default)]
+    pub treasury_voice_high_ratio: f32,
+    #[serde(default)]
+    pub treasury_voice_low_ratio: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -3510,6 +3531,23 @@ mod tests {
                 "crew-size voice ratios must order: 0 < low ({}) < 1 < high ({})",
                 fl.crew_size_voice_low_ratio,
                 fl.crew_size_voice_high_ratio
+            );
+        }
+        // Content-depth voice round 32: the treasury voice, the same shape as the crew-size voice —
+        // both band pools stocked and its ratios ordered (a flush band above the founding stake, a
+        // bare one below it) when enabled, so the two bands never overlap.
+        if fl.treasury_voice_high_ratio > 0.0 {
+            assert!(
+                !fl.treasury_flush.is_empty() && !fl.treasury_bare.is_empty(),
+                "treasury voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.treasury_voice_low_ratio > 0.0
+                    && fl.treasury_voice_low_ratio < 1.0
+                    && fl.treasury_voice_high_ratio > 1.0,
+                "treasury voice ratios must order: 0 < low ({}) < 1 < high ({})",
+                fl.treasury_voice_low_ratio,
+                fl.treasury_voice_high_ratio
             );
         }
         // Content-depth voice round 31: the ruling-people voice, when stocked, must name the new
