@@ -280,6 +280,9 @@ pub fn decay_subsystems(sim: &mut SimState, data: &GameData, wear: f32) {
     // that tends a module modulates its decay by their mood — devotion keeps it
     // sharp, resentment lets it slide — closing the neglect → sour → rot spiral.
     let tender_scale = data.config.subsystems.tender_approval_decay_scale;
+    // Knowledge-upkeep coupling (content-depth subsystems round 33): a module the crew has
+    // mastered decays slower, its faults caught early and patched cleverly.
+    let knowledge_reduction = data.config.subsystems.knowledge_decay_reduction;
 
     for id in GameData::sorted_ids(&data.subsystems) {
         let Some(def) = data.subsystems.get(&id) else {
@@ -296,6 +299,12 @@ pub fn decay_subsystems(sim: &mut SimState, data: &GameData, wear: f32) {
             if let Some(approval) = sim.tender_approval(data, &id) {
                 mult *= (1.0 + tender_scale * (0.5 - approval)).max(0.0);
             }
+        }
+        // The crew's craft with the machine itself slows its rot — scaled by the module's own
+        // knowledge, kept above 0 so mastery slows the decay but never stops it.
+        if knowledge_reduction != 0.0 {
+            let knowledge = sim.subsystems.get(&id).map_or(0.0, |s| s.knowledge);
+            mult *= (1.0 - knowledge_reduction * knowledge).max(0.0);
         }
         let decay = def.decay_per_year * mult;
         if let Some(state) = sim.subsystems.get_mut(&id) {
@@ -1151,6 +1160,45 @@ mod tests {
             failing > sound,
             "a failing engineering bay should rot the ship faster than a sound one \
              (failing {failing} vs sound {sound})"
+        );
+    }
+
+    #[test]
+    fn a_mastered_module_decays_slower_than_one_the_crew_barely_knows() {
+        // Content-depth subsystems round 33: a module's own knowledge slows its rot. Two identical
+        // medical bays, one the crew has mastered and one they barely understand, wear at different
+        // rates over a year — but even perfect mastery only slows the decay, never stops it. The
+        // engineering bay is held neutral (condition 0.5 → keystone mult 1.0) so only knowledge
+        // differs.
+        assert!(
+            GameData::load()
+                .unwrap()
+                .config
+                .subsystems
+                .knowledge_decay_reduction
+                > 0.0,
+            "this test needs the knowledge-upkeep coupling enabled"
+        );
+
+        let wear_med = |knowledge: f32| -> f32 {
+            let (data, mut sim) = campaign(6);
+            sim.subsystems.get_mut("engineering_bay").unwrap().condition = 0.5;
+            sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.8;
+            sim.subsystems.get_mut("medical_bay").unwrap().knowledge = knowledge;
+            decay_subsystems(&mut sim, &data, 1.0);
+            0.8 - sim.subsystems["medical_bay"].condition
+        };
+
+        let ignorant = wear_med(0.0); // a module the crew barely knows rots full
+        let mastered = wear_med(1.0); // a mastered one rots slower
+        assert!(
+            mastered < ignorant,
+            "a mastered module decays slower than one the crew barely knows \
+             (mastered {mastered} vs ignorant {ignorant})"
+        );
+        assert!(
+            mastered > 0.0,
+            "but even perfect mastery does not stop the rot ({mastered})"
         );
     }
 

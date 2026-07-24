@@ -2438,6 +2438,14 @@ mod tests {
             "objective_subsystem_training_per_month {} must be a small monthly gain [0, 0.1)",
             subs_cfg.objective_subsystem_training_per_month
         );
+        // Content-depth subsystems round 33: the knowledge-upkeep reduction is a fraction in [0, 1)
+        // — a mastered module decays slower, but even perfect craft only slows the rot, never stops
+        // it (a full 1.0 would make a well-known module immortal).
+        assert!(
+            (0.0..1.0).contains(&subs_cfg.knowledge_decay_reduction),
+            "knowledge_decay_reduction {} must be a fraction in [0, 1)",
+            subs_cfg.knowledge_decay_reduction
+        );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(
                 subs_cfg.crisis_weight_floor > 0.0,

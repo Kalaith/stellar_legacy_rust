@@ -236,6 +236,18 @@ pub struct SubsystemsConfig {
     /// still. 0 = a faction's mood does not touch upkeep.
     #[serde(default)]
     pub tender_approval_decay_scale: f32,
+    /// How much a module's own *knowledge* slows its yearly decay (content-depth subsystems
+    /// round 33): the third decay lever, beside the it7 engineering keystone (a sound bay slows
+    /// *every other* module's rot) and the it12 tender mood (a devoted people slows *their* module's
+    /// rot). Where those read a module's condition and its tenders' feelings, this reads the crew's
+    /// *craft* with the machine itself — a module the crew has truly mastered is maintained better,
+    /// its faults caught early and patched cleverly, so its decay is scaled by `1 - this·knowledge`,
+    /// kept above 0 so even perfect mastery only *slows* the rot, never stops it. It gives knowledge
+    /// a universal purpose (every module's longevity, not only the specific it10/it25 couplings) and
+    /// composes with the charters-round-33 mission-training, where the work that leans on a module
+    /// builds the very craft that now preserves it. 0 = knowledge does not touch a module's upkeep.
+    #[serde(default)]
+    pub knowledge_decay_reduction: f32,
     /// How much a *degraded* agriculture bay cuts food production (content-depth
     /// subsystems round 12): the food module's missing condition→output coupling,
     /// the parallel to the medical/security condition effects. The yield factor is
