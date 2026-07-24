@@ -135,6 +135,21 @@ pub struct GameConfig {
     /// `MarketState` at campaign start.
     #[serde(default)]
     pub market_impact_per_unit: f32,
+    /// The food store the ship can keep *fresh* — its carrying capacity (content-depth
+    /// provisioning round 24): food is the one resource with no upkeep and no cap, so it
+    /// could otherwise pile up without limit. Everything above this line spoils by
+    /// `food_spoilage_fraction` per year (of the excess), a gentle soft cap: sensible
+    /// stores lose nothing, only a deep hoard erodes toward what the cold-holds and
+    /// hydroponics can actually cycle. Set comfortably above `fat_food_threshold` so a
+    /// prudent reserve still reads as plenty. 0 = stores never spoil.
+    #[serde(default)]
+    pub food_carrying_capacity: i64,
+    /// Fraction of the food held *above* `food_carrying_capacity` lost each year to
+    /// spoilage (content-depth provisioning round 24). Gentle — the hoard asymptotes
+    /// toward the capacity rather than being clipped to it, so a temporary surplus is
+    /// tolerated and only a sustained one wears away.
+    #[serde(default)]
+    pub food_spoilage_fraction: f32,
     /// Food store below which a year counts as *lean* (content-depth provisioning
     /// round 13): distinct from the near-famine `low_food_threshold`, this is the
     /// "not comfortably stocked" line whose sustained crossing drives `lean_food_years`
@@ -479,6 +494,12 @@ pub struct FlavorConfig {
     /// the ship did*. Placeholder: `{parts}`. Indexed by year; empty falls back.
     #[serde(default)]
     pub fabrication: Vec<String>,
+    /// Over-deep food stores spoiling past the ship's carrying capacity (content-depth
+    /// provisioning round 24): fires the years a hoard beyond what the cold-holds can keep
+    /// erodes, so the loss reads as *something that happened* rather than an unexplained
+    /// dip. Placeholder: `{spoiled}`. Indexed by year; empty = the spoilage is silent.
+    #[serde(default)]
+    pub food_spoilage: Vec<String>,
     /// The ramscoop/scanners replenishing reaction mass (real-time loop follow-up:
     /// legible stat changes): a periodic in-world report of the fuel the drive has
     /// gathered and processed over the last few travel years, so the fuel gauge's
@@ -2509,6 +2530,34 @@ mod tests {
             "market_impact_per_unit {} out of the gentle range [0, 0.01]",
             data.config.market_impact_per_unit
         );
+        // Content-depth provisioning round 24: the food carrying capacity, if set, must
+        // sit above the fat line (a prudent reserve should still read as plenty, not spoil
+        // the ship out of its own abundance), its spoilage a gentle fraction, and its
+        // narration carry the {spoiled} slot.
+        if data.config.food_carrying_capacity > 0 {
+            assert!(
+                data.config.food_carrying_capacity > data.config.fat_food_threshold,
+                "food_carrying_capacity {} must sit above the fat line {} so plenty still reads",
+                data.config.food_carrying_capacity,
+                data.config.fat_food_threshold
+            );
+            assert!(
+                data.config.food_spoilage_fraction > 0.0
+                    && data.config.food_spoilage_fraction <= 0.5,
+                "food_spoilage_fraction {} must be a gentle positive fraction",
+                data.config.food_spoilage_fraction
+            );
+            assert!(
+                data.config.flavor.food_spoilage.is_empty()
+                    || data
+                        .config
+                        .flavor
+                        .food_spoilage
+                        .iter()
+                        .all(|s| s.contains("{spoiled}")),
+                "every food_spoilage line needs its {{spoiled}} slot"
+            );
+        }
         // Content-depth charters round 22: the crew-morale accrual swing is gentle —
         // a devoted crew works meaningfully but not miraculously faster, and even a
         // broken one is floored above a stall at runtime.

@@ -2408,6 +2408,63 @@ fn fuel_is_spent_in_travel_but_not_on_station() {
 }
 
 #[test]
+fn over_deep_food_stores_spoil_toward_the_carrying_capacity() {
+    // Content-depth provisioning round 24: food beyond what the ship can keep fresh
+    // rots. A hoard above the carrying capacity loses a fraction of the excess each
+    // year; a ship at sensible stores loses nothing.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    let cap = data.config.food_carrying_capacity;
+    assert!(
+        cap > 0 && data.config.food_spoilage_fraction > 0.0,
+        "this test needs the spoilage coupling enabled"
+    );
+
+    // A deep hoard: the excess above the cap erodes this year.
+    let mut hoard = SimState::new_campaign(
+        &data,
+        "preservers",
+        4,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let start = cap + 40_000;
+    hoard.resources.food = start;
+    advance_year(&mut hoard, &data);
+    assert!(
+        hoard.resources.food < start,
+        "an over-deep hoard loses stores to spoilage ({} -> {})",
+        start,
+        hoard.resources.food
+    );
+    assert!(
+        hoard.resources.food > cap,
+        "spoilage only erodes toward the cap, not below it in one year"
+    );
+
+    // A ship at sensible stores (below the cap): spoilage takes nothing (production and
+    // upkeep move it a little, but no spoilage line fires and it is never clipped down).
+    let mut modest = SimState::new_campaign(
+        &data,
+        "preservers",
+        4,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    modest.resources.food = cap / 2;
+    advance_year(&mut modest, &data);
+    let spoil_lines = modest
+        .log
+        .iter()
+        .filter(|l| data.config.flavor.food_spoilage.contains(&l.text))
+        .count();
+    assert_eq!(
+        spoil_lines, 0,
+        "a ship below its carrying capacity loses nothing to spoilage"
+    );
+}
+
+#[test]
 fn a_power_rich_ship_fabricates_its_own_spare_parts() {
     // Content-depth provisioning round 21: idle reactor surplus — otherwise wasted —
     // is worked with raw ore into spare parts. A ship above the surplus line converts

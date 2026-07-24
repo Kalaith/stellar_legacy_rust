@@ -129,6 +129,27 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.push_log(line);
     }
 
+    // Stores kept past what the ship can keep *fresh* spoil (content-depth provisioning
+    // round 24): food is the one resource with no upkeep and no cap, so it could pile up
+    // without limit — but a generation ship's cold-holds and hydroponics can only cycle so
+    // much, and everything beyond that carrying capacity slowly rots. A gentle soft cap:
+    // each year a fraction of the *excess above capacity* is lost, so a ship at sensible
+    // stores loses nothing and only a deep hoard erodes, asymptoting toward the line it can
+    // actually keep. Bounds the abundance without forbidding a prudent reserve.
+    if config.food_carrying_capacity > 0 && sim.resources.food > config.food_carrying_capacity {
+        let excess = sim.resources.food - config.food_carrying_capacity;
+        let spoiled = (excess as f32 * config.food_spoilage_fraction).round() as i64;
+        if spoiled > 0 {
+            sim.resources.food -= spoiled;
+            let pool = &data.config.flavor.food_spoilage;
+            if !pool.is_empty() {
+                let line = pool[sim.year() as usize % pool.len()]
+                    .replace("{spoiled}", &spoiled.to_string());
+                sim.push_log(line);
+            }
+        }
+    }
+
     // A life-support plant that has failed badly cannot sustain everyone (content-depth
     // subsystems round 15): the module's most fundamental effect. Below the failure
     // threshold the ship thins each year, scaled by how far the plant has collapsed.

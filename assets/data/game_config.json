@@ -23,6 +23,8 @@
   "low_food_threshold": 500,
   "lean_food_threshold": 4000,
   "fat_food_threshold": 15000,
+  "food_carrying_capacity": 60000,
+  "food_spoilage_fraction": 0.1,
   "chronic_hunger_years": 5,
   "chronic_hunger_morale_drain": 0.004,
   "chronic_hunger_death_bonus": 0.003,
@@ -337,6 +339,12 @@
       "With power to burn and ore in the holds, the fabrication decks ran a shift they could not usually afford, and the ship banked {parts} spare parts of its own making.",
       "The idle reactor output finally earned its keep: fed through the fabricators with a measure of raw minerals, it came out the far end as {parts} spare parts, stacked and logged against the long dark.",
       "A power-rich year, and the ship spent the surplus wisely — not on comfort but on keeping, the fabricators turning spare energy and ore into {parts} parts the maintenance crews would be glad of later."
+    ],
+    "food_spoilage": [
+      "The holds are fuller than the ship can keep them: {spoiled} units of stored food spoiled this year past the cold-holds' reach, a hoard grown beyond what a sealed hull can actually preserve.",
+      "A generation ship can carry only so much before the surplus turns — and this year {spoiled} units of the over-deep stores went off, quietly written down as the cost of hoarding more than the reclaimers can cycle.",
+      "The quartermasters logged {spoiled} units of food lost to spoilage, the tail of a stockpile the hydroponics and cold-stores could not keep fresh — a reminder that a hold is not a granary and the dark does not preserve.",
+      "Stores kept too long past their keeping soured: {spoiled} units struck from the manifest this year, the ship learning again that abundance held is not the same as abundance kept."
     ],
     "crew_death": [
       "{name}, the ship's {post}, died at their post; the roster is one name shorter tonight.",
