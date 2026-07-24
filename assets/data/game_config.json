@@ -660,6 +660,11 @@
     ],
     "crew_size_voice_high_ratio": 1.15,
     "crew_size_voice_low_ratio": 0.7,
+    "ruling_people_change": [
+      "Somewhere in the last generations the ship changed hands. No vote was called and no charter rewritten, but the census tells a quiet truth the corridors already knew: the {name} are the many now, the largest people aboard, and the ship has begun — slowly, in a hundred small ways — to keep their calendar, defer to their elders, and answer its questions in their voice. The founders drew up a ship; their descendants are deciding, generation by generation, whose ship it becomes.",
+      "The balance has tipped. For a long time the ship was run, in the way that matters — whose customs set the tone, whose people fill the councils and the long watches — by one folk; now, without anyone quite marking the day, it is run by the {name}. Births and burials did what no mutiny could, and the ship the founders launched is passing, peacefully and completely, into new hands that will shape its next centuries after their own fashion.",
+      "A generation ship changes its rulers the slow way, and it has just finished doing so: the {name} have grown from a bloc into the majority, and the ship is theirs now in everything but the founding charter's letter. The old majority did not fall so much as fade, outnumbered by the cradles, and the decks have that particular quiet of a people realizing that the ship they will hand their children is no longer quite the one they were handed."
+    ],
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",

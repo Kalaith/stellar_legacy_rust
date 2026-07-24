@@ -582,6 +582,16 @@ pub struct SimState {
     /// the middle re-arms.
     #[serde(default)]
     pub crew_size_voice_band: i8,
+    /// The id of the people last announced as *running the ship* (content-depth voice round 31):
+    /// the first voice keyed not to a stat crossing a band but to a *change in which faction is
+    /// dominant* — the largest aboard, "who runs the ship" for the it10 dilemma odds, the it16
+    /// reputation lean, and the it21 ambient. Over centuries the it11/it13 demographic drift can
+    /// hand the ship from one people to another, and the whole ship bends to the new majority's
+    /// ways, but the turning itself went unremarked. Records the launch dominant people silently;
+    /// when the dominant people later *changes*, the decks remark the changing of the guard once,
+    /// then this updates. None = not yet recorded (pre-launch / a ship with no aboard people).
+    #[serde(default)]
+    pub ruling_people_voice: Option<String>,
     /// The band the skeleton's hull-collapse beat last marked (content-depth campaign-
     /// skeleton round 23): -1 once the hull has crossed *into* structural failure (the
     /// beat fires the moment it does), 0 while the hull holds above the red line. The
@@ -750,6 +760,7 @@ impl SimState {
             air_voice_band: 0,
             fuel_voice_band: 0,
             crew_size_voice_band: 0,
+            ruling_people_voice: None,
             hull_beat_band: 0,
             air_beat_band: 0,
             depopulation_beats_fired: 0,
@@ -830,6 +841,10 @@ impl SimState {
             config.flavor.fuel_voice_high,
             config.flavor.fuel_voice_low,
         );
+        // Likewise record the people who run the ship at launch, so the founding majority reads as
+        // the baseline, not a "changing of the guard" the ruling-people voice announces — only a
+        // *later* shift in who is dominant speaks (content-depth voice round 31).
+        sim.ruling_people_voice = sim.dominant_faction_id().map(str::to_owned);
         // Founding senior staff fill the configured starting posts.
         for archetype_id in &config.crew.starting_posts {
             let age_span = config.crew.recruit_age_max - config.crew.recruit_age_min + 1;

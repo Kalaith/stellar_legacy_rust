@@ -1394,6 +1394,48 @@ impl SimState {
         self.crew_size_voice_band = band;
     }
 
+    /// Remark when the ship passes into a new people's hands (content-depth voice round 31): the
+    /// first voice keyed not to a stat crossing a band but to a change in *which faction is
+    /// dominant* — the largest aboard, the "who runs the ship" that the it10 dilemma odds, the it16
+    /// reputation lean, and the it21 ambient all read. The it11/it13 demographic drift can, over
+    /// centuries, hand the ship from one majority to another; when the dominant people differs from
+    /// the one last recorded, the decks remark the changing of the guard once (naming the new
+    /// ruling people), then this updates. The launch majority is recorded silently in
+    /// `new_campaign`; a ship with no aboard people (`dominant_faction_id` None) holds its record
+    /// and says nothing. Deterministic (indexed by year), no RNG. It layers over the it11 power-
+    /// transition *beat* the way the hull voice layers over the hull beat: the voice is the decks'
+    /// immediate remark, the beat the ship's fuller reckoning with new leadership.
+    pub fn announce_ruling_people(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.ruling_people_change.is_empty() {
+            return;
+        }
+        let Some(current) = self.dominant_faction_id().map(str::to_owned) else {
+            return;
+        };
+        match &self.ruling_people_voice {
+            // Not yet recorded (a save from before this field, or a pre-launch state): adopt the
+            // current majority as the baseline without announcing.
+            None => self.ruling_people_voice = Some(current),
+            Some(prev) if *prev == current => {}
+            Some(_) => {
+                let name = data
+                    .factions
+                    .get(&current)
+                    .map(|f| f.name.as_str())
+                    .unwrap_or("");
+                if let Some(line) = FlavorConfig::line_with_name(
+                    &fl.ruling_people_change,
+                    self.year() as usize,
+                    name,
+                ) {
+                    self.push_log(line);
+                }
+                self.ruling_people_voice = Some(current);
+            }
+        }
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -2993,6 +3035,86 @@ mod tests {
         sim.announce_crew_size_mood(&data);
         assert_eq!(crew_lines(&sim), 2, "a swelling crew says so afresh");
         assert_eq!(sim.crew_size_voice_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_it_passes_into_new_hands() {
+        // Content-depth voice round 31: the ruling-people voice, the first keyed to a change in
+        // *who runs the ship* rather than a stat crossing a band. The launch majority is the silent
+        // baseline; when demographic drift hands the ship to a new largest people, the decks remark
+        // the changing of the guard once, naming the newcomers; staying under the same people does
+        // not reprint.
+        let data = GameData::load().unwrap();
+        assert!(
+            !data.config.flavor.ruling_people_change.is_empty(),
+            "this test needs the ruling-people voice enabled"
+        );
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        // Count log lines that announce `name` taking the ship (a pooled line with {name} filled).
+        let ruling_lines = |sim: &SimState, name: &str| {
+            let subs: Vec<String> = data
+                .config
+                .flavor
+                .ruling_people_change
+                .iter()
+                .map(|p| p.replace("{name}", name))
+                .collect();
+            sim.log.iter().filter(|l| subs.contains(&l.text)).count()
+        };
+
+        // A fresh ship records its founding majority silently — the launch is no changing of guard.
+        let mut fresh = SimState::new_campaign(&data, "preservers", 7, &picks);
+        let founding = fresh.dominant_faction_id().map(str::to_owned).unwrap();
+        let founding_name = data.factions.get(&founding).unwrap().name.clone();
+        fresh.announce_ruling_people(&data);
+        assert_eq!(
+            ruling_lines(&fresh, &founding_name),
+            0,
+            "the founding majority is the silent baseline"
+        );
+        assert_eq!(
+            fresh.ruling_people_voice.as_deref(),
+            Some(founding.as_str())
+        );
+
+        // A ship the Hearth clearly runs, its baseline recorded.
+        let fs = |id: &str, members: u32| FactionState {
+            faction_id: id.to_string(),
+            members,
+            status: FactionStatus::Aboard,
+            approval: 0.5,
+            mood_band: 0,
+        };
+        let mut sim = SimState::new_campaign(&data, "preservers", 31, &picks);
+        sim.factions = vec![fs("hearth_union", 500), fs("steel_covenant", 300)];
+        sim.ruling_people_voice = Some("hearth_union".to_string());
+        let steel_name = data.factions.get("steel_covenant").unwrap().name.clone();
+
+        // The Hearth still runs the ship: no remark.
+        sim.announce_ruling_people(&data);
+        assert_eq!(
+            ruling_lines(&sim, &steel_name),
+            0,
+            "no shift in the majority, no remark"
+        );
+
+        // Demographic drift hands the ship to the Steel Covenant: the guard changes, once, by name.
+        sim.factions = vec![fs("hearth_union", 300), fs("steel_covenant", 600)];
+        sim.announce_ruling_people(&data);
+        assert_eq!(
+            ruling_lines(&sim, &steel_name),
+            1,
+            "the changing of the guard is remarked once, naming the new people"
+        );
+        assert_eq!(sim.ruling_people_voice.as_deref(), Some("steel_covenant"));
+
+        // Still the Steel Covenant: no reprint.
+        sim.announce_ruling_people(&data);
+        assert_eq!(
+            ruling_lines(&sim, &steel_name),
+            1,
+            "staying under the same people is not re-announced"
+        );
     }
 
     #[test]

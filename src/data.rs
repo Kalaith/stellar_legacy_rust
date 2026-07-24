@@ -915,6 +915,16 @@ pub struct FlavorConfig {
     /// want of anyone to fill them, a shrinking people. No name; indexed by year.
     #[serde(default)]
     pub crew_thinning: Vec<String>,
+    /// The ship passing into a new people's hands (content-depth voice round 31): the first voice
+    /// keyed to a change in *which faction is dominant* rather than a stat crossing a band. Over
+    /// centuries the it11/it13 demographic drift can hand the ship from one majority to another —
+    /// the Hearth outgrowing the Ascension, a schism unseating the largest people — and the whole
+    /// ship bends to the newcomers' ways (the it10 dilemma odds, the it16 reputation lean, the it21
+    /// ambient all key on who runs it), but the turning itself went unremarked. When the dominant
+    /// people changes, the decks remark the changing of the guard once. Placeholder `{name}` (the
+    /// new ruling people). Indexed by year; empty = the shift passes in silence.
+    #[serde(default)]
+    pub ruling_people_change: Vec<String>,
     /// Fraction of `starting_population` at/above which the ship remarks a swelling crew
     /// (`_high_ratio`) or at/below which it remarks a thinning one (`_low_ratio`) (content-depth
     /// voice round 30). 0 (`_high_ratio`) disables the crew-size voice.
@@ -3428,6 +3438,15 @@ mod tests {
                 fl.crew_size_voice_high_ratio
             );
         }
+        // Content-depth voice round 31: the ruling-people voice, when stocked, must name the new
+        // majority — every line carries the `{name}` placeholder, or the changing of the guard
+        // would announce a ship passing into the hands of nobody.
+        assert!(
+            fl.ruling_people_change
+                .iter()
+                .all(|line| line.contains("{name}")),
+            "every ruling_people_change line must carry the {{name}} placeholder"
+        );
         // Content-depth voice round 28: the wonder reputation voice, the same shape — both band
         // pools stocked and the thresholds ordered when enabled.
         if fl.wonder_voice_high > 0.0 {
