@@ -2356,6 +2356,17 @@ mod tests {
                 c.min_combat >= 0 && c.min_cargo >= 0 && c.min_speed >= 0,
                 "charter '{id}' has a negative loadout requirement"
             );
+            // Content-depth charters round 29: a reputation-scaled reward must name a positive
+            // scale (a trait with a zero scale is a dead field), and the scale is gentle so a
+            // name is worth a premium but never multiplies or erases the pay outright.
+            if !c.reward_reputation_trait.is_empty() {
+                assert!(
+                    (0.0..=1.0).contains(&c.reward_reputation_scale)
+                        && c.reward_reputation_scale > 0.0,
+                    "charter '{id}' names a reward reputation trait but its scale {} is not in (0, 1]",
+                    c.reward_reputation_scale
+                );
+            }
             // Content-depth charters round 23: a preserve charter must actually erode
             // (a positive, gentle yearly attrition), or "keep the cargo" is a free win.
             if c.preserve_objective {

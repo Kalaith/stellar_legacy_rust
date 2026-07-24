@@ -505,11 +505,15 @@ impl Game {
             // full-term run pays in full, a truncated one pays its fraction, and
             // zero objective progress pays nothing. The failure band no longer
             // zeroes pay by itself — objective progress alone decides it.
+            // A charter pays by objective completion, and now by the ship's *name* too
+            // (content-depth charters round 29): a reputation the writ prizes lifts the pay, a
+            // notorious one cuts it — so the character you build by your choices is worth money
+            // on the missions that turn on it, not only a key to which missions you are offered.
             let payout = sim.contract.as_ref().and_then(|c| {
-                self.data
-                    .contracts
-                    .get(&c.template_id)
-                    .map(|t| contract::prorated_reward(&t.reward, c.objective_fraction()))
+                self.data.contracts.get(&c.template_id).map(|t| {
+                    let rep_mult = contract::reputation_reward_multiplier(sim, t);
+                    contract::prorated_reward(&t.reward, c.objective_fraction() * rep_mult)
+                })
             });
             if let Some(payout) = payout {
                 sim.resources.apply(&payout);

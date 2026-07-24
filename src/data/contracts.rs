@@ -259,6 +259,19 @@ pub struct ContractTemplate {
     pub min_reputation: Vec<crate::data::events::ReputationGate>,
     #[serde(default)]
     pub max_reputation: Vec<crate::data::events::ReputationGate>,
+    /// The reputation trait whose value scales this charter's *pay* (content-depth charters
+    /// round 29): where `min_reputation` gates *which* work a name unlocks (it16), this decides
+    /// how *well* that work pays — your name is worth money. A ship famous for the named trait
+    /// commands a premium, a notorious one takes a discount. Empty = the pay ignores reputation
+    /// (the founding-tier default).
+    #[serde(default)]
+    pub reward_reputation_trait: String,
+    /// How steeply `reward_reputation_trait` bends the pay (content-depth charters round 29):
+    /// the pay is multiplied by `1 + this·(reputation − 0.5)`, floored at 0.5 — so at scale 0.6
+    /// a famously-mercy ship earns ~30% more on a relief run and a merciless one ~30% less, and
+    /// a neutral name pays the base terms. 0 = no reputation premium even if a trait is named.
+    #[serde(default)]
+    pub reward_reputation_scale: f32,
     /// A lasting boon granted when this charter is seen through to full term
     /// (content-depth charters round 15): the mission's *legacy*, distinct from its
     /// pro-rated pay. Building a great extraction works makes the ship's engineers

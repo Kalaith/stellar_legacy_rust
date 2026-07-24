@@ -202,6 +202,8 @@
   "id": "veiled_expanse_survey",
   "name": "Charter of Discovery: The Veiled Expanse",
   "objective": "exploration",
+  "reward_reputation_trait": "wonder",
+  "reward_reputation_scale": 0.6,
   "description": "Nearly four centuries into the unmapped dark past the last relay, charting a lightless expanse the founders only ever named. Bring back the map, and the naming rights.",
   "target_duration_years": 360,
   "phases": [
@@ -1933,6 +1935,8 @@
   "id": "the_sanctuary_run",
   "name": "Sanctuary Run: The Talleth Exodus",
   "objective": "rescue",
+  "reward_reputation_trait": "mercy",
+  "reward_reputation_scale": 0.6,
   "description": "A failing habitat-world needs its people carried to safety across four centuries of dark, and the consortium arranging it will not hand that trust to just any hull. They want a ship with a name — a reputation for treating the vulnerable as kin, for the sort of mercy that does not calculate — because a people entrusting its children to a passing stranger deserves a stranger already known to be kind.",
   "target_duration_years": 400,
   "phases": [
@@ -2065,6 +2069,8 @@
   "id": "the_hard_contract",
   "name": "Enforcement Writ: The Vane Default",
   "objective": "salvage",
+  "reward_reputation_trait": "resolve",
+  "reward_reputation_scale": 0.6,
   "description": "A colony consortium has defaulted, and its distant backers want their assets recovered from a settlement that will not give them up willingly — a cold, unlovely job of stripping a place that people still call home. No hull with a soft reputation would take it, and the backers would not trust a soft hull to finish it; they want a ship known for doing the hard thing without flinching, and they pay accordingly.",
   "target_duration_years": 360,
   "phases": [

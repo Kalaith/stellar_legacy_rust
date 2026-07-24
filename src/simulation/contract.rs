@@ -450,6 +450,20 @@ pub fn jump_to_return(sim: &mut SimState) -> bool {
     true
 }
 
+/// The reputation premium (or discount) on a charter's pay (content-depth charters round 29):
+/// where `min_reputation` gates *which* work a name unlocks (round 16), this scales how *well*
+/// that work pays. The pay is multiplied by `1 + scale·(reputation − 0.5)` on the charter's
+/// named trait, floored at 0.5 — so a ship famous for the trait earns a premium, a notorious one
+/// a discount, and a neutral name the base terms. 1.0 (inert) when the charter names no trait or
+/// sets a zero scale. Reads the ship's cumulative reputation; deterministic, no RNG.
+pub fn reputation_reward_multiplier(sim: &SimState, template: &ContractTemplate) -> f32 {
+    if template.reward_reputation_trait.is_empty() || template.reward_reputation_scale == 0.0 {
+        return 1.0;
+    }
+    let rep = sim.reputation(&template.reward_reputation_trait);
+    (1.0 + template.reward_reputation_scale * (rep - 0.5)).max(0.5)
+}
+
 /// Prorate a charter reward by objective completion (W2): pay = reward ×
 /// fraction, rounded toward zero per resource. Every completion pays exactly
 /// this — full-term or truncated; zero objective progress ⇒ zero pay.
@@ -1241,6 +1255,49 @@ mod tests {
         assert!(
             roomy < cramped,
             "a roomy hull keeps more of its charge: {roomy} lost vs {cramped}"
+        );
+    }
+
+    #[test]
+    fn a_ships_name_bends_what_a_charter_pays() {
+        // Content-depth charters round 29: a reputation the writ prizes lifts its pay, a
+        // notorious one cuts it, a neutral name pays the base. The Sanctuary Run scales its pay
+        // on mercy; an ordinary charter that names no trait ignores reputation entirely.
+        let data = GameData::load().unwrap();
+        let sanctuary = data.contracts.get("the_sanctuary_run").unwrap();
+        assert!(
+            !sanctuary.reward_reputation_trait.is_empty()
+                && sanctuary.reward_reputation_scale > 0.0,
+            "this test needs the reputation-reward coupling enabled"
+        );
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 14, &picks);
+
+        // A neutral name (the launch state): the base terms.
+        assert!(
+            (reputation_reward_multiplier(&sim, sanctuary) - 1.0).abs() < 1e-6,
+            "a neutral name pays the base terms"
+        );
+
+        // A famously merciful ship: a premium above the base.
+        sim.reputation.insert("mercy".to_string(), 1.0);
+        let merciful = reputation_reward_multiplier(&sim, sanctuary);
+        assert!(merciful > 1.0, "a merciful ship earns more on a relief run");
+
+        // A merciless ship: a discount, but floored — a name never erases the pay.
+        sim.reputation.insert("mercy".to_string(), 0.0);
+        let merciless = reputation_reward_multiplier(&sim, sanctuary);
+        assert!(
+            merciless < 1.0 && merciless >= 0.5,
+            "a merciless ship earns less, but never nothing ({merciless})"
+        );
+
+        // An ordinary charter that names no trait ignores reputation entirely.
+        let plain = data.contracts.get("deep_vein_survey").unwrap();
+        assert_eq!(
+            reputation_reward_multiplier(&sim, plain),
+            1.0,
+            "a charter that names no trait pays flat"
         );
     }
 
