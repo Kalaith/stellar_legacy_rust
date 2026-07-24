@@ -181,6 +181,7 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
         loadout.speed,
         loadout.combat,
         loadout.cargo,
+        loadout.crew_capacity,
     );
     for milestone in &progress.reached_milestones {
         // Pooled so a voyage's many milestones don't read as a form letter (voice

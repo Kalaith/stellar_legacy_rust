@@ -379,6 +379,15 @@ pub struct ShipConfig {
     /// base rate. 0 = the ship's guns do not deter the route (hazard reads as authored).
     #[serde(default)]
     pub hazard_combat_mitigation: f32,
+    /// How much each point of aggregate *crew_capacity* (berths) eases a preserve charter's
+    /// monthly attrition (content-depth charters round 28): crew_capacity's first mechanical
+    /// role — until now a pure display stat — and the berth twin of cargo's haul lever. A ship
+    /// with the room to carry its charge (colonists, refugees, the frozen) in some comfort loses
+    /// fewer of them over the voyage; the attrition is scaled by `1 - crew·this`, floored so even
+    /// the roomiest hull cannot wholly stop the loss. 0 = berths do not touch preserve attrition
+    /// (a preserve charter erodes at its authored rate regardless of the ship).
+    #[serde(default)]
+    pub preserve_berth_relief: f32,
 }
 
 /// Per-year population drift over a voyage (PLAN M4.1): a long mission changes
@@ -2873,6 +2882,15 @@ mod tests {
             (0.0..=0.2).contains(&data.config.ship.hazard_combat_mitigation),
             "hazard_combat_mitigation {} out of the gentle range [0, 0.2]",
             data.config.ship.hazard_combat_mitigation
+        );
+        // Content-depth charters round 28: each berth eases preserve attrition by a gentle
+        // fraction — a roomy hull should meaningfully outperform a cramped one, but not make a
+        // single point of crew_capacity nearly cancel the whole attrition (the in-code floor of
+        // 0.2 also caps the total relief regardless).
+        assert!(
+            (0.0..=0.05).contains(&data.config.ship.preserve_berth_relief),
+            "preserve_berth_relief {} out of the gentle range [0, 0.05]",
+            data.config.ship.preserve_berth_relief
         );
         // Content-depth factions round 22: the proud-tender upkeep is a gentle yearly
         // dividend of a delighted people, at a plausible "delighted" approval band — not

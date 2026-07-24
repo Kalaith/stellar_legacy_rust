@@ -3540,7 +3540,7 @@ mod tests {
 
         // Put the ship on-station so there is a Return leg to jump to.
         loop {
-            let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
             if p.phase_changed == Some(ContractPhase::Operation) {
                 break;
             }

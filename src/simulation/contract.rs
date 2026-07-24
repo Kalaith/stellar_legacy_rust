@@ -273,16 +273,18 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
 
 /// Advance the active contract by one month (W2): step the timeline, recompute
 /// the authored phase, accrue objective work while on-station, refresh metrics,
-/// pay any newly reached milestone, and detect completion. `speed`, `combat`, and
-/// `cargo` are the ship loadout's aggregate stats: speed quickens *every* mission's
-/// objective, combat quickens only a *contested* one (charters round 21), and cargo
-/// only a *haul* one (charters round 24).
+/// pay any newly reached milestone, and detect completion. `speed`, `combat`,
+/// `cargo`, and `crew` are the ship loadout's aggregate stats: speed quickens *every*
+/// mission's objective, combat quickens only a *contested* one (charters round 21), cargo
+/// only a *haul* one (charters round 24), and crew_capacity (berths) eases the attrition of a
+/// *preserve* one (charters round 28) — a ship with room to carry keeps more of what it carries.
 pub fn advance_contract(
     sim: &mut SimState,
     config: &crate::data::GameConfig,
     speed: i32,
     combat: i32,
     cargo: i32,
+    crew: i32,
 ) -> ContractProgress {
     let population_count = sim.population.count;
     let unity = sim.population.unity;
@@ -347,8 +349,16 @@ pub fn advance_contract(
                 phase,
                 ContractPhase::Travel | ContractPhase::Operation | ContractPhase::Return
             ) {
-                let monthly_loss =
-                    contract.objective_target * contract.preserve_attrition_per_year / 12.0;
+                // Berths ease the attrition (content-depth charters round 28): a ship with the
+                // crew_capacity to carry its charge in some comfort loses fewer of them over the
+                // long dark than one that crams them into every hold — crew_capacity's first
+                // mechanical role, the berth twin of cargo's haul lever. Floored so even the
+                // roomiest ship cannot wholly stop the loss; inert (factor 1.0) at crew 0.
+                let berth_relief =
+                    (1.0 - crew.max(0) as f32 * config.ship.preserve_berth_relief).max(0.2);
+                let monthly_loss = contract.objective_target * contract.preserve_attrition_per_year
+                    / 12.0
+                    * berth_relief;
                 contract.objective_progress = (contract.objective_progress - monthly_loss).max(0.0);
             }
         } else if phase == ContractPhase::Operation {
@@ -518,7 +528,7 @@ mod tests {
             sim.contract.as_mut().unwrap().months_elapsed = ops_start;
             let before = sim.contract.as_ref().unwrap().objective_progress;
             for _ in 0..12 {
-                advance_contract(&mut sim, &data.config, 0, 0, 0);
+                advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
             }
             sim.contract.as_ref().unwrap().objective_progress - before
         };
@@ -952,7 +962,7 @@ mod tests {
         sim.contract = Some(contract);
 
         let before = sim.resources.minerals;
-        advance_contract(&mut sim, &data.config, 0, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         assert_eq!(
             sim.resources.minerals,
             before + 500,
@@ -960,7 +970,7 @@ mod tests {
         );
 
         let after = sim.resources.minerals;
-        advance_contract(&mut sim, &data.config, 0, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         assert_eq!(
             sim.resources.minerals, after,
             "an already-reached milestone does not pay out again"
@@ -992,12 +1002,12 @@ mod tests {
         let (data, mut sim) = armed(1, "deep_vein_survey");
 
         // Month 1 crosses the pre-launch Preparation into Travel.
-        let first = advance_contract(&mut sim, &data.config, 0, 0, 0);
+        let first = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         assert_eq!(first.phase_changed, Some(ContractPhase::Travel));
 
         // Travel holds until the authored travel years elapse, then Operation.
         let op_start = loop {
-            let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
             if let Some(phase) = p.phase_changed {
                 assert_eq!(
                     phase,
@@ -1021,7 +1031,7 @@ mod tests {
 
         // Nothing accrues in Preparation or Travel.
         loop {
-            let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
             if p.phase_changed == Some(ContractPhase::Operation) {
                 break;
             }
@@ -1049,7 +1059,7 @@ mod tests {
         let first_operation_accrual = |contract_id: &str, cargo: i32| -> f32 {
             let (data, mut sim) = armed(9, contract_id);
             loop {
-                let p = advance_contract(&mut sim, &data.config, 0, 0, cargo);
+                let p = advance_contract(&mut sim, &data.config, 0, 0, cargo, 0);
                 if p.phase_changed == Some(ContractPhase::Operation) {
                     break;
                 }
@@ -1083,7 +1093,7 @@ mod tests {
             let (data, mut sim) = armed(9, "deep_vein_survey");
             sim.population.morale = morale; // advance_contract never moves morale
             loop {
-                let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
+                let p = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
                 if p.phase_changed == Some(ContractPhase::Operation) {
                     break;
                 }
@@ -1108,7 +1118,7 @@ mod tests {
         let first_operation_accrual = |contract_id: &str, combat: i32| -> f32 {
             let (data, mut sim) = armed(9, contract_id);
             loop {
-                let p = advance_contract(&mut sim, &data.config, 0, combat, 0);
+                let p = advance_contract(&mut sim, &data.config, 0, combat, 0, 0);
                 if p.phase_changed == Some(ContractPhase::Operation) {
                     break;
                 }
@@ -1183,7 +1193,7 @@ mod tests {
 
         // A voyage month erodes it (never accrues): each on-voyage step loses ground.
         let before = sim.contract.as_ref().unwrap().objective_progress;
-        advance_contract(&mut sim, &data.config, 0, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         let after = sim.contract.as_ref().unwrap().objective_progress;
         assert!(
             after < before,
@@ -1201,6 +1211,36 @@ mod tests {
             sim2.contract.as_ref().unwrap().objective_progress,
             0.0,
             "an ordinary charter builds its objective from zero"
+        );
+    }
+
+    #[test]
+    fn a_roomy_hull_keeps_more_of_what_it_carries() {
+        // Content-depth charters round 28: crew_capacity (berths) eases a preserve charter's
+        // attrition — crew_capacity's first mechanical role. Two identical ark runs, one carried
+        // by a cramped hull (crew 0) and one by a roomy one (crew 30), diverge in a single
+        // voyage-month: the roomy ship loses fewer of its sleepers.
+        let relief = {
+            let (data, _sim) = armed(6, "the_ark_run");
+            data.config.ship.preserve_berth_relief
+        };
+        assert!(
+            relief > 0.0,
+            "this test needs the berth-relief coupling enabled"
+        );
+
+        let loss = |crew: i32| -> f32 {
+            let (data, mut sim) = armed(6, "the_ark_run");
+            let before = sim.contract.as_ref().unwrap().objective_progress;
+            advance_contract(&mut sim, &data.config, 0, 0, 0, crew);
+            before - sim.contract.as_ref().unwrap().objective_progress
+        };
+        let cramped = loss(0); // no berths → the authored attrition, in full
+        let roomy = loss(30); // ample berths → eased attrition
+        assert!(cramped > 0.0, "a cramped hull still loses to the cold");
+        assert!(
+            roomy < cramped,
+            "a roomy hull keeps more of its charge: {roomy} lost vs {cramped}"
         );
     }
 
@@ -1255,7 +1295,7 @@ mod tests {
 
         // Make station, then bank a clean quarter of the objective.
         loop {
-            let p = advance_contract(&mut sim, &data.config, 0, 0, 0);
+            let p = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
             if p.phase_changed == Some(ContractPhase::Operation) {
                 break;
             }
@@ -1273,7 +1313,7 @@ mod tests {
         assert_eq!(sim.contract.as_ref().unwrap().phase, ContractPhase::Return);
         let total = sim.contract.as_ref().unwrap().total_months();
         while sim.contract.as_ref().unwrap().months_elapsed < total {
-            advance_contract(&mut sim, &data.config, 0, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         }
 
         let contract = sim.contract.as_ref().unwrap();
@@ -1309,7 +1349,7 @@ mod tests {
         sim.resources.food = data.config.low_food_threshold + 1_000;
         sim.resources.energy = data.config.low_energy_threshold + 1_000;
         for _ in 0..10 {
-            advance_contract(&mut sim, &data.config, 0, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         }
         assert_eq!(
             efficiency(&sim),
@@ -1321,7 +1361,7 @@ mod tests {
         // so the running fraction settles at (10*2 + 10*1) / (20*2) = 0.75.
         sim.resources.food = 0;
         for _ in 0..10 {
-            advance_contract(&mut sim, &data.config, 0, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         }
         assert!(
             (efficiency(&sim) - 0.75).abs() < 1e-6,
@@ -1331,7 +1371,7 @@ mod tests {
 
         // The lean stretch stays on the record after stores recover.
         sim.resources.food = data.config.low_food_threshold + 1_000;
-        advance_contract(&mut sim, &data.config, 0, 0, 0);
+        advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         assert!(
             efficiency(&sim) < 1.0,
             "a famine is not forgotten once the stores refill"
@@ -1345,7 +1385,7 @@ mod tests {
 
         // A few months into Travel — no objective work has happened.
         for _ in 0..50 {
-            advance_contract(&mut sim, &data.config, 0, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         }
         assert_eq!(sim.contract.as_ref().unwrap().phase, ContractPhase::Travel);
 
@@ -1353,7 +1393,7 @@ mod tests {
         assert_eq!(sim.contract.as_ref().unwrap().phase, ContractPhase::Return);
         let total = sim.contract.as_ref().unwrap().total_months();
         while sim.contract.as_ref().unwrap().months_elapsed < total {
-            advance_contract(&mut sim, &data.config, 0, 0, 0);
+            advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
         }
 
         let contract = sim.contract.as_ref().unwrap();
