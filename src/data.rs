@@ -156,6 +156,15 @@ pub struct GameConfig {
     /// `MarketState` at campaign start.
     #[serde(default)]
     pub trade_reputation_scale: f32,
+    /// The premium a ship pays to *buy* a survival good it is critically low on (content-depth
+    /// provisioning round 32): the market's third responsiveness (volume it22, name it30, now
+    /// *need*). Traders read a near-empty hold and price the desperation in — buying food with the
+    /// larder near famine (below `low_food_threshold`) or energy with the grid near dark (below
+    /// `low_energy_threshold`) costs `1 + this`. It rewards buying *early*, before the ship is over
+    /// a barrel, and stings the crisis-buyer who waited. Applies to buys only; copied onto
+    /// `MarketState` at campaign start. 0 = the market charges the same however empty the hold.
+    #[serde(default)]
+    pub market_desperation_premium: f32,
     /// The food store the ship can keep *fresh* — its carrying capacity (content-depth
     /// provisioning round 24): food is the one resource with no upkeep and no cap, so it
     /// could otherwise pile up without limit. Everything above this line spoils by
@@ -3190,6 +3199,14 @@ mod tests {
             (0.0..1.0).contains(&data.config.trade_reputation_scale),
             "trade_reputation_scale {} must be a gentle fraction in [0, 1)",
             data.config.trade_reputation_scale
+        );
+        // Content-depth provisioning round 32: the desperation premium is a gentle markup in
+        // [0, 1) — a crisis-buyer pays more for the good it cannot do without, but a waystation
+        // never doubles the price on need alone.
+        assert!(
+            (0.0..1.0).contains(&data.config.market_desperation_premium),
+            "market_desperation_premium {} must be a gentle markup in [0, 1)",
+            data.config.market_desperation_premium
         );
         // Content-depth provisioning round 25: the becalmed morale drain is a gentle
         // yearly attrition, like the chronic-hunger one it mirrors — the slow despair of a

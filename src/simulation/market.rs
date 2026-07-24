@@ -58,9 +58,37 @@ fn reputation_trade_factor(sim: &SimState, buying: bool) -> f32 {
     factor.max(0.1)
 }
 
+/// The premium the market puts on a *buy* the ship makes while critically low on that good
+/// (content-depth provisioning round 32): the market's regard for the ship's *need*. A ship
+/// buying a survival good (food, energy) with its own stock below the resource's floor is over a
+/// barrel, and the waystation prices the desperation in — the buy costs `1 + desperation_premium`.
+/// Minerals and influence have no survival floor and never read as desperate; a sell is never
+/// desperate (a low ship is not selling what it lacks). 1.0 (inert) when the premium is 0, the
+/// floor unset, or the hold still comfortable. Reads the ship's own stock; deterministic.
+fn desperation_factor(sim: &SimState, resource: TradeResource) -> f32 {
+    let premium = sim.market.desperation_premium;
+    if premium == 0.0 {
+        return 1.0;
+    }
+    let (stock, floor) = match resource {
+        TradeResource::Food => (sim.resources.food, sim.market.desperation_food_floor),
+        TradeResource::Energy => (sim.resources.energy, sim.market.desperation_energy_floor),
+        // No survival floor: the ship is never *desperate* for these, only short.
+        TradeResource::Minerals | TradeResource::Influence => return 1.0,
+    };
+    if floor > 0 && stock < floor {
+        1.0 + premium
+    } else {
+        1.0
+    }
+}
+
 pub fn buy(sim: &mut SimState, resource: TradeResource, amount: i64) -> Result<(), String> {
-    let cost = (price_of(sim, resource) * reputation_trade_factor(sim, true) * amount as f32).ceil()
-        as i64;
+    let cost = (price_of(sim, resource)
+        * reputation_trade_factor(sim, true)
+        * desperation_factor(sim, resource)
+        * amount as f32)
+        .ceil() as i64;
     let delta = trade_delta(resource, amount, -cost);
     if !sim.resources.can_afford(&delta) {
         return Err(format!("Need {cost} credits"));
@@ -132,6 +160,62 @@ mod tests {
 
         sell(&mut sim, TradeResource::Food, 100).unwrap();
         assert_eq!(sim.resources.food, food_before);
+    }
+
+    #[test]
+    fn a_desperate_buy_of_a_survival_good_pays_a_premium() {
+        // Content-depth provisioning round 32: the market reads the ship's need. Buying food with
+        // the larder near famine costs a premium a comfortable buyer never pays — so buy early,
+        // before you are over a barrel. Minerals have no survival floor and never read as desperate.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.market_desperation_premium > 0.0,
+            "this test needs the desperation premium enabled"
+        );
+        let floor = data.config.low_food_threshold;
+
+        // The credits a 100-unit food buy costs at a given starting food stock (fresh sim each
+        // time, so the round-22 price shift from one buy never bleeds into the next).
+        let food_cost_at = |food: i64| -> i64 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "wanderers",
+                11,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.resources.food = food;
+            sim.resources.credits = 1_000_000;
+            let before = sim.resources.credits;
+            buy(&mut sim, TradeResource::Food, 100).unwrap();
+            before - sim.resources.credits
+        };
+
+        let comfortable = food_cost_at(floor + 5_000); // a full larder: no desperation
+        let desperate = food_cost_at(0); // near famine: the premium bites
+        assert!(
+            desperate > comfortable,
+            "a starving ship pays a premium for food ({desperate} vs {comfortable})"
+        );
+
+        // Minerals carry no survival floor, so an empty mineral hold is short, not desperate.
+        let mineral_cost_at = |minerals: i64| -> i64 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "wanderers",
+                11,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.resources.minerals = minerals;
+            sim.resources.credits = 1_000_000;
+            let before = sim.resources.credits;
+            buy(&mut sim, TradeResource::Minerals, 100).unwrap();
+            before - sim.resources.credits
+        };
+        assert_eq!(
+            mineral_cost_at(0),
+            mineral_cost_at(100_000),
+            "a mineral buy reads no desperation, however empty the hold"
+        );
     }
 
     #[test]

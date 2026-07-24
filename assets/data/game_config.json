@@ -44,6 +44,7 @@
   "low_energy_production_shed": 0.4,
   "market_impact_per_unit": 0.0003,
   "trade_reputation_scale": 0.25,
+  "market_desperation_premium": 0.25,
   "hull_warning_threshold": 0.7,
   "life_support_warning_threshold": 0.8,
   "hull_decay_per_year": 0.0035,

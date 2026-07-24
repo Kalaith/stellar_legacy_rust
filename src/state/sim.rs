@@ -232,6 +232,28 @@ pub struct MarketState {
     /// start. 0 = the waystations price every ship alike, whatever its name.
     #[serde(default)]
     pub trade_reputation_scale: f32,
+    /// The premium a ship pays to buy a survival good it is *critically low* on (content-depth
+    /// provisioning round 32): the market's third responsiveness, on the ship's *need* rather than
+    /// its trade volume (it22) or its name (it30). Traders read a near-empty hold — a ship buying
+    /// food with its own larder near famine, or energy with its grid near dark — and price the
+    /// desperation in: the buy costs `1 + this` when the ship's stock of that good is below its
+    /// floor. Never let them see you're desperate, so buy early, when you still have leverage. Set
+    /// from `market_desperation_premium` at campaign start; applies to buys only (a desperate ship
+    /// is not selling what it lacks). 0 = the waystations charge the same however empty the hold.
+    #[serde(default)]
+    pub desperation_premium: f32,
+    /// Food stock below which a *buy* of food reads as desperation (content-depth provisioning
+    /// round 32): set from `low_food_threshold` — the same near-famine line the rest of the sim
+    /// uses — so the premium bites exactly when the ship is buying to stave off hunger. 0 = food
+    /// buys are never desperate.
+    #[serde(default)]
+    pub desperation_food_floor: i64,
+    /// Energy stock below which a *buy* of energy reads as desperation (content-depth provisioning
+    /// round 32): set from `low_energy_threshold` — the same grid-critical line the it29 production
+    /// shed and it15 life-support power-starvation use — so the premium bites when the ship is
+    /// buying power to keep the lights on. 0 = energy buys are never desperate.
+    #[serde(default)]
+    pub desperation_energy_floor: i64,
 }
 
 /// Per-category advisor delegation (GDD §5.4): a delegated category's events
@@ -687,6 +709,9 @@ impl SimState {
                 .collect(),
             impact_per_unit: config.market_impact_per_unit,
             trade_reputation_scale: config.trade_reputation_scale,
+            desperation_premium: config.market_desperation_premium,
+            desperation_food_floor: config.low_food_threshold,
+            desperation_energy_floor: config.low_energy_threshold,
         };
 
         let mut sim = Self {
