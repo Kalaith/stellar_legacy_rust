@@ -269,6 +269,13 @@ pub struct Complication {
     /// 0.0 / None = that gate ignored.
     #[serde(default)]
     pub min_cultural_drift: f32,
+    /// Adaptation-divergence gate (content-depth event families round 30): the complication rides
+    /// only once the people's `adaptation` has risen to or above this fraction — the high-side
+    /// physiological twin of `min_cultural_drift`, so a complication can turn on the crew having
+    /// become *shipborn* (a grief that only a crew unable to survive a planet can feel). None =
+    /// ungated by adaptation.
+    #[serde(default)]
+    pub adaptation_above: Option<f32>,
     #[serde(default)]
     pub condition_below: Vec<SubsystemGate>,
     #[serde(default)]

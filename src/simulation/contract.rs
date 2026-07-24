@@ -1288,7 +1288,7 @@ mod tests {
         sim.reputation.insert("mercy".to_string(), 0.0);
         let merciless = reputation_reward_multiplier(&sim, sanctuary);
         assert!(
-            merciless < 1.0 && merciless >= 0.5,
+            (0.5..1.0).contains(&merciless),
             "a merciless ship earns less, but never nothing ({merciless})"
         );
 

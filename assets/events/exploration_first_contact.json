@@ -344,6 +344,18 @@
     },
     "log": "The ship ran dark past the young world and let it keep its innocent sky. Some aboard grieved the hands they did not extend; the council called restraint its own kind of gift."
    }
+  ],
+  "complications": [
+   {
+    "id": "a_shore_the_crew_can_no_longer_walk",
+    "adaptation_above": 0.82,
+    "description_add": "And there is a grief in it this generation that the founders never could have felt: the crew who look down on that living world are, in the flesh, no longer able to live on one. Here is the very thing the whole voyage was launched to find — an open sky, a real gravity, ground — and the shipborn people gazing at it have become a kind that could not stand beneath that sky and would not survive that ground. They have found the shore and lost the legs to walk it.",
+    "population_delta": {
+     "morale": -0.04,
+     "legacy_loyalty": -0.03
+    },
+    "log": "The young world passed beneath a crew who could no longer have lived on it — the founders' dream of open ground arriving a generation too late for the bodies that reached it — and the ship carried its quiet, particular grief on into a dark that had, at last, become the only home its people could keep."
+   }
   ]
  },
  {
@@ -392,6 +404,23 @@
     },
     "log": "The ship mapped the monuments from a respectful distance and left them to their long silence. The archives gained a mystery and the crew kept its full number."
    }
+  ],
+  "complications": [
+   {
+    "id": "a_ship_that_lives_for_exactly_this",
+    "min_reputation": [
+     {
+      "id": "wonder",
+      "threshold": 0.6
+     }
+    ],
+    "description_add": "And this is a ship whose whole name is the chasing of exactly this — a chronicle thick with charted impossibilities, a crew who have made a creed of wonder — so the debate is not really whether to enter the monuments but how deep, and how long, and how much the ship will spend to read what the vanished builders left. A vessel famous for its marvels does not sail past the largest marvel it has ever found.",
+    "population_delta": {
+     "morale": 0.03,
+     "cultural_drift": 0.02
+    },
+    "log": "A ship that had made wonder its name went into the silent monuments the way it went into everything strange — all the way, and gladly — and gathered from the vanished builders' works a haul of knowledge worthy of its reputation, at a cost in the lost it accepted as the price of being the kind of ship it had chosen to be."
+   }
   ]
  },
  {
@@ -436,6 +465,18 @@
     },
     "log": "The salvage crews took the beacon apart for its patient, ancient tech and left the lane silent behind them. The message it had carried for eons ended, unanswered, in a cargo hold."
    }
+  ],
+  "complications": [
+   {
+    "id": "a_mirror_of_the_ships_own_fate",
+    "min_cultural_drift": 0.6,
+    "description_add": "And to a crew that has itself drifted far from the ones who launched it, the beacon is not a curiosity but a mirror: here is a people who outlived their purpose, who kept faithfully repeating a message in a tongue their own descendants — if any survived — could no longer have read, broadcasting into a dark that had long forgotten them. The ship's elders look at the endless, unanswered signal and see, uncomfortably clearly, a thing the ship itself could one day become.",
+    "population_delta": {
+     "morale": -0.03,
+     "legacy_loyalty": 0.03
+    },
+    "log": "The drifted ship heard its own possible epitaph in the beacon's patient, pointless faithfulness — a people reduced to a message no one was left to understand — and whatever it chose to do with the thing, it carried on a little more soberly, having met a stranger's ending that looked too much like a road its own long drift might yet be traveling."
+   }
   ]
  },
  {
@@ -469,6 +510,18 @@
      "stability": 0.02
     },
     "log": "The ship pretended it had not noticed and flew on unchanged, ceding the first word to the watchers who had never offered it — and carried, from then on, the quiet weight of knowing it was seen, and had chosen not to look back."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_drifted_name_the_watchers_gods",
+    "min_cultural_drift": 0.6,
+    "description_add": "And on a ship drifted this far from the founders' cool rationalism, the analysts' talk of an unknown observer falls on a crew that has already decided what the watchers are: not aliens but a presence — ancestors keeping vigil, gods weighing the voyage, the founders themselves come back to see how their children fared. The council is no longer debating a first-contact protocol but a matter of faith, and the two are not easy to keep apart.",
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "unity": -0.02
+    },
+    "log": "The ship's drifted generations did not hear *aliens* in the analysts' report; they heard *watchers* in the older sense — the vigilant dead, the founders' ghosts, something owed reverence — and the council's careful protocol dissolved into a quarrel over what the ship owed a presence half of it had already begun to pray to."
    }
   ]
  },

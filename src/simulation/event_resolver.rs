@@ -18,6 +18,9 @@ pub fn active_complication<'a>(
 ) -> Option<&'a Complication> {
     template.complications.iter().find(|c| {
         sim.population.cultural_drift >= c.min_cultural_drift
+            // Adaptation-divergence gate (content-depth round 30): rides only on a shipborn crew.
+            && c.adaptation_above
+                .is_none_or(|t| sim.population.adaptation >= t)
             && c.condition_below.iter().all(|gate| {
                 sim.subsystems
                     .get(&gate.id)
@@ -2089,6 +2092,39 @@ mod tests {
             Some(&comp.id)
         );
         assert!(shown_description(&sim, template).contains("two peoples"));
+    }
+
+    #[test]
+    fn a_shipborn_crew_grieves_a_world_it_can_no_longer_walk() {
+        // Content-depth event families round 30: exploration_first_contact's first complications,
+        // reactive to the ship's *identity*. The Young World gains a twist that rides only once
+        // the crew has grown so shipborn (adaptation past the divergence line) that the very
+        // world the voyage was launched to find is one they could no longer live on — a grief
+        // only a diverged crew can feel. This also exercises the new adaptation_above complication
+        // gate.
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 30, &picks);
+        sim.dynasty.generation = 2; // clear the event's own min_generation
+        let template = data.events.get("the_young_world").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| c.adaptation_above.is_some())
+            .expect("the young world carries a shipborn-grief reaction");
+        let line = comp.adaptation_above.unwrap();
+
+        // A still-planet-capable crew: the grief stays out.
+        sim.population.adaptation = line - 0.1;
+        assert!(active_complication(&sim, template).is_none());
+
+        // A fully shipborn crew: it rides, and the "no longer walk" grief shows.
+        sim.population.adaptation = line + 0.05;
+        assert_eq!(
+            active_complication(&sim, template).map(|c| &c.id),
+            Some(&comp.id)
+        );
+        assert!(shown_description(&sim, template).contains("no longer able to live"));
     }
 
     #[test]
