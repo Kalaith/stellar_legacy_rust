@@ -396,7 +396,16 @@ pub fn life_support_mortality_loss(sim: &SimState, data: &GameData) -> u32 {
     }
     let severity = ((threshold - condition) / threshold).clamp(0.0, 1.0);
     let fraction = cfg.life_support_failure_mortality * severity;
-    (sim.population.count as f32 * fraction) as u32
+    // A serving infirmary fights to keep the asphyxiating alive (content-depth subsystems round
+    // 31): the medical bay's condition mitigates the failing-air deaths — the third death source
+    // its craft covers, after age (round 18) and famine (round 9). Kept below full relief so even
+    // a perfect bay only saves some; it cannot make air out of nothing.
+    let medical = sim
+        .subsystems
+        .get("medical_bay")
+        .map_or(0.0, |s| s.condition);
+    let relief = (1.0 - cfg.medical_life_support_relief * medical).max(0.0);
+    (sim.population.count as f32 * fraction * relief) as u32
 }
 
 /// Fraction by which the life-support/habitat subsystem slows life-support
@@ -1224,6 +1233,8 @@ mod tests {
                 .unwrap()
                 .condition = 0.0;
             sim.subsystems.get_mut("agriculture").unwrap().condition = garden;
+            // Isolate the garden coupling from the round-31 medical life-support relief.
+            sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.0;
             life_support_mortality_loss(&sim, &data)
         };
 
@@ -1241,6 +1252,45 @@ mod tests {
         assert!(
             green_garden > 0,
             "but a garden alone cannot wholly replace a dead plant"
+        );
+    }
+
+    #[test]
+    fn a_serving_infirmary_keeps_some_of_the_asphyxiating_alive() {
+        // Content-depth subsystems round 31: when the air fails, the medics fight to keep the
+        // asphyxiating alive, so the medical bay's condition mitigates the life-support-failure
+        // deaths — but even a perfect infirmary only saves some; it cannot make air.
+        let data = GameData::load().unwrap();
+        let relief = data.config.subsystems.medical_life_support_relief;
+        assert!(
+            relief > 0.0,
+            "this test needs the medical life-support coupling enabled"
+        );
+        let deaths_with_medical = |medical: f32| -> u32 {
+            let (_, mut sim) = campaign(31);
+            sim.population.count = 5000;
+            // A fully collapsed plant, no garden, so only the infirmary differs.
+            sim.subsystems
+                .get_mut("life_support_habitat")
+                .unwrap()
+                .condition = 0.0;
+            sim.subsystems.get_mut("agriculture").unwrap().condition = 0.0;
+            sim.subsystems.get_mut("medical_bay").unwrap().condition = medical;
+            life_support_mortality_loss(&sim, &data)
+        };
+        let no_infirmary = deaths_with_medical(0.0);
+        let full_infirmary = deaths_with_medical(1.0);
+        assert!(
+            no_infirmary > 0,
+            "a dead plant with no infirmary thins the crew"
+        );
+        assert!(
+            full_infirmary < no_infirmary,
+            "a serving infirmary saves some of the asphyxiating ({full_infirmary} vs {no_infirmary})"
+        );
+        assert!(
+            full_infirmary > 0,
+            "but even a perfect infirmary cannot make air — some are still lost"
         );
     }
 

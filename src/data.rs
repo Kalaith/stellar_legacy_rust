@@ -2301,6 +2301,13 @@ mod tests {
             "agriculture_adaptation_resistance {} must be a fraction in [0, 1)",
             data.config.voyage_drift.agriculture_adaptation_resistance
         );
+        // Content-depth subsystems round 31: the medical life-support relief is a fraction below 1
+        // (even a perfect infirmary only *saves some* of the asphyxiating; it cannot make air).
+        assert!(
+            (0.0..1.0).contains(&subs_cfg.medical_life_support_relief),
+            "medical_life_support_relief {} must be a fraction in [0, 1)",
+            subs_cfg.medical_life_support_relief
+        );
         if subs_cfg.security_crisis_mitigation > 0.0 {
             assert!(
                 subs_cfg.crisis_weight_floor > 0.0,

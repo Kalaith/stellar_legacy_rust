@@ -279,6 +279,17 @@ pub struct SubsystemsConfig {
     /// thinning, the pressure to keep the plant alive, not a massacre.
     #[serde(default)]
     pub life_support_failure_mortality: f32,
+    /// Fraction of the life-support-failure deaths a full-condition medical bay prevents
+    /// (content-depth subsystems round 31): when the air fails the medics fight to keep the
+    /// asphyxiating alive — oxygen therapy, triage, the sick pulled to the decks the plant can
+    /// still hold — so the medical bay's condition mitigates the round-15 mortality. This is the
+    /// *third* death source the infirmary's craft covers (age, round 18; famine, round 9; and now
+    /// the failing air), completing its "keep people alive" role across every way the ship kills.
+    /// The loss is scaled by `1 - medical_life_support_relief · medical_condition`; kept below 1 so
+    /// even a perfect infirmary only saves *some* — it cannot make air out of nothing. 0 = the
+    /// infirmary does not touch asphyxiation deaths.
+    #[serde(default)]
+    pub medical_life_support_relief: f32,
     /// Energy store below which the life-support plant begins to starve for power
     /// (content-depth provisioning round 15): the plant needs current to run, so
     /// below this the grid's power availability caps the plant's effective condition
