@@ -270,6 +270,22 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         sim.population.morale =
             (sim.population.morale - config.chronic_hunger_morale_drain).max(0.0);
     }
+    // …and it turns the peoples against their government (content-depth provisioning round 28):
+    // the *political* toll of a long hunger, beside its toll on the crew's spirits (above) and
+    // bodies (the it18 death bonus). A people that goes hungry stops trusting the council that
+    // rations it, so a chronic shortage sours every aboard faction — and that discontent feeds
+    // the whole faction machinery (the it100 approval→unity cohesion, the withdrawal beats, the
+    // it13 demographic drift), so hunger does not only wear the ship but turns its peoples
+    // against the leadership. Same "sustained lean" gate; one bad winter is inert.
+    if config.chronic_hunger_faction_penalty > 0.0
+        && sim.lean_food_years >= config.chronic_hunger_years
+    {
+        for f in &mut sim.factions {
+            if f.is_aboard() {
+                f.adjust_approval(-config.chronic_hunger_faction_penalty);
+            }
+        }
+    }
     // …and the long plenty lifts them (content-depth provisioning round 20): the
     // morale mirror of the chronic-hunger drain, on the same "sustained" threshold —
     // a well-fed generation is a happy one, so a fat spell held past `chronic_hunger_

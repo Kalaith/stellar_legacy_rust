@@ -211,6 +211,17 @@ pub struct GameConfig {
     /// long disrepair costs no morale.
     #[serde(default)]
     pub disrepair_morale_drain: f32,
+    /// Approval each aboard people loses per year while the ship is in a sustained lean past
+    /// `chronic_hunger_years` (content-depth provisioning round 28): the *political* toll of a
+    /// long hunger, beside its toll on the crew's spirits (`chronic_hunger_morale_drain`, it17)
+    /// and bodies (`chronic_hunger_death_bonus`, it18). A people that goes hungry stops trusting
+    /// the council that rations it — so a chronic shortage sours every aboard faction, and the
+    /// discontent feeds the whole faction machinery (the it100 approval→unity cohesion, the
+    /// it withdrawal beats, the it13 demographic drift): hunger does not only wear the ship, it
+    /// turns the peoples against their government. Gentle by design; 0 = a long hunger costs no
+    /// faction goodwill.
+    #[serde(default)]
+    pub chronic_hunger_faction_penalty: f32,
     /// Extra *monthly death chance* added to every character while the ship has been
     /// lean past `chronic_hunger_years` (content-depth provisioning round 18 — the
     /// provisioning axis's coupling to the real-time-loop mortality system). Where
@@ -2883,6 +2894,14 @@ mod tests {
             (0.0..=0.05).contains(&data.config.disrepair_morale_drain),
             "disrepair_morale_drain {} must be a gentle yearly attrition [0, 0.05]",
             data.config.disrepair_morale_drain
+        );
+        // Content-depth provisioning round 28: the chronic-hunger faction penalty is a gentle
+        // yearly souring — the slow political erosion of a people that keeps going hungry, not a
+        // single rupture (the acute famine events carry the sharp breaks).
+        assert!(
+            (0.0..=0.05).contains(&data.config.chronic_hunger_faction_penalty),
+            "chronic_hunger_faction_penalty {} must be a gentle yearly souring [0, 0.05]",
+            data.config.chronic_hunger_faction_penalty
         );
         // Content-depth provisioning round 24: the food carrying capacity, if set, must
         // sit above the fat line (a prudent reserve should still read as plenty, not spoil

@@ -667,6 +667,72 @@ fn a_long_lean_wears_the_crews_spirits_down() {
 }
 
 #[test]
+fn a_long_hunger_turns_the_peoples_against_the_council() {
+    // Content-depth provisioning round 28: the political toll of a chronic hunger. A ship long
+    // lean sours its aboard peoples — a people that keeps going hungry stops trusting the council
+    // that rations it — where a comfortably fed ship's factions are untouched by the larder.
+    // Isolated like the morale test (production off, a small crew so neither famines, no events),
+    // so the only approval difference is the year's hunger penalty on a single tracked faction.
+    let mut data = GameData::load().unwrap();
+    assert!(
+        data.config.chronic_hunger_faction_penalty > 0.0 && data.config.chronic_hunger_years > 0,
+        "this test needs the chronic-hunger faction coupling enabled"
+    );
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.base_production.food = 0.0;
+
+    let make = |food: i64, lean_years: u32| -> SimState {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            17,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.population.count = 200; // a crew the stores easily feed (no famine)
+        sim.resources.food = food;
+        sim.lean_food_years = lean_years;
+        sim
+    };
+    // A tracked aboard faction's approval; demographic drift moves members, not approval, and at
+    // neutral reputation/sound subsystems no other coupling touches it — so it isolates the toll.
+    let approval = |sim: &SimState| {
+        sim.factions
+            .iter()
+            .find(|f| f.is_aboard())
+            .unwrap()
+            .approval
+    };
+
+    let mut hungry = make(
+        data.config.lean_food_threshold - 500,
+        data.config.chronic_hunger_years,
+    );
+    let mut fed = make(data.config.fat_food_threshold + 5000, 0);
+    assert_eq!(
+        approval(&hungry),
+        approval(&fed),
+        "the two ships launch with the same faction goodwill"
+    );
+
+    advance_year(&mut hungry, &data);
+    advance_year(&mut fed, &data);
+
+    assert!(
+        approval(&hungry) < approval(&fed),
+        "a chronic hunger sours the peoples where a full larder does not (hungry {} vs fed {})",
+        approval(&hungry),
+        approval(&fed)
+    );
+    let gap = approval(&fed) - approval(&hungry);
+    assert!(
+        (gap - data.config.chronic_hunger_faction_penalty).abs() < 1e-4,
+        "the approval gap is exactly the year's chronic-hunger faction penalty ({gap})"
+    );
+}
+
+#[test]
 fn identical_seeds_produce_identical_decades() {
     let (data, mut a) = fresh(77);
     let (_, mut b) = fresh(77);
