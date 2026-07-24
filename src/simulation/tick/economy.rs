@@ -372,6 +372,11 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // the generations (content-depth factions round 16): a kind majority drifts the
     // ship toward a merciful name, a cold one hardens it, no dramatic choice required.
     sim.apply_dominant_reputation_lean(data);
+    // …and the name the ship has earned warms or cools each people toward it (content-depth
+    // factions round 27): the reverse of the lean above, closing the reputation_leanings loop —
+    // a merciful ship contents the peoples who prize mercy and sours those who scorn it, so the
+    // ship's character is no longer only *shaped by* its factions but *felt by* them.
+    sim.apply_reputation_alignment_sentiment(data);
     // …and the ship remarks when its name begins to mean something (content-depth
     // voice round 16): a merciful or a feared reputation says so once, at a gentler
     // threshold than the it109 beat — the quiet marker before the defining reckoning.

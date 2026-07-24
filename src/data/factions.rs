@@ -208,6 +208,16 @@ pub struct FactionConfig {
     /// rules does not touch reputation.
     #[serde(default)]
     pub dominant_reputation_lean_per_year: f32,
+    /// Per-year approval drift the ship's *earned reputation* imparts to each aboard people
+    /// according to how that reputation aligns with its `reputation_leanings` (content-depth
+    /// factions round 27): the reverse of `dominant_reputation_lean_per_year`, closing the
+    /// loop so a people is not only a *source* of the ship's character but a *judge* of it.
+    /// Each aboard people's approval shifts by `this · Σ leaning · (reputation − 0.5)·2` — a
+    /// merciful ship contents the mercy-prizing and sours the mercy-scorning. A neutral
+    /// character (every trait 0.5, the launch state) shifts no one. 0 = reputation does not
+    /// touch approval.
+    #[serde(default)]
+    pub reputation_alignment_approval_scale: f32,
     /// Ideological spread (member-weighted MAD of aboard `ideology`) past which a
     /// divided polity begins to erode the ship's `stability` (content-depth factions
     /// round 18): the faction system's coupling to *governance*, distinct from the

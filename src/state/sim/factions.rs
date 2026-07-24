@@ -581,6 +581,46 @@ impl SimState {
         }
     }
 
+    /// A people grows content or discontent as the ship's *character* honors or affronts its
+    /// values (content-depth factions round 27): the reverse of `apply_dominant_reputation_lean`,
+    /// and the half of the `reputation_leanings` loop that was missing. Where that lets whoever
+    /// runs the ship bend its reputation toward their leanings, this lets the reputation the ship
+    /// has actually earned bend every aboard people's *approval* — a merciful ship contents the
+    /// factions that prize mercy and sours the ones that scorn it, a ruthless one the reverse.
+    /// For each aboard people, the yearly shift is `scale · Σ leaning · (reputation − 0.5)·2` over
+    /// its leanings — the ship's traits recentred to [−1, 1] so a neutral character (every trait
+    /// at 0.5, the launch state) pulls no one either way. Reads reputation + the catalog leanings;
+    /// deterministic, no RNG. Inert when the scale is 0.
+    pub fn apply_reputation_alignment_sentiment(&mut self, data: &GameData) {
+        let scale = data.config.factions.reputation_alignment_approval_scale;
+        if scale == 0.0 {
+            return;
+        }
+        // Read phase (immutable): each aboard people's alignment with the ship's earned character.
+        let adjustments: Vec<(usize, f32)> = self
+            .factions
+            .iter()
+            .enumerate()
+            .filter(|(_, f)| f.is_aboard())
+            .filter_map(|(i, f)| {
+                let def = data.factions.get(&f.faction_id)?;
+                if def.reputation_leanings.is_empty() {
+                    return None;
+                }
+                let alignment: f32 = def
+                    .reputation_leanings
+                    .iter()
+                    .map(|(trait_id, lean)| lean * (self.reputation(trait_id) - 0.5) * 2.0)
+                    .sum();
+                Some((i, scale * alignment))
+            })
+            .collect();
+        // Write phase (mutable): the ship's name warms or cools each people toward it.
+        for (i, delta) in adjustments {
+            self.factions[i].adjust_approval(delta);
+        }
+    }
+
     /// The member-weighted mean approval of the aboard peoples (content-depth
     /// factions round 15): the ship's overall political mood, so a large content
     /// majority weighs more than a small soured minority. `0.5` (neutral) when no
@@ -1337,6 +1377,65 @@ mod tests {
         // A people with no leaning leaves the ship's name to its choices.
         let under_neutral = mercy_after("meridian_accord");
         assert_eq!(under_neutral, 0.5, "an unleaning people touches nothing");
+    }
+
+    #[test]
+    fn the_name_the_ship_earns_warms_or_cools_each_people_toward_it() {
+        // Content-depth factions round 27: the reverse of the round-16 lean above, closing
+        // the reputation_leanings loop. A merciful ship contents the people that prizes mercy
+        // (the Hearth, mercy +0.5) and sours the one that scorns it (the Ascension, mercy
+        // −0.4); a ruthless ship does the reverse. A neutral character moves neither.
+        let data = GameData::load().unwrap();
+        assert!(
+            data.config.factions.reputation_alignment_approval_scale > 0.0,
+            "this test needs the reputation-alignment sentiment enabled"
+        );
+
+        // Approval change over one year for a given people at a given ship mercy.
+        let delta_for = |faction: &str, mercy: f32| -> f32 {
+            let mut sim = SimState::new_campaign(
+                &data,
+                "preservers",
+                33,
+                &crate::state::sim::founding_faction_ids(&data),
+            );
+            sim.factions = vec![FactionState {
+                faction_id: faction.to_string(),
+                members: sim.population.count,
+                status: FactionStatus::Aboard,
+                approval: 0.5,
+                mood_band: 0,
+            }];
+            sim.reputation.insert("mercy".to_string(), mercy);
+            sim.apply_reputation_alignment_sentiment(&data);
+            sim.factions[0].approval - 0.5
+        };
+
+        // A merciful ship (mercy 1.0): the mercy-prizing Hearth warms, the mercy-scorning
+        // Ascension cools.
+        assert!(
+            delta_for("hearth_union", 1.0) > 0.0,
+            "a merciful ship contents the people that prizes mercy"
+        );
+        assert!(
+            delta_for("ascension_circle", 1.0) < 0.0,
+            "a merciful ship sours the people that scorns it"
+        );
+        // A ruthless ship (mercy 0.0): the signs flip.
+        assert!(
+            delta_for("hearth_union", 0.0) < 0.0,
+            "a ruthless ship sours the mercy-prizing people"
+        );
+        assert!(
+            delta_for("ascension_circle", 0.0) > 0.0,
+            "a ruthless ship contents the mercy-scorning people"
+        );
+        // A neutral character (the launch state) moves no one.
+        assert_eq!(
+            delta_for("hearth_union", 0.5),
+            0.0,
+            "a ship of neutral character warms no one either way"
+        );
     }
 
     #[test]
