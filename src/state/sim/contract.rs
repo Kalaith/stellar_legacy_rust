@@ -125,6 +125,14 @@ pub struct ActiveContract {
     /// *rebuilt* hull (climbing back to the higher recovery line) reckon with its restoration.
     #[serde(default)]
     pub hull_beats_fired: u32,
+    /// How many air-collapse beats have fired this voyage (content-depth campaign-skeleton
+    /// round 33): the atmosphere twin of `hull_beats_fired` — the persistent "the air has failed"
+    /// flag the air *recovery* beat reads. The it24 air-collapse beat re-arms its band the moment
+    /// life-support clears the red line, so this counter — set when the collapse fires, cleared when
+    /// the recovery does — is what lets an *overhauled* plant (climbing to the higher recovery line)
+    /// reckon with its restoration.
+    #[serde(default)]
+    pub air_beats_fired: u32,
     /// How many anniversary beats have fired (content-depth round 7): the
     /// periodic commemoration cadence. Doubles as the count of anniversaries
     /// observed, so the next fires when the voyage passes the following multiple.

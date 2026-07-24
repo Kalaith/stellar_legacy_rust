@@ -1362,6 +1362,19 @@ pub struct CampaignSkeletonConfig {
     /// disables it.
     #[serde(default)]
     pub air_beat_threshold: f32,
+    /// Air-recovery beat family (content-depth campaign-skeleton round 33): the atmosphere twin of
+    /// the it32 hull-recovery beat and the *ascending* mirror of the it24 air-collapse beat. Once
+    /// the air has failed (an air beat fired) and `life_support` climbs back to or above
+    /// `air_recovery_beat_threshold`, a beat is forced from this family — the crew reckoning with a
+    /// ship whose air was dragged back from suffocation and made breathable. Empty = no air-recovery
+    /// beat.
+    #[serde(default)]
+    pub air_recovery_beat_family: String,
+    /// Life-support at or above which the air-recovery beat fires (content-depth campaign-skeleton
+    /// round 33): set *above* `air_beat_threshold` so a mere wobble over the red line does not count
+    /// as an overhaul — only a real one does (hysteresis). 0 disables it.
+    #[serde(default)]
+    pub air_recovery_beat_threshold: f32,
     /// Becalmed beat family (content-depth campaign-skeleton round 25): the *mobility*
     /// twin of the hull/air *integrity* collapse beats — where those watch the ship
     /// falling apart or suffocating, this watches it *stranded*. Once the ship has been
@@ -3106,6 +3119,23 @@ mod tests {
                     .iter()
                     .any(|(_, e)| e.life_support_below.is_some()),
                 "the air-collapse beat needs a life_support_below-gated event to surface"
+            );
+        }
+        // Content-depth campaign-skeleton round 33: the air-recovery beat, the atmosphere twin of
+        // the hull-recovery guard — a family with events and a threshold that sits *above* the
+        // collapse red line (hysteresis) and no higher than a whole plant (an overhaul, not a wobble).
+        if !sk.air_recovery_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.air_recovery_beat_family),
+                "campaign_skeleton air_recovery_beat_family '{}' has no events",
+                sk.air_recovery_beat_family
+            );
+            assert!(
+                sk.air_recovery_beat_threshold > sk.air_beat_threshold
+                    && sk.air_recovery_beat_threshold <= 1.0,
+                "air_recovery_beat_threshold {} must sit above the collapse red line {}",
+                sk.air_recovery_beat_threshold,
+                sk.air_beat_threshold
             );
         }
         // Content-depth campaign-skeleton round 25: the becalmed (mobility) beat needs a

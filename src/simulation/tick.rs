@@ -105,6 +105,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_heartening_recovery_beat(sim, data, &mut report)
             && !fire_loyalty_recovery_beat(sim, data, &mut report)
             && !fire_hull_recovery_beat(sim, data, &mut report)
+            && !fire_air_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
@@ -491,8 +492,40 @@ fn fire_air_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -
         // The air recovered above the red line — re-arm, but do not fire.
         return false;
     }
+    // Record the collapse so the air-recovery beat (round 33) can reckon with a later overhaul;
+    // fires only during a voyage, so a contract is present.
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.air_beats_fired += 1;
+    }
     let family = cfg.air_beat_family.clone();
     force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire an air-recovery beat (content-depth campaign-skeleton round 33): the atmosphere twin of the
+/// it32 hull-recovery beat, and the *ascending* mirror of the it24 air-collapse beat. Once the
+/// ship's air has failed (an air beat fired, `air_beats_fired > 0`) and `life_support` then climbs
+/// back to or above the recovery threshold — a real overhaul, set above the collapse red line for
+/// hysteresis — force a beat (the crew confronting a ship whose air was dragged back from
+/// suffocation and made breathable again) and reset the collapse counter so a later failure reckons
+/// anew. With this the ship's *air* joins its frame (it32) and its crew's four stats in sounding
+/// both its breaking and its mending. Fires once per failure episode; at most one per month.
+fn fire_air_recovery_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.air_recovery_beat_family.is_empty() || cfg.air_recovery_beat_threshold <= 0.0 {
+        return false;
+    }
+    let recovered = sim.contract.as_ref().is_some_and(|c| {
+        c.air_beats_fired > 0 && sim.ship.life_support >= cfg.air_recovery_beat_threshold
+    });
+    if !recovered {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        // The air is overhauled; re-arm the collapse beat against a future failure.
+        contract.air_beats_fired = 0;
+    }
+    force_family_beat(sim, data, &cfg.air_recovery_beat_family, report);
     true
 }
 

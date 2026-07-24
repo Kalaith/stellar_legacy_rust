@@ -291,6 +291,8 @@
     "hull_recovery_beat_threshold": 0.6,
     "air_beat_family": "biology_medical",
     "air_beat_threshold": 0.25,
+    "air_recovery_beat_family": "biology_medical",
+    "air_recovery_beat_threshold": 0.6,
     "becalmed_beat_family": "survival",
     "becalmed_beat_years": 5,
     "divergence_beat_threshold": 0.82,

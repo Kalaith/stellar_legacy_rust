@@ -1741,6 +1741,104 @@ fn a_hull_recovery_beat_marks_a_frame_rebuilt_from_failure() {
 }
 
 #[test]
+fn an_air_recovery_beat_marks_a_plant_overhauled_from_failure() {
+    // Content-depth campaign-skeleton round 33: the atmosphere twin of the hull-recovery beat. Air
+    // that never failed marks no recovery; life-support driven past its red line fires the collapse
+    // beat and arms the counter; a patch over the red line but below the recovery line is no
+    // overhaul; a real overhaul back over the recovery line forces the recovery beat and re-arms.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.campaign_skeleton.drift_beats.clear();
+    data.config.campaign_skeleton.adaptation_beats.clear();
+    data.config.campaign_skeleton.crisis_beats.clear();
+    data.config.campaign_skeleton.despair_beats.clear();
+    data.config.campaign_skeleton.loyalty_beats.clear();
+    data.config.campaign_skeleton.stability_beats.clear();
+    data.config.campaign_skeleton.flourish_beats.clear();
+    data.config.campaign_skeleton.objective_beats.clear();
+    data.config.campaign_skeleton.subsystem_beats.clear();
+    data.config.campaign_skeleton.reputation_beat_family.clear();
+    data.config.campaign_skeleton.succession_beat_family.clear();
+    data.config.campaign_skeleton.long_reign_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .dynasty_crisis_beat_family
+        .clear();
+    data.config
+        .campaign_skeleton
+        .power_transition_beat_family
+        .clear();
+    data.config.campaign_skeleton.founding_beat_family.clear();
+    // Silence the hull beats so only the air collapse/recovery can fire.
+    data.config.campaign_skeleton.hull_beat_family.clear();
+    data.config
+        .campaign_skeleton
+        .hull_recovery_beat_family
+        .clear();
+    data.config.campaign_skeleton.dead_air_years = 0;
+    data.config.campaign_skeleton.anniversary_years = 0;
+    let red_line = data.config.campaign_skeleton.air_beat_threshold;
+    let recover_line = data.config.campaign_skeleton.air_recovery_beat_threshold;
+    assert!(
+        red_line > 0.0 && recover_line > red_line,
+        "this test needs the air collapse+recovery beats enabled"
+    );
+
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        7,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    sim.resources.food = 1_000_000;
+    sim.ship.hull_integrity = 0.95; // keep the frame sound so only the air speaks
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    sim.contract.as_mut().unwrap().beats.clear();
+    let counter = |sim: &SimState| sim.contract.as_ref().unwrap().air_beats_fired;
+    let clear_pending = |sim: &mut SimState, data: &GameData| {
+        if let Some(pending) = sim.pending_event.clone() {
+            let t = data.events.get(&pending.template_id).cloned().unwrap();
+            crate::simulation::event_resolver::apply_outcome(sim, data, &t, 0);
+        }
+    };
+
+    // Sound air that never failed marks no recovery.
+    sim.ship.life_support = 0.9;
+    advance_year(&mut sim, &data);
+    assert_eq!(counter(&sim), 0, "air that never failed arms no recovery");
+
+    // The air fails past the red line: the collapse beat fires and arms the recovery counter.
+    sim.ship.life_support = red_line - 0.05;
+    advance_year(&mut sim, &data);
+    assert_eq!(sim.air_beat_band, -1, "the failing air forces the collapse");
+    assert_eq!(counter(&sim), 1, "the collapse arms the recovery");
+    clear_pending(&mut sim, &data);
+
+    // A patch over the red line but below the recovery line: re-arms the band, no recovery yet.
+    sim.ship.life_support = (red_line + recover_line) / 2.0;
+    advance_year(&mut sim, &data);
+    assert_eq!(sim.air_beat_band, 0, "the patch clears the red line");
+    assert_eq!(
+        counter(&sim),
+        1,
+        "a partial patch below the recovery line is no overhaul"
+    );
+    clear_pending(&mut sim, &data);
+
+    // A real overhaul back over the recovery line: the recovery beat fires and re-arms the counter.
+    sim.ship.life_support = 0.95;
+    advance_year(&mut sim, &data);
+    assert_eq!(
+        counter(&sim),
+        0,
+        "a full overhaul fires the recovery and re-arms the collapse"
+    );
+}
+
+#[test]
 fn a_founding_beat_fires_once_as_the_launch_generation_passes() {
     // Content-depth campaign-skeleton round 22: the early member of the era trio. With
     // reactive rolls and the other beats off, the campaign must force a founding-era
