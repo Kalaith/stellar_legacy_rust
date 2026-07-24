@@ -262,6 +262,9 @@ impl Game {
                     if sim.contract.is_none()
                         && renown >= template.min_renown
                         && crate::simulation::contract::meets_in_world_gate(sim, template)
+                        && crate::simulation::contract::meets_loadout_gate(
+                            sim, &self.data, template,
+                        )
                     {
                         sim.selected_charter = Some(id.clone());
                         sim.push_log(format!("Charter under consideration: {}", template.name));

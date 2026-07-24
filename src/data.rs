@@ -2173,6 +2173,11 @@ mod tests {
                 "charter '{id}' objective_cargo_scaling {} out of range [0, 0.01]",
                 c.objective_cargo_scaling
             );
+            // Content-depth charters round 26: loadout gates are non-negative minimums.
+            assert!(
+                c.min_combat >= 0 && c.min_cargo >= 0 && c.min_speed >= 0,
+                "charter '{id}' has a negative loadout requirement"
+            );
             // Content-depth charters round 23: a preserve charter must actually erode
             // (a positive, gentle yearly attrition), or "keep the cargo" is a free win.
             if c.preserve_objective {

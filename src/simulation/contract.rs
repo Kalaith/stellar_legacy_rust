@@ -93,6 +93,27 @@ pub fn meets_in_world_gate(sim: &SimState, template: &ContractTemplate) -> bool 
             .all(|g| sim.reputation(&g.id) <= g.threshold)
 }
 
+/// Whether the ship's *loadout* meets a charter's minimum fitting (content-depth
+/// charters round 26): the drydock-availability twin of `meets_in_world_gate`. A writ
+/// that names a `min_combat`/`min_cargo`/`min_speed` is offered only to a hull whose
+/// aggregate loadout clears each — the guns to serve an enforcement contract, the hold
+/// to carry a megahaul, the engine to make a deep window. Kept a *separate* gate from
+/// the in-world one so the writ board can name which of the two bars a locked writ.
+/// A charter that names no minimum (the founding-tier default) always clears.
+pub fn meets_loadout_gate(
+    sim: &SimState,
+    data: &crate::data::GameData,
+    template: &ContractTemplate,
+) -> bool {
+    if template.min_combat == 0 && template.min_cargo == 0 && template.min_speed == 0 {
+        return true;
+    }
+    let loadout = crate::simulation::ship::loadout_stats(sim, data);
+    loadout.combat >= template.min_combat
+        && loadout.cargo >= template.min_cargo
+        && loadout.speed >= template.min_speed
+}
+
 /// Grant a charter's completion reward (content-depth charters round 15): the
 /// lasting capability a mission leaves the ship — chiefly subsystem boons kept
 /// across voyages — applied once when the charter is seen through to full term.
@@ -1111,6 +1132,37 @@ mod tests {
         assert!(
             (quiet_armed - quiet_unarmed).abs() < 1e-4,
             "a quiet survey is indifferent to arms: {quiet_armed} vs {quiet_unarmed}"
+        );
+    }
+
+    #[test]
+    fn a_writ_that_needs_guns_is_barred_to_an_unarmed_hull() {
+        // Content-depth charters round 26: the loadout availability gate. The Vane Default
+        // enforcement writ demands real firepower; an unarmed hull cannot take it, though
+        // an ungated founding writ always clears, and fitting a weapon opens it.
+        let data = crate::data::GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let mut sim = SimState::new_campaign(&data, "preservers", 12, &picks);
+        let hard = data.contracts.get("the_hard_contract").unwrap();
+        let ordinary = data.contracts.get("deep_vein_survey").unwrap();
+        assert!(hard.min_combat > 0, "the enforcement writ demands combat");
+
+        // An unarmed hull (no weapon fitted): the writ is barred, the founding one open.
+        assert!(sim.ship.weapon.is_none());
+        assert!(
+            !meets_loadout_gate(&sim, &data, hard),
+            "an unarmed hull can't take the enforcement writ"
+        );
+        assert!(
+            meets_loadout_gate(&sim, &data, ordinary),
+            "a founding writ asks nothing of the loadout"
+        );
+
+        // Fit a real weapon: the writ opens.
+        sim.ship.weapon = Some("pulse_cannon".to_string());
+        assert!(
+            meets_loadout_gate(&sim, &data, hard),
+            "with the guns fitted, the enforcement writ opens"
         );
     }
 

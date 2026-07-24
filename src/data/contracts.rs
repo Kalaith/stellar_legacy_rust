@@ -142,6 +142,20 @@ pub struct ContractTemplate {
     /// (PLAN M4.8). 0 = available from the founding; richer charters gate higher.
     #[serde(default)]
     pub min_renown: i64,
+    /// Minimum ship *loadout* the writ demands to even be accepted (content-depth
+    /// charters round 26): the drydock's coupling to charter *availability*, the twin of
+    /// the it21/it166 accrual gates (which decide how *well* a fitted ship works a mission,
+    /// where these decide whether it may *take* one). A megahaul will not be offered to a
+    /// ship without the hold to carry it, an enforcement writ not to a hull without the
+    /// guns to serve it, a deep dash not to one without the engine to make the window. So
+    /// the fitting a captain chooses now shapes which work the writ board even shows.
+    /// 0 = the writ asks nothing of the loadout (the founding-tier default).
+    #[serde(default)]
+    pub min_combat: i32,
+    #[serde(default)]
+    pub min_cargo: i32,
+    #[serde(default)]
+    pub min_speed: i32,
     /// Free-form destination/mission tags (content-depth iteration) copied onto
     /// the active contract at launch. Events may gate on them via
     /// `EventTemplate::requires_charter_tag`, so a charter colors which events

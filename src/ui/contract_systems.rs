@@ -351,9 +351,25 @@ pub(crate) fn draw_charter_cards(
         // The label names whichever bars it, so the board reads honestly.
         let renown_locked = template.min_renown > renown;
         let in_world_ok = crate::simulation::contract::meets_in_world_gate(ctx.sim, template);
-        let locked = renown_locked || !in_world_ok;
+        // …and the drydock loadout gate (content-depth charters round 26): a writ that
+        // demands guns/hold/engine the ship doesn't carry stays locked, and names the lack.
+        let loadout_ok =
+            crate::simulation::contract::meets_loadout_gate(ctx.sim, ctx.data, template);
+        let locked = renown_locked || !in_world_ok || !loadout_ok;
         let lock_label = if renown_locked {
             format!("LOCKED · RENOWN {}", template.min_renown)
+        } else if !loadout_ok {
+            let mut needs: Vec<String> = Vec::new();
+            if template.min_combat > 0 {
+                needs.push(format!("CBT {}", template.min_combat));
+            }
+            if template.min_cargo > 0 {
+                needs.push(format!("CARGO {}", template.min_cargo));
+            }
+            if template.min_speed > 0 {
+                needs.push(format!("SPD {}", template.min_speed));
+            }
+            format!("LOCKED · NEEDS {}", needs.join(" · "))
         } else {
             let needed: Vec<&str> = template
                 .requires_faction_aboard

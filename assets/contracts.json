@@ -1899,6 +1899,7 @@
    "influence": 120
   },
   "min_renown": 100,
+  "min_cargo": 250,
   "tags": [
    "mining",
    "colony",
@@ -2146,6 +2147,7 @@
    "minerals": 1200
   },
   "min_renown": 100,
+  "min_combat": 3,
   "tags": [
    "hostile_space",
    "salvage"
