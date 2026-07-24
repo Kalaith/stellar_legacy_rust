@@ -345,6 +345,12 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // groaning band or back into a sound one, the decks remark the vessel itself aging or
     // renewed — the first voice for the machine rather than the crew it carries.
     sim.announce_hull_condition(data);
+    // …and the ship's *air* is the other half of its body (content-depth voice round 23),
+    // now that the year's life-support wear (and any repair) has settled: when the air
+    // crosses into a stale band or back into a fresh one, the decks remark the atmosphere
+    // going close or clearing — the structure and the air, the two survival systems, both
+    // now speak.
+    sim.announce_air_condition(data);
 
     // Founding Day (real-time loop follow-up): everyone gains a year at once, and
     // any officer aged past their term stands down. Aging is yearly; death is the

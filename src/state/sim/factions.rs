@@ -950,6 +950,35 @@ impl SimState {
         self.hull_voice_band = band;
     }
 
+    /// Give the ship's *air* a voice (content-depth voice round 23): the second ship-body
+    /// voice, the atmosphere twin of the it22 hull (structure) voice, on `life_support`.
+    /// When the air crosses *into* a stale band (close and thick, the scrubbers labouring)
+    /// or a fresh one (clean and cool again after an overhaul), the decks remark it once.
+    /// Deterministic (indexed by year), no RNG; a return to the middle re-arms.
+    pub fn announce_air_condition(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.air_voice_high <= 0.0 {
+            return;
+        }
+        let band =
+            stability_voice_band_for(self.ship.life_support, fl.air_voice_high, fl.air_voice_low);
+        if band == self.air_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.air_fresh,
+            -1 => &fl.air_stale,
+            _ => {
+                self.air_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.air_voice_band = band;
+    }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need
@@ -1950,6 +1979,50 @@ mod tests {
             (0.0, 0.0),
             "a people below the proud threshold tends its module no better than duty"
         );
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_air_goes_stale_or_clears() {
+        // Content-depth voice round 23: the air (life-support) voice, the atmosphere twin
+        // of the hull voice. A new ship's clean air is the silent baseline; crossing into
+        // a stale band surfaces one pooled line; an overhaul back to fresh gets its own,
+        // opposite line; staying put does not reprint.
+        let (data, mut sim, _picks) = armed(51);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.air_voice_high > 0.0 && fl.air_stale.len() >= 3,
+            "this test needs the air voice enabled"
+        );
+        let low = fl.air_voice_low;
+        let high = fl.air_voice_high;
+        let air_lines = |sim: &SimState| {
+            let stale = &data.config.flavor.air_stale;
+            let fresh = &data.config.flavor.air_fresh;
+            sim.log
+                .iter()
+                .filter(|l| stale.contains(&l.text) || fresh.contains(&l.text))
+                .count()
+        };
+
+        // A new ship breathes clean — the launch band is recorded, silent.
+        sim.announce_air_condition(&data);
+        assert_eq!(air_lines(&sim), 0, "a new ship's air is silent");
+
+        // The air goes stale past the low line: one line.
+        sim.ship.life_support = low - 0.05;
+        sim.announce_air_condition(&data);
+        assert_eq!(air_lines(&sim), 1, "staling air says so once");
+        assert_eq!(sim.air_voice_band, -1);
+
+        // Still stale — no reprint.
+        sim.announce_air_condition(&data);
+        assert_eq!(air_lines(&sim), 1, "staying stale is not re-announced");
+
+        // An overhaul clears the air: a second, distinct line.
+        sim.ship.life_support = high + 0.05;
+        sim.announce_air_condition(&data);
+        assert_eq!(air_lines(&sim), 2, "cleared air says so afresh");
+        assert_eq!(sim.air_voice_band, 1);
     }
 
     #[test]

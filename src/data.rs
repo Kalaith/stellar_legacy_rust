@@ -636,6 +636,24 @@ pub struct FlavorConfig {
     pub hull_voice_high: f32,
     #[serde(default)]
     pub hull_voice_low: f32,
+    /// The ship's *air* crossing into a stale band (content-depth voice round 23): the
+    /// atmosphere twin of the hull (structure) voice, on `life_support`. When the air
+    /// goes close and thick — the scrubbers labouring, a faint reek that never quite
+    /// clears, a headache waiting on the lower decks — one of these surfaces. No name;
+    /// indexed by year; empty = silence.
+    #[serde(default)]
+    pub air_stale: Vec<String>,
+    /// The ship's air crossing back into good order (content-depth voice round 23): the
+    /// positive twin — clean and cool again after a scrubber overhaul, a ship that
+    /// breathes easy. No name; indexed by year.
+    #[serde(default)]
+    pub air_fresh: Vec<String>,
+    /// Life-support at/above which the ship remarks clean air (`_high`) or at/below which
+    /// it remarks the air gone stale (`_low`) (content-depth voice round 23).
+    #[serde(default)]
+    pub air_voice_high: f32,
+    #[serde(default)]
+    pub air_voice_low: f32,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -2540,6 +2558,19 @@ mod tests {
                 "hull voice thresholds must order: 0 < low ({}) < high ({})",
                 fl.hull_voice_low,
                 fl.hull_voice_high
+            );
+        }
+        // Content-depth voice round 23: and the air (life-support) voice, the same shape.
+        if fl.air_voice_high > 0.0 {
+            assert!(
+                !fl.air_stale.is_empty() && !fl.air_fresh.is_empty(),
+                "air voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.air_voice_low > 0.0 && fl.air_voice_low < fl.air_voice_high,
+                "air voice thresholds must order: 0 < low ({}) < high ({})",
+                fl.air_voice_low,
+                fl.air_voice_high
             );
         }
         // Content-depth voice round 6: the recurring-crisis pools need variety

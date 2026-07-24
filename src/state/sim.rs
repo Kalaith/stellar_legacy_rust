@@ -483,6 +483,15 @@ pub struct SimState {
     /// announced. 0 at launch; a return to the middle re-arms.
     #[serde(default)]
     pub hull_voice_band: i8,
+    /// The last-announced band of the ship's *air* — its life-support (content-depth
+    /// voice round 23): the second ship-body voice, the atmosphere twin of the it22 hull
+    /// (structure) voice. Tracks whether `life_support` last crossed into a stale band
+    /// (the air gone close and thick, scrubbers labouring, a headache on every deck) or a
+    /// fresh one (clean and cool again after an overhaul), so the decks remark the
+    /// crossing once. The launch band (a new ship breathes clean) is recorded, not
+    /// announced. 0 at launch; a return to the middle re-arms.
+    #[serde(default)]
+    pub air_voice_band: i8,
     /// The band the skeleton's hull-collapse beat last marked (content-depth campaign-
     /// skeleton round 23): -1 once the hull has crossed *into* structural failure (the
     /// beat fires the moment it does), 0 while the hull holds above the red line. The
@@ -624,6 +633,7 @@ impl SimState {
             loyalty_voice_band: 0,
             unity_voice_band: 0,
             hull_voice_band: 0,
+            air_voice_band: 0,
             hull_beat_band: 0,
             depopulation_beats_fired: 0,
             subsystem_beats_fired: Vec::new(),
@@ -669,6 +679,14 @@ impl SimState {
             sim.ship.hull_integrity,
             config.flavor.hull_voice_high,
             config.flavor.hull_voice_low,
+        );
+        // Likewise record the launch band of the ship's air, so a new ship's clean
+        // atmosphere reads as the baseline, not a "breathing easy" the air voice
+        // announces (content-depth voice round 23).
+        sim.air_voice_band = factions::stability_voice_band_for(
+            sim.ship.life_support,
+            config.flavor.air_voice_high,
+            config.flavor.air_voice_low,
         );
         // Founding senior staff fill the configured starting posts.
         for archetype_id in &config.crew.starting_posts {

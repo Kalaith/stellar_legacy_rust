@@ -498,6 +498,20 @@
     ],
     "hull_voice_high": 0.72,
     "hull_voice_low": 0.45,
+    "air_stale": [
+      "The air has gone close and thick. It is nothing you could point to on a gauge and call a failure — the life-support holds, the numbers are within tolerance — but the ship breathes wrong now, a faint stale reek on the lower decks that never quite clears, a heaviness to every lungful, the particular flat used-up quality of an atmosphere that has been through the scrubbers one too many times. The crew have started sleeping with the vents on high and waking with headaches anyway.",
+      "The scrubbers are labouring. You can hear it if you stand near a bulkhead — a strained note under the usual hum — and you can smell the result everywhere else: the air a little sour, a little damp, carrying the accumulated staleness the reclaimers can no longer quite strip out. No alarm has sounded. But the ship has stopped smelling like a place and started smelling like a machine that is tired of recycling the same breath.",
+      "It is a subtle thing and then it is the only thing: the air aboard has thinned toward stale, the fresh green edge the grow-decks used to lend it gone flat, a mustiness settling into the fabric of the ship that no amount of filtering lifts. The crew ration their exertion without being told to, breathe shallow on the worst decks, and carry a low background headache that has become, quietly, the normal state of things.",
+      "The atmosphere has soured by degrees until the whole ship notices at once. The reclaimers run flat out and still the air comes back used, close, faintly wrong — a ship exhaling and inhaling its own long-recycled breath, the margin between comfortable and merely survivable worn thin. Nothing has failed. It simply is not fresh, anywhere, any longer, and the crew have forgotten what fresh was."
+    ],
+    "air_fresh": [
+      "The air is clean again. A hard overhaul of the scrubbers and the reclaim loops has stripped away the accumulated staleness, and the ship breathes the way it did when it was new — cool, clear, a faint green edge off the grow-decks, the kind of air you do not notice because there is nothing in it to notice. The headaches lifted within a week. The crew sleep with the vents on low and wake rested, and no one quite remarks on it, which is exactly the point.",
+      "Something was set right in the ship's lungs this stretch. The reclaimers run quiet and clean, the sour heaviness is gone from the lower decks, and the atmosphere carries again that clear cool nothing-quality that means the life-support is doing its whole job and asking no notice for it. The ship smells like a place people live rather than a machine recycling their breath.",
+      "The air cleared. After a long stale spell the scrubbers were rebuilt and the whole atmosphere turned over, and now the ship breathes easy — the green edge back, the mustiness gone, the crew's shallow careful breathing relaxing into the unconscious ease of people who no longer have to think about the air at all. It is the quietest kind of good news, and the deepest.",
+      "The life-support runs sweet and clean this season, the reclaim loops overhauled and the grow-decks lending their fresh green note to every deck, and the ship carries the particular unremarked comfort of an atmosphere that is simply, wholly well. The crew breathe without thinking about it, which is the only true sign that the air is right."
+    ],
+    "air_voice_high": 0.75,
+    "air_voice_low": 0.5,
     "subsystem_repair": [
       "The {name} was patched back toward working order, good for another stretch of the dark.",
       "Field crews nursed the {name} back to something like health — not pristine, but holding.",
