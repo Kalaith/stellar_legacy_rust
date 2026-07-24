@@ -1798,6 +1798,17 @@ impl SimState {
                 }
             }
         }
+        // …and taking a people in marks the ship's name (content-depth factions round 34): the
+        // reputation mirror of the it31 departure penalty. Where a people *fleeing* the ship lowers
+        // its mercy (a hull peoples flee), *welcoming* one aboard — giving them a berth and a future
+        // in the dark — raises it: word spreads that this is a hull that takes people in. A flat
+        // bonus (the mercy is in the *act* of inclusion, not the newcomer's eventual size), it
+        // composes with the it30 reputation-trade coupling (a merciful ship is dealt with squarely)
+        // and the it16 mercy voice/beat, exactly as the departure penalty does from the other side.
+        let recruit_rep = cfg.recruit_reputation_bonus;
+        if recruit_rep > 0.0 {
+            self.adjust_reputation("mercy", recruit_rep);
+        }
         Ok(())
     }
 }
@@ -3955,6 +3966,37 @@ mod tests {
         assert!(
             sim.log.iter().any(|e| e.text.contains("engineering bay")),
             "the recruit logs the people's signature arrival"
+        );
+    }
+
+    #[test]
+    fn taking_a_people_aboard_warms_the_ships_name() {
+        // Content-depth factions round 34: the reputation mirror of the round-31 departure penalty.
+        // Where a people fleeing the ship lowers its mercy, welcoming one aboard raises it — a hull
+        // that takes people in earns a merciful name, by exactly the recruit bonus.
+        let (data, mut sim, _picks) = armed(9);
+        let cfg = &data.config.factions;
+        assert!(
+            cfg.recruit_reputation_bonus > 0.0,
+            "this test needs the recruit reputation bonus enabled"
+        );
+        sim.resources.credits = 100_000;
+        // Free a slot the same way the dowry test does; the departure's own mercy penalty lands here,
+        // so we read mercy *after* it and measure only the recruit's lift.
+        sim.apply_faction_loss(&data, FactionLossKind::Departed);
+        assert!(!sim.is_faction_aboard("steel_covenant"));
+
+        let before = sim.reputation("mercy");
+        sim.recruit_faction_group(&data, "steel_covenant").unwrap();
+        let after = sim.reputation("mercy");
+        assert!(
+            after > before,
+            "welcoming a new people warms the ship's mercy ({after} vs {before})"
+        );
+        assert!(
+            (after - before - cfg.recruit_reputation_bonus).abs() < 1e-6,
+            "the warming is exactly the recruit reputation bonus ({})",
+            after - before
         );
     }
 

@@ -83,6 +83,7 @@
     "proud_tender_knowledge_bonus": 0.005,
     "departure_cohesion_scar": 0.15,
     "departure_reputation_penalty": 0.12,
+    "recruit_reputation_bonus": 0.06,
     "assimilation_unity_lift": 0.08,
     "rival_unity_friction": 0.03,
     "ally_unity_solidarity": 0.02,

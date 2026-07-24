@@ -2276,6 +2276,14 @@ mod tests {
             "recruit_newcomer_ally_comfort {} must be a gentle per-ally shift [0, 0.5)",
             data.config.factions.recruit_newcomer_ally_comfort
         );
+        // Content-depth factions round 34: the recruit mercy bonus is a gentle one-shot reputation
+        // nudge in [0, 0.5) — welcoming a people warms the ship's name, but no single recruitment
+        // makes it a saint.
+        assert!(
+            (0.0..0.5).contains(&data.config.factions.recruit_reputation_bonus),
+            "recruit_reputation_bonus {} must be a gentle reputation nudge [0, 0.5)",
+            data.config.factions.recruit_reputation_bonus
+        );
         // Content-depth charters round 32: the charter pride/letdown are gentle one-shot approval
         // shifts in [0, 0.5) — a mission's outcome moves the crew's politics, but no single writ
         // makes or breaks a people's whole standing with the ship.

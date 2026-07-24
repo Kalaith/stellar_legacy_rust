@@ -284,6 +284,15 @@ pub struct FactionConfig {
     /// break-away costs the ship no reputation.
     #[serde(default)]
     pub departure_reputation_penalty: f32,
+    /// Mercy reputation the ship gains when it *takes a new people aboard* (content-depth factions
+    /// round 34): the reputation mirror of `departure_reputation_penalty`. Where a people fleeing
+    /// the ship spreads word that this is a hull peoples flee (mercy down), welcoming one — giving
+    /// them a berth and a future in the dark — spreads word that this is a hull that takes people in
+    /// (mercy up). A flat bonus on each recruitment (the mercy is in the *act* of inclusion, not the
+    /// newcomer's eventual size), composing with the round-30 reputation-trade coupling and the
+    /// round-16 mercy voice/beat exactly as the departure penalty does. 0 = recruiting wins no name.
+    #[serde(default)]
+    pub recruit_reputation_bonus: f32,
     /// Unity gained when a tiny drifted people is *assimilated* — folded into the largest
     /// at a generation boundary (content-depth factions round 26): the positive mirror of
     /// the `departure_cohesion_scar`. Where a people that *leaves* tears a hole in the
