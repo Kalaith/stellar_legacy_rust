@@ -96,6 +96,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_hull_beat(sim, data, &mut report)
             && !fire_air_beat(sim, data, &mut report)
             && !fire_becalmed_beat(sim, data, &mut report)
+            && !fire_divergence_beat(sim, data, &mut report)
             && !fire_reputation_beat(sim, data, &mut report)
             && !fire_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
@@ -457,6 +458,40 @@ fn fire_becalmed_beat(sim: &mut SimState, data: &GameData, report: &mut TickRepo
         return false;
     }
     let family = cfg.becalmed_beat_family.clone();
+    force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire an adaptation-divergence beat (content-depth campaign-skeleton round 26): the
+/// *crew-body* twin of the hull/air/becalmed *ship-body* crisis beats, and the terminal
+/// counterpart to the gentle ascending `adaptation_beats` milestones. The month the people's
+/// `adaptation` first rises to or above the red line — grown so shipborn they can no longer
+/// survive a planet, the founding mission physically impossible — a beat is forced (the crew
+/// confronting that they have become the ship's own kind); a fall back below (a strong
+/// infirmary holding the baseline) re-arms it. Fires only during a voyage; at most one per
+/// crossing.
+fn fire_divergence_beat(sim: &mut SimState, data: &GameData, report: &mut TickReport) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.divergence_beat_family.is_empty()
+        || cfg.divergence_beat_threshold <= 0.0
+        || sim.contract.is_none()
+    {
+        return false;
+    }
+    let band = if sim.population.adaptation >= cfg.divergence_beat_threshold {
+        1
+    } else {
+        0
+    };
+    if band == sim.adaptation_divergence_band {
+        return false;
+    }
+    sim.adaptation_divergence_band = band;
+    if band == 0 {
+        // The crew fell back below the red line — re-arm, but do not fire.
+        return false;
+    }
+    let family = cfg.divergence_beat_family.clone();
     force_family_beat(sim, data, &family, report);
     true
 }

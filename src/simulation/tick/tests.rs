@@ -735,6 +735,8 @@ fn contract_completes_at_target_duration() {
     data.config.campaign_skeleton.air_beat_family.clear();
     // …and the round-25 becalmed beat, which a fuel-starved voyage trips.
     data.config.campaign_skeleton.becalmed_beat_family.clear();
+    // …and the round-26 divergence beat, which a long voyage's rising adaptation trips.
+    data.config.campaign_skeleton.divergence_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
     let mut sim = SimState::new_campaign(
@@ -1228,6 +1230,46 @@ fn a_becalmed_beat_fires_when_the_ship_is_long_stranded_and_rearms_when_it_burns
     sim.fuel_stall_years = 0;
     assert!(!fire_becalmed_beat(&mut sim, &data, &mut report));
     assert_eq!(sim.becalmed_beat_band, 0);
+}
+
+#[test]
+fn a_divergence_beat_fires_when_the_crew_grows_shipborn_and_rearms_when_held_back() {
+    // Content-depth campaign-skeleton round 26: the high-side crew-body twin of the
+    // hull/air/becalmed ship-body crisis beats. Once the people's adaptation rises to its
+    // red line — grown so shipborn they can no longer survive a planet — the divergence
+    // reckoning is forced once; a fall back below (a strong infirmary holding the baseline)
+    // re-arms it.
+    let data = GameData::load().unwrap();
+    let line = data.config.campaign_skeleton.divergence_beat_threshold;
+    assert!(line > 0.0, "this test needs the divergence beat enabled");
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        11,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+
+    // Still planet-capable (short of the line): no reckoning.
+    sim.population.adaptation = line - 0.05;
+    assert!(!fire_divergence_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.adaptation_divergence_band, 0);
+
+    // Grown fully shipborn: the beat fires, once.
+    sim.population.adaptation = line + 0.02;
+    assert!(fire_divergence_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.adaptation_divergence_band, 1);
+    assert!(
+        !fire_divergence_beat(&mut sim, &data, &mut report),
+        "fires once per crossing"
+    );
+
+    // The infirmary holds the line back below — re-arms it (clears the band, no fire).
+    sim.population.adaptation = line - 0.05;
+    assert!(!fire_divergence_beat(&mut sim, &data, &mut report));
+    assert_eq!(sim.adaptation_divergence_band, 0);
 }
 
 #[test]
@@ -1805,6 +1847,8 @@ fn the_sunset_relief_plays_its_two_act_scripted_arc_in_order() {
     data.config.campaign_skeleton.air_beat_family.clear();
     // …and the round-25 becalmed beat, which a fuel-starved voyage trips.
     data.config.campaign_skeleton.becalmed_beat_family.clear();
+    // …and the round-26 divergence beat, which a long voyage's rising adaptation trips.
+    data.config.campaign_skeleton.divergence_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 
@@ -1909,6 +1953,8 @@ fn a_charter_fires_its_scripted_beat_on_its_appointed_year() {
     data.config.campaign_skeleton.air_beat_family.clear();
     // …and the round-25 becalmed beat, which a fuel-starved voyage trips.
     data.config.campaign_skeleton.becalmed_beat_family.clear();
+    // …and the round-26 divergence beat, which a long voyage's rising adaptation trips.
+    data.config.campaign_skeleton.divergence_beat_family.clear();
     data.config.campaign_skeleton.dead_air_years = 0;
     data.config.campaign_skeleton.anniversary_years = 0;
 

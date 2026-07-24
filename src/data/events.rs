@@ -444,6 +444,13 @@ pub struct EventTemplate {
     /// that breathes clean. None = ungated.
     #[serde(default)]
     pub life_support_below: Option<f32>,
+    /// Adaptation-divergence gate (content-depth campaign-skeleton round 26): the *high-side*
+    /// crew-body twin of `hull_below`/`life_support_below` — the event only enters the pool
+    /// once the people's `adaptation` has risen to or above this fraction, the honest gate for
+    /// *the crew has become the ship's own kind* content and the divergence beat. So "we can no
+    /// longer survive a planet" cannot surface on a still-baseline crew. None = ungated.
+    #[serde(default)]
+    pub adaptation_above: Option<f32>,
     /// Chronic-scarcity gate (content-depth provisioning round 13): the event only
     /// enters the pool once the food store has sat below the lean line for at least
     /// this many consecutive years (`sim.lean_food_years`) — the honest gate for

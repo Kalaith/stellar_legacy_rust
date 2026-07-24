@@ -389,6 +389,16 @@ fn passes_gate(sim: &SimState, template: &EventTemplate) -> bool {
     {
         return false;
     }
+    // Adaptation-divergence gate (content-depth campaign-skeleton round 26): the high-side
+    // crew-body twin — "we have become the ship's own kind, and can no longer survive a
+    // planet" content waits until the people's adaptation has risen to its red line, the
+    // honest gate for the divergence beat.
+    if template
+        .adaptation_above
+        .is_some_and(|t| sim.population.adaptation < t)
+    {
+        return false;
+    }
     // Chronic-scarcity gate (content-depth round 13): long-hunger content waits
     // until the shortage has ground on for years, not just this season.
     if sim.lean_food_years < template.min_lean_food_years {

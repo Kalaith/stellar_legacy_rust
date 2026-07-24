@@ -2665,5 +2665,85 @@
     "log": "The ship let the drive stay cold and the chance pass by, choosing the drift it had made a home over a heading it no longer wanted — a drift-people fully become itself, at peace in a stillness the founders would have called a failure and the living called their life."
    }
   ]
+ },
+ {
+  "id": "the_people_of_the_ship",
+  "category": "legacy_moment",
+  "title": "The People of the Ship",
+  "description": "The chief medic brings the whole council the finding it has quietly circled for a generation: the crew are no longer, in the flesh, the people who launched. Taller and lighter-boned in the low spin, lungs tuned to recycled air, blood and inner ear reshaped for a world that turns — the medics have measured it and will not soften it. The founders' charter names a planet as the destination and landfall as the purpose. The bodies in this room could not survive an open sky. The question is no longer whether to make landfall. It is whether to keep pretending the ship is a vessel to a home, when it has become the home.",
+  "requires_decision": true,
+  "adaptation_above": 0.82,
+  "legacy_weight_modifiers": {
+   "preservers": 1.4
+  },
+  "outcomes": [
+   {
+    "id": "declare_the_ship_the_destination",
+    "label": "Strike the planetfall clause",
+    "description": "Say the true thing out loud and write it into the charter: the ship is not carrying a people to a world, the ship is the world. Landfall was the founders' purpose; being a people, whole and aboard, is this one. A relief to say, and a grief — the open ground receding for good from anything a living hand could reach.",
+    "population_delta": {
+     "adaptation": 0.05,
+     "unity": 0.09,
+     "morale": 0.05,
+     "legacy_loyalty": -0.08,
+     "cultural_drift": 0.05
+    },
+    "log": "The council struck the planetfall clause and wrote the ship itself into the charter as the destination — not a defeat but a coming-of-age, a people ceasing to apologize for the shape the voyage had made of it. The founders' dream of open ground was folded up and set gently aside, and the ship, having stopped being a journey, became at last a place."
+   },
+   {
+    "id": "hold_the_baseline_seed",
+    "label": "Keep a baseline seed alive",
+    "description": "Refuse the finality. Commit the infirmary to holding a small baseline-human seed-population — kept planet-fit by every craft the medics have, at real cost in effort and stores — so that the charter's promise is not physically dead: someone, some generation, could still walk out onto a shore.",
+    "resource_delta": {
+     "influence": -25,
+     "food": -60
+    },
+    "population_delta": {
+     "adaptation": -0.06,
+     "legacy_loyalty": 0.06,
+     "morale": -0.03
+    },
+    "log": "The infirmary took up the hardest charge it had ever been given: to hold a handful of the crew planet-fit against the whole drift of the ship, a baseline seed kept for grandchildren who might yet stand on open ground. It cost stores and rest and never fully succeeded — but the charter's promise, for one more generation, was not allowed to die."
+   }
+  ],
+  "family": "legacy_drift"
+ },
+ {
+  "id": "the_open_sky_fear",
+  "category": "legacy_moment",
+  "title": "The Open-Sky Fear",
+  "description": "In a training bay rigged to project an open horizon, half the young cohort could not stay in the room. Not distaste — vertigo, a body certain that a ceiling three kilometers off is a fall waiting to happen, that unbounded air is a thing gone wrong. The instructors, shipborn themselves, understand it completely. The people fitted to the ship are coming to fear the very sky the voyage was meant to reach.",
+  "requires_decision": true,
+  "adaptation_above": 0.82,
+  "outcomes": [
+   {
+    "id": "let_the_horizon_go",
+    "label": "Let the horizon go",
+    "description": "Stop training for a landfall the bodies recoil from. Turn the open-sky bay to some use the shipborn actually want. A quiet surrender that half the ship exhales to hear.",
+    "population_delta": {
+     "adaptation": 0.04,
+     "morale": 0.04,
+     "unity": 0.03,
+     "legacy_loyalty": -0.04
+    },
+    "log": "The open-sky bay went dark, its horizon projector repurposed, and no one argued for long. The ship's people stopped rehearsing a homecoming their bodies dreaded, and something tight in the corridors loosened — the relief of a folk no longer asked to want what it could no longer want."
+   },
+   {
+    "id": "drill_against_the_fear",
+    "label": "Drill against the fear",
+    "description": "Refuse to let the reflex win. Run graded acclimation for anyone willing — hard, joyless work against a body's own certainty — so the option of open ground stays open to at least those who choose it.",
+    "resource_delta": {
+     "influence": -15,
+     "energy": -40
+    },
+    "population_delta": {
+     "adaptation": -0.03,
+     "morale": -0.04,
+     "legacy_loyalty": 0.05
+    },
+    "log": "The acclimation drills ran on, unloved and unrelenting, a minority holding the door to open ground ajar by main force of will against their own reshaped nerves. It won few converts and cost the rest their patience — but the ship kept, in the bodies of the stubborn, a living memory of what it was to stand unroofed."
+   }
+  ],
+  "family": "legacy_drift"
  }
 ]

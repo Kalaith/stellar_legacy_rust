@@ -1078,6 +1078,20 @@ pub struct CampaignSkeletonConfig {
     /// disables it.
     #[serde(default)]
     pub becalmed_beat_years: u32,
+    /// Adaptation-divergence beat (content-depth campaign-skeleton round 26): the *crew-body*
+    /// twin of the hull/air/becalmed *ship-body* crisis beats, and the terminal counterpart to
+    /// the gentle ascending `adaptation_beats` milestones — where those mark the descendants
+    /// growing suited to the ship, this fires once the people have grown so shipborn they can no
+    /// longer survive a planet at all: the founding mission (make landfall) has become
+    /// physically impossible. The month `adaptation` first rises to or above this fraction a beat
+    /// is forced from `divergence_beat_family`; a fall back below re-arms it (a strong infirmary
+    /// holding the line can un-fire the reckoning). 0 disables it. Pairs with the it adaptation
+    /// voice: the voice murmurs the drift, the beat forces its point of no return.
+    #[serde(default)]
+    pub divergence_beat_threshold: f32,
+    /// The family the adaptation-divergence beat draws from.
+    #[serde(default)]
+    pub divergence_beat_family: String,
     /// Power-transition beat family (content-depth round 11): a beat keyed not to
     /// a stat or a time but to a *political* change — the first tick the dominant
     /// faction differs from the one the skeleton last marked (demographic drift
@@ -2580,6 +2594,27 @@ mod tests {
             assert!(
                 sk.becalmed_beat_years > 0,
                 "the becalmed beat needs a sustained-stall threshold"
+            );
+        }
+        // Content-depth campaign-skeleton round 26: the adaptation-divergence beat, the high-side
+        // crew-body twin, needs a family with events, a red line in (0,1), and an
+        // adaptation_above-gated event to surface the reckoning on theme.
+        if !sk.divergence_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.divergence_beat_family),
+                "campaign_skeleton divergence_beat_family '{}' has no events",
+                sk.divergence_beat_family
+            );
+            assert!(
+                sk.divergence_beat_threshold > 0.0 && sk.divergence_beat_threshold < 1.0,
+                "divergence_beat_threshold {} must be a red line inside (0, 1)",
+                sk.divergence_beat_threshold
+            );
+            assert!(
+                data.events
+                    .iter()
+                    .any(|(_, e)| e.adaptation_above.is_some()),
+                "the adaptation-divergence beat needs an adaptation_above-gated event to surface"
             );
         }
         // Content-depth voice: every generational-flavor pool must be non-empty

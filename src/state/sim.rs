@@ -391,6 +391,13 @@ pub struct SimState {
     /// burning re-arms it. 0 at launch.
     #[serde(default)]
     pub becalmed_beat_band: i8,
+    /// The band the adaptation-divergence beat last marked (content-depth campaign-skeleton
+    /// round 26): 1 once the crew has grown so shipborn it can no longer survive a planet,
+    /// 0 while it is still planet-capable. The crew-body twin of the it hull/air/becalmed
+    /// ship-body crisis beats; a fall back below the red line (a strong infirmary holding the
+    /// baseline) re-arms it. 0 at launch — a founding crew is planet-born.
+    #[serde(default)]
+    pub adaptation_divergence_band: i8,
     /// Fuel actually scooped by the drive since the last provisioning report
     /// (real-time loop follow-up: legible stat changes), 0-1 fraction. Accrued
     /// each year by the engine regen (only the part that wasn't capped away), so a
@@ -647,6 +654,7 @@ impl SimState {
             fuel_stalled_this_year: false,
             fuel_stall_years: 0,
             becalmed_beat_band: 0,
+            adaptation_divergence_band: 0,
             fuel_scooped_accum: 0.0,
             tutorial_dismissed: false,
             market,
