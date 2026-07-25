@@ -325,7 +325,11 @@ pub fn term_bar(rect: Rect, frac: f32, fill: Color, label: &str, value: &str) {
         baseline,
         TextStyle::new(font, label_color).params(),
     );
-    let value_color = if frac > 0.9 { term::bg() } else { term::accent() };
+    let value_color = if frac > 0.9 {
+        term::bg()
+    } else {
+        term::accent()
+    };
     draw_text_right(
         value,
         rect.right() - 8.0,
@@ -422,9 +426,30 @@ pub fn draw_gauge_icon(icon: GaugeIcon, cx: f32, cy: f32, r: f32, color: Color) 
         }
         GaugeIcon::People => {
             draw_circle_lines(cx, cy - r * 0.4, r * 0.42, t, color);
-            draw_line(cx - r * 0.8, cy + r * 0.85, cx + r * 0.8, cy + r * 0.85, t, color);
-            draw_line(cx - r * 0.8, cy + r * 0.85, cx - r * 0.5, cy + r * 0.15, t, color);
-            draw_line(cx + r * 0.8, cy + r * 0.85, cx + r * 0.5, cy + r * 0.15, t, color);
+            draw_line(
+                cx - r * 0.8,
+                cy + r * 0.85,
+                cx + r * 0.8,
+                cy + r * 0.85,
+                t,
+                color,
+            );
+            draw_line(
+                cx - r * 0.8,
+                cy + r * 0.85,
+                cx - r * 0.5,
+                cy + r * 0.15,
+                t,
+                color,
+            );
+            draw_line(
+                cx + r * 0.8,
+                cy + r * 0.85,
+                cx + r * 0.5,
+                cy + r * 0.15,
+                t,
+                color,
+            );
         }
     }
 }
@@ -439,7 +464,12 @@ pub fn status_badge(rect: Rect, icon: GaugeIcon, label: &str, value: &str, tone:
     draw_circle_lines(cx, cy, r + 5.0, 1.0, term::faint());
     draw_gauge_icon(icon, cx, cy, r * 0.72, tone);
     let tx = cx + r + 16.0;
-    draw_ui_text_ex(label, tx, cy - 3.0, TextStyle::new(12.0, term::dim()).params());
+    draw_ui_text_ex(
+        label,
+        tx,
+        cy - 3.0,
+        TextStyle::new(12.0, term::dim()).params(),
+    );
     draw_ui_text_ex(value, tx, cy + 15.0, TextStyle::new(15.0, tone).params());
 }
 
@@ -824,6 +854,10 @@ pub struct GameplayCtx<'a> {
     /// random option (real-time loop §2). Only meaningful while a decision is
     /// pending; the modal renders it as a countdown.
     pub decision_remaining: f32,
+    /// Smooth-scroll state for the charter board / PREP swap column (the list
+    /// outgrows its panel). A `Cell` so this pure-view path can update the offset
+    /// through the shared `&GameplayCtx` without threading `&mut` everywhere.
+    pub charter_scroll: &'a std::cell::Cell<macroquad_toolkit::ui::ScrollArea>,
 }
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {

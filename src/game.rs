@@ -22,6 +22,8 @@ use macroquad_toolkit::notifications::{
     NotificationAnchor, NotificationManager, NotificationRenderConfig,
 };
 use macroquad_toolkit::prelude::{begin_virtual_ui_frame, end_virtual_ui_frame};
+use macroquad_toolkit::ui::ScrollArea;
+use std::cell::Cell;
 
 /// True on the frame the number key for a 0-based list index (1..=9) is pressed.
 fn digit_pressed(index: usize) -> bool {
@@ -116,6 +118,10 @@ pub struct Game {
     /// Reset when the pending decision changes.
     decision_key: Option<String>,
     decision_started: f64,
+    /// Smooth-scroll state for the drydock charter board / PREP swap column,
+    /// which now outgrows its panel (grouped by objective, all tiers listed).
+    /// A `Cell` so the pure-view draw path can update it through `&GameplayCtx`.
+    charter_scroll: Cell<ScrollArea>,
 }
 
 impl Game {
@@ -188,6 +194,7 @@ impl Game {
             month_accumulator: 0.0,
             decision_key: None,
             decision_started: 0.0,
+            charter_scroll: Cell::new(ScrollArea::new()),
         }
     }
 
@@ -437,6 +444,7 @@ impl Game {
                     log_reveal,
                     run_clock: self.run_clock_for(&gameplay.sim),
                     decision_remaining: self.decision_remaining(&gameplay.sim),
+                    charter_scroll: &self.charter_scroll,
                 }),
             }
         };
