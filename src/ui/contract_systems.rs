@@ -145,7 +145,9 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec
             contract.objective_progress, contract.objective_target, contract.objective_unit
         ),
     );
-    y += 30.0;
+    // Clear the objective bar before the milestone list: a section header sits on
+    // its baseline, so a tight gap let its ascenders overlap the bar's box.
+    y += 42.0;
 
     draw_ui_text_ex(
         "MILESTONES",
@@ -204,7 +206,7 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec
     if underway {
         if term_button(
             abort,
-            "[ TURN BACK ]  ·  pay prorated to progress",
+            "[ TURN BACK ]  ·  pay prorated to the objective banked (0 if none)",
             true,
             mouse,
         ) {

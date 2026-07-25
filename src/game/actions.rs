@@ -159,7 +159,7 @@ impl Game {
                     if contract::jump_to_return(sim) {
                         sim.push_log("The council votes to turn back.");
                         self.notifications
-                            .warning("Turning for home — pay will be prorated.");
+                            .warning("Turning for home — pay prorated to the objective banked.");
                     }
                 }
                 None
