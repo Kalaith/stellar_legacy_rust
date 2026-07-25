@@ -14,7 +14,7 @@ use crate::data::ship_components::{ComponentKind, ComponentStats};
 use crate::data::GameData;
 use crate::simulation::ship::loadout_stats;
 use crate::state::sim::SimState;
-use crate::ui::term;
+use crate::ui::{term, term_bar};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::draw_ui_text_ex;
@@ -706,12 +706,12 @@ pub fn draw_status_strip(rect: Rect, schematic: &ShipSchematic) {
             rect.y + 20.0,
             TextStyle::new(11.0, term::dim()).params(),
         );
-        meter(
+        term_bar(
             Rect::new(tx + 10.0, rect.y + 30.0, tw - 20.0, 16.0),
             value,
-            1.0,
             condition_tone(value),
-            Some(&format!("{:.0}%", value * 100.0)),
+            "",
+            &format!("{:.0}%", value * 100.0),
         );
     };
     let value_tile = |i: f32, label: &str, value: &str| {

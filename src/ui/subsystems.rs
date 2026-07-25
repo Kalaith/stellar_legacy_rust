@@ -3,7 +3,7 @@
 //! Train verbs. Pure view: it reads `&SimState` and emits `UiAction` only.
 
 use crate::data::GameData;
-use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
+use crate::ui::{term, term_bar, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
@@ -62,31 +62,31 @@ fn draw_card(
     );
     y += 22.0;
 
-    meter(
+    term_bar(
         Rect::new(content.x, y, content.w, 18.0),
         state.condition,
-        1.0,
-        term::primary(),
-        Some(&format!("CONDITION {:.0}%", state.condition * 100.0)),
+        term::accent(),
+        "CONDITION",
+        &format!("{:.0}%", state.condition * 100.0),
     );
     y += 24.0;
 
     // Knowledge — red when it has fallen below the repair threshold.
     let can_mend = state.knowledge >= def.repair_knowledge_required;
-    meter(
+    term_bar(
         Rect::new(content.x, y, content.w, 18.0),
         state.knowledge,
-        1.0,
         if can_mend {
             term::accent()
         } else {
             term::alert()
         },
-        Some(&format!(
-            "KNOWLEDGE {:.0}%  (mend needs {:.0}%)",
+        "KNOWLEDGE",
+        &format!(
+            "{:.0}%  (need {:.0}%)",
             state.knowledge * 100.0,
             def.repair_knowledge_required * 100.0
-        )),
+        ),
     );
 
     // --- Verbs: Repair / Upgrade (port) / Train ---

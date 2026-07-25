@@ -104,6 +104,12 @@ impl DisplaySettings {
             Phosphor::Amber => CrtStyle::amber(),
             Phosphor::Green => CrtStyle::green(),
         };
+        // Ease the corner falloff and scanline darkening back from the toolkit
+        // presets: the heavy vignette greyed the panels toward the edges and
+        // washed the whole frame. A lighter tube keeps the CRT character while
+        // letting the boosted palette read crisp and flat, corner to corner.
+        style.vignette_alpha *= 0.4;
+        style.scanline_alpha *= 0.7;
         if !self.scanlines {
             style.scanline_alpha = 0.0;
         }

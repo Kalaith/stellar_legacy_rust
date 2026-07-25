@@ -26,24 +26,36 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
     );
     y += 34.0;
 
-    // Header row.
+    // Header row — column captions aligned to the row cards below.
+    let col_held = 240.0;
+    let col_price = 400.0;
+    let col_trend = 560.0;
     for (label, offset) in [
         ("COMMODITY", 0.0),
-        ("HELD", 220.0),
-        ("PRICE", 360.0),
-        ("TREND", 500.0),
+        ("HELD", col_held),
+        ("PRICE", col_price),
+        ("TREND", col_trend),
     ] {
         draw_ui_text_ex(
             label,
-            content.x + offset,
+            content.x + 14.0 + offset,
             y,
             TextStyle::new(13.0, term::faint()).params(),
         );
     }
-    y += 10.0;
+    y += 12.0;
 
+    // Each commodity gets its own bordered row card, so the ledger reads as a
+    // set of instruments rather than a bare table adrift in empty space.
+    let row_h = 50.0;
     for entry in &ctx.sim.market.entries {
-        y += 44.0;
+        let row = Rect::new(content.x, y, content.w, row_h);
+        draw_surface(
+            row,
+            &SurfaceStyle::new(term::surface_inset()).with_border(1.0, term::faint()),
+        );
+        let tb = row.y + row_h * 0.5 + 5.0;
+        let cx = row.x + 14.0;
         let held = match entry.resource {
             TradeResource::Energy => ctx.sim.resources.energy,
             TradeResource::Minerals => ctx.sim.resources.minerals,
@@ -52,20 +64,20 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         };
         draw_ui_text_ex(
             entry.resource.label(),
-            content.x,
-            y,
+            cx,
+            tb,
             TextStyle::new(16.0, term::primary()).params(),
         );
         draw_ui_text_ex(
             &held.to_string(),
-            content.x + 220.0,
-            y,
+            cx + col_held,
+            tb,
             TextStyle::new(16.0, term::accent()).params(),
         );
         draw_ui_text_ex(
             &format!("{:.1} cr", entry.price),
-            content.x + 360.0,
-            y,
+            cx + col_price,
+            tb,
             TextStyle::new(16.0, term::primary()).params(),
         );
         let (arrow, color) = if entry.trend > 0.005 {
@@ -77,22 +89,25 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         };
         draw_ui_text_ex(
             &format!("{arrow} {:+.2}", entry.trend),
-            content.x + 500.0,
-            y,
+            cx + col_trend,
+            tb,
             TextStyle::new(16.0, color).params(),
         );
 
-        let buy_rect = Rect::new(content.x + 660.0, y - 22.0, 130.0, 30.0);
-        let sell_rect = Rect::new(content.x + 800.0, y - 22.0, 130.0, 30.0);
+        let bh = 30.0;
+        let by = row.y + (row_h - bh) * 0.5;
+        let buy_rect = Rect::new(row.right() - 292.0, by, 132.0, bh);
+        let sell_rect = Rect::new(row.right() - 146.0, by, 132.0, bh);
         if term_button(buy_rect, &format!("BUY {lot}"), true, mouse) {
             actions.push(UiAction::Buy(entry.resource, lot));
         }
         if term_button(sell_rect, &format!("SELL {lot}"), held >= lot, mouse) {
             actions.push(UiAction::Sell(entry.resource, lot));
         }
+        y += row_h + 10.0;
     }
 
-    y += 60.0;
+    y += 22.0;
     draw_text_block(
         "Prices drift each year the ship advances. Buy low before a long leg; sell what the next generation won't need.",
         content.x,

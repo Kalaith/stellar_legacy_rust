@@ -4,7 +4,7 @@
 use crate::data::contracts::ContractPhase;
 use crate::data::{GameData, ResourceDelta};
 use crate::state::sim::ActiveContract;
-use crate::ui::{term, term_button, term_panel, GameplayCtx, UiAction};
+use crate::ui::{term, term_bar, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, measure_ui_text, RectExt};
@@ -121,12 +121,12 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec
     );
     y += 24.0;
 
-    meter(
+    term_bar(
         Rect::new(content.x, y, content.w, 26.0),
         contract.progress(),
-        1.0,
-        term::primary(),
-        Some(&format!("PROGRESS {:.0}%", contract.progress() * 100.0)),
+        term::accent(),
+        "PROGRESS",
+        &format!("{:.0}%", contract.progress() * 100.0),
     );
     y += 34.0;
 
@@ -135,15 +135,15 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec
     y += 30.0;
 
     // Quantified objective counter (W2) — pay tracks this fraction, not the clock.
-    meter(
+    term_bar(
         Rect::new(content.x, y, content.w, 22.0),
         contract.objective_fraction(),
-        1.0,
         term::accent(),
-        Some(&format!(
-            "OBJECTIVE {:.0} / {:.0} {}",
+        "OBJECTIVE",
+        &format!(
+            "{:.0} / {:.0} {}",
             contract.objective_progress, contract.objective_target, contract.objective_unit
-        )),
+        ),
     );
     y += 30.0;
 
@@ -179,18 +179,17 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec
     );
     y += 22.0;
     for metric in &contract.metrics {
-        meter(
+        term_bar(
             Rect::new(content.x, y, content.w, 20.0),
             (metric.current / metric.target.max(0.001)).min(1.0),
-            1.0,
             term::accent(),
-            Some(&format!(
-                "{} {:.2}/{:.2} (w {:.0}%)",
-                metric.name,
+            &metric.name.to_uppercase(),
+            &format!(
+                "{:.2}/{:.2} (w {:.0}%)",
                 metric.current,
                 metric.target,
                 metric.weight * 100.0
-            )),
+            ),
         );
         y += 28.0;
     }
