@@ -76,6 +76,11 @@ impl Game {
                 if let GameState::Menu(menu) = &mut self.state {
                     menu.phase = crate::state::MenuPhase::NewGame;
                 }
+                // First time into the new-game picker, the orientation overlay
+                // greets the commander over it (once per install, per the flag).
+                if !self.onboarding.welcome_seen {
+                    self.welcome_open = true;
+                }
                 None
             }
             UiAction::BackToMainMenu => {

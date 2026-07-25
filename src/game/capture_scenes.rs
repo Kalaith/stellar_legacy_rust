@@ -28,8 +28,11 @@ impl Game {
         match scene {
             "menu" => self.state = crate::state::GameState::Menu(MenuState::new(false)),
             "welcome" => {
-                // The first-run orientation overlay above the main menu.
-                self.state = crate::state::GameState::Menu(MenuState::new(false));
+                // The first-run orientation overlay above the new-game picker,
+                // where it greets the commander after choosing NEW GAME.
+                let mut menu = MenuState::new(false);
+                menu.phase = crate::state::MenuPhase::NewGame;
+                self.state = crate::state::GameState::Menu(menu);
                 self.welcome_open = true;
             }
             "green" => {

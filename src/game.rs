@@ -153,10 +153,10 @@ impl Game {
         let _ = assets.load_texture_configs(&data.texture_manifest).await;
 
         let achievements = crate::achievements::load(&data.config.game_name);
-        // The first-run welcome overlay shows once per install, after the boot
-        // log, until the player dismisses it (which persists the flag).
+        // The first-run welcome overlay is triggered by the first NEW GAME (see
+        // GoToNewGame), not on boot — the main menu shows clean. The flag decides
+        // whether that first NEW GAME opens it.
         let onboarding = crate::settings::Onboarding::load(&data.config.game_name);
-        let welcome_open = !onboarding.welcome_seen;
 
         Self {
             data,
@@ -174,7 +174,7 @@ impl Game {
             settings_open: false,
             help_open: false,
             onboarding,
-            welcome_open,
+            welcome_open: false,
             modal_key: None,
             modal_started: 0.0,
             mission_started: None,
