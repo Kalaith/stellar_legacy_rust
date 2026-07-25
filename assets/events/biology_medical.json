@@ -274,6 +274,19 @@
      "unity": -0.02
     },
     "log": "The soft years showed in the mourning: a crew unused to loss took the fever's toll far harder than the count alone would explain, and the ship was a long time lifting its head afterward."
+   },
+   {
+    "id": "the_borrowed_alertness_comes_due",
+    "requires_consequence": [
+     "stimulant_debt"
+    ],
+    "description_add": "And this fever finds a crew that has borrowed against its own body before: the long stimulant regime that drove them through the sleeping sickness left a debt of exhaustion never fully repaid, reserves spent that a generation ship does not easily rebuild. Where a rested crew might shrug this off, one still hollow from the last emergency has nothing held back to fight it with.",
+    "population_delta": {
+     "count": -15,
+     "morale": -0.04,
+     "stability": -0.02
+    },
+    "log": "The quiet fever came due on a debt the ship thought long settled: the crew driven through the sleeping sickness on drugs and discipline had never got their reserves back, and the fever took more of the hollowed-out than it ever should have — the old emergency's cost collected in full, a generation late."
    }
   ]
  },

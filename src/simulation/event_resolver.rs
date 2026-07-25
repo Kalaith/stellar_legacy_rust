@@ -2277,6 +2277,45 @@ mod tests {
     }
 
     #[test]
+    fn a_stimulant_debt_comes_due_in_a_later_fever() {
+        // Content-depth event families round 35: the `stimulant_debt` consequence arc. Pushing
+        // through the Long Sleep on stimulants records `stimulant_debt`; a later Quiet Fever then
+        // finds a crew hollowed by the old borrowed alertness, with no reserves to fight it — extra
+        // dead, morale and stability sinking. A rested crew (no debt) meets the fever fresh. (The
+        // debt complication is checked after the broken-ward and soft-years ones, so a sound
+        // infirmary and a crew not long-soft isolate it.)
+        let data = GameData::load().unwrap();
+        let picks = crate::state::sim::founding_faction_ids(&data);
+        let template = data.events.get("quiet_fever").unwrap();
+        let comp = template
+            .complications
+            .iter()
+            .find(|c| {
+                c.requires_consequence
+                    .contains(&"stimulant_debt".to_string())
+            })
+            .expect("the quiet fever carries a stimulant-debt reckoning");
+
+        // A rested crew: sound ward, not long-soft, no debt — no complication rides.
+        let mut clean = SimState::new_campaign(&data, "preservers", 23, &picks);
+        clean.subsystems.get_mut("medical_bay").unwrap().condition = 1.0;
+        clean.fat_food_years = 0;
+        assert!(
+            active_complication(&clean, template).is_none(),
+            "a rested crew with a sound ward meets the fever fresh"
+        );
+
+        // Record the debt the stimulant regime leaves: now it comes due.
+        clean.consequences.push("stimulant_debt".to_string());
+        assert_eq!(
+            active_complication(&clean, template).map(|c| &c.id),
+            Some(&comp.id),
+            "the borrowed alertness comes due on a crew that spent its reserves"
+        );
+        assert!(shown_description(&clean, template).contains("borrowed against its own body"));
+    }
+
+    #[test]
     fn a_reputation_gated_complication_rides_only_on_a_ship_of_that_name() {
         // Content-depth event families round 22: the same crisis reads differently by
         // the *name* the ship has earned. The Petitioners gains a twist that rides only
