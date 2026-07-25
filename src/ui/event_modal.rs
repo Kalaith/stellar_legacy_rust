@@ -33,7 +33,9 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         available.len(),
         term::alert(),
     );
-    let mut y = content.y + 30.0;
+    // Drop the title clear of the header divider — at the old offset its caps
+    // sat right on the rule and read as cramped.
+    let mut y = content.y + 48.0;
     draw_ui_text_ex(
         &template.title,
         content.x,
@@ -49,7 +51,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
 
     for (shown, &i) in available.iter().enumerate() {
         let outcome = &template.outcomes[i];
-        let card = Rect::new(content.x, y, content.w, 84.0);
+        let card = Rect::new(content.x, y, content.w, 92.0);
         draw_surface(
             card,
             &SurfaceStyle::new(Color::new(0.08, 0.065, 0.015, 1.0)).with_border(1.0, term::faint()),
@@ -58,7 +60,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
             &outcome.description,
             card.x + 14.0,
             card.y + 8.0,
-            card.w - 200.0,
+            card.w - 264.0,
             48.0,
             13.0,
             3.0,
@@ -73,19 +75,19 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
             draw_ui_text_ex(
                 &text,
                 card.x + 14.0,
-                card.y + 72.0,
+                card.y + 80.0,
                 TextStyle::new(12.0, color).params(),
             );
         }
         if term_button(
-            Rect::new(card.right() - 178.0, card.y + 24.0, 164.0, 36.0),
+            Rect::new(card.right() - 244.0, card.y + 18.0, 230.0, 56.0),
             &format!("[{}] {}", shown + 1, outcome.label.to_uppercase()),
             true,
             mouse,
         ) {
             actions.push(UiAction::ResolveEvent(i));
         }
-        y += 96.0;
+        y += 104.0;
     }
 }
 
@@ -109,7 +111,9 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
         dilemma.options.len(),
         term::primary(),
     );
-    let mut y = content.y + 30.0;
+    // Drop the title clear of the header divider — at the old offset its caps
+    // sat right on the rule and read as cramped.
+    let mut y = content.y + 48.0;
     draw_ui_text_ex(
         &dilemma.title,
         content.x,
@@ -127,7 +131,7 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
     y += 84.0;
 
     for (i, option) in dilemma.options.iter().enumerate() {
-        let card = Rect::new(content.x, y, content.w, 84.0);
+        let card = Rect::new(content.x, y, content.w, 92.0);
         draw_surface(
             card,
             &SurfaceStyle::new(Color::new(0.08, 0.065, 0.015, 1.0)).with_border(1.0, term::faint()),
@@ -161,21 +165,21 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
             &option.success.log,
             card.x + 14.0,
             card.y + 34.0,
-            card.w - 200.0,
+            card.w - 264.0,
             40.0,
             12.0,
             3.0,
             term::faint(),
         );
         if term_button(
-            Rect::new(card.right() - 178.0, card.y + 24.0, 164.0, 36.0),
+            Rect::new(card.right() - 244.0, card.y + 18.0, 230.0, 56.0),
             &format!("[{}] {}", i + 1, option.label.to_uppercase()),
             true,
             mouse,
         ) {
             actions.push(UiAction::ResolveDilemma(i));
         }
-        y += 96.0;
+        y += 104.0;
     }
 }
 
@@ -212,11 +216,13 @@ fn modal_frame(header: &str, countdown: i32, option_count: usize, accent: Color)
         Color::new(0.0, 0.0, 0.0, 0.75),
     );
 
-    let height = 248.0 + option_count as f32 * 96.0;
+    // Taller cards (bigger buttons) and the lower title need more room; a wider
+    // frame lets the option labels breathe on two comfortable lines.
+    let height = 210.0 + option_count as f32 * 104.0;
     let rect = Rect::new(
-        LOGICAL_WIDTH / 2.0 - 330.0,
+        LOGICAL_WIDTH / 2.0 - 350.0,
         (LOGICAL_HEIGHT - height) / 2.0,
-        660.0,
+        700.0,
         height,
     );
     let header_h = 40.0;
