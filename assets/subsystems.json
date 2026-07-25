@@ -47,7 +47,8 @@
     "tiers": [
       { "id": "fabrication_shop", "name": "Fabrication Shop", "cost": { "credits": 1800, "minerals": 400 }, "severity_reduction": 0.15, "weight_multiplier": 0.85, "flavor": "New tooling and a proper machine shop go in; the engineers stop improvising and start building." },
       { "id": "fabrication_hall", "name": "Fabrication Hall", "cost": { "credits": 3600, "minerals": 800 }, "severity_reduction": 0.3, "weight_multiplier": 0.7, "flavor": "The engineering bay is rebuilt into a full fabrication hall — the ship can now make the parts it once could only ration." },
-      { "id": "integrated_foundry", "name": "Integrated Foundry", "cost": { "credits": 7200, "minerals": 1600 }, "severity_reduction": 0.45, "weight_multiplier": 0.55, "flavor": "The bay reaches its pinnacle: foundry, mill, and clean room together, able to remanufacture nearly anything the ship is made of." }
+      { "id": "integrated_foundry", "name": "Integrated Foundry", "cost": { "credits": 7200, "minerals": 1600 }, "severity_reduction": 0.45, "weight_multiplier": 0.55, "flavor": "The bay reaches its pinnacle: foundry, mill, and clean room together, able to remanufacture nearly anything the ship is made of." },
+      { "id": "nanolathe_forge", "name": "Nanolathe Forge", "acquisition": "mission_reward", "cost": {}, "severity_reduction": 0.6, "weight_multiplier": 0.45, "flavor": "The recovered nanolathe is coaxed back to life: matter reprinted atom by atom, the bay now builds what no shipyard taught it to. No yard sold this — a mission brought it home." }
     ]
   },
   {
@@ -64,7 +65,8 @@
     "tiers": [
       { "id": "overhauled_scrubbers", "name": "Overhauled Scrubbers", "cost": { "credits": 1700, "minerals": 350 }, "severity_reduction": 0.2, "weight_multiplier": 1.0, "flavor": "The scrubbers and circulators are overhauled; the air comes easier and the decks feel less like a machine and more like a home." },
       { "id": "dual_loop_habitat", "name": "Dual-Loop Habitat", "cost": { "credits": 3400, "minerals": 700 }, "severity_reduction": 0.35, "weight_multiplier": 1.0, "flavor": "Life support is rebuilt with a second independent loop — a failure that would once have emptied a deck now merely inconveniences it." },
-      { "id": "triple_redundant_biosphere", "name": "Triple-Redundant Biosphere", "cost": { "credits": 6800, "minerals": 1400 }, "severity_reduction": 0.5, "weight_multiplier": 1.0, "flavor": "The habitat reaches its fullest: triple-redundant air, water, and warmth. The ship breathes as steadily as a world." }
+      { "id": "triple_redundant_biosphere", "name": "Triple-Redundant Biosphere", "cost": { "credits": 6800, "minerals": 1400 }, "severity_reduction": 0.5, "weight_multiplier": 1.0, "flavor": "The habitat reaches its fullest: triple-redundant air, water, and warmth. The ship breathes as steadily as a world." },
+      { "id": "voidsealed_biosphere", "name": "Voidsealed Biosphere", "acquisition": "mission_reward", "cost": {}, "severity_reduction": 0.65, "weight_multiplier": 1.0, "flavor": "Grafted from a dead titan's own habitat decks, the biosphere seals against the void the way its makers meant it to. The ship breathes easier than anything human hands could build it." }
     ]
   },
   {

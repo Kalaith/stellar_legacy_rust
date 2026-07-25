@@ -356,6 +356,12 @@ pub struct CompletionReward {
     /// installed in drydock, mirroring an event's `grant_component`. `None` = none.
     #[serde(default)]
     pub grant_component: Option<String>,
+    /// A subsystem *version* this charter unlocks (content-depth charters, 2c): the
+    /// fitting twin of `grant_component`. A mission-reward module version the ship
+    /// may then fit in drydock — alien fabrication tech from a stripped hull, a
+    /// xeno-biosphere from a dead titan. Must name a real `MissionReward` fitting.
+    #[serde(default)]
+    pub grant_fitting: Option<String>,
     /// Line narrating the boon; empty = a generic line.
     #[serde(default)]
     pub log: String,

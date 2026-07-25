@@ -203,22 +203,37 @@ fn draw_module_ladder(
             // (never sold; unlocked only by a voyage — wired in a later pass).
             let fitting = &def.tiers[vi - 1];
             if fitting.acquisition.is_mission_only() {
-                draw_surface(
-                    row,
-                    &SurfaceStyle::new(term::surface()).with_border(1.0, term::faint()),
-                );
-                draw_ui_text_ex(
-                    name,
-                    row.x + 8.0,
-                    row.y + 16.0,
-                    TextStyle::new(13.0, term::dim()).params(),
-                );
-                draw_text_right(
-                    "MISSION REWARD",
-                    row.right() - 8.0,
-                    row.y + 16.0,
-                    TextStyle::new(10.0, term::dim()),
-                );
+                let unlocked = ctx
+                    .sim
+                    .ship
+                    .unlocked_fittings
+                    .iter()
+                    .any(|f| f == &fitting.id);
+                if unlocked {
+                    // A voyage has recovered this version — fit it free (the mission
+                    // was the price), distinct from a bought upgrade.
+                    let label = format!("INSTALL {name} · RECOVERED");
+                    if term_button(row, &label, true, mouse) {
+                        actions.push(UiAction::InstallFitting(id.to_owned()));
+                    }
+                } else {
+                    draw_surface(
+                        row,
+                        &SurfaceStyle::new(term::surface()).with_border(1.0, term::faint()),
+                    );
+                    draw_ui_text_ex(
+                        name,
+                        row.x + 8.0,
+                        row.y + 16.0,
+                        TextStyle::new(13.0, term::dim()).params(),
+                    );
+                    draw_text_right(
+                        "MISSION REWARD",
+                        row.right() - 8.0,
+                        row.y + 16.0,
+                        TextStyle::new(10.0, term::dim()),
+                    );
+                }
             } else {
                 let cost = &fitting.cost;
                 let mut bits = vec![format!("{}cr", cost.credits)];

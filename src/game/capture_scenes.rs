@@ -146,14 +146,19 @@ impl Game {
                 );
                 for (id, tier) in [
                     ("agriculture", 3),
-                    ("engineering_bay", 1),
+                    ("engineering_bay", 3),
                     ("medical_bay", 2),
+                    ("life_support_habitat", 3),
                     ("security", 0),
                 ] {
                     if let Some(s) = sim.subsystems.get_mut(id) {
                         s.tier = tier;
                     }
                 }
+                // One mission-reward version recovered (engineering's Nanolathe
+                // Forge → INSTALL · RECOVERED), one still locked (life support's
+                // Voidsealed Biosphere → MISSION REWARD).
+                sim.ship.unlocked_fittings = vec!["nanolathe_forge".to_owned()];
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = Screen::ShipBuilder;
                 self.ship_modules_tab.set(true);

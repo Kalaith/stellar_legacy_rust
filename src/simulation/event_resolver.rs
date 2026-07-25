@@ -634,6 +634,13 @@ pub fn apply_outcome(
     if let Some(component_id) = &outcome.grant_component {
         sim.ship.salvage.push(component_id.clone());
     }
+    // …and a subsystem version this outcome unlocks (2c): a mission-reward fitting
+    // the ship may now build in drydock.
+    if let Some(fitting_id) = &outcome.grant_fitting {
+        if !sim.ship.unlocked_fittings.contains(fitting_id) {
+            sim.ship.unlocked_fittings.push(fitting_id.clone());
+        }
+    }
 
     let text = if outcome.log.is_empty() {
         format!("{}: {}", template.title, outcome.label)

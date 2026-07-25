@@ -348,9 +348,12 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         let col = i % cols;
         let upper = i < cols;
         let t = t_lo + (col as f32 + 0.5) / cols as f32 * (t_hi - t_lo);
-        // Boxes grow with tier, so an upgrade is visible as a larger module.
-        let w = 58.0 + state.tier as f32 * 9.0;
-        let h = 30.0 + state.tier as f32 * 5.0;
+        // Boxes grow with tier, so an upgrade is visible as a larger module. A
+        // mission-reward 4th version reads at the tier-3 size (the slot's cap) so
+        // it never overflows into its neighbours.
+        let visual_tier = state.tier.min(3) as f32;
+        let w = 58.0 + visual_tier * 9.0;
+        let h = 30.0 + visual_tier * 5.0;
         let band_y = if upper {
             cy - row_offset
         } else {

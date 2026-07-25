@@ -201,6 +201,11 @@ pub struct EventOutcome {
     /// A ship component id this outcome drops into the salvage hold (PLAN M4.4).
     #[serde(default)]
     pub grant_component: Option<String>,
+    /// A subsystem *version* id this outcome unlocks (the fitting twin of
+    /// `grant_component`): a mission-reward module version the ship may then fit
+    /// in drydock. Must name a real `MissionReward` fitting.
+    #[serde(default)]
+    pub grant_fitting: Option<String>,
     /// When set, an applied outcome turns an active mission for home early (W2):
     /// the contract jumps to its Return segment. Fits both catastrophe (a crisis
     /// forcing withdrawal) and fortune (a find rich enough to sail back on).

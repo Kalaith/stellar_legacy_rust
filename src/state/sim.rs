@@ -64,6 +64,11 @@ pub struct ShipState {
     /// Field-installable underway only if crew + part allow; freely in port.
     #[serde(default)]
     pub salvage: Vec<String>,
+    /// Subsystem *version* ids a mission has granted (the fitting equivalent of
+    /// `salvage`). A mission-reward subsystem version can never be bought — it can
+    /// be fitted in drydock only once its id is unlocked here.
+    #[serde(default)]
+    pub unlocked_fittings: Vec<String>,
 }
 
 impl ShipState {
@@ -773,6 +778,7 @@ impl SimState {
                 engine: "ion_drive".to_owned(),
                 weapon: None,
                 salvage: Vec::new(),
+                unlocked_fittings: Vec::new(),
             },
             population: PopulationState {
                 count: config.starting_population,

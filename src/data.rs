@@ -2035,6 +2035,44 @@ mod tests {
             mission_only_parts >= 1,
             "expected at least one mission-reward ship part, found none"
         );
+        // The subsystem-version twin (2c): every mission-reward fitting must be
+        // reachable — granted by some mission — and every `grant_fitting` must name
+        // a real mission-reward version.
+        let granted_fittings: std::collections::HashSet<&String> = data
+            .events
+            .iter()
+            .flat_map(|(_, e)| e.outcomes.iter())
+            .filter_map(|o| o.grant_fitting.as_ref())
+            .chain(
+                data.contracts
+                    .iter()
+                    .filter_map(|(_, c)| c.completion_reward.grant_fitting.as_ref()),
+            )
+            .collect();
+        let mut mission_fittings: std::collections::HashSet<&str> =
+            std::collections::HashSet::new();
+        for (sid, sub) in data.subsystems.iter() {
+            for tier in &sub.tiers {
+                if tier.acquisition.is_mission_only() {
+                    mission_fittings.insert(tier.id.as_str());
+                    assert!(
+                        granted_fittings.contains(&tier.id),
+                        "mission-reward version '{}' on subsystem '{sid}' is granted by no mission",
+                        tier.id
+                    );
+                }
+            }
+        }
+        assert!(
+            !mission_fittings.is_empty(),
+            "expected at least one mission-reward subsystem version, found none"
+        );
+        for gf in &granted_fittings {
+            assert!(
+                mission_fittings.contains(gf.as_str()),
+                "grant_fitting '{gf}' is not a real mission-reward subsystem version"
+            );
+        }
         // Content-depth charter↔event coupling: every charter-tag an event gates
         // on must exist on at least one charter, or the event can never fire.
         let charter_tags: std::collections::HashSet<&String> = data
@@ -2461,10 +2499,12 @@ mod tests {
                     sub.buffers_family
                 );
             }
-            assert_eq!(
-                sub.tiers.len(),
-                3,
-                "subsystem '{id}' has three upgrade tiers"
+            // Three bought upgrade tiers, optionally topped by mission-reward
+            // versions (2c): the purchasable ladder is exactly three, and any
+            // extra tiers above it must be mission rewards.
+            assert!(
+                sub.tiers.len() >= 3,
+                "subsystem '{id}' needs three bought upgrade tiers"
             );
             // Named-version pass: the baseline and every fitting carry a name, and
             // fitting ids are unique within the subsystem (a mission's
@@ -2474,11 +2514,31 @@ mod tests {
                 "subsystem '{id}' has no baseline_name"
             );
             let mut fitting_ids = std::collections::HashSet::new();
-            for tier in &sub.tiers {
-                assert!(
-                    tier.cost.credits > 0,
-                    "subsystem '{id}' tier cost must be positive"
-                );
+            for (ti, tier) in sub.tiers.iter().enumerate() {
+                let mission_reward = tier.acquisition.is_mission_only();
+                // The first three rungs are bought (positive cost); mission-reward
+                // versions sit above them and are free (the mission is the price).
+                if mission_reward {
+                    assert!(
+                        ti >= 3,
+                        "subsystem '{id}' mission-reward version '{}' must sit above the three bought tiers",
+                        tier.id
+                    );
+                    assert!(
+                        tier.cost == crate::data::ResourceDelta::default(),
+                        "subsystem '{id}' mission-reward version '{}' carries a price but is never bought",
+                        tier.id
+                    );
+                } else {
+                    assert!(
+                        ti < 3,
+                        "subsystem '{id}' has a bought tier above the three-rung ladder",
+                    );
+                    assert!(
+                        tier.cost.credits > 0,
+                        "subsystem '{id}' tier cost must be positive"
+                    );
+                }
                 // Content-depth subsystems round 5: every tier carries its own
                 // upgrade prose, so a rebuild never falls back to the generic
                 // shared line.

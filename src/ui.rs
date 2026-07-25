@@ -202,6 +202,9 @@ pub enum UiAction {
     /// Subsystem verbs (W5): mend, upgrade (port), or train its knowledge.
     RepairSubsystem(String),
     UpgradeSubsystem(String),
+    /// Fit a mission-reward subsystem version the ship has unlocked (2c) — free,
+    /// drydock-only, distinct from the bought `UpgradeSubsystem`.
+    InstallFitting(String),
     TrainSubsystemKnowledge(String),
     Buy(TradeResource, i64),
     Sell(TradeResource, i64),

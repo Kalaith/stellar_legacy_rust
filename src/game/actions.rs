@@ -185,6 +185,14 @@ impl Game {
                 );
                 None
             }
+            UiAction::InstallFitting(id) => {
+                self.subsystem_verb(
+                    subsystems::install_fitting,
+                    &id,
+                    "A recovered design goes in.",
+                );
+                None
+            }
             UiAction::TrainSubsystemKnowledge(id) => {
                 self.subsystem_verb(
                     subsystems::train_subsystem_knowledge,

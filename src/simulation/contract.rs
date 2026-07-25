@@ -168,6 +168,13 @@ pub fn apply_completion_reward(
     if let Some(component_id) = &reward.grant_component {
         sim.ship.salvage.push(component_id.clone());
     }
+    // …and a subsystem version the charter unlocks (2c): a mission-reward fitting,
+    // buildable in drydock once the ship has earned it.
+    if let Some(fitting_id) = &reward.grant_fitting {
+        if !sim.ship.unlocked_fittings.contains(fitting_id) {
+            sim.ship.unlocked_fittings.push(fitting_id.clone());
+        }
+    }
     Some(if reward.log.is_empty() {
         format!("The lessons of {} stay with the ship.", template.name)
     } else {

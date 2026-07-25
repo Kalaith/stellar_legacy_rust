@@ -204,6 +204,14 @@ pub fn upgrade_subsystem(sim: &mut SimState, data: &GameData, id: &str) -> Resul
     let Some(next) = def.tiers.get(tier as usize) else {
         return Err(format!("The {name} is already at its highest tier."));
     };
+    // A mission-reward version is never for sale — it is fitted via `install_fitting`
+    // once a voyage has unlocked it, not bought here.
+    if next.acquisition.is_mission_only() {
+        return Err(format!(
+            "The {} can only be recovered from a mission, not bought.",
+            next.name
+        ));
+    }
     let cost = ResourceDelta {
         credits: -next.cost.credits,
         energy: -next.cost.energy,
@@ -223,6 +231,45 @@ pub fn upgrade_subsystem(sim: &mut SimState, data: &GameData, id: &str) -> Resul
     // log never blanks.
     let line = if next.flavor.is_empty() {
         format!("The {name} is rebuilt stronger.")
+    } else {
+        next.flavor.clone()
+    };
+    sim.push_log(line);
+    Ok(())
+}
+
+/// Fit the next subsystem version when it is a mission reward the ship has already
+/// unlocked (2c). Free (the mission was the price), drydock-only, and refuses
+/// unless the next version is mission-reward and its id is in
+/// `ship.unlocked_fittings`. Consumes the unlock so a granted version fits once.
+pub fn install_fitting(sim: &mut SimState, data: &GameData, id: &str) -> Result<(), String> {
+    if sim.contract.is_some() {
+        return Err("Subsystems are rebuilt in drydock, between missions.".to_owned());
+    }
+    let Some(def) = data.subsystems.get(id) else {
+        return Err("Unknown subsystem.".to_owned());
+    };
+    let name = def.name.clone();
+    let tier = sim.subsystems.get(id).map(|s| s.tier).unwrap_or(0);
+    let Some(next) = def.tiers.get(tier as usize) else {
+        return Err(format!("The {name} is already at its highest version."));
+    };
+    if !next.acquisition.is_mission_only() {
+        return Err(format!(
+            "The {} is bought in the yard, not unlocked.",
+            next.name
+        ));
+    }
+    if !sim.ship.unlocked_fittings.iter().any(|f| f == &next.id) {
+        return Err(format!("No mission has recovered the {} yet.", next.name));
+    }
+    if let Some(state) = sim.subsystems.get_mut(id) {
+        state.tier += 1;
+    }
+    // A granted version fits once; spend the unlock so it isn't re-usable.
+    sim.ship.unlocked_fittings.retain(|f| f != &next.id);
+    let line = if next.flavor.is_empty() {
+        format!("The {name} is rebuilt to a design no yard could sell.")
     } else {
         next.flavor.clone()
     };
@@ -1693,6 +1740,40 @@ mod tests {
         assert!(
             upgrade_subsystem(&mut sim, &data, "medical_bay").is_err(),
             "tier caps at 3"
+        );
+    }
+
+    #[test]
+    fn a_mission_reward_version_installs_only_once_unlocked() {
+        let (data, mut sim) = campaign(11);
+        sim.resources.credits = 1_000_000;
+        sim.resources.minerals = 1_000_000;
+        // Climb engineering to the top bought tier (3).
+        for _ in 0..3 {
+            upgrade_subsystem(&mut sim, &data, "engineering_bay").unwrap();
+        }
+        assert_eq!(sim.subsystems["engineering_bay"].tier, 3);
+        // The mission-reward 4th version can't be bought…
+        assert!(upgrade_subsystem(&mut sim, &data, "engineering_bay").is_err());
+        // …nor installed before a mission unlocks it.
+        assert!(install_fitting(&mut sim, &data, "engineering_bay").is_err());
+        // Grant it, then it fits — free, and the unlock is spent.
+        sim.ship
+            .unlocked_fittings
+            .push("nanolathe_forge".to_owned());
+        let credits_before = sim.resources.credits;
+        install_fitting(&mut sim, &data, "engineering_bay").unwrap();
+        assert_eq!(sim.subsystems["engineering_bay"].tier, 4);
+        assert_eq!(
+            sim.resources.credits, credits_before,
+            "a recovered version is free"
+        );
+        assert!(
+            !sim.ship
+                .unlocked_fittings
+                .iter()
+                .any(|f| f == "nanolathe_forge"),
+            "the unlock is consumed on install"
         );
     }
 
