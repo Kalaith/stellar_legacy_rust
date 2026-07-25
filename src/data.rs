@@ -255,6 +255,16 @@ pub struct GameConfig {
     /// long disrepair costs no morale.
     #[serde(default)]
     pub disrepair_morale_drain: f32,
+    /// Morale worn away each year the ship's grid has been *chronically dark* — energy below
+    /// `low_energy_threshold` past `chronic_hunger_years` running (content-depth provisioning round
+    /// 34): the fourth sustained-privation morale cost, beside `chronic_hunger_morale_drain` (the
+    /// larder), `becalmed_morale_drain` (the drive), and `disrepair_morale_drain` (the home). A ship
+    /// run for years on rationed light and cold decks — systems cycled off to keep the essential
+    /// ones lit — wears the crew's spirit the way a chronic hunger does, the standing morale cost
+    /// the it33 power *voice* only narrates. Same sustained gate as the others; gentle by design; 0
+    /// = a long power poverty costs no morale.
+    #[serde(default)]
+    pub chronic_low_energy_morale_drain: f32,
     /// Approval each aboard people loses per year while the ship is in a sustained lean past
     /// `chronic_hunger_years` (content-depth provisioning round 28): the *political* toll of a
     /// long hunger, beside its toll on the crew's spirits (`chronic_hunger_morale_drain`, it17)
@@ -3390,6 +3400,14 @@ mod tests {
             (0.0..=0.05).contains(&data.config.disrepair_morale_drain),
             "disrepair_morale_drain {} must be a gentle yearly attrition [0, 0.05]",
             data.config.disrepair_morale_drain
+        );
+        // Content-depth provisioning round 34: the chronic-low-energy morale drain is a gentle
+        // yearly attrition too, the fourth of the sustained-privation costs — the slow wearing of a
+        // crew living in the dark, not a single hard blow.
+        assert!(
+            (0.0..=0.05).contains(&data.config.chronic_low_energy_morale_drain),
+            "chronic_low_energy_morale_drain {} must be a gentle yearly attrition [0, 0.05]",
+            data.config.chronic_low_energy_morale_drain
         );
         // Content-depth provisioning round 28: the chronic-hunger faction penalty is a gentle
         // yearly souring — the slow political erosion of a people that keeps going hungry, not a

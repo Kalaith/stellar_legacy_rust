@@ -702,6 +702,14 @@ pub struct SimState {
     /// with tape for a generation — from one lean year between resupplies. 0 at launch.
     #[serde(default)]
     pub lean_parts_years: u32,
+    /// Consecutive years the energy store has sat below the *low* line (content-depth provisioning
+    /// round 34): a rolling count of how long the grid has run dark — rationed light, systems cycled
+    /// off — reset the moment the reactors recover. The energy twin of `lean_food_years`; it lets
+    /// content and the it34 morale drain tell a *chronic* power poverty from one lean season, and
+    /// it is the mechanical companion to the it33 power *voice* that narrates the dark grid. 0 at
+    /// launch.
+    #[serde(default)]
+    pub lean_energy_years: u32,
     /// Founding factions carried aboard (W7). `sum(members of Aboard) ==
     /// population.count` after every `rebalance_factions`.
     #[serde(default)]
@@ -827,6 +835,7 @@ impl SimState {
             founding_beat_fired: false,
             lean_food_years: 0,
             lean_parts_years: 0,
+            lean_energy_years: 0,
             fat_food_years: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),

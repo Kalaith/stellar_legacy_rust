@@ -3345,6 +3345,50 @@ fn a_chronic_becalming_wears_the_crews_spirits() {
 }
 
 #[test]
+fn a_ship_run_long_in_the_dark_loses_heart() {
+    // Content-depth provisioning round 34: a ship whose grid runs dark for years loses heart, the
+    // power twin of the chronic-hunger and becalming morale drains. A ship still below the low line
+    // this year ends it a shade grimmer than one whose reactors recover, the gap the year's drain.
+    let mut data = GameData::load().unwrap();
+    data.config.event_chance_base = 0.0;
+    data.config.event_chance_cap = 0.0;
+    data.config.dilemma_chance_per_generation = 0.0;
+    data.config.base_production.energy = 0.0; // hold the energy store where we set it
+    let drain = data.config.chronic_low_energy_morale_drain;
+    let years = data.config.chronic_hunger_years;
+    let low = data.config.low_energy_threshold;
+    assert!(
+        drain > 0.0 && years > 0 && low > 0,
+        "this test needs the low-energy drain enabled"
+    );
+
+    let run = |energy: i64| -> f32 {
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            5,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.resources.food = 1_000_000;
+        sim.population.morale = 0.6;
+        sim.resources.energy = energy;
+        sim.lean_energy_years = years; // already chronically dark at the year's start
+        advance_year(&mut sim, &data);
+        sim.population.morale
+    };
+    let stays_dark = run(low - 100); // still below the low line → the drain bites
+    let reactors_recover = run(low + 5_000); // the grid recovers → the streak resets, no drain
+    assert!(
+        stays_dark < reactors_recover,
+        "a ship still in the dark loses heart where one whose reactors recover does not"
+    );
+    assert!(
+        (reactors_recover - stays_dark - drain).abs() < 1e-4,
+        "the gap is exactly the year's low-energy morale drain ({stays_dark} vs {reactors_recover})"
+    );
+}
+
+#[test]
 fn a_chronic_disrepair_wears_the_crews_spirits() {
     // Content-depth provisioning round 27: a ship left unmended for years loses heart, the
     // toolroom twin of the chronic-hunger and becalming morale drains. A ship that stays short

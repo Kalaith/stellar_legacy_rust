@@ -111,6 +111,15 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     } else {
         sim.fat_food_years = 0;
     }
+    // …and how long the grid has run dark (content-depth provisioning round 34): a store still
+    // below the low-energy line adds a year to the power-poverty streak; a recovered grid resets it.
+    // This is what lets content tell a chronic power poverty — years of rationed light — from one
+    // lean season, the energy twin of the lean-food streak.
+    if config.low_energy_threshold > 0 && sim.resources.energy < config.low_energy_threshold {
+        sim.lean_energy_years = sim.lean_energy_years.saturating_add(1);
+    } else {
+        sim.lean_energy_years = 0;
+    }
 
     // Idle reactor output runs the fabricators (content-depth provisioning round 21):
     // energy has no upkeep and simply piles up unused, the voyage's one wasted
@@ -413,6 +422,19 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
         && sim.fuel_stall_years >= config.chronic_hunger_years
     {
         sim.population.morale = (sim.population.morale - config.becalmed_morale_drain).max(0.0);
+    }
+    // …and a ship long run in the dark loses heart too (content-depth provisioning round 34): the
+    // third great privation drain, beside the it17 chronic hunger and the it25 becalming. A grid
+    // held below the low line for years — rationed light, cold decks, systems cycled off to keep the
+    // essential ones lit — wears the crew's spirit every year it holds, the standing morale cost the
+    // it33 power *voice* only narrates. Same sustained gate as the hunger and becalming drains, so a
+    // single lean season is inert; only a chronic power poverty bites.
+    if config.chronic_low_energy_morale_drain > 0.0
+        && config.chronic_hunger_years > 0
+        && sim.lean_energy_years >= config.chronic_hunger_years
+    {
+        sim.population.morale =
+            (sim.population.morale - config.chronic_low_energy_morale_drain).max(0.0);
     }
 
     // The rest of the ship's subsystems wear with the years too (W5).

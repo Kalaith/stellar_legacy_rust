@@ -30,6 +30,7 @@
   "chronic_hunger_years": 5,
   "chronic_hunger_morale_drain": 0.004,
   "becalmed_morale_drain": 0.005,
+  "chronic_low_energy_morale_drain": 0.005,
   "disrepair_morale_drain": 0.004,
   "chronic_hunger_faction_penalty": 0.02,
   "chronic_hunger_death_bonus": 0.003,
