@@ -39,3 +39,23 @@ Verify with `.\scripts\capture_ui.ps1 -Scenes ship_underway`, plus
   external full-name captions are now partly redundant with the tags; connection
   routing is straight stubs (no orthogonal "bus" routing); single hull class
   shown in captures (verify corvette/ark/ring adapt).
+
+## Iteration 3 — hull-class adaptation + decoupled room grid
+- **Preserved**: corridor + branches, standardized tags, highlighting, status.
+- **Weakness** (found by adding corvette/ark capture scenes): rooms were placed
+  as a fraction of the hull height, so a lean hull risked pinching them; the ark's
+  spun-gravity ring sliced straight through the centre rooms; classes looked
+  nearly identical; and long external captions collided when a short hull packed
+  the rooms together.
+- **Improvement**: rooms now hug the corridor at a FIXED offset and the hull is
+  sized to *enclose* them — no hull can make a room overflow. `Profile` gained
+  `length` and `height`, so a corvette is visibly short and lean while an ark is
+  long and tall (real class identity). The ring became a single clean circle
+  seated just outside the centre rooms. On-diagram captions shortened to single
+  words (full names live on the Subsystems tab), ending the collisions. Added
+  `ship_underway_corvette` / `ship_underway_ark` capture scenes (shared demo
+  helper) for ongoing multi-hull verification.
+- **Open weaknesses** (next): pictographic icons still absent (candidate for the
+  iteration-5 "new system"); branch routing is straight (could be orthogonal bus
+  taps); armored_prow / habitat_ring classes not yet spot-checked; the deck
+  captions are pure flavour and could carry real info.

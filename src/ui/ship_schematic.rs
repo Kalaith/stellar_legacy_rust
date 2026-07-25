@@ -105,8 +105,29 @@ fn subsystem_code(id: &str) -> &'static str {
     }
 }
 
+/// A short single-phrase caption for the diagram — the full formal name lives on
+/// the Subsystems tab. Short so adjacent captions never collide, even when a lean
+/// hull packs the rooms close together.
+fn subsystem_short(id: &str) -> &'static str {
+    match id {
+        "agriculture" => "AGRICULTURE",
+        "education_culture" => "ARCHIVES",
+        "engineering_bay" => "ENGINEERING",
+        "life_support_habitat" => "LIFE SUPPORT",
+        "medical_bay" => "MEDICAL",
+        "security" => "SECURITY",
+        _ => "SYSTEM",
+    }
+}
+
 /// The bridge is stood by the ship's command staff.
 const BRIDGE_POSTS: &[&str] = &["commander", "navigator"];
+
+/// Fixed distance from the corridor to each deck's room centres. Rooms are placed
+/// relative to this, not to the hull size, so the layout survives any hull class.
+const ROW_OFFSET: f32 = 48.0;
+/// The vertical slot each room occupies (tallest tier-3 box plus headroom).
+const ROOM_SLOT_H: f32 = 46.0;
 
 fn any_post_aboard(sim: &SimState, posts: &[&str]) -> bool {
     sim.crew
@@ -133,13 +154,22 @@ fn deck_range(id: &str) -> (u8, u8) {
 }
 
 /// Hull silhouette parameters, chosen by hull id so each ship reads distinct.
+/// Only the *outline* is shaped here; the compartment grid is placed independently
+/// (rooms hug the corridor at a fixed offset), so no hull can make a room overflow.
 struct Profile {
     /// 0 blunt … 1 needle prow.
     nose: f32,
-    /// Mid-body fullness (broad freighter vs. lean corvette).
+    /// Mid-body fullness — how full the shoulders are (broad freighter vs. lean
+    /// corvette).
     bulge: f32,
     /// Stern width fraction.
     tail: f32,
+    /// Fraction of the available width the hull spans — a corvette is short, an
+    /// ark long.
+    length: f32,
+    /// Multiplier on the hull's half-height above the room-enclosing minimum, so
+    /// bulky classes stand taller without ever pinching the compartments.
+    height: f32,
     /// Carries a central spun-gravity ring.
     ring: bool,
 }
@@ -150,36 +180,48 @@ fn hull_profile(hull_id: &str) -> Profile {
             nose: 0.2,
             bulge: 1.0,
             tail: 0.75,
+            length: 0.94,
+            height: 1.12,
             ring: false,
         },
         "light_corvette" => Profile {
-            nose: 0.9,
-            bulge: 0.45,
-            tail: 0.4,
+            nose: 0.95,
+            bulge: 0.4,
+            tail: 0.36,
+            length: 0.72,
+            height: 0.98,
             ring: false,
         },
         "generation_ark" => Profile {
             nose: 0.3,
             bulge: 1.0,
             tail: 0.85,
+            length: 1.0,
+            height: 1.2,
             ring: true,
         },
         "habitat_ring" => Profile {
             nose: 0.45,
-            bulge: 0.75,
+            bulge: 0.72,
             tail: 0.6,
+            length: 0.9,
+            height: 1.16,
             ring: true,
         },
         "armored_prow" => Profile {
             nose: 1.0,
             bulge: 0.6,
             tail: 0.5,
+            length: 0.84,
+            height: 1.0,
             ring: false,
         },
         _ => Profile {
             nose: 0.5,
             bulge: 0.75,
             tail: 0.6,
+            length: 0.88,
+            height: 1.05,
             ring: false,
         },
     }
@@ -196,26 +238,37 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         .map(|c| c.name.clone())
         .unwrap_or_else(|| sim.ship.hull.clone());
 
-    // Spine runs bow (left) to stern (right); the hull rises to a mid-body bell.
-    let margin_x = frame.w * 0.07;
-    let sx0 = frame.x + margin_x;
-    let sx1 = frame.right() - margin_x;
     let cy = frame.y + frame.h * 0.5;
-    let max_h = frame.h * 0.28;
+    let cx = frame.x + frame.w * 0.5;
+
+    // Rooms hug the corridor at a FIXED offset, independent of the hull — so a
+    // room can never overflow a lean hull nor float in a broad one. The hull is
+    // then sized to enclose them; class shape only ever varies the outline.
+    let row_offset = ROW_OFFSET;
+    // Hull half-height at mid-body: enough to wrap the tallest room, then scaled
+    // up for bulky classes.
+    let base_max_h = row_offset + ROOM_SLOT_H * 0.5 + 20.0;
+    let max_h = base_max_h * profile.height;
+
+    // Length-scaled, centred span: a corvette is visibly shorter, an ark longer.
+    let hull_span = frame.w * 0.86 * profile.length;
+    let sx0 = cx - hull_span * 0.5;
+    let sx1 = cx + hull_span * 0.5;
     let x_at = |t: f32| sx0 + t * (sx1 - sx0);
 
-    // Control stations (t, height-fraction) shaped by the profile, then mirrored
-    // top/bottom into a closed outline.
-    let bell = 0.6 + profile.bulge * 0.4;
-    let bow = 0.08 + (1.0 - profile.nose) * 0.30;
-    let tail = 0.18 + profile.tail * 0.34;
+    // Control stations (t, height-fraction) mirrored top/bottom into a closed
+    // outline. Mid is full (encloses rooms); the shoulders stay high enough to
+    // wrap the room columns; only the bow and stern taper by nose/tail.
+    let shoulder = 0.82 + profile.bulge * 0.13;
+    let bow = 0.12 + (1.0 - profile.nose) * 0.26;
+    let tail = 0.22 + profile.tail * 0.30;
     let stations = [
         (0.00, bow),
-        (0.12, 0.40 * bell + 0.15),
-        (0.30, 0.86 * bell),
-        (0.50, bell),
-        (0.70, 0.86 * bell),
-        (0.88, 0.55 * tail + 0.2),
+        (0.12, (bow + shoulder) * 0.5),
+        (0.30, shoulder),
+        (0.50, 1.0),
+        (0.70, shoulder),
+        (0.88, (tail + shoulder) * 0.5),
         (1.00, tail),
     ];
     let mut outline: Vec<Vec2> = stations
@@ -226,9 +279,11 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         outline.push(vec2(x_at(t), cy + f * max_h));
     }
 
+    // The spun-gravity ring frames the central habitat, seated just outside the
+    // centre rooms rather than slicing through them.
     let ring = profile
         .ring
-        .then(|| (vec2(x_at(0.5), cy), max_h * bell * 0.92));
+        .then(|| (vec2(cx, cy), row_offset + ROOM_SLOT_H * 0.5 + 10.0));
 
     let mut modules = Vec::new();
 
@@ -287,7 +342,7 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
     let cols = ids.len().div_ceil(2).max(1);
     let (t_lo, t_hi) = (0.20_f32, 0.80_f32);
     for (i, id) in ids.iter().enumerate() {
-        let (Some(def), Some(state)) = (data.subsystems.get(id), sim.subsystems.get(id)) else {
+        let Some(state) = sim.subsystems.get(id) else {
             continue;
         };
         let col = i % cols;
@@ -297,15 +352,15 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         let w = 58.0 + state.tier as f32 * 9.0;
         let h = 30.0 + state.tier as f32 * 5.0;
         let band_y = if upper {
-            cy - max_h * 0.46
+            cy - row_offset
         } else {
-            cy + max_h * 0.46
+            cy + row_offset
         };
         let rect = Rect::new(x_at(t) - w * 0.5, band_y - h * 0.5, w, h);
         let (deck_lo, deck_hi) = deck_range(id);
         modules.push(ModuleGlyph {
             id: id.clone(),
-            label: def.name.to_uppercase(),
+            label: subsystem_short(id).to_owned(),
             code: subsystem_code(id).to_owned(),
             rect,
             kind: ModuleKind::Subsystem,
@@ -384,7 +439,6 @@ pub fn draw(frame: Rect, schematic: &ShipSchematic) {
     }
     if let Some((c, r)) = schematic.ring {
         draw_circle_lines(c.x, c.y, r, 1.5, term::dim());
-        draw_circle_lines(c.x, c.y, r * 0.6, 1.0, term::faint());
     }
 
     // The corridor: a twin-line spine running bow to stern, the bus every
