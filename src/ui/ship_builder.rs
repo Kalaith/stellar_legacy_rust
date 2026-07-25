@@ -16,6 +16,56 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         return;
     }
 
+    // Sub-tab toggle: the hull/engine/weapon LOADOUT catalog, or the subsystem
+    // MODULES ladders. Both are drydock work, so both live behind this one screen.
+    let modules = ctx.ship_modules_tab.get();
+    const SEG_W: f32 = 160.0;
+    const SEG_H: f32 = 30.0;
+    for (i, label) in ["LOADOUT", "MODULES"].iter().enumerate() {
+        let seg = Rect::new(area.x + i as f32 * (SEG_W + 8.0), area.y, SEG_W, SEG_H);
+        let active = (i == 1) == modules;
+        let hovered = seg.contains_point(mouse);
+        let fill = if active {
+            term::surface_active()
+        } else if hovered {
+            term::surface_hover()
+        } else {
+            term::surface()
+        };
+        draw_surface(
+            seg,
+            &SurfaceStyle::new(fill).with_border(
+                1.0,
+                if active {
+                    term::accent()
+                } else {
+                    term::faint()
+                },
+            ),
+        );
+        draw_text_centered_in_box_ex(
+            label,
+            seg.x,
+            seg.y,
+            seg.w,
+            seg.h,
+            TextStyle::new(15.0, if active { term::accent() } else { term::dim() }),
+        );
+        if hovered && is_mouse_button_released(MouseButton::Left) {
+            ctx.ship_modules_tab.set(i == 1);
+        }
+    }
+    let body = Rect::new(area.x, area.y + SEG_H + 10.0, area.w, area.h - SEG_H - 10.0);
+    if modules {
+        draw_modules(ctx, body, mouse, actions);
+    } else {
+        draw_loadout(ctx, body, mouse, actions);
+    }
+}
+
+/// The LOADOUT catalog: hull / engine / weapon columns, each scrolling when it
+/// overflows (a full column plus a found mission-reward part is one card too tall).
+fn draw_loadout(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     let columns = [
         (ComponentKind::Hull, "HULLS"),
         (ComponentKind::Engine, "ENGINES"),
@@ -73,6 +123,125 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         scroll.draw_scrollbar(view, content_h);
     }
     ctx.ship_scroll.set(scrolls);
+}
+
+/// The MODULES view: the six subsystems as named version ladders. Each panel
+/// lists the module's versions bottom-to-top — those already passed, the one
+/// fitted now, and the next one up as an INSTALL (drydock purchase). Buying emits
+/// the same `UpgradeSubsystem` action the Subsystems tab uses.
+fn draw_modules(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    const GAP: f32 = 12.0;
+    let col_w = (area.w - GAP) / 2.0;
+    let row_h = (area.h - 2.0 * GAP) / 3.0;
+    for (i, id) in crate::data::GameData::sorted_ids(&ctx.data.subsystems)
+        .into_iter()
+        .enumerate()
+    {
+        let col = (i % 2) as f32;
+        let row = (i / 2) as f32;
+        let rect = Rect::new(
+            area.x + col * (col_w + GAP),
+            area.y + row * (row_h + GAP),
+            col_w,
+            row_h,
+        );
+        draw_module_ladder(ctx, rect, &id, mouse, actions);
+    }
+}
+
+/// One subsystem's version ladder panel (see [`draw_modules`]).
+fn draw_module_ladder(
+    ctx: &GameplayCtx<'_>,
+    rect: Rect,
+    id: &str,
+    mouse: Vec2,
+    actions: &mut Vec<UiAction>,
+) {
+    let (Some(def), Some(state)) = (ctx.data.subsystems.get(id), ctx.sim.subsystems.get(id)) else {
+        return;
+    };
+    term_panel(rect, Some(&def.name.to_uppercase()));
+    let c = rect.inset(14.0);
+    let versions = def.tiers.len() + 1; // baseline + each named upgrade
+    let top = c.y + 28.0;
+    let stride = ((c.bottom() - top) / versions as f32).min(34.0);
+
+    for vi in 0..versions {
+        let tier = vi as u32;
+        let name = def.fitting_name(tier);
+        let ry = top + vi as f32 * stride;
+        let row = Rect::new(c.x, ry, c.w, stride - 4.0);
+
+        if tier < state.tier {
+            // A version already surpassed — record of the ladder climbed.
+            draw_ui_text_ex(
+                &format!("· {name}"),
+                row.x + 6.0,
+                row.y + 16.0,
+                TextStyle::new(12.0, term::faint()).params(),
+            );
+        } else if tier == state.tier {
+            // The version fitted right now.
+            draw_surface(
+                row,
+                &SurfaceStyle::new(term::surface_active()).with_border(1.0, term::accent()),
+            );
+            draw_ui_text_ex(
+                name,
+                row.x + 8.0,
+                row.y + 16.0,
+                TextStyle::new(13.0, term::accent()).params(),
+            );
+            draw_text_right(
+                "INSTALLED",
+                row.right() - 8.0,
+                row.y + 16.0,
+                TextStyle::new(11.0, term::accent()),
+            );
+        } else if tier == state.tier + 1 {
+            // The next rung — a drydock purchase, unless it is a mission reward
+            // (never sold; unlocked only by a voyage — wired in a later pass).
+            let fitting = &def.tiers[vi - 1];
+            if fitting.acquisition.is_mission_only() {
+                draw_surface(
+                    row,
+                    &SurfaceStyle::new(term::surface()).with_border(1.0, term::faint()),
+                );
+                draw_ui_text_ex(
+                    name,
+                    row.x + 8.0,
+                    row.y + 16.0,
+                    TextStyle::new(13.0, term::dim()).params(),
+                );
+                draw_text_right(
+                    "MISSION REWARD",
+                    row.right() - 8.0,
+                    row.y + 16.0,
+                    TextStyle::new(10.0, term::dim()),
+                );
+            } else {
+                let cost = &fitting.cost;
+                let mut bits = vec![format!("{}cr", cost.credits)];
+                if cost.minerals > 0 {
+                    bits.push(format!("{}min", cost.minerals));
+                }
+                let affordable = ctx.sim.resources.credits >= cost.credits
+                    && ctx.sim.resources.minerals >= cost.minerals;
+                let label = format!("INSTALL {name} · {}", bits.join(" + "));
+                if term_button(row, &label, affordable, mouse) {
+                    actions.push(UiAction::UpgradeSubsystem(id.to_owned()));
+                }
+            }
+        } else {
+            // A version further up the ladder, previewed but not yet reachable.
+            draw_ui_text_ex(
+                &format!("○ {name}"),
+                row.x + 6.0,
+                row.y + 16.0,
+                TextStyle::new(12.0, term::faint()).params(),
+            );
+        }
+    }
 }
 
 /// The under-way SHIP tab (real-time loop §5): a procedural blueprint of the

@@ -135,6 +135,30 @@ impl Game {
                 gameplay.screen = Screen::ShipBuilder;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
             }
+            "ship_modules" => {
+                // The SHIP tab's MODULES sub-tab: subsystem version ladders. Vary
+                // the fitted tiers so passed / installed / next-to-buy rows all show.
+                let mut sim = SimState::new_campaign(
+                    &self.data,
+                    "preservers",
+                    0xC0FFEE,
+                    &crate::state::sim::founding_faction_ids(&self.data),
+                );
+                for (id, tier) in [
+                    ("agriculture", 3),
+                    ("engineering_bay", 1),
+                    ("medical_bay", 2),
+                    ("security", 0),
+                ] {
+                    if let Some(s) = sim.subsystems.get_mut(id) {
+                        s.tier = tier;
+                    }
+                }
+                let mut gameplay = GameplayState::new(sim);
+                gameplay.screen = Screen::ShipBuilder;
+                self.ship_modules_tab.set(true);
+                self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
+            }
             // The SHIP tab under way (real-time loop §5): the procedural blueprint.
             // Three hull classes share one demo sim so the schematic's adaptation
             // to different outlines can be verified side by side.

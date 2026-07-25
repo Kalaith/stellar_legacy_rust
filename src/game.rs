@@ -126,6 +126,10 @@ pub struct Game {
     /// (Hull/Engine/Weapon), which overflow once a mission-reward part joins a
     /// full column. One `ScrollArea` per column.
     ship_scroll: Cell<[ScrollArea; 3]>,
+    /// SHIP builder sub-tab: `false` = LOADOUT (hull/engine/weapon catalog),
+    /// `true` = MODULES (the six subsystems' named version ladders). Pure view
+    /// state, flipped by the on-screen toggle.
+    ship_modules_tab: Cell<bool>,
 }
 
 impl Game {
@@ -200,6 +204,7 @@ impl Game {
             decision_started: 0.0,
             charter_scroll: Cell::new(ScrollArea::new()),
             ship_scroll: Cell::new([ScrollArea::new(); 3]),
+            ship_modules_tab: Cell::new(false),
         }
     }
 
@@ -451,6 +456,7 @@ impl Game {
                     decision_remaining: self.decision_remaining(&gameplay.sim),
                     charter_scroll: &self.charter_scroll,
                     ship_scroll: &self.ship_scroll,
+                    ship_modules_tab: &self.ship_modules_tab,
                 }),
             }
         };

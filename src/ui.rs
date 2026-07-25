@@ -862,6 +862,9 @@ pub struct GameplayCtx<'a> {
     /// column that overflows (e.g. a mission-reward part added to a full one)
     /// stays reachable. Indexed Hull / Engine / Weapon.
     pub ship_scroll: &'a std::cell::Cell<[macroquad_toolkit::ui::ScrollArea; 3]>,
+    /// SHIP builder sub-tab: `false` = LOADOUT catalog, `true` = MODULES (named
+    /// subsystem version ladders). Pure view state, flipped by the on-screen toggle.
+    pub ship_modules_tab: &'a std::cell::Cell<bool>,
 }
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
