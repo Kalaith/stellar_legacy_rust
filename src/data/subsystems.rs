@@ -110,6 +110,19 @@ pub struct SubsystemsConfig {
     /// 0 = the bay's state does not touch fabrication.
     #[serde(default)]
     pub engineering_fabrication_penalty: f32,
+    /// How much a *degraded* engineering bay weakens *field* repairs (content-depth subsystems
+    /// round 34): the repair companion to the it7 decay keystone. The bay is the ship's fabricators
+    /// and diagnostic rigs — the tools a field repair is *made with* — so its condition scales how
+    /// far each underway repair goes: the restored condition gains `field_gain · (1 -
+    /// engineering_field_repair_penalty·(1 - engineering_condition))`, penalty-below-full and
+    /// floored at 0, so a sound bay makes a full field repair and a failing one can only patch. It
+    /// compounds the keystone from the other side — neglect the bay and it speeds every module's
+    /// decay (it7) *and* weakens every field mend, a double bind broken only by a full repair in
+    /// port (dock repairs go whole regardless). A gentle self-bootstrap, not a spiral: each field
+    /// mend of the bay itself raises its own condition and so improves the next. 0 = the bay's state
+    /// does not touch field-repair effectiveness.
+    #[serde(default)]
+    pub engineering_field_repair_penalty: f32,
     /// Fraction of famine losses the medical bay itself prevents at full
     /// condition (content-depth subsystems round 9): the two modules that only
     /// ever *cost* the ship now earn their keep, and — unlike the tier-based

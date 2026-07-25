@@ -163,7 +163,16 @@ pub fn repair_subsystem(sim: &mut SimState, data: &GameData, id: &str) -> Result
     let restored = if in_port {
         1.0
     } else {
-        (current + data.config.repair.field_gain).min(ceiling)
+        // A field repair is only as good as the bay it is made with (content-depth subsystems round
+        // 34): the engineering bay's condition scales the underway gain, so a failing bay can only
+        // patch. Dock repairs (above) go whole regardless — full facilities in port.
+        let eng = sim
+            .subsystems
+            .get("engineering_bay")
+            .map_or(1.0, |s| s.condition);
+        let effectiveness =
+            (1.0 - data.config.subsystems.engineering_field_repair_penalty * (1.0 - eng)).max(0.0);
+        (current + data.config.repair.field_gain * effectiveness).min(ceiling)
     };
     let name = def.name.clone();
     if let Some(state) = sim.subsystems.get_mut(id) {
@@ -1538,6 +1547,48 @@ mod tests {
         repair_subsystem(&mut sim, &data, "medical_bay").unwrap();
         assert!(sim.subsystems["medical_bay"].condition > 0.3);
         assert!(sim.resources.minerals < minerals_before);
+    }
+
+    #[test]
+    fn a_sound_engineering_bay_makes_a_better_field_repair() {
+        // Content-depth subsystems round 34: the repair companion to the round-7 decay keystone. A
+        // field (underway) repair is made with the bay's fabricators, so a sound bay mends the
+        // medical ward further than a failing one — but even a failing bay patches something. (In
+        // port, full facilities take repairs whole regardless, so this is exercised only underway.)
+        assert!(
+            GameData::load()
+                .unwrap()
+                .config
+                .subsystems
+                .engineering_field_repair_penalty
+                > 0.0,
+            "this test needs the field-repair coupling enabled"
+        );
+
+        let field_restore = |eng_condition: f32| -> f32 {
+            let (data, mut sim) = campaign(6);
+            // Underway, so field repairs (capped at the field ceiling), not whole dock repairs.
+            let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+            sim.contract = Some(crate::simulation::contract::start_contract(&template, &sim));
+            sim.resources.minerals = 100_000;
+            sim.ship.spare_parts = 100;
+            sim.subsystems.get_mut("medical_bay").unwrap().condition = 0.3;
+            sim.subsystems.get_mut("medical_bay").unwrap().knowledge = 0.9;
+            sim.subsystems.get_mut("engineering_bay").unwrap().condition = eng_condition;
+            repair_subsystem(&mut sim, &data, "medical_bay").unwrap();
+            sim.subsystems["medical_bay"].condition - 0.3
+        };
+
+        let sound = field_restore(1.0); // a sound bay makes the full field gain
+        let failing = field_restore(0.2); // a failing bay can only patch
+        assert!(
+            sound > failing,
+            "a sound engineering bay mends the ward further ({sound} vs {failing})"
+        );
+        assert!(
+            failing > 0.0,
+            "but even a failing bay patches something ({failing})"
+        );
     }
 
     #[test]

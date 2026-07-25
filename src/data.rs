@@ -2441,6 +2441,14 @@ mod tests {
             "engineering_fabrication_penalty {} out of range [0, 1]",
             subs_cfg.engineering_fabrication_penalty
         );
+        // Content-depth subsystems round 34: the field-repair penalty is a fraction in [0, 1] — a
+        // fully wrecked bay makes the weakest field mend (at 1, only the residual gain), but even it
+        // patches something, and a sound bay always makes a full one.
+        assert!(
+            (0.0..=1.0).contains(&subs_cfg.engineering_field_repair_penalty),
+            "engineering_field_repair_penalty {} out of range [0, 1]",
+            subs_cfg.engineering_field_repair_penalty
+        );
         // Content-depth subsystems round 30: the engineering→fuel-regen penalty is a fraction in
         // [0, 1] (a wrecked bay scoops less, but never a negative — fuel regen floors at zero).
         assert!(
