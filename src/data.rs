@@ -431,6 +431,17 @@ pub struct ShipConfig {
     /// mood does not touch how fast the mission goes.
     #[serde(default)]
     pub morale_objective_swing: f32,
+    /// How much the crew's *unity* swings objective accrual (content-depth charters round 34): the
+    /// second crew-state accrual lever the round-22 morale coupling invited, and a distinct one — a
+    /// crew can be high-hearted yet *fractured* (two contented peoples pulling different ways), or
+    /// grim yet *united* (a dour crew rowing as one). Where morale is the work's *will*, unity is
+    /// its *coordination*: a cohesive crew works a mission as a single hand while a divided one
+    /// duplicates effort and argues the method. Accrual is scaled by `1 + this·(unity − 0.5)`,
+    /// floored, around the neutral 0.5 midpoint, multiplying with the morale factor so a mission
+    /// goes fastest under a crew both willing and united. 0 = the crew's cohesion does not touch how
+    /// fast the mission goes.
+    #[serde(default)]
+    pub unity_objective_swing: f32,
     /// Success-chance bonus per point of aggregate combat on Wanderer dilemmas
     /// (firepower backs the confrontation).
     pub combat_dilemma_odds_per_point: f32,
@@ -3411,6 +3422,14 @@ mod tests {
             (0.0..=1.0).contains(&data.config.ship.morale_objective_swing),
             "morale_objective_swing {} out of the gentle range [0, 1]",
             data.config.ship.morale_objective_swing
+        );
+        // Content-depth charters round 34: the crew-unity accrual swing, the same gentle shape as
+        // the morale one — a cohesive crew works meaningfully but not miraculously faster, floored
+        // above a stall at runtime.
+        assert!(
+            (0.0..=1.0).contains(&data.config.ship.unity_objective_swing),
+            "unity_objective_swing {} out of the gentle range [0, 1]",
+            data.config.ship.unity_objective_swing
         );
         // Content-depth charters round 27: each point of combat deters route hazard by a
         // gentle fraction — a moderately-armed ship should meaningfully quiet a lawless route,

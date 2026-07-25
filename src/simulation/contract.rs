@@ -320,6 +320,13 @@ pub fn advance_contract(
     // stalls it. Read before the mutable contract borrow.
     let morale_factor =
         (1.0 + config.ship.morale_objective_swing * (sim.population.morale - 0.5)).max(0.2);
+    // …and its cohesion moves how *together* the work goes (content-depth charters round 34): the
+    // second crew-state lever, coordination beside morale's will. A united crew works as one hand, a
+    // fractured one duplicates effort and argues the method — scaled around the neutral midpoint and
+    // floored like morale, multiplying with it so a mission goes fastest under a crew both willing
+    // and united. Read before the mutable contract borrow.
+    let unity_factor =
+        (1.0 + config.ship.unity_objective_swing * (sim.population.unity - 0.5)).max(0.2);
 
     let mut out = ContractProgress::default();
     // The objective subsystem an Operation month trained (content-depth charters round 33), set
@@ -386,7 +393,8 @@ pub fn advance_contract(
                 * objective_condition
                 * combat_factor
                 * cargo_factor
-                * morale_factor;
+                * morale_factor
+                * unity_factor;
             // …and the work itself sharpens the craft it leans on (content-depth charters round 33):
             // the reverse of the round-14 coupling, where the subsystem's condition speeds the
             // mission — here a month of on-station work builds the objective subsystem's *knowledge*
@@ -1077,9 +1085,10 @@ mod tests {
     #[test]
     fn objective_accrues_only_during_operation() {
         let (data, mut sim) = armed(2, "deep_vein_survey");
-        // Neutralize the round-22 crew-morale factor (as speed/combat are passed 0) so
-        // this isolates the base accrual rate: at the 0.5 midpoint the factor is 1.0.
+        // Neutralize the round-22 crew-morale and round-34 crew-unity factors (as speed/combat are
+        // passed 0) so this isolates the base accrual rate: at the 0.5 midpoint each factor is 1.0.
         sim.population.morale = 0.5;
+        sim.population.unity = 0.5;
 
         // Nothing accrues in Preparation or Travel.
         loop {
@@ -1204,6 +1213,31 @@ mod tests {
         assert!(
             devoted > broken * 1.05,
             "a high-hearted crew works the objective faster: {devoted} vs {broken}"
+        );
+    }
+
+    #[test]
+    fn a_united_crew_works_the_objective_faster_than_a_fractured_one() {
+        // Content-depth charters round 34: the mission's coupling to the crew's *cohesion*, the
+        // second crew-state lever distinct from its spirits (round 22). A crew rowing as one works
+        // the objective faster than a fractured one pulling different ways, all else equal (morale
+        // is the same fresh-campaign value in both runs, so this isolates unity).
+        let first_operation_accrual = |unity: f32| -> f32 {
+            let (data, mut sim) = armed(9, "deep_vein_survey");
+            sim.population.unity = unity; // advance_contract never moves unity
+            loop {
+                let p = advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
+                if p.phase_changed == Some(ContractPhase::Operation) {
+                    break;
+                }
+            }
+            sim.contract.as_ref().unwrap().objective_progress
+        };
+        let united = first_operation_accrual(0.95);
+        let fractured = first_operation_accrual(0.15);
+        assert!(
+            united > fractured * 1.05,
+            "a united crew works the objective faster than a fractured one: {united} vs {fractured}"
         );
     }
 
