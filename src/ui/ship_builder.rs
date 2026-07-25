@@ -54,7 +54,15 @@ fn draw_underway(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut V
     let status_h = 120.0;
     let layout = Rect::new(main.x, main.y, main.w, main.h - status_h - GAP);
     term_panel(layout, Some("SHIP LAYOUT"));
-    let frame = layout.inset(16.0);
+    // Extra top margin clears the 34px panel header: the schematic's top deck-label
+    // band and the legend both sit near frame.y, so a bare 16px inset let them
+    // collide with the "SHIP LAYOUT" title. Sides/bottom stay at 16.
+    let frame = Rect::new(
+        layout.x + 16.0,
+        layout.y + 40.0,
+        layout.w - 32.0,
+        layout.h - 56.0,
+    );
     let schematic = ship_schematic::build(ctx.sim, ctx.data, frame);
     ship_schematic::draw(frame, &schematic);
     draw_legend(frame);
@@ -118,20 +126,22 @@ fn draw_legend(frame: Rect) {
 fn draw_overview(ctx: &GameplayCtx<'_>, rect: Rect, schematic: &ship_schematic::ShipSchematic) {
     term_panel(rect, Some("SHIP OVERVIEW"));
     let c = rect.inset(16.0);
+    // Drop the ship name clear of the 34px panel header — at the old offset its
+    // caps sat on the header divider and read as overlapping.
     draw_ui_text_ex(
         &schematic.hull_name,
         c.x,
-        c.y + 26.0,
+        c.y + 40.0,
         TextStyle::new(18.0, term::accent()).params(),
     );
     draw_ui_text_ex(
         "GENERATION SHIP · UNDER WAY",
         c.x,
-        c.y + 44.0,
+        c.y + 58.0,
         TextStyle::new(11.0, term::dim()).params(),
     );
     let s = &schematic.stats;
-    let mut y = c.y + 76.0;
+    let mut y = c.y + 90.0;
     let rows = [
         ("SOULS ABOARD", ctx.sim.population.count.to_string()),
         ("CREW POSTS", ctx.sim.crew.len().to_string()),

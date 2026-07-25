@@ -766,13 +766,20 @@ pub fn draw_status_strip(rect: Rect, schematic: &ShipSchematic) {
     let mods_text = if mods.is_empty() {
         "—".to_owned()
     } else {
-        mods.join("  ")
+        mods.join(" ")
     };
-    draw_ui_text_ex(
+    // Fit the modifiers into the tile: a full loadout ("CARGO 400 SPD 2 FUEL+1")
+    // overran a fixed-size line and spilled past the tile edges, so let the block
+    // shrink and wrap to two lines within the cell instead.
+    draw_text_block(
         &mods_text,
         tx + 10.0,
-        rect.y + 42.0,
-        TextStyle::new(13.0, term::primary()).params(),
+        rect.y + 28.0,
+        tw - 20.0,
+        rect.h - 34.0,
+        13.0,
+        3.0,
+        term::primary(),
     );
 }
 
