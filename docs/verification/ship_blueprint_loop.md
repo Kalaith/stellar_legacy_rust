@@ -88,3 +88,11 @@ Verify with `.\scripts\capture_ui.ps1 -Scenes ship_underway`, plus
 - **Open weaknesses** (next): barge vs ark silhouettes still similar; deck captions
   pure flavour; icon stroke is thin at capture scale (could thicken); no legend
   entry explaining the icons.
+
+---
+
+**Loop paused after iteration 5** (at the user's request). The full
+`docs/verification` screenshot set was regenerated so every scene reflects the
+current build. Remaining ideas for a future pass are the open weaknesses above:
+sharpen barge-vs-ark silhouettes, give the deck captions real meaning, thicken
+icon strokes, and add an icon legend.
