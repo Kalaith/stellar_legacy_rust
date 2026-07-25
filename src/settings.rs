@@ -13,6 +13,31 @@ pub const DISPLAY_KEY: &str = "display";
 /// Persistence key for the default per-category council delegation (GDD §5.4)
 /// applied to each new voyage.
 pub const DELEGATION_KEY: &str = "delegation";
+/// Persistence key for one-time onboarding flags (first-run welcome overlay).
+pub const ONBOARDING_KEY: &str = "onboarding";
+
+/// One-time onboarding progress. Lives outside the sim save so it survives
+/// deleting a campaign — the welcome overlay is shown once per install, not
+/// once per voyage. All fields `serde(default)` so an absent/partial blob reads
+/// as "nothing seen yet".
+#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[serde(default)]
+pub struct Onboarding {
+    /// Whether the player has dismissed the first-run welcome overlay.
+    pub welcome_seen: bool,
+}
+
+impl Onboarding {
+    /// Loads onboarding flags, defaulting to "nothing seen" on a fresh install.
+    pub fn load(game_name: &str) -> Self {
+        load_json_key(game_name, ONBOARDING_KEY).unwrap_or_default()
+    }
+
+    /// Persists the onboarding flags.
+    pub fn save(&self, game_name: &str) -> Result<(), String> {
+        save_json_key(game_name, ONBOARDING_KEY, self)
+    }
+}
 
 /// Load the persisted default delegation for new campaigns (all-council if
 /// never set).

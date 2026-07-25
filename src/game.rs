@@ -79,6 +79,10 @@ pub struct Game {
     settings_open: bool,
     /// Whether the F2 help/controls overlay is open.
     help_open: bool,
+    /// One-time onboarding flags (persisted separately from the campaign save).
+    onboarding: crate::settings::Onboarding,
+    /// Whether the first-run welcome overlay is showing (once per install).
+    welcome_open: bool,
     /// Terminal typewriter reveal for blocking modals: which modal is showing
     /// and when it appeared, so its body text streams in. Purely cosmetic —
     /// never touches the deterministic sim.
@@ -149,6 +153,10 @@ impl Game {
         let _ = assets.load_texture_configs(&data.texture_manifest).await;
 
         let achievements = crate::achievements::load(&data.config.game_name);
+        // The first-run welcome overlay shows once per install, after the boot
+        // log, until the player dismisses it (which persists the flag).
+        let onboarding = crate::settings::Onboarding::load(&data.config.game_name);
+        let welcome_open = !onboarding.welcome_seen;
 
         Self {
             data,
@@ -165,6 +173,8 @@ impl Game {
             delegation_defaults,
             settings_open: false,
             help_open: false,
+            onboarding,
+            welcome_open,
             modal_key: None,
             modal_started: 0.0,
             mission_started: None,
@@ -183,6 +193,17 @@ impl Game {
 
     pub fn update(&mut self, dt: f32) {
         self.notifications.update(dt);
+
+        // First-run welcome overlay sits above the menu once the boot log ends.
+        // Any key dismisses it (its button is handled in draw); until then, no
+        // other input runs and any menu intents queued beneath it are dropped.
+        if self.boot.is_done() && self.welcome_open {
+            if get_last_key_pressed().is_some() {
+                self.dismiss_welcome();
+            }
+            let _ = self.events.drain();
+            return;
+        }
 
         // F10 toggles the CRT effect outright; F1 opens the display panel.
         if is_key_pressed(KeyCode::F10) {
@@ -431,10 +452,15 @@ impl Game {
             Vec::new()
         };
         let help_close = self.help_open && ui::help::draw(virtual_ui.mouse_position());
+        // First-run welcome overlay, above the menu only; its button dismisses it.
+        let welcome_dismiss = self.welcome_open
+            && matches!(self.state, GameState::Menu(_))
+            && ui::welcome::draw(&self.data.config.welcome, virtual_ui.mouse_position());
         end_virtual_ui_frame();
 
-        // While a panel is open, swallow the underlying screen's intents.
-        if !self.settings_open && !self.help_open {
+        // While a panel or the welcome overlay is open, swallow the underlying
+        // screen's intents.
+        if !self.settings_open && !self.help_open && !self.welcome_open {
             for action in actions {
                 self.events.push(action);
             }
@@ -444,6 +470,9 @@ impl Game {
         }
         if help_close {
             self.help_open = false;
+        }
+        if welcome_dismiss {
+            self.dismiss_welcome();
         }
 
         self.notifications
@@ -465,6 +494,20 @@ impl Game {
         if let Err(err) = self.display.save(&self.data.config.game_name) {
             self.notifications
                 .warning(format!("Display settings not saved: {err}"));
+        }
+    }
+
+    /// Close the first-run welcome overlay and remember it was seen, so it never
+    /// shows again on this install.
+    fn dismiss_welcome(&mut self) {
+        if !self.welcome_open {
+            return;
+        }
+        self.welcome_open = false;
+        self.onboarding.welcome_seen = true;
+        if let Err(err) = self.onboarding.save(&self.data.config.game_name) {
+            self.notifications
+                .warning(format!("Onboarding flag not saved: {err}"));
         }
     }
 

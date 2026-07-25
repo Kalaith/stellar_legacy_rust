@@ -51,6 +51,10 @@ pub struct LegacyDef {
     pub id: String,
     pub name: String,
     pub description: String,
+    /// One-line summary of what picking this legacy actually changes in play —
+    /// founding-family temperament, the dilemmas it forces, and its undoing.
+    /// Shown on the new-game legacy card so the choice reads as consequential.
+    pub effects: String,
     /// Failure-condition name: cultural_collapse / humanity_loss / fleet_dissolution.
     pub failure_risk: String,
     pub dilemmas: Vec<DilemmaDef>,

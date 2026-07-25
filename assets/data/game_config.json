@@ -112,6 +112,8 @@
   "tutorial": {
     "drydock_hint": "FIRST VOYAGE - Select a charter below to open the PREP screen and ready the ship.",
     "drydock_refit_hint": "Repair or refit on the SHIP screen, then choose the next charter:",
+    "legacy_intro": "Your legacy is the creed the ship lives by. It shapes your founding families' names and temperament, the moral dilemmas the voyage forces on you, and how your society comes apart under strain. Pick the way of failing you want to play against:",
+    "factions_intro": "The founding peoples are the cultures that crew the ship. Each leans somewhere from tech-embracing to traditional, and whichever grows largest aboard sways your defining gambles. Choose the mix you mean to hold together for centuries:",
     "steps": [
       {
         "id": "choose_charter",
@@ -139,6 +141,25 @@
         "tip": "Departure locks the loadout. From here, generations will live and die before the ship sees home again."
       }
     ]
+  },
+  "welcome": {
+    "title": "WELCOME ABOARD, COMMANDER",
+    "intro": "Stellar Legacy is a generational-starship command game. You do not fly a ship so much as steward a whole society across the centuries it takes to cross the dark. Here is what you are taking on:",
+    "sections": [
+      {
+        "heading": "THE VOYAGE",
+        "body": "You accept a charter — a destination and a term of years — then prep the ship and LAUNCH. Time runs in months while under way; press SPACE or ENTER to advance, and pick a faster speed when the road is quiet. Food, spare parts, and fuel must last the whole crossing, so provision for centuries, not for a season."
+      },
+      {
+        "heading": "YOUR PEOPLE",
+        "body": "You begin by choosing a LEGACY — the creed your dynasty lives and dies by — and a handful of FOUNDING PEOPLES who crew the ship. Both are real choices: they set your families' temperament, the dilemmas you'll face, and the way your civilization can come apart. Generations are born, lead, and pass on while the voyage runs."
+      },
+      {
+        "heading": "COMMAND",
+        "body": "The council brings you decisions; each one pauses the clock until you answer, and there are no undo buttons — only consequences your heirs inherit. Press F2 any time for the controls, and F1 for display settings. When you're ready, dismiss this and choose your legacy."
+      }
+    ],
+    "dismiss_label": "BEGIN [ press any key ]"
   },
   "subsystems": {
     "knowledge_start": 0.7,

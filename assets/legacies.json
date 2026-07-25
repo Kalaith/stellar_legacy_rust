@@ -3,6 +3,7 @@
     "id": "preservers",
     "name": "The Preservers",
     "description": "Keep the mission, the culture, and the bloodlines exactly as the founders intended. Every deviation is a small extinction.",
+    "effects": "Founding families run traditional and loyal. Their dilemmas test whether you hold the old ways under pressure. Undoing: CULTURAL COLLAPSE — let tradition rot too far and the mission loses its soul.",
     "failure_risk": "cultural_collapse",
     "dilemmas": [
       {
@@ -405,6 +406,7 @@
     "id": "adaptors",
     "name": "The Adaptors",
     "description": "The void does not negotiate. Change the crew — genetically, cybernetically, biologically — until the mission fits.",
+    "effects": "Founding families embrace change and the remaking of the body. Their dilemmas test how far you'll bend flesh to survive. Undoing: HUMANITY LOSS — too much body-horror and existential dread and the crew stops being human.",
     "failure_risk": "humanity_loss",
     "dilemmas": [
       {
@@ -787,6 +789,7 @@
     "id": "wanderers",
     "name": "The Wanderers",
     "description": "The ship owes nothing to anyone. Take what the voyage needs — ports, convoys, and promises are all negotiable.",
+    "effects": "Founding families are hardy and independent, and start with a combat edge. Their dilemmas test the freebooter's bargain. Undoing: FLEET DISSOLUTION — lean too hard on piracy and the fleet scatters.",
     "failure_risk": "fleet_dissolution",
     "dilemmas": [
       {

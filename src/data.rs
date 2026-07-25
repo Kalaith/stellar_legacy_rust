@@ -371,6 +371,8 @@ pub struct GameConfig {
     pub provisioning: ProvisioningConfig,
     /// First-voyage tutorial content: the drydock hint and PREP checklist.
     pub tutorial: TutorialConfig,
+    /// First-run welcome overlay content (shown once, per install).
+    pub welcome: WelcomeConfig,
     /// Ship-subsystem knowledge/training tunables (W5).
     pub subsystems: SubsystemsConfig,
     /// Seeded-campaign-skeleton beat pools + era layering (content-depth).
@@ -1570,8 +1572,29 @@ pub struct TutorialConfig {
     pub drydock_hint: String,
     /// The same line's everyday text once the tutorial is over.
     pub drydock_refit_hint: String,
+    /// Explains the legacy column on the new-game screen (what the choice does).
+    pub legacy_intro: String,
+    /// Explains the founding-peoples column on the new-game screen.
+    pub factions_intro: String,
     /// Ordered pre-launch checklist steps for the PREP screen.
     pub steps: Vec<TutorialStep>,
+}
+
+/// One captioned block of the first-run welcome overlay.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WelcomeSection {
+    pub heading: String,
+    pub body: String,
+}
+
+/// First-run welcome overlay content (shown once, gated on a saved flag). All
+/// text is data, per the hard rule; the overlay itself lives in `ui::welcome`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WelcomeConfig {
+    pub title: String,
+    pub intro: String,
+    pub sections: Vec<WelcomeSection>,
+    pub dismiss_label: String,
 }
 
 /// archetype; recruiting fills a vacancy, training raises the holder's

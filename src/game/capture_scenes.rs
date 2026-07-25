@@ -18,12 +18,20 @@ impl Game {
         self.instant_reveal = true;
         self.capture_run_secs = None;
         self.boot.finish();
+        // The first-run welcome overlay would otherwise sit over every menu
+        // scene; scenes opt into it explicitly (the "welcome" scene below).
+        self.welcome_open = false;
         self.display = crate::settings::DisplaySettings::default();
         self.crt_style = self.display.crt_style();
         ui::term::set_phosphor(self.display.phosphor);
         self.delegation_defaults = crate::state::sim::DelegationSettings::default();
         match scene {
             "menu" => self.state = crate::state::GameState::Menu(MenuState::new(false)),
+            "welcome" => {
+                // The first-run orientation overlay above the main menu.
+                self.state = crate::state::GameState::Menu(MenuState::new(false));
+                self.welcome_open = true;
+            }
             "green" => {
                 // The new-game picker on the green (P1) tube, to verify the recolor.
                 self.display.phosphor = crate::settings::Phosphor::Green;

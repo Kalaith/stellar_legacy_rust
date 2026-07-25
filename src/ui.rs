@@ -16,6 +16,7 @@ pub mod prep;
 pub mod settings;
 pub mod ship_builder;
 pub mod subsystems;
+pub mod welcome;
 
 use crate::chronicle::ChronicleStore;
 use crate::data::events::EventCategory;
@@ -428,23 +429,30 @@ fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
     }
 
     let starting = ctx.data.config.factions.starting_count as usize;
-    let panel = Rect::new(LOGICAL_WIDTH / 2.0 - 430.0, 205.0, 860.0, 440.0);
+    let tut = &ctx.data.config.tutorial;
+    let panel = Rect::new(LOGICAL_WIDTH / 2.0 - 430.0, 198.0, 860.0, 508.0);
     term_panel(panel, Some("FOUNDING CHARTER"));
     let content = panel.inset(24.0);
     let col_gap = 24.0;
     let col_w = (content.w - col_gap) / 2.0;
     let left_x = content.x;
     let right_x = content.x + col_w + col_gap;
+    // Both columns share a header band: an intro block explaining the choice,
+    // then the pickable list below it. `list_top` is where each list starts.
+    let list_top = content.y + 92.0;
 
     // --- Left column: the legacy that steers the bloodline ---
-    let mut y = content.y + 34.0;
-    draw_ui_text_ex(
-        "Choose the legacy that steers your bloodline:",
+    draw_text_block(
+        &tut.legacy_intro,
         left_x,
-        y,
-        TextStyle::new(15.0, term::dim()).params(),
+        content.y + 28.0,
+        col_w,
+        58.0,
+        14.0,
+        3.0,
+        term::dim(),
     );
-    y += 16.0;
+    let mut y = list_top;
     for (i, legacy_id) in ctx.legacy_ids.iter().enumerate() {
         let Some(legacy) = ctx.data.legacies.get(legacy_id) else {
             continue;
@@ -497,24 +505,63 @@ fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
         y += 70.0;
     }
 
+    // A "what this changes" callout for the focused legacy, so the pick reads as
+    // a mechanical choice and not just flavor. Text is the legacy's own `effects`.
+    if let Some(legacy) = ctx
+        .legacy_ids
+        .get(ctx.menu.selected_legacy)
+        .and_then(|id| ctx.data.legacies.get(id))
+    {
+        let callout = Rect::new(left_x, y + 6.0, col_w, content.bottom() - (y + 6.0) - 56.0);
+        draw_surface(
+            callout,
+            &SurfaceStyle::new(term::surface_inset()).with_border(1.0, term::faint()),
+        );
+        draw_ui_text_ex(
+            "WHAT THIS CHANGES",
+            callout.x + 14.0,
+            callout.y + 22.0,
+            TextStyle::new(13.0, term::accent()).params(),
+        );
+        draw_text_block(
+            &legacy.effects,
+            callout.x + 14.0,
+            callout.y + 30.0,
+            callout.w - 28.0,
+            callout.h - 40.0,
+            13.0,
+            3.0,
+            term::primary(),
+        );
+    }
+
     // --- Right column: the founding peoples (W7) — pick exactly `starting` ---
     let chosen = ctx.menu.selected_factions.len();
-    let mut fy = content.y + 34.0;
+    draw_text_block(
+        &tut.factions_intro,
+        right_x,
+        content.y + 28.0,
+        col_w,
+        50.0,
+        14.0,
+        3.0,
+        term::dim(),
+    );
     draw_ui_text_ex(
         &format!("Choose {starting} founding peoples  ({chosen}/{starting}):"),
         right_x,
-        fy,
+        content.y + 84.0,
         TextStyle::new(
-            15.0,
+            14.0,
             if chosen == starting {
                 term::accent()
             } else {
-                term::dim()
+                term::primary()
             },
         )
         .params(),
     );
-    fy += 16.0;
+    let mut fy = list_top;
     for id in GameData::sorted_ids(&ctx.data.factions) {
         let Some(faction) = ctx.data.factions.get(&id) else {
             continue;
