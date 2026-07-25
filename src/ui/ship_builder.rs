@@ -1,8 +1,8 @@
 //! Ship Builder: component catalog and current loadout (GDD §9).
 
 use crate::data::ship_components::{ComponentKind, ComponentStats, ShipComponent};
-use crate::simulation::ship::{install_eligibility, loadout_stats, InstallEligibility};
-use crate::ui::{term, term_button, term_meter, term_panel, GameplayCtx, UiAction};
+use crate::simulation::ship::{install_eligibility, InstallEligibility};
+use crate::ui::{ship_schematic, stat_line, term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
@@ -38,142 +38,151 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
     }
 }
 
-/// The under-way SHIP readout (real-time loop §5): installed hull/engine/weapon
-/// with their stats, the ship's live integrity meters, and the aggregate loadout
-/// boosts currently in force. No purchase/commission — those are drydock jobs.
+/// The under-way SHIP tab (real-time loop §5): a procedural blueprint of the
+/// vessel. The central schematic ([`ship_schematic`]) draws the hull with every
+/// module highlighted by condition, tier, and crew manning, and reacts on its own
+/// to anything that changes mid-mission. A left rail carries the overview and the
+/// one interactive under-way job — field-fitting salvaged parts. No
+/// purchase/commission; those are drydock work.
 fn draw_underway(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
-    let sim = ctx.sim;
-    let left = Rect::new(area.x, area.y, area.w * 0.5 - 6.0, area.h);
-    let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
+    const GAP: f32 = 12.0;
+    let left_w = 296.0;
+    let left = Rect::new(area.x, area.y, left_w, area.h);
+    let main = Rect::new(left.right() + GAP, area.y, area.w - left_w - GAP, area.h);
 
-    // --- Installed modules ---
-    term_panel(left, Some("INSTALLED MODULES"));
-    let content = left.inset(18.0);
-    let mut y = content.y + 40.0;
-    let modules = [
-        (ComponentKind::Hull, "HULL", Some(sim.ship.hull.as_str())),
-        (
-            ComponentKind::Engine,
-            "ENGINE",
-            Some(sim.ship.engine.as_str()),
-        ),
-        (ComponentKind::Weapon, "WEAPON", sim.ship.weapon.as_deref()),
-    ];
-    for (kind, slot, id) in modules {
-        let component = id.and_then(|i| ctx.data.ship_components.find(kind, i));
+    // --- Main: procedural schematic over a live status strip ---
+    let status_h = 120.0;
+    let layout = Rect::new(main.x, main.y, main.w, main.h - status_h - GAP);
+    term_panel(layout, Some("SHIP LAYOUT"));
+    let frame = layout.inset(16.0);
+    let schematic = ship_schematic::build(ctx.sim, ctx.data, frame);
+    ship_schematic::draw(frame, &schematic);
+    draw_legend(frame);
+
+    let status = Rect::new(main.x, layout.bottom() + GAP, main.w, status_h);
+    term_panel(status, Some("SHIP STATUS"));
+    // Clear the 34px panel header before laying the tiles.
+    let strip = Rect::new(
+        status.x + 14.0,
+        status.y + 40.0,
+        status.w - 28.0,
+        status.h - 52.0,
+    );
+    ship_schematic::draw_status_strip(strip, &schematic);
+
+    // --- Left rail: overview + field ops ---
+    let rail_h = (area.h - GAP) * 0.5;
+    draw_overview(ctx, Rect::new(left.x, left.y, left.w, rail_h), &schematic);
+    draw_field_ops(
+        ctx,
+        Rect::new(left.x, left.y + rail_h + GAP, left.w, rail_h),
+        mouse,
+        actions,
+    );
+}
+
+/// A compact key for the schematic's highlight language, tucked in the top-left
+/// where the hull leaves whitespace.
+fn draw_legend(frame: Rect) {
+    draw_ui_text_ex(
+        "◉ MANNED   ○ VACANT",
+        frame.x,
+        frame.y + 14.0,
+        TextStyle::new(11.0, term::dim()).params(),
+    );
+    let mut x = frame.x;
+    draw_ui_text_ex(
+        "COND",
+        x,
+        frame.y + 30.0,
+        TextStyle::new(11.0, term::dim()).params(),
+    );
+    x += 42.0;
+    for (label, color) in [
+        ("GOOD", term::accent()),
+        ("WORN", term::dim()),
+        ("CRIT", term::alert()),
+    ] {
         draw_ui_text_ex(
-            slot,
-            content.x,
-            y,
-            TextStyle::new(12.0, term::dim()).params(),
+            label,
+            x,
+            frame.y + 30.0,
+            TextStyle::new(11.0, color).params(),
         );
-        match component {
-            Some(c) => {
-                draw_ui_text_ex(
-                    &c.name,
-                    content.x + 80.0,
-                    y,
-                    TextStyle::new(15.0, term::accent()).params(),
-                );
-                let stats = stats_line(&c.stats);
-                if !stats.is_empty() {
-                    draw_ui_text_ex(
-                        &stats,
-                        content.x + 80.0,
-                        y + 18.0,
-                        TextStyle::new(12.0, term::primary()).params(),
-                    );
-                }
-            }
-            None => {
-                draw_ui_text_ex(
-                    "— none —",
-                    content.x + 80.0,
-                    y,
-                    TextStyle::new(15.0, term::faint()).params(),
-                );
-            }
-        }
-        y += 48.0;
+        x += 42.0;
     }
+}
 
-    // Aggregate loadout modifiers currently in force — the ship's live boosts.
-    y += 8.0;
+/// The left-rail overview: which ship this is, who it carries, and the loadout
+/// at a glance.
+fn draw_overview(ctx: &GameplayCtx<'_>, rect: Rect, schematic: &ship_schematic::ShipSchematic) {
+    term_panel(rect, Some("SHIP OVERVIEW"));
+    let c = rect.inset(16.0);
     draw_ui_text_ex(
-        "ACTIVE MODIFIERS",
-        content.x,
-        y,
-        TextStyle::new(14.0, term::primary()).params(),
+        &schematic.hull_name,
+        c.x,
+        c.y + 26.0,
+        TextStyle::new(18.0, term::accent()).params(),
     );
-    y += 22.0;
-    let agg = loadout_stats(sim, ctx.data);
-    let agg_line = stats_line(&agg);
     draw_ui_text_ex(
-        if agg_line.is_empty() {
-            "no loadout bonuses"
-        } else {
-            &agg_line
-        },
-        content.x,
-        y,
-        TextStyle::new(13.0, term::accent()).params(),
+        "GENERATION SHIP · UNDER WAY",
+        c.x,
+        c.y + 44.0,
+        TextStyle::new(11.0, term::dim()).params(),
     );
-
-    // --- Integrity + salvage hold ---
-    term_panel(right, Some("INTEGRITY"));
-    let rc = right.inset(18.0);
-    let mut ry = rc.y + 42.0;
-    let meters = [
-        ("HULL", sim.ship.hull_integrity),
-        ("LIFE SUPPORT", sim.ship.life_support),
-        ("FUEL", sim.ship.fuel),
+    let s = &schematic.stats;
+    let mut y = c.y + 76.0;
+    let rows = [
+        ("SOULS ABOARD", ctx.sim.population.count.to_string()),
+        ("CREW POSTS", ctx.sim.crew.len().to_string()),
+        ("CARGO", s.cargo.to_string()),
+        ("SPEED", s.speed.to_string()),
+        ("COMBAT", s.combat.to_string()),
     ];
-    for (label, value) in meters {
-        term_meter(
-            Rect::new(rc.x, ry, rc.w, 22.0),
-            value,
-            1.0,
-            &format!("{label} {:.0}%", value * 100.0),
-        );
-        ry += 34.0;
+    for (label, value) in rows {
+        stat_line(c.x, y, label, &value, term::accent());
+        y += 24.0;
     }
-    ry += 6.0;
-    draw_ui_text_ex(
-        &format!("SPARE PARTS {}", sim.ship.spare_parts),
-        rc.x,
-        ry,
-        TextStyle::new(14.0, term::accent()).params(),
-    );
-    ry += 30.0;
+}
 
-    // A part in the salvage hold can still be field-fitted under way if crew and
-    // stores allow (PLAN M4.4) — the one loadout change the black permits.
-    if !sim.ship.salvage.is_empty() {
+/// Field ops (PLAN M4.4): the salvage hold and its under-way field-install
+/// buttons — the one loadout change the black permits, gated by crew and stores.
+fn draw_field_ops(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+    term_panel(rect, Some("FIELD OPS · SALVAGE HOLD"));
+    let c = rect.inset(16.0);
+    if ctx.sim.ship.salvage.is_empty() {
         draw_ui_text_ex(
-            "SALVAGE HOLD",
-            rc.x,
-            ry,
-            TextStyle::new(14.0, term::primary()).params(),
+            "The salvage hold is empty.",
+            c.x,
+            c.y + 30.0,
+            TextStyle::new(13.0, term::faint()).params(),
         );
-        ry += 24.0;
-        for id in sim.ship.salvage.clone() {
-            let name = ctx
-                .data
-                .ship_components
-                .find_any(&id)
-                .map(|(_, c)| c.name.clone())
-                .unwrap_or_else(|| id.clone());
-            let (enabled, label) = match install_eligibility(sim, ctx.data, &id) {
-                InstallEligibility::Ready => (true, format!("FIELD INSTALL — {name}")),
-                InstallEligibility::NeedsEngineer => (false, format!("{name} · NEEDS ENGINEER")),
-                InstallEligibility::NeedsConsumables => (false, format!("{name} · NEEDS PARTS")),
-                _ => (false, format!("{name} · UNAVAILABLE")),
-            };
-            if term_button(Rect::new(rc.x, ry, rc.w, 26.0), &label, enabled, mouse) {
-                actions.push(UiAction::InstallSalvage(id.clone()));
-            }
-            ry += 30.0;
+        draw_ui_text_ex(
+            "Parts found on the voyage are fitted here.",
+            c.x,
+            c.y + 50.0,
+            TextStyle::new(11.0, term::dim()).params(),
+        );
+        return;
+    }
+    let mut y = c.y + 30.0;
+    for id in ctx.sim.ship.salvage.clone() {
+        let name = ctx
+            .data
+            .ship_components
+            .find_any(&id)
+            .map(|(_, comp)| comp.name.clone())
+            .unwrap_or_else(|| id.clone());
+        let (enabled, label) = match install_eligibility(ctx.sim, ctx.data, &id) {
+            InstallEligibility::Ready => (true, format!("FIELD INSTALL — {name}")),
+            InstallEligibility::NeedsEngineer => (false, format!("{name} · NEEDS ENGINEER")),
+            InstallEligibility::NeedsConsumables => (false, format!("{name} · NEEDS PARTS")),
+            _ => (false, format!("{name} · UNAVAILABLE")),
+        };
+        if term_button(Rect::new(c.x, y, c.w, 26.0), &label, enabled, mouse) {
+            actions.push(UiAction::InstallSalvage(id.clone()));
         }
+        y += 32.0;
     }
 }
 

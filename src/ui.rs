@@ -15,6 +15,7 @@ pub mod market;
 pub mod prep;
 pub mod settings;
 pub mod ship_builder;
+pub mod ship_schematic;
 pub mod subsystems;
 pub mod welcome;
 

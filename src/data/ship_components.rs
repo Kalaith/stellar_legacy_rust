@@ -10,7 +10,7 @@ pub enum ComponentKind {
     Weapon,
 }
 
-#[derive(Debug, Clone, Copy, Default, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default)]
 pub struct ComponentStats {
     pub cargo: i32,

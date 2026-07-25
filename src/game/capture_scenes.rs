@@ -148,6 +148,20 @@ impl Game {
                 sim.ship.fuel = 0.4;
                 sim.ship.weapon = Some("mass_driver".to_owned());
                 sim.ship.salvage = vec!["solar_sail".to_owned()];
+                // Mixed tiers + wear so the schematic shows every highlight state:
+                // a proud tier-3 module, a failing one in alert-red, a mid one.
+                if let Some(s) = sim.subsystems.get_mut("agriculture") {
+                    s.tier = 3;
+                    s.condition = 0.95;
+                }
+                if let Some(s) = sim.subsystems.get_mut("medical_bay") {
+                    s.tier = 1;
+                    s.condition = 0.28;
+                }
+                if let Some(s) = sim.subsystems.get_mut("engineering_bay") {
+                    s.tier = 2;
+                    s.condition = 0.55;
+                }
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = Screen::ShipBuilder;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));
