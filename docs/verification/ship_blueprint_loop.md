@@ -59,3 +59,17 @@ Verify with `.\scripts\capture_ui.ps1 -Scenes ship_underway`, plus
   iteration-5 "new system"); branch routing is straight (could be orthogonal bus
   taps); armored_prow / habitat_ring classes not yet spot-checked; the deck
   captions are pure flavour and could carry real info.
+
+## Iteration 4 — corridor terminals + junction nodes; all five hulls verified
+- **Preserved**: modular grid, per-class outlines, tags, highlighting, captions.
+- **Weakness**: the corridor ran *through* the bridge and engine boxes and taps
+  were unmarked, so the "bus" read weakly; and armored_prow / habitat_ring had
+  never been captured.
+- **Improvement**: the corridor now terminates at the bridge's right and the
+  engine's left, so those two read as the bus's endpoints; each subsystem branch
+  taps the corridor at a small junction node, making the wiring deliberate. Added
+  `ship_underway_prow` / `ship_underway_ring` scenes — all five real hull classes
+  now render cleanly with distinct silhouettes and intact rooms.
+- **Open weaknesses** (next, iteration 5 = new system): pictographic room ICONS;
+  barge vs ark silhouettes are close (both full-bulge — differentiate more);
+  deck captions still pure flavour.

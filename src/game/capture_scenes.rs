@@ -140,6 +140,12 @@ impl Game {
             "ship_underway_ark" => {
                 self.state = self.underway_blueprint_state(Some("generation_ark"))
             }
+            "ship_underway_prow" => {
+                self.state = self.underway_blueprint_state(Some("armored_prow"))
+            }
+            "ship_underway_ring" => {
+                self.state = self.underway_blueprint_state(Some("habitat_ring"))
+            }
             "subsystems" => {
                 // The subsystems screen (W5) with mixed tiers, worn condition,
                 // and a knowledge stat dipping below a repair threshold.

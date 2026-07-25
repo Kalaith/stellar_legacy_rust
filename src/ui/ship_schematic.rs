@@ -376,7 +376,9 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         hull_id: sim.ship.hull.clone(),
         hull_name,
         outline,
-        corridor: (vec2(x_at(0.05), cy), vec2(x_at(0.95), cy)),
+        // Corridor runs between the bridge and engine boxes as its terminals,
+        // rather than passing through them.
+        corridor: (vec2(x_at(0.05) + 60.0, cy), vec2(x_at(0.95) - 64.0, cy)),
         ring,
         modules,
         hull_integrity: sim.ship.hull_integrity,
@@ -447,23 +449,16 @@ pub fn draw(frame: Rect, schematic: &ShipSchematic) {
     draw_line(a.x, a.y - 2.0, b.x, b.y - 2.0, 1.0, term::dim());
     draw_line(a.x, a.y + 2.0, b.x, b.y + 2.0, 1.0, term::dim());
 
-    // Branch connectors: a stub tying each compartment back to the corridor, so
-    // the layout reads as a wired schematic rather than floating boxes.
+    // Branch connectors: a stub tying each compartment back to the corridor, with
+    // a small junction node where it taps the bus — so the layout reads as a wired
+    // schematic rather than floating boxes.
     for glyph in &schematic.modules {
         let r = glyph.rect;
         match glyph.kind {
-            ModuleKind::Subsystem if r.center().y < a.y => {
-                draw_line(
-                    r.center().x,
-                    r.bottom(),
-                    r.center().x,
-                    a.y,
-                    1.0,
-                    term::faint(),
-                );
-            }
             ModuleKind::Subsystem => {
-                draw_line(r.center().x, r.y, r.center().x, a.y, 1.0, term::faint());
+                let from = if r.center().y < a.y { r.bottom() } else { r.y };
+                draw_line(r.center().x, from, r.center().x, a.y, 1.0, term::faint());
+                draw_circle(r.center().x, a.y, 2.0, term::dim());
             }
             // The weapon taps the hull spine from its dorsal mount.
             ModuleKind::Weapon => {
