@@ -36,6 +36,9 @@ pub struct ModuleGlyph {
     /// Subsystem id, or `"bridge"` / component id for the loadout glyphs.
     pub id: String,
     pub label: String,
+    /// Standardized 3-letter tag drawn inside the box — the scannable identity,
+    /// independent of the long external caption.
+    pub code: String,
     pub rect: Rect,
     pub kind: ModuleKind,
     /// 0-1 physical condition (subsystem condition; component integrity/fuel).
@@ -85,6 +88,20 @@ fn subsystem_crew_posts(id: &str) -> &'static [&'static str] {
         "security" => &["security_chief"],
         "education_culture" => &["scientist"],
         _ => &[],
+    }
+}
+
+/// The standardized 3-letter tag stamped inside a subsystem compartment. Kept
+/// stable so a room reads the same across every hull it appears on.
+fn subsystem_code(id: &str) -> &'static str {
+    match id {
+        "agriculture" => "AGR",
+        "education_culture" => "EDU",
+        "engineering_bay" => "ENG",
+        "life_support_habitat" => "LSH",
+        "medical_bay" => "MED",
+        "security" => "SEC",
+        _ => "SYS",
     }
 }
 
@@ -220,6 +237,7 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
     modules.push(component_glyph(
         "bridge",
         "COMMAND BRIDGE",
+        "CMD",
         Rect::new(x_at(0.05) - 6.0, cy - 18.0, 66.0, 36.0),
         ModuleKind::Bridge,
         sim.ship.hull_integrity,
@@ -234,6 +252,7 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
     modules.push(component_glyph(
         &sim.ship.engine,
         &engine_label,
+        "DRV",
         Rect::new(x_at(0.95) - 64.0, cy - 22.0, 72.0, 44.0),
         ModuleKind::Engine,
         // The engine reads by how much reaction mass it has to work with.
@@ -251,6 +270,7 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         modules.push(component_glyph(
             weapon_id,
             &label,
+            "WPN",
             Rect::new(x_at(0.5) - 34.0, cy - max_h - 30.0, 68.0, 24.0),
             ModuleKind::Weapon,
             sim.ship.hull_integrity,
@@ -286,6 +306,7 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         modules.push(ModuleGlyph {
             id: id.clone(),
             label: def.name.to_uppercase(),
+            code: subsystem_code(id).to_owned(),
             rect,
             kind: ModuleKind::Subsystem,
             condition: state.condition,
@@ -314,6 +335,7 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
 fn component_glyph(
     id: &str,
     label: &str,
+    code: &str,
     rect: Rect,
     kind: ModuleKind,
     condition: f32,
@@ -323,6 +345,7 @@ fn component_glyph(
     ModuleGlyph {
         id: id.to_owned(),
         label: label.to_owned(),
+        code: code.to_owned(),
         rect,
         kind,
         condition,
@@ -417,6 +440,17 @@ fn draw_glyph(frame: Rect, glyph: &ModuleGlyph) {
         &SurfaceStyle::new(term::surface_inset()).with_border(1.5, tone),
     );
 
+    // Standardized tag inside the box, in the condition tone — the scannable
+    // in-box identity, seated above the pip row.
+    draw_text_centered_in_box_ex(
+        &glyph.code,
+        r.x,
+        r.y,
+        r.w,
+        r.h - 10.0,
+        TextStyle::new(14.0, tone),
+    );
+
     // Tier pips (subsystems only), matching the subsystems screen convention.
     if glyph.kind == ModuleKind::Subsystem {
         for t in 0..3 {
@@ -448,8 +482,23 @@ fn draw_glyph(frame: Rect, glyph: &ModuleGlyph) {
     } else {
         term::faint()
     };
+
+    // The dorsal weapon labels to its side, clear of the centre-top captions; no
+    // leader, since its mount branch already ties it to the hull.
+    if glyph.kind == ModuleKind::Weapon {
+        draw_ui_text_ex(
+            &glyph.label,
+            r.right() + 8.0,
+            r.center().y + 4.0,
+            TextStyle::new(12.0, label_color).params(),
+        );
+        return;
+    }
+
+    // Everything else: name on the deck band (subsystems) or just beside the box
+    // (bridge/engine), with a leader tying label to box and a smaller, dimmer
+    // deck caption beneath — a clear primary/secondary typographic split.
     let (ly, leader_from, leader_to) = match glyph.kind {
-        ModuleKind::Weapon => (r.y - 14.0, r.y, r.y - 8.0),
         ModuleKind::Bridge | ModuleKind::Engine => {
             let ly = r.bottom() + 18.0;
             (ly, r.bottom(), ly - 12.0)
@@ -458,7 +507,7 @@ fn draw_glyph(frame: Rect, glyph: &ModuleGlyph) {
             let ly = frame.y + 26.0;
             (ly, r.y, ly + 6.0)
         }
-        ModuleKind::Subsystem => {
+        _ => {
             let ly = frame.bottom() - 24.0;
             (ly, r.bottom(), ly - 18.0)
         }
@@ -686,6 +735,24 @@ mod tests {
             .unwrap();
         assert_ne!(e0.id, e1.id);
         assert_eq!(e1.id, "warp_coil");
+    }
+
+    #[test]
+    fn every_subsystem_carries_a_three_letter_code() {
+        let data = GameData::load().unwrap();
+        let sch = build(&sim(&data), &data, frame());
+        for m in sch
+            .modules
+            .iter()
+            .filter(|m| m.kind == ModuleKind::Subsystem)
+        {
+            assert_eq!(m.code.len(), 3, "{} has a non-triliteral code", m.id);
+            assert_ne!(
+                m.code, "SYS",
+                "{} fell through to the placeholder code",
+                m.id
+            );
+        }
     }
 
     #[test]
