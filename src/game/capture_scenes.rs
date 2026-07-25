@@ -124,8 +124,13 @@ impl Game {
                     0xC0FFEE,
                     &crate::state::sim::founding_faction_ids(&self.data),
                 );
-                // Seed a salvage hold so the SALVAGE HOLD strip shows (M4.4).
-                sim.ship.salvage = vec!["mass_driver".to_owned(), "solar_sail".to_owned()];
+                // Seed a salvage hold so the SALVAGE HOLD strip shows (M4.4), incl.
+                // a mission-reward part so its MISSION REWARD tag + install state show.
+                sim.ship.salvage = vec![
+                    "mass_driver".to_owned(),
+                    "solar_sail".to_owned(),
+                    "singularity_lance".to_owned(),
+                ];
                 let mut gameplay = GameplayState::new(sim);
                 gameplay.screen = Screen::ShipBuilder;
                 self.state = crate::state::GameState::Gameplay(Box::new(gameplay));

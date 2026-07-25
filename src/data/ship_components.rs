@@ -1,6 +1,6 @@
 //! Ship component catalog: hulls, engines, weapons (GDD §6).
 
-use crate::data::ResourceDelta;
+use crate::data::{Acquisition, ResourceDelta};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -33,6 +33,12 @@ pub struct ShipComponent {
     /// drydock (PLAN M4.4)? Engines/weapons are modular; hulls are structural.
     #[serde(default)]
     pub field_installable: bool,
+    /// How the part is obtained. `MissionReward` parts are never sold — they hide
+    /// from the buy catalog and only surface once a mission drops them into the
+    /// salvage hold. Defaults to `Purchasable` so existing catalog entries are
+    /// unchanged.
+    #[serde(default)]
+    pub acquisition: Acquisition,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

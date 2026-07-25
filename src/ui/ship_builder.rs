@@ -5,7 +5,7 @@ use crate::simulation::ship::{install_eligibility, InstallEligibility};
 use crate::ui::{ship_schematic, stat_line, term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
-use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
+use macroquad_toolkit::ui::{draw_ui_text_ex, is_fully_visible, RectExt};
 
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
     // Under way the SHIP tab is a status readout, not a shipyard (real-time loop
@@ -23,19 +23,56 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
     ];
     let col_w = (area.w - 24.0) / 3.0;
 
+    const STRIDE: f32 = 100.0;
+    // Gutter reserved at each column's right edge for its scrollbar.
+    const GUTTER: f32 = 12.0;
+    let mut scrolls = ctx.ship_scroll.get();
+
     for (i, (kind, title)) in columns.iter().enumerate() {
         let rect = Rect::new(area.x + i as f32 * (col_w + 12.0), area.y, col_w, area.h);
         term_panel(rect, Some(title));
         let content = rect.inset(16.0);
-        let mut y = content.y + 40.0;
 
-        for component in ctx.data.ship_components.list(*kind) {
-            let installed = is_installed(ctx, *kind, &component.id);
-            let card = Rect::new(content.x, y, content.w, 96.0);
-            draw_component_card(ctx, card, component, installed, mouse, *kind, actions);
-            y += 100.0;
+        // Cards a mission-reward part joins only once owned; the rest are the
+        // buyable catalog. Collect the visible set first so the column can scroll
+        // when it overflows (a full catalog plus a found part is one card too tall).
+        let cards: Vec<&ShipComponent> = ctx
+            .data
+            .ship_components
+            .list(*kind)
+            .iter()
+            .filter(|c| {
+                let installed = is_installed(ctx, *kind, &c.id);
+                let salvaged = ctx.sim.ship.salvage.iter().any(|s| s == &c.id);
+                !c.acquisition.is_mission_only() || installed || salvaged
+            })
+            .collect();
+
+        // Scroll viewport: below the panel header, the full card width less the gutter.
+        let view = Rect::new(
+            content.x,
+            content.y + 34.0,
+            content.w,
+            content.bottom() - (content.y + 34.0),
+        );
+        let card_w = view.w - GUTTER;
+        let content_h = cards.len() as f32 * STRIDE;
+        let scroll = &mut scrolls[i];
+        scroll.update_at(view, content_h, mouse);
+
+        let mut y = view.y - scroll.offset();
+        for component in cards {
+            let card = Rect::new(view.x, y, card_w, 96.0);
+            // Cull partially-scrolled cards so none spills past the panel.
+            if is_fully_visible(card, view) {
+                let installed = is_installed(ctx, *kind, &component.id);
+                draw_component_card(ctx, card, component, installed, mouse, *kind, actions);
+            }
+            y += STRIDE;
         }
+        scroll.draw_scrollbar(view, content_h);
     }
+    ctx.ship_scroll.set(scrolls);
 }
 
 /// The under-way SHIP tab (real-time loop §5): a procedural blueprint of the
@@ -266,6 +303,16 @@ fn draw_component_card(
         )
         .params(),
     );
+    // A part with no catalog price wears its provenance: a mission recovered it,
+    // it cannot be bought, so the tag reads where a price would otherwise sit.
+    if component.acquisition.is_mission_only() {
+        draw_text_right(
+            "MISSION REWARD",
+            rect.right() - 12.0,
+            rect.y + 20.0,
+            TextStyle::new(10.0, term::dim()),
+        );
+    }
     draw_text_block(
         &component.description,
         rect.x + 12.0,

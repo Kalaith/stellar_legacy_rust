@@ -122,6 +122,10 @@ pub struct Game {
     /// which now outgrows its panel (grouped by objective, all tiers listed).
     /// A `Cell` so the pure-view draw path can update it through `&GameplayCtx`.
     charter_scroll: Cell<ScrollArea>,
+    /// Smooth-scroll state for the SHIP builder's three catalog columns
+    /// (Hull/Engine/Weapon), which overflow once a mission-reward part joins a
+    /// full column. One `ScrollArea` per column.
+    ship_scroll: Cell<[ScrollArea; 3]>,
 }
 
 impl Game {
@@ -195,6 +199,7 @@ impl Game {
             decision_key: None,
             decision_started: 0.0,
             charter_scroll: Cell::new(ScrollArea::new()),
+            ship_scroll: Cell::new([ScrollArea::new(); 3]),
         }
     }
 
@@ -445,6 +450,7 @@ impl Game {
                     run_clock: self.run_clock_for(&gameplay.sim),
                     decision_remaining: self.decision_remaining(&gameplay.sim),
                     charter_scroll: &self.charter_scroll,
+                    ship_scroll: &self.ship_scroll,
                 }),
             }
         };

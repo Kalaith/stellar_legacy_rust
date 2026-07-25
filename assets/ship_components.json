@@ -69,6 +69,19 @@
         "combat": 1
       },
       "field_installable": false
+    },
+    {
+      "id": "derelict_titan",
+      "name": "Derelict Titan Frame",
+      "description": "The gutted spine of a warship centuries dead, towed home and made to live again. No yard sells its like — you can only find one.",
+      "cost": {},
+      "stats": {
+        "cargo": 350,
+        "crew_capacity": 20,
+        "combat": 3
+      },
+      "field_installable": false,
+      "acquisition": "mission_reward"
     }
   ],
   "engines": [
@@ -141,6 +154,18 @@
         "speed": 6
       },
       "field_installable": true
+    },
+    {
+      "id": "voidfold_lattice",
+      "name": "Voidfold Lattice",
+      "description": "Drive tech pulled from an alien hull that fell silent long ago. It folds distance and scoops the fold's own wake for fuel — no human yard knows how to build it.",
+      "cost": {},
+      "stats": {
+        "speed": 5,
+        "fuel_regen": 2
+      },
+      "field_installable": true,
+      "acquisition": "mission_reward"
     }
   ],
   "weapons": [
@@ -205,6 +230,17 @@
         "combat": 7
       },
       "field_installable": true
+    },
+    {
+      "id": "singularity_lance",
+      "name": "Singularity Lance",
+      "description": "A recovered relic that spits a pinprick of collapsed matter. Nothing in a shipyard's catalog reaches this far or hits this hard — the deep dark gave it up, once.",
+      "cost": {},
+      "stats": {
+        "combat": 9
+      },
+      "field_installable": true,
+      "acquisition": "mission_reward"
     }
   ]
 }

@@ -900,6 +900,10 @@
   "objective_target": 30,
   "objective_unit": "systems charted",
   "min_renown": 400,
+  "completion_reward": {
+   "grant_component": "derelict_titan",
+   "log": "At the rim's last dark the lookouts found a warship centuries dead, drifting where no war was ever fought — its frame sound though its crew was long dust. The ship towed the titan's spine home across the black, a hull no yard could build, waiting for a drydock to wake it."
+  },
   "milestones": [
    {
     "id": "last_star",
@@ -1296,8 +1300,8 @@
   "objective_target": 900,
   "objective_unit": "kilotonnes secured under tow",
   "completion_reward": {
-   "grant_component": "warp_coil",
-   "log": "Grappling the dead titan, the salvage crews found more than archives in its silent engineering spaces — an experimental drive coil, generations ahead of anything this ship carried, cold but whole. It rode home in the hold, a prize the writ never thought to promise, waiting for a drydock bold enough to fit it."
+   "grant_component": "voidfold_lattice",
+   "log": "Grappling the dead titan, the salvage crews found more than archives in its silent engineering spaces — an alien drive lattice, its making generations beyond anything this ship carried, cold but whole. It rode home in the hold, a prize the writ never thought to promise, waiting for a drydock bold enough to fit it."
   },
   "milestones": [
    {
@@ -2169,13 +2173,14 @@
    }
   ],
   "completion_reward": {
+   "grant_component": "singularity_lance",
    "reputation_deltas": [
     {
      "id": "mercy",
      "delta": -0.06
     }
    ],
-   "log": "Four centuries of stripping a place people still called home left their mark on the ship — a crew grown practiced at the cold thing done without flinching, and a name in the dark grown colder to match."
+   "log": "Four centuries of stripping a place people still called home left their mark on the ship — a crew grown practiced at the cold thing done without flinching, and a name in the dark grown colder to match. Behind blast doors the defaulters never listed, the boarding crews found their one warm thing: a lance out of legend that spits a pinprick of collapsed matter, older than the colony that hid it, and no shipyard could ever sell its like."
   },
   "abandonment": {
    "reputation_deltas": [

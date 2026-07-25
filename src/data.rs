@@ -65,6 +65,28 @@ const SUBSYSTEMS_JSON: &str = include_str!("../assets/subsystems.json");
 const DYNASTY_NAMES_JSON: &str = include_str!("../assets/dynasty_names.json");
 const CREW_ARCHETYPES_JSON: &str = include_str!("../assets/crew_archetypes.json");
 
+/// How a fitting (ship component or subsystem version) is obtained. `Purchasable`
+/// is bought in the drydock at its `cost`; `MissionReward` is never for sale —
+/// it only reaches the ship as a granted part (`grant_component` /
+/// `completion_reward`), dropping into the salvage hold to be installed. A part
+/// may be granted whether it is purchasable or not, so a mission can hand over
+/// either an ordinary catalog part (found early/free) or a unique one that can be
+/// had no other way.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Acquisition {
+    #[default]
+    Purchasable,
+    MissionReward,
+}
+
+impl Acquisition {
+    /// True when the part can never be bought — it comes only from a mission.
+    pub fn is_mission_only(self) -> bool {
+        matches!(self, Acquisition::MissionReward)
+    }
+}
+
 /// Signed per-resource change used by event outcomes, costs, and rewards.
 /// Also doubles as an absolute amount set (e.g. starting resources).
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
@@ -1971,6 +1993,48 @@ mod tests {
                 "event grant_component '{id}' must be a real ship component"
             );
         }
+        // Mission-reward parts are never sold, so a price on one is dead data —
+        // and a part nobody can buy that no mission grants is unreachable. Collect
+        // every granted id (event outcomes + charter completions) and check that
+        // each mission-only part is reachable, and that at least one exists.
+        let granted_ids: std::collections::HashSet<&String> = data
+            .events
+            .iter()
+            .flat_map(|(_, e)| e.outcomes.iter())
+            .filter_map(|o| o.grant_component.as_ref())
+            .chain(
+                data.contracts
+                    .iter()
+                    .filter_map(|(_, c)| c.completion_reward.grant_component.as_ref()),
+            )
+            .collect();
+        let mut mission_only_parts = 0;
+        for kind in [
+            ship_components::ComponentKind::Hull,
+            ship_components::ComponentKind::Engine,
+            ship_components::ComponentKind::Weapon,
+        ] {
+            for component in data.ship_components.list(kind) {
+                if !component.acquisition.is_mission_only() {
+                    continue;
+                }
+                mission_only_parts += 1;
+                assert!(
+                    component.cost == crate::data::ResourceDelta::default(),
+                    "mission-reward part '{}' carries a price but can never be bought",
+                    component.id
+                );
+                assert!(
+                    granted_ids.contains(&component.id),
+                    "mission-reward part '{}' is granted by no mission — it is unreachable",
+                    component.id
+                );
+            }
+        }
+        assert!(
+            mission_only_parts >= 1,
+            "expected at least one mission-reward ship part, found none"
+        );
         // Content-depth charter↔event coupling: every charter-tag an event gates
         // on must exist on at least one charter, or the event can never fire.
         let charter_tags: std::collections::HashSet<&String> = data
@@ -2557,9 +2621,9 @@ mod tests {
             );
         }
 
-        assert_eq!(data.ship_components.hulls.len(), 5);
-        assert_eq!(data.ship_components.engines.len(), 5);
-        assert_eq!(data.ship_components.weapons.len(), 5);
+        assert_eq!(data.ship_components.hulls.len(), 6);
+        assert_eq!(data.ship_components.engines.len(), 6);
+        assert_eq!(data.ship_components.weapons.len(), 6);
         assert_eq!(data.crew_archetypes.len(), 7);
         // Doubled name pools (§8): 50 given names, 20 surnames + 10 traits
         // per legacy.

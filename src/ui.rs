@@ -858,6 +858,10 @@ pub struct GameplayCtx<'a> {
     /// outgrows its panel). A `Cell` so this pure-view path can update the offset
     /// through the shared `&GameplayCtx` without threading `&mut` everywhere.
     pub charter_scroll: &'a std::cell::Cell<macroquad_toolkit::ui::ScrollArea>,
+    /// Smooth-scroll state for the SHIP builder's three catalog columns, so a
+    /// column that overflows (e.g. a mission-reward part added to a full one)
+    /// stays reachable. Indexed Hull / Engine / Weapon.
+    pub ship_scroll: &'a std::cell::Cell<[macroquad_toolkit::ui::ScrollArea; 3]>,
 }
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
