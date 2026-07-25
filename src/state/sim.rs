@@ -361,13 +361,15 @@ impl GameSpeed {
         GameSpeed::X3,
     ];
 
-    /// Real-time multiplier on the auto-advance cadence (0 while paused).
+    /// Real-time multiplier on the auto-advance cadence (0 while paused). The
+    /// baseline was rescaled so the slowest running speed matches the old top
+    /// rate (1x ran too slow); the labels stay honest — 2x is twice 1x, 3x thrice.
     pub fn multiplier(self) -> f32 {
         match self {
             GameSpeed::Paused => 0.0,
-            GameSpeed::X1 => 1.0,
-            GameSpeed::X2 => 2.0,
-            GameSpeed::X3 => 3.0,
+            GameSpeed::X1 => 3.0,
+            GameSpeed::X2 => 6.0,
+            GameSpeed::X3 => 9.0,
         }
     }
 
