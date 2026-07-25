@@ -299,6 +299,7 @@
     "air_recovery_beat_threshold": 0.6,
     "becalmed_beat_family": "survival",
     "becalmed_beat_years": 5,
+    "becalmed_recovery_beat_family": "survival",
     "divergence_beat_threshold": 0.82,
     "divergence_beat_family": "legacy_drift",
     "cultural_divergence_beat_threshold": 0.88,

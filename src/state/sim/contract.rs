@@ -133,6 +133,14 @@ pub struct ActiveContract {
     /// reckon with its restoration.
     #[serde(default)]
     pub air_beats_fired: u32,
+    /// How many becalmed beats have fired this voyage (content-depth campaign-skeleton round 34):
+    /// the mobility twin of `hull_beats_fired` / `air_beats_fired` — the persistent "the ship has
+    /// been stranded" flag the becalmed *recovery* beat reads. Set when the it25 becalmed collapse
+    /// fires (a long fuel-stall), cleared when the recovery does (the drive lit again), so a ship
+    /// freed from the doldrums reckons with the crossing the collapse beat's band alone would pass
+    /// over in silence.
+    #[serde(default)]
+    pub becalmed_beats_fired: u32,
     /// How many anniversary beats have fired (content-depth round 7): the
     /// periodic commemoration cadence. Doubles as the count of anniversaries
     /// observed, so the next fires when the voyage passes the following multiple.

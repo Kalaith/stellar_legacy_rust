@@ -106,6 +106,7 @@ pub fn advance_months(sim: &mut SimState, data: &GameData, max_months: u32) -> T
             && !fire_loyalty_recovery_beat(sim, data, &mut report)
             && !fire_hull_recovery_beat(sim, data, &mut report)
             && !fire_air_recovery_beat(sim, data, &mut report)
+            && !fire_becalmed_recovery_beat(sim, data, &mut report)
             && !fire_flourish_beat(sim, data, &mut report)
             && !fire_depopulation_beat(sim, data, &mut report)
             && !fire_objective_beat(sim, data, &mut report)
@@ -553,8 +554,46 @@ fn fire_becalmed_beat(sim: &mut SimState, data: &GameData, report: &mut TickRepo
         // The ship burns again — re-arm, but do not fire.
         return false;
     }
+    // Record the stranding so the becalmed-recovery beat (round 34) can reckon with the drive being
+    // lit again; fires only during a voyage, so a contract is present.
+    if let Some(contract) = sim.contract.as_mut() {
+        contract.becalmed_beats_fired += 1;
+    }
     let family = cfg.becalmed_beat_family.clone();
     force_family_beat(sim, data, &family, report);
+    true
+}
+
+/// Fire a becalmed-recovery beat (content-depth campaign-skeleton round 34): the mobility twin of
+/// the it32 hull-recovery and it33 air-recovery beats, and the *ascending* mirror of the it25
+/// becalmed collapse beat — the seventh and last collapse beat to gain its recovery, so *every*
+/// collapse beat now sounds both its breaking and its mending. Once the ship has been stranded (a
+/// becalmed beat fired, `becalmed_beats_fired > 0`) and it *burns again* (`fuel_stall_years` back to
+/// 0, the drive lit after years dead in the water), force a beat (the crew reckoning with a voyage
+/// underway once more) and reset the collapse counter so a later stranding reckons anew. Unlike the
+/// hull/air recoveries this needs no hysteresis threshold — the stall counter resets to 0 in one
+/// step when the ship burns, so "moving again" is an unambiguous crossing. Fires once per stranding.
+fn fire_becalmed_recovery_beat(
+    sim: &mut SimState,
+    data: &GameData,
+    report: &mut TickReport,
+) -> bool {
+    let cfg = &data.config.campaign_skeleton;
+    if cfg.becalmed_recovery_beat_family.is_empty() {
+        return false;
+    }
+    let recovered = sim
+        .contract
+        .as_ref()
+        .is_some_and(|c| c.becalmed_beats_fired > 0 && sim.fuel_stall_years == 0);
+    if !recovered {
+        return false;
+    }
+    if let Some(contract) = sim.contract.as_mut() {
+        // The drive is lit again; re-arm the collapse beat against a future stranding.
+        contract.becalmed_beats_fired = 0;
+    }
+    force_family_beat(sim, data, &cfg.becalmed_recovery_beat_family, report);
     true
 }
 

@@ -1417,6 +1417,74 @@ fn a_becalmed_beat_fires_when_the_ship_is_long_stranded_and_rearms_when_it_burns
 }
 
 #[test]
+fn a_becalmed_recovery_beat_marks_a_ship_freed_from_the_doldrums() {
+    // Content-depth campaign-skeleton round 34: the mobility twin of the hull/air recovery beats,
+    // the last collapse beat to gain its recovery. A ship that never stranded marks no recovery; a
+    // long stranding fires the collapse and arms the counter; while still stranded no recovery
+    // fires; the drive lit again (the stall counter back to 0) fires the recovery and re-arms. The
+    // recovery reads the collapse *counter* and the stall count, not the collapse band, so it is
+    // tested against the fire hooks directly like the collapse test.
+    let data = GameData::load().unwrap();
+    let years = data.config.campaign_skeleton.becalmed_beat_years;
+    assert!(
+        years > 0
+            && !data
+                .config
+                .campaign_skeleton
+                .becalmed_recovery_beat_family
+                .is_empty(),
+        "this test needs the becalmed collapse+recovery beats enabled"
+    );
+    let mut sim = SimState::new_campaign(
+        &data,
+        "preservers",
+        7,
+        &crate::state::sim::founding_faction_ids(&data),
+    );
+    let template = data.contracts.get("deep_vein_survey").unwrap().clone();
+    sim.contract = Some(start_contract(&template, &sim));
+    let mut report = TickReport::default();
+    let counter = |sim: &SimState| sim.contract.as_ref().unwrap().becalmed_beats_fired;
+
+    // A ship moving all along marks no recovery.
+    sim.fuel_stall_years = 0;
+    assert!(!fire_becalmed_recovery_beat(&mut sim, &data, &mut report));
+    assert_eq!(
+        counter(&sim),
+        0,
+        "a ship that never stranded arms no recovery"
+    );
+
+    // Long stranded: the collapse beat fires and arms the recovery counter.
+    sim.fuel_stall_years = years;
+    assert!(fire_becalmed_beat(&mut sim, &data, &mut report));
+    assert_eq!(counter(&sim), 1, "the stranding arms the recovery");
+
+    // Still stranded (the stall persists): the recovery does not fire.
+    assert!(
+        !fire_becalmed_recovery_beat(&mut sim, &data, &mut report),
+        "a still-stranded ship marks no recovery"
+    );
+    assert_eq!(counter(&sim), 1);
+
+    // The drive lit again (the stall counter back to 0): the recovery fires and re-arms.
+    sim.fuel_stall_years = 0;
+    assert!(
+        fire_becalmed_recovery_beat(&mut sim, &data, &mut report),
+        "a ship freed from the doldrums reckons with the recovery"
+    );
+    assert_eq!(
+        counter(&sim),
+        0,
+        "the recovery re-arms the collapse counter"
+    );
+    assert!(
+        !fire_becalmed_recovery_beat(&mut sim, &data, &mut report),
+        "fires once per stranding"
+    );
+}
+
+#[test]
 fn a_divergence_beat_fires_when_the_crew_grows_shipborn_and_rearms_when_held_back() {
     // Content-depth campaign-skeleton round 26: the high-side crew-body twin of the
     // hull/air/becalmed ship-body crisis beats. Once the people's adaptation rises to its

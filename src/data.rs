@@ -1435,6 +1435,15 @@ pub struct CampaignSkeletonConfig {
     /// disables it.
     #[serde(default)]
     pub becalmed_beat_years: u32,
+    /// Becalmed-recovery beat family (content-depth campaign-skeleton round 34): the mobility twin
+    /// of the it32 hull-recovery and it33 air-recovery beats, and the *ascending* mirror of the it25
+    /// becalmed collapse beat — the last collapse beat to gain its recovery. Once the ship has been
+    /// stranded (a becalmed beat fired) and it *burns again* (`fuel_stall_years` back to 0), a beat
+    /// is forced from this family — the crew reckoning with a voyage underway once more. Needs no
+    /// threshold: the stall counter resets to 0 in one step, so "moving again" is unambiguous. Empty
+    /// = no becalmed-recovery beat.
+    #[serde(default)]
+    pub becalmed_recovery_beat_family: String,
     /// Adaptation-divergence beat (content-depth campaign-skeleton round 26): the *crew-body*
     /// twin of the hull/air/becalmed *ship-body* crisis beats, and the terminal counterpart to
     /// the gentle ascending `adaptation_beats` milestones — where those mark the descendants
@@ -3211,6 +3220,15 @@ mod tests {
             assert!(
                 sk.becalmed_beat_years > 0,
                 "the becalmed beat needs a sustained-stall threshold"
+            );
+        }
+        // Content-depth campaign-skeleton round 34: the becalmed-recovery beat needs a family with
+        // events (it has no threshold — the recovery fires when the stall counter returns to 0).
+        if !sk.becalmed_recovery_beat_family.is_empty() {
+            assert!(
+                families.contains(&sk.becalmed_recovery_beat_family),
+                "campaign_skeleton becalmed_recovery_beat_family '{}' has no events",
+                sk.becalmed_recovery_beat_family
             );
         }
         // Content-depth campaign-skeleton round 26: the adaptation-divergence beat, the high-side
