@@ -58,6 +58,9 @@ pub struct ShipSchematic {
     pub hull_name: String,
     /// Closed hull outline in absolute logical coordinates.
     pub outline: Vec<Vec2>,
+    /// The primary corridor (bow end → stern end) that every compartment branches
+    /// off — the schematic's structural spine.
+    pub corridor: (Vec2, Vec2),
     /// Central spun-gravity ring (centre, radius) for hulls that carry one.
     pub ring: Option<(Vec2, f32)>,
     pub modules: Vec<ModuleGlyph>,
@@ -255,15 +258,21 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         ));
     }
 
-    // --- The six subsystem modules, three along the upper deck, three lower ---
+    // --- Subsystem compartments in a modular grid that reflows for any count ---
+    // Two decks flank the corridor; columns are sized to the compartment count so
+    // rooms can be added, removed, or resized without the layout breaking. The
+    // first row fills the upper deck left-to-right, the remainder the lower deck,
+    // each lower box seated directly under its upper-deck column.
     let ids = GameData::sorted_ids(&data.subsystems);
-    let band_ts = [0.28_f32, 0.50, 0.72];
+    let cols = ids.len().div_ceil(2).max(1);
+    let (t_lo, t_hi) = (0.20_f32, 0.80_f32);
     for (i, id) in ids.iter().enumerate() {
         let (Some(def), Some(state)) = (data.subsystems.get(id), sim.subsystems.get(id)) else {
             continue;
         };
-        let upper = i < 3;
-        let t = band_ts[i % 3];
+        let col = i % cols;
+        let upper = i < cols;
+        let t = t_lo + (col as f32 + 0.5) / cols as f32 * (t_hi - t_lo);
         // Boxes grow with tier, so an upgrade is visible as a larger module.
         let w = 58.0 + state.tier as f32 * 9.0;
         let h = 30.0 + state.tier as f32 * 5.0;
@@ -291,6 +300,7 @@ pub fn build(sim: &SimState, data: &GameData, frame: Rect) -> ShipSchematic {
         hull_id: sim.ship.hull.clone(),
         hull_name,
         outline,
+        corridor: (vec2(x_at(0.05), cy), vec2(x_at(0.95), cy)),
         ring,
         modules,
         hull_integrity: sim.ship.hull_integrity,
@@ -349,21 +359,48 @@ pub fn draw(frame: Rect, schematic: &ShipSchematic) {
         let b = schematic.outline[(i + 1) % n];
         draw_line(a.x, a.y, b.x, b.y, 1.5, term::border());
     }
-    // Faint spine.
-    if n > 1 {
-        let cy = frame.y + frame.h * 0.5;
-        draw_line(
-            schematic.outline[0].x,
-            cy,
-            frame.right() - frame.w * 0.07,
-            cy,
-            1.0,
-            term::faint(),
-        );
-    }
     if let Some((c, r)) = schematic.ring {
         draw_circle_lines(c.x, c.y, r, 1.5, term::dim());
         draw_circle_lines(c.x, c.y, r * 0.6, 1.0, term::faint());
+    }
+
+    // The corridor: a twin-line spine running bow to stern, the bus every
+    // compartment taps into.
+    let (a, b) = schematic.corridor;
+    draw_line(a.x, a.y - 2.0, b.x, b.y - 2.0, 1.0, term::dim());
+    draw_line(a.x, a.y + 2.0, b.x, b.y + 2.0, 1.0, term::dim());
+
+    // Branch connectors: a stub tying each compartment back to the corridor, so
+    // the layout reads as a wired schematic rather than floating boxes.
+    for glyph in &schematic.modules {
+        let r = glyph.rect;
+        match glyph.kind {
+            ModuleKind::Subsystem if r.center().y < a.y => {
+                draw_line(
+                    r.center().x,
+                    r.bottom(),
+                    r.center().x,
+                    a.y,
+                    1.0,
+                    term::faint(),
+                );
+            }
+            ModuleKind::Subsystem => {
+                draw_line(r.center().x, r.y, r.center().x, a.y, 1.0, term::faint());
+            }
+            // The weapon taps the hull spine from its dorsal mount.
+            ModuleKind::Weapon => {
+                draw_line(
+                    r.center().x,
+                    r.bottom(),
+                    r.center().x,
+                    r.bottom() + 12.0,
+                    1.0,
+                    term::faint(),
+                );
+            }
+            _ => {}
+        }
     }
 
     for glyph in &schematic.modules {
@@ -379,14 +416,6 @@ fn draw_glyph(frame: Rect, glyph: &ModuleGlyph) {
         r,
         &SurfaceStyle::new(term::surface_inset()).with_border(1.5, tone),
     );
-
-    // Greeble: a couple of interior hatch lines, stable per module.
-    let g = hash_id(&glyph.id);
-    let hatches = 1 + (g % 3) as i32;
-    for k in 0..hatches {
-        let fx = r.x + r.w * (0.3 + 0.2 * k as f32);
-        draw_line(fx, r.y + 4.0, fx, r.bottom() - 4.0, 1.0, term::faint());
-    }
 
     // Tier pips (subsystems only), matching the subsystems screen convention.
     if glyph.kind == ModuleKind::Subsystem {
