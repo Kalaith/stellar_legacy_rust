@@ -73,3 +73,18 @@ Verify with `.\scripts\capture_ui.ps1 -Scenes ship_underway`, plus
 - **Open weaknesses** (next, iteration 5 = new system): pictographic room ICONS;
   barge vs ark silhouettes are close (both full-bulge — differentiate more);
   deck captions still pure flavour.
+
+## Iteration 5 — NEW SYSTEM: standardized pictographic icons
+- **Preserved**: everything — tags, corridor/nodes, highlighting, per-class hulls.
+- **Weakness**: rooms were identified by tag + caption alone; no fast pictographic
+  read, so scanning still leaned on text.
+- **New system**: `draw_icon` renders a standardized line pictogram per compartment
+  type from primitives — sprout (agriculture), open book (education), gear
+  (engineering), droplet (life support), cross (medical), shield (security), plus
+  chevron (bridge), nozzle (engine), crosshair (weapon). Each sits left of its tag
+  inside the box, drawn in the condition tone so it reads identity + health at a
+  glance. The vocabulary is keyed by id/kind, so it is stable across every hull and
+  extends cleanly to new room types.
+- **Open weaknesses** (next): barge vs ark silhouettes still similar; deck captions
+  pure flavour; icon stroke is thin at capture scale (could thicken); no legend
+  entry explaining the icons.

@@ -429,6 +429,106 @@ fn condition_tone(c: f32) -> Color {
     }
 }
 
+/// A standardized line pictogram for each compartment type, drawn at `c` with
+/// half-extent `s` in `color`. Keyed by subsystem id (or component kind), so a
+/// room shows the same glyph on every hull — the schematic's icon vocabulary.
+fn draw_icon(glyph: &ModuleGlyph, c: Vec2, s: f32, color: Color) {
+    let stroke = 1.2;
+    let line = |a: Vec2, b: Vec2| draw_line(a.x, a.y, b.x, b.y, stroke, color);
+    let poly = |pts: &[Vec2]| {
+        for i in 0..pts.len() {
+            line(pts[i], pts[(i + 1) % pts.len()]);
+        }
+    };
+    let key = match glyph.kind {
+        ModuleKind::Bridge => "bridge",
+        ModuleKind::Engine => "engine",
+        ModuleKind::Weapon => "weapon",
+        ModuleKind::Subsystem => glyph.id.as_str(),
+    };
+    match key {
+        // A sprout: stem and two leaves.
+        "agriculture" => {
+            line(vec2(c.x, c.y + s), vec2(c.x, c.y - s * 0.3));
+            line(vec2(c.x, c.y - s * 0.1), vec2(c.x - s, c.y - s * 0.8));
+            line(vec2(c.x, c.y - s * 0.1), vec2(c.x + s, c.y - s * 0.8));
+        }
+        // The medical cross.
+        "medical_bay" => {
+            draw_line(c.x, c.y - s, c.x, c.y + s, 2.2, color);
+            draw_line(c.x - s, c.y, c.x + s, c.y, 2.2, color);
+        }
+        // A gear: hub ring with radial teeth.
+        "engineering_bay" => {
+            draw_circle_lines(c.x, c.y, s * 0.55, stroke, color);
+            for k in 0..6 {
+                let ang = k as f32 * std::f32::consts::TAU / 6.0;
+                let (sn, cs) = ang.sin_cos();
+                line(
+                    vec2(c.x + cs * s * 0.55, c.y + sn * s * 0.55),
+                    vec2(c.x + cs * s, c.y + sn * s),
+                );
+            }
+        }
+        // A droplet: peaked top over a rounded base.
+        "life_support_habitat" => {
+            draw_circle_lines(c.x, c.y + s * 0.3, s * 0.55, stroke, color);
+            line(vec2(c.x, c.y - s), vec2(c.x - s * 0.55, c.y + s * 0.15));
+            line(vec2(c.x, c.y - s), vec2(c.x + s * 0.55, c.y + s * 0.15));
+        }
+        // An open book.
+        "education_culture" => {
+            line(vec2(c.x, c.y - s * 0.7), vec2(c.x, c.y + s * 0.7));
+            poly(&[
+                vec2(c.x, c.y - s * 0.7),
+                vec2(c.x - s, c.y - s * 0.35),
+                vec2(c.x - s, c.y + s * 0.7),
+                vec2(c.x, c.y + s * 0.7),
+            ]);
+            poly(&[
+                vec2(c.x, c.y - s * 0.7),
+                vec2(c.x + s, c.y - s * 0.35),
+                vec2(c.x + s, c.y + s * 0.7),
+                vec2(c.x, c.y + s * 0.7),
+            ]);
+        }
+        // A shield.
+        "security" => {
+            poly(&[
+                vec2(c.x - s, c.y - s * 0.8),
+                vec2(c.x + s, c.y - s * 0.8),
+                vec2(c.x + s, c.y + s * 0.1),
+                vec2(c.x, c.y + s),
+                vec2(c.x - s, c.y + s * 0.1),
+            ]);
+        }
+        // A forward chevron for the command bridge.
+        "bridge" => {
+            line(vec2(c.x + s * 0.5, c.y - s), vec2(c.x - s * 0.6, c.y));
+            line(vec2(c.x - s * 0.6, c.y), vec2(c.x + s * 0.5, c.y + s));
+        }
+        // An engine nozzle with an exhaust tick.
+        "engine" => {
+            poly(&[
+                vec2(c.x - s * 0.5, c.y - s),
+                vec2(c.x + s * 0.5, c.y - s),
+                vec2(c.x + s, c.y + s * 0.4),
+                vec2(c.x - s, c.y + s * 0.4),
+            ]);
+            line(vec2(c.x, c.y + s * 0.5), vec2(c.x, c.y + s));
+        }
+        // A weapon crosshair.
+        "weapon" => {
+            draw_circle_lines(c.x, c.y, s * 0.7, stroke, color);
+            draw_line(c.x - s, c.y, c.x + s, c.y, 1.0, color);
+            draw_line(c.x, c.y - s, c.x, c.y + s, 1.0, color);
+        }
+        _ => {
+            draw_circle_lines(c.x, c.y, s * 0.6, stroke, color);
+        }
+    }
+}
+
 /// Draw the schematic (silhouette, ring, and every module glyph with its label)
 /// inside `frame`.
 pub fn draw(frame: Rect, schematic: &ShipSchematic) {
@@ -489,15 +589,17 @@ fn draw_glyph(frame: Rect, glyph: &ModuleGlyph) {
         &SurfaceStyle::new(term::surface_inset()).with_border(1.5, tone),
     );
 
-    // Standardized tag inside the box, in the condition tone — the scannable
-    // in-box identity, seated above the pip row.
+    // In-box identity, all in the condition tone: a standardized pictogram on the
+    // left, its 3-letter tag to the right, seated above the pip row.
+    let icon_c = vec2(r.x + 13.0, r.y + (r.h - 8.0) * 0.5);
+    draw_icon(glyph, icon_c, 6.5, tone);
     draw_text_centered_in_box_ex(
         &glyph.code,
-        r.x,
+        r.x + 20.0,
         r.y,
-        r.w,
+        r.w - 28.0,
         r.h - 10.0,
-        TextStyle::new(14.0, tone),
+        TextStyle::new(13.0, tone),
     );
 
     // Tier pips (subsystems only), matching the subsystems screen convention.
