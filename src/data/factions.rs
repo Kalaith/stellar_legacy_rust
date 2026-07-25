@@ -303,6 +303,17 @@ pub struct FactionConfig {
     /// assimilation touches cohesion no more than the headcount move it always was.
     #[serde(default)]
     pub assimilation_unity_lift: f32,
+    /// Unity dented when a *new people is taken aboard* (content-depth factions round 35): the
+    /// cohesion mirror of `assimilation_unity_lift`. Where a people *merging* into the majority
+    /// removes a faultline and consolidates the polity (it26), a people *joining* adds one — a new
+    /// seam in the community, a group to integrate, its own ways to accommodate — so the crew is,
+    /// for a while, a little less one thing. A one-time dent on recruitment (the integration shock),
+    /// distinct from the it23 *standing* rival/ally grind that then accounts for the new pairings
+    /// year over year. Gentle by design; a captain who builds the colony by taking peoples in trades
+    /// a little cohesion for the growth, dowry (it7), and merciful name (it34) they bring. 0 = a
+    /// recruitment touches cohesion no more than the headcount move it always was.
+    #[serde(default)]
+    pub recruit_unity_cost: f32,
     #[serde(default)]
     pub rival_unity_friction: f32,
     /// Unity lifted per year by a pair of aboard *allies* (content-depth factions round

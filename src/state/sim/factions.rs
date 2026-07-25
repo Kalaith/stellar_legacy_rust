@@ -1847,6 +1847,14 @@ impl SimState {
         if recruit_rep > 0.0 {
             self.adjust_reputation("mercy", recruit_rep);
         }
+        // …and a new people is a new seam in the community (content-depth factions round 35): the
+        // cohesion mirror of the it26 assimilation unity lift. Where folding a people into the
+        // majority removes a faultline, taking one aboard adds one, so unity dents a little — the
+        // one-time integration shock, distinct from the it23 standing grind that then reckons with
+        // the new pairings year over year.
+        if cfg.recruit_unity_cost > 0.0 {
+            self.population.unity = (self.population.unity - cfg.recruit_unity_cost).max(0.0);
+        }
         Ok(())
     }
 }
@@ -4084,6 +4092,37 @@ mod tests {
             (after - before - cfg.recruit_reputation_bonus).abs() < 1e-6,
             "the warming is exactly the recruit reputation bonus ({})",
             after - before
+        );
+    }
+
+    #[test]
+    fn taking_a_people_aboard_dents_the_ships_cohesion() {
+        // Content-depth factions round 35: the cohesion mirror of the round-26 assimilation unity
+        // lift. Where folding a people into the majority removes a faultline and lifts unity, taking
+        // a new people aboard adds one, so unity dents by exactly the recruit unity cost.
+        let (data, mut sim, _picks) = armed(9);
+        let cfg = &data.config.factions;
+        assert!(
+            cfg.recruit_unity_cost > 0.0,
+            "this test needs the recruit unity cost enabled"
+        );
+        sim.resources.credits = 100_000;
+        // Free a slot; the departure's own cohesion scar lands here, so we set a clean baseline
+        // after it and measure only the recruit's dent.
+        sim.apply_faction_loss(&data, FactionLossKind::Departed);
+        assert!(!sim.is_faction_aboard("steel_covenant"));
+        sim.population.unity = 0.6;
+        let before = sim.population.unity;
+        sim.recruit_faction_group(&data, "steel_covenant").unwrap();
+        assert!(
+            sim.population.unity < before,
+            "a new people dents the ship's cohesion ({} vs {before})",
+            sim.population.unity
+        );
+        assert!(
+            (before - sim.population.unity - cfg.recruit_unity_cost).abs() < 1e-6,
+            "the dent is exactly the recruit unity cost ({})",
+            before - sim.population.unity
         );
     }
 

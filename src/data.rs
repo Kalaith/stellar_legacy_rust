@@ -3558,6 +3558,14 @@ mod tests {
             "assimilation_unity_lift {} out of range [0, 0.5]",
             fac_cfg.assimilation_unity_lift
         );
+        // Content-depth factions round 35: the recruit unity cost is the one-time integration shock,
+        // in the same gentle [0, 0.5] band as the assimilation lift it mirrors — a new people dents
+        // cohesion, but no single recruitment shatters the crew.
+        assert!(
+            (0.0..=0.5).contains(&fac_cfg.recruit_unity_cost),
+            "recruit_unity_cost {} out of range [0, 0.5]",
+            fac_cfg.recruit_unity_cost
+        );
         // Content-depth voice round 2: if ambient flavor is switched on, it needs
         // lines to draw from.
         if fl.ambient_gap_years > 0 {

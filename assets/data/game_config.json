@@ -86,6 +86,7 @@
     "departure_reputation_penalty": 0.12,
     "recruit_reputation_bonus": 0.06,
     "assimilation_unity_lift": 0.08,
+    "recruit_unity_cost": 0.05,
     "rival_unity_friction": 0.03,
     "ally_unity_solidarity": 0.02,
     "approval_growth_factor": 0.04,
