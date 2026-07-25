@@ -2466,6 +2466,14 @@ mod tests {
                 3,
                 "subsystem '{id}' has three upgrade tiers"
             );
+            // Named-version pass: the baseline and every fitting carry a name, and
+            // fitting ids are unique within the subsystem (a mission's
+            // `grant_fitting` addresses them by id).
+            assert!(
+                !sub.baseline_name.trim().is_empty(),
+                "subsystem '{id}' has no baseline_name"
+            );
+            let mut fitting_ids = std::collections::HashSet::new();
             for tier in &sub.tiers {
                 assert!(
                     tier.cost.credits > 0,
@@ -2477,6 +2485,15 @@ mod tests {
                 assert!(
                     !tier.flavor.trim().is_empty(),
                     "subsystem '{id}' has a tier with no upgrade flavor"
+                );
+                assert!(
+                    !tier.name.trim().is_empty(),
+                    "subsystem '{id}' has a fitting with no name"
+                );
+                assert!(
+                    fitting_ids.insert(tier.id.as_str()),
+                    "subsystem '{id}' has a duplicate fitting id '{}'",
+                    tier.id
                 );
             }
             // Content-depth subsystem coverage: every subsystem has at least one

@@ -45,7 +45,7 @@ fn draw_card(
     let content = rect.inset(14.0);
     let mut y = content.y + 32.0;
 
-    // Tier pips + the event family this module buffers.
+    // The version currently fitted, its tier pips, and the family it buffers.
     let pips: String = (1..=3)
         .map(|t| if state.tier >= t { '●' } else { '○' })
         .collect();
@@ -54,6 +54,13 @@ fn draw_card(
     } else {
         def.buffers_family.replace('_', " ")
     };
+    draw_ui_text_ex(
+        def.fitting_name(state.tier),
+        content.x,
+        y,
+        TextStyle::new(13.0, term::primary()).params(),
+    );
+    y += 16.0;
     draw_ui_text_ex(
         &format!("TIER {pips}   ·   buffers {family}"),
         content.x,
@@ -114,8 +121,8 @@ fn draw_card(
         actions.push(UiAction::RepairSubsystem(id.to_owned()));
     }
 
-    // Upgrade: port-only, pays the next tier's cost, caps at tier 3.
-    let next = def.tiers.get(state.tier as usize);
+    // Upgrade: port-only, pays the next fitting's cost, caps at the top version.
+    let next = def.next_fitting(state.tier);
     let upgrade_label = match next {
         Some(t) if in_port => format!("UPGRADE ({}cr)", t.cost.credits),
         Some(_) => "UPGRADE · PORT".to_owned(),

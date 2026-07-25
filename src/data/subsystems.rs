@@ -2,11 +2,30 @@
 //! weapon, each buffering one event family through upgrade tiers. Identities and
 //! balance live in `assets/subsystems.json`; no subsystem constants in Rust.
 
-use crate::data::ResourceDelta;
+use crate::data::{Acquisition, ResourceDelta};
 use serde::{Deserialize, Serialize};
 
+/// One named *version* of a subsystem — a distinct fitting a module can be built
+/// up to (W5; content-depth "different versions" pass). The list is a linear
+/// ladder: `tiers[i]` is the fitting reached at tier `i + 1`, above the module's
+/// baseline (tier 0). Each carries its own identity and how it is obtained, so a
+/// module can offer a bought upgrade and, above it, one only a mission yields.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SubsystemTier {
+    /// Stable id for this fitting (unique within its subsystem). Referenced by a
+    /// mission's `grant_fitting` when the fitting is a mission reward.
+    pub id: String,
+    /// The version's proper name, e.g. "Aeroponics Suite" — shown on the cards.
+    pub name: String,
+    /// A one-line description of what this version is. Optional; empty falls back
+    /// to the subsystem's own description.
+    #[serde(default)]
+    pub description: String,
+    /// How this version is obtained. `MissionReward` versions are never sold —
+    /// they unlock only when a voyage grants them (`grant_fitting`). Defaults to
+    /// `Purchasable` so existing ladders are unchanged.
+    #[serde(default)]
+    pub acquisition: Acquisition,
     /// Drydock cost to reach this tier from the one below (authored positive;
     /// negated on spend).
     pub cost: ResourceDelta,
@@ -38,6 +57,13 @@ pub struct SubsystemDef {
     /// Tier 0 is the ship's baseline (no entry here); `tiers[i]` is the upgrade
     /// to reach tier `i + 1`.
     pub tiers: Vec<SubsystemTier>,
+    /// The name of the baseline (tier 0) fitting the ship starts with, e.g.
+    /// "Hydroponics Bay" — the first rung of the version ladder.
+    pub baseline_name: String,
+    /// One-line description of the baseline fitting; empty falls back to
+    /// `description`.
+    #[serde(default)]
+    pub baseline_description: String,
     pub description: String,
 }
 
@@ -49,6 +75,20 @@ impl SubsystemDef {
         } else {
             self.tiers.get(tier as usize - 1)
         }
+    }
+
+    /// The proper name of the version currently fitted at `tier` (the baseline at
+    /// tier 0, else the named upgrade fitting).
+    pub fn fitting_name(&self, tier: u32) -> &str {
+        match self.tier_stats(tier) {
+            Some(fitting) => &fitting.name,
+            None => &self.baseline_name,
+        }
+    }
+
+    /// The next fitting up the ladder from `tier`, or `None` at the top tier.
+    pub fn next_fitting(&self, tier: u32) -> Option<&SubsystemTier> {
+        self.tiers.get(tier as usize)
     }
 }
 
