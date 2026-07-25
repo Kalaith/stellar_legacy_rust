@@ -541,6 +541,10 @@ pub(super) fn year_boundary_tick(sim: &mut SimState, data: &GameData, report: &m
     // crossing into flush (the coffers full, the council debating what to build) or bare (every
     // credit counted twice), read against the founding stake — the ledger's turning remarked once.
     sim.announce_treasury_mood(data);
+    // …and when its power fortune turns (content-depth voice round 33): the energy store crossing
+    // into flush (reactors past the surplus line, everything lit) or dark (the grid near the
+    // life-support and production lines, decks on rationed light) — the money voice's power sibling.
+    sim.announce_power_mood(data);
     // …and when the demographic drift finally hands the ship from one people to another (content-
     // depth voice round 31): who runs the ship — the largest aboard — bends the it10 dilemma odds,
     // the it16 reputation lean, and the it21 ambient, but the turning itself went unremarked. When

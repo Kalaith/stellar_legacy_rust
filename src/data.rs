@@ -987,6 +987,27 @@ pub struct FlavorConfig {
     pub treasury_voice_high_ratio: f32,
     #[serde(default)]
     pub treasury_voice_low_ratio: f32,
+    /// The ship's reactors running *flush* (content-depth voice round 33): the power-fortune voice,
+    /// the sibling of the it32 treasury (money) voice. When the energy store climbs past
+    /// `power_voice_high` the reactors are making more than even the it21 fabricators can drink —
+    /// everything lit, the drydock's power-hungry work cleared without a second thought, the ship
+    /// running warm and bright. No name; indexed by year; empty = a surplus passes unremarked.
+    #[serde(default)]
+    pub power_flush: Vec<String>,
+    /// The ship's grid running *dark* (content-depth voice round 33): the low twin — the energy
+    /// store fallen to `power_voice_low`, the it15 life-support plant nearing its power-starvation
+    /// line and the it29 factories shedding output, the decks on rationed light and the crew moving
+    /// through a ship that hums lower than it should. No name; indexed by year.
+    #[serde(default)]
+    pub power_starved: Vec<String>,
+    /// Energy store at/above which the ship remarks a flush grid (`power_voice_high`) or at/below
+    /// which it remarks a dark one (`power_voice_low`) (content-depth voice round 33). Absolute
+    /// energy levels (energy has no founding-stake reference the way credits do); set to bracket the
+    /// founding stock so a launched ship reads neutral. 0 (`power_voice_high`) disables the voice.
+    #[serde(default)]
+    pub power_voice_high: i64,
+    #[serde(default)]
+    pub power_voice_low: i64,
     /// A subsystem patched back toward working order (content-depth voice round 9):
     /// the field-repair verb fires repeatedly across a voyage, so the flat line it
     /// used needs variety. Placeholder `{name}` (the module). Indexed by the month
@@ -3634,6 +3655,29 @@ mod tests {
                 "treasury voice ratios must order: 0 < low ({}) < 1 < high ({})",
                 fl.treasury_voice_low_ratio,
                 fl.treasury_voice_high_ratio
+            );
+        }
+        // Content-depth voice round 33: the power voice, the treasury's energy sibling — both band
+        // pools stocked and its absolute energy lines ordered (0 < dark < flush) when enabled, and
+        // the founding stock bracketed between them so a launched ship reads neutral, not flush.
+        if fl.power_voice_high > 0 {
+            assert!(
+                !fl.power_flush.is_empty() && !fl.power_starved.is_empty(),
+                "power voice is enabled but a band pool is empty"
+            );
+            assert!(
+                fl.power_voice_low > 0 && fl.power_voice_low < fl.power_voice_high,
+                "power voice lines must order: 0 < dark ({}) < flush ({})",
+                fl.power_voice_low,
+                fl.power_voice_high
+            );
+            assert!(
+                data.config.starting_resources.energy > fl.power_voice_low
+                    && data.config.starting_resources.energy < fl.power_voice_high,
+                "the founding energy stock {} must sit between the power lines ({}, {}) so launch reads neutral",
+                data.config.starting_resources.energy,
+                fl.power_voice_low,
+                fl.power_voice_high
             );
         }
         // Content-depth voice round 31: the ruling-people voice, when stocked, must name the new

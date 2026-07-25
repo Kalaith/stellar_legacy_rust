@@ -1440,6 +1440,44 @@ impl SimState {
         self.treasury_voice_band = band;
     }
 
+    /// Remark when the ship's power crosses into flush or dark (content-depth voice round 33): the
+    /// power-fortune voice, the sibling of the it32 treasury (money) voice, read against absolute
+    /// energy lines (energy has no founding-stake reference the way credits do). When the reactors
+    /// cross *into* a flush band (energy past `power_voice_high`, more than even the it21 fabricators
+    /// can drink) or a dark one (fallen to `power_voice_low`, the it15 plant and it29 factories
+    /// starving), the ship's power fortune is remarked once. The launch band (a ship at its founding
+    /// stock, bracketed between the lines) is recorded not announced; a return to the middle re-arms.
+    /// Deterministic (indexed by year), no RNG.
+    pub fn announce_power_mood(&mut self, data: &GameData) {
+        let fl = &data.config.flavor;
+        if fl.power_voice_high <= 0 {
+            return;
+        }
+        let energy = self.resources.energy;
+        let band = if energy >= fl.power_voice_high {
+            1
+        } else if energy <= fl.power_voice_low {
+            -1
+        } else {
+            0
+        };
+        if band == self.power_voice_band {
+            return;
+        }
+        let pool = match band {
+            1 => &fl.power_flush,
+            -1 => &fl.power_starved,
+            _ => {
+                self.power_voice_band = band;
+                return;
+            }
+        };
+        if let Some(line) = FlavorConfig::line_with_name(pool, self.year() as usize, "") {
+            self.push_log(line);
+        }
+        self.power_voice_band = band;
+    }
+
     /// Remark when the ship passes into a new people's hands (content-depth voice round 31): the
     /// first voice keyed not to a stat crossing a band but to a change in *which faction is
     /// dominant* — the largest aboard, the "who runs the ship" that the it10 dilemma odds, the it16
@@ -3232,6 +3270,55 @@ mod tests {
         sim.announce_treasury_mood(&data);
         assert_eq!(treasury_lines(&sim), 2, "a flush treasury says so afresh");
         assert_eq!(sim.treasury_voice_band, 1);
+    }
+
+    #[test]
+    fn the_ship_remarks_when_its_reactors_run_flush_or_dark() {
+        // Content-depth voice round 33: the power voice, the treasury's energy sibling. A ship at its
+        // founding stock (bracketed between the lines) is the silent baseline; the grid running dark
+        // below the low line says so once; flush above the high line gets its own, opposite line;
+        // staying put does not reprint.
+        let (data, mut sim, _picks) = armed(64);
+        let fl = &data.config.flavor;
+        assert!(
+            fl.power_voice_high > 0 && fl.power_flush.len() >= 2,
+            "this test needs the power voice enabled"
+        );
+        let high = fl.power_voice_high;
+        let low = fl.power_voice_low;
+        let power_lines = |sim: &SimState| {
+            let flush = &data.config.flavor.power_flush;
+            let starved = &data.config.flavor.power_starved;
+            sim.log
+                .iter()
+                .filter(|l| flush.contains(&l.text) || starved.contains(&l.text))
+                .count()
+        };
+
+        // A ship at its founding stock — the launch band is recorded, silent.
+        sim.resources.energy = data.config.starting_resources.energy;
+        sim.announce_power_mood(&data);
+        assert_eq!(
+            power_lines(&sim),
+            0,
+            "a ship at its founding stock is silent"
+        );
+
+        // The grid runs dark at or below the low line: one line.
+        sim.resources.energy = low - 100;
+        sim.announce_power_mood(&data);
+        assert_eq!(power_lines(&sim), 1, "a dark grid says so once");
+        assert_eq!(sim.power_voice_band, -1);
+
+        // Still dark — no reprint.
+        sim.announce_power_mood(&data);
+        assert_eq!(power_lines(&sim), 1, "staying dark is not re-announced");
+
+        // The reactors run flush past the high line: a second, distinct line.
+        sim.resources.energy = high + 500;
+        sim.announce_power_mood(&data);
+        assert_eq!(power_lines(&sim), 2, "flush reactors say so afresh");
+        assert_eq!(sim.power_voice_band, 1);
     }
 
     #[test]

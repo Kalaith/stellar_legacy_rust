@@ -625,6 +625,15 @@ pub struct SimState {
     /// a return to the middle re-arms.
     #[serde(default)]
     pub treasury_voice_band: i8,
+    /// The last-announced band of the ship's *power* — its energy store (content-depth voice round
+    /// 33): the power-fortune voice, the sibling of the it32 treasury (money) band. Tracks whether
+    /// the reactors last crossed into a flush band (energy past the surplus line, everything lit) or
+    /// a dark one (the grid near the it15 life-support and it29 production lines, decks on rationed
+    /// light), so the ship's power fortune is remarked once at each turning. The launch band (a ship
+    /// at its founding stock, bracketed between the lines) is 0, not announced; a return to the
+    /// middle re-arms.
+    #[serde(default)]
+    pub power_voice_band: i8,
     /// The id of the people last announced as *running the ship* (content-depth voice round 31):
     /// the first voice keyed not to a stat crossing a band but to a *change in which faction is
     /// dominant* — the largest aboard, "who runs the ship" for the it10 dilemma odds, the it16
@@ -809,6 +818,7 @@ impl SimState {
             fuel_voice_band: 0,
             crew_size_voice_band: 0,
             treasury_voice_band: 0,
+            power_voice_band: 0,
             ruling_people_voice: None,
             hull_beat_band: 0,
             air_beat_band: 0,
