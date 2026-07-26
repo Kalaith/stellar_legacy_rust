@@ -1,7 +1,9 @@
-# Stellar Legacy — File Size Refactor
+# Stellar Legacy — File Size Refactor (complete)
 
 `CODE_STANDARDS.md` sets a **800-line hard limit** per `.rs` file (soft target 200–400,
-soft limit 600). Eleven files are over it. This plan tracks the split, one file per pass.
+soft limit 600). Eleven files were over it. All eleven are now split; **no `.rs` file in the tree
+exceeds 800 lines**, and the largest (`game/actions.rs`, 720) was already compliant
+at baseline. 139 files, 37,674 lines, 366 tests passing.
 
 Rules that constrain every split here:
 
@@ -26,7 +28,7 @@ Rules that constrain every split here:
 | 1259 | `src/simulation/tick.rs` | **done** — 7 files, largest 261 |
 | 1178 | `src/state/sim.rs` | **done** — 6 files, largest 467 |
 | 1043 | `src/ui.rs` | **done** — 4 files, largest 356 |
-|  925 | `src/ui/ship_schematic.rs` | pending |
+|  925 | `src/ui/ship_schematic.rs` | **done** — 3 files, largest 424 |
 |  808 | `src/simulation/tick/economy.rs` | **done** — 8 files, largest 175 |
 
 ## Planned cuts
@@ -61,8 +63,9 @@ narration), `beats` (the large scripted/threshold beat family), `economy`, `dete
 
 ### The remaining seven
 
-Smaller and more mechanical — each has one or two cohesive responsibilities to lift out.
-Planned once the four large ones land, so the shape of the shared helpers is settled.
+Handled in passes 5–11; see the log. Three of them (`subsystems.rs`, `ui.rs`,
+`ship_schematic.rs`) already marked their own seams with section banners, and those
+cuts simply followed them.
 
 ## Log
 
@@ -98,3 +101,11 @@ Planned once the four large ones land, so the shape of the shared helpers is set
 - **Pass 10** — `ui.rs` 1043 → `ui.rs` (219, the palette, `UiAction` and the module list)
   + `widgets.rs` (265), `main_menu.rs` (356) and `shell.rs` (210), following the file's own
   section banners and re-exported flat.
+- **Pass 11** — `ui/ship_schematic.rs` 925 → `ship_schematic.rs` (424, the pure `build`
+  half) + `draw/` (373, every macroquad call) + `tests.rs` (136), following the split the
+  file's own module doc already described. All 8 tests preserved.
+
+**Result:** no file over 800 lines. Every pass kept `cargo fmt --check`,
+`cargo clippy --all-targets -- -D warnings` and `cargo test` green, and no test was
+dropped: 354 tests at the start, 366 now (the twelve added are the two monster data
+tests broken into named ones).
