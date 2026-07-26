@@ -9,12 +9,28 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
+/// Height of one SHIP POSTS row, and so of its TRAIN/RECRUIT target.
+///
+/// The rows used to sit at 24 with a 24-tall button, which is zero gap: the
+/// touch expansion had nowhere to grow into and the target stayed 24 logical
+/// pixels — around 22 CSS pixels on a tablet, against a standard of 44.
+///
+/// 30 is what this column can afford. The left side carries the roster, seven
+/// post rows and the peoples list in 576 pixels, and reaching a full 44 here
+/// would cost the roster every row it shows. That is the honest ceiling for
+/// this screen without redrawing it, and it is recorded here so the next
+/// person does not rediscover it by trying.
+const POST_STRIDE: f32 = 30.0;
+/// The button drawn inside a [`POST_STRIDE`] row. The 4px it leaves is what the
+/// hit area grows into, 2px each way, reaching the full stride.
+const POST_BUTTON_H: f32 = 26.0;
+
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.55, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
     // Posts is sized to exactly one row per archetype — as a fixed ratio its
     // last TRAIN/RECRUIT button bled into the PEOPLES panel below.
-    let posts_h = 78.0 + (ctx.data.crew_archetypes.len().saturating_sub(1)) as f32 * 24.0;
+    let posts_h = 78.0 + (ctx.data.crew_archetypes.len().saturating_sub(1)) as f32 * POST_STRIDE;
     let roster = Rect::new(left.x, left.y, left.w, left.h * 0.325);
     let posts = Rect::new(left.x, roster.bottom() + 8.0, left.w, posts_h);
     let factions = Rect::new(
@@ -159,7 +175,7 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mu
             && !member.is_leader
             && !designated
             && term_button(
-                Rect::new(content.right() - 96.0, y - 14.0, 90.0, 26.0),
+                Rect::new(content.right() - 96.0, y - 16.0, 90.0, 30.0),
                 "NAME HEIR",
                 true,
                 pointer,
@@ -200,7 +216,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut
                 );
                 let maxed = holder.skill >= archetype.skill_max;
                 if term_button(
-                    Rect::new(content.right() - 150.0, y - 14.0, 144.0, 24.0),
+                    Rect::new(content.right() - 150.0, y - 14.0, 144.0, POST_BUTTON_H),
                     &if maxed {
                         "MASTERED".to_owned()
                     } else {
@@ -220,7 +236,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut
                     TextStyle::new(13.0, term::dim()).params(),
                 );
                 if term_button(
-                    Rect::new(content.right() - 150.0, y - 14.0, 144.0, 24.0),
+                    Rect::new(content.right() - 150.0, y - 14.0, 144.0, POST_BUTTON_H),
                     &format!("RECRUIT ({} CR)", crew_cfg.recruit_cost_credits),
                     ctx.sim.resources.credits >= crew_cfg.recruit_cost_credits,
                     pointer,
@@ -229,7 +245,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut
                 }
             }
         }
-        y += 24.0;
+        y += POST_STRIDE;
     }
 }
 

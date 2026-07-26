@@ -171,8 +171,15 @@ fn draw_ship_panel(
     // port-only. Buttons enable only when the action is currently possible.
     let repair = ctx.data.config.repair;
     let in_port = sim.contract.is_none();
+    // The field-repair price is the same for either system, so it is stated once
+    // in the heading. That buys back the width to sit the two side by side, which
+    // is what lets three 24-tall rows become two 34-tall ones in the same 78
+    // pixels — a 28-pixel touch target becomes a 44-pixel one for free.
     draw_ui_text_ex(
-        "MAINTENANCE",
+        &format!(
+            "MAINTENANCE · FIELD {}p·{}min",
+            repair.field_parts_cost, repair.field_minerals_cost
+        ),
         content.x,
         y,
         TextStyle::new(15.0, term::dim()).params(),
@@ -183,30 +190,26 @@ fn draw_ship_panel(
             && sim.ship.spare_parts >= repair.field_parts_cost
             && sim.resources.minerals >= repair.field_minerals_cost
     };
+    const REPAIR_H: f32 = 34.0;
+    const REPAIR_GAP: f32 = 10.0;
+    let half_w = (content.w - REPAIR_GAP) * 0.5;
     if term_button(
-        Rect::new(content.x, y, content.w, 24.0),
-        &format!(
-            "FIELD REPAIR HULL ({}p·{}min)",
-            repair.field_parts_cost, repair.field_minerals_cost
-        ),
+        Rect::new(content.x, y, half_w, REPAIR_H),
+        "REPAIR HULL",
         field_affordable(sim.ship.hull_integrity),
         pointer,
     ) {
         actions.push(UiAction::FieldRepair(RepairKind::Hull));
     }
-    y += 27.0;
     if term_button(
-        Rect::new(content.x, y, content.w, 24.0),
-        &format!(
-            "FIELD REPAIR LIFE SPT ({}p·{}min)",
-            repair.field_parts_cost, repair.field_minerals_cost
-        ),
+        Rect::new(content.x + half_w + REPAIR_GAP, y, half_w, REPAIR_H),
+        "REPAIR LIFE SPT",
         field_affordable(sim.ship.life_support),
         pointer,
     ) {
         actions.push(UiAction::FieldRepair(RepairKind::LifeSupport));
     }
-    y += 27.0;
+    y += REPAIR_H + REPAIR_GAP;
     let full_label = if in_port {
         format!(
             "FULL REFIT ({}cr·{}min)",
@@ -219,14 +222,14 @@ fn draw_ship_panel(
         && sim.resources.credits >= repair.full_credits_cost
         && sim.resources.minerals >= repair.full_minerals_cost;
     if term_button(
-        Rect::new(content.x, y, content.w, 24.0),
+        Rect::new(content.x, y, content.w, REPAIR_H),
         &full_label,
         full_ok,
         pointer,
     ) {
         actions.push(UiAction::FullRepair);
     }
-    y += 34.0;
+    y += REPAIR_H + 10.0;
 
     // Extinction is handled by the full-screen game-over takeover
     // (`ui::game_over`), so the dashboard never renders in that state.

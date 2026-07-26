@@ -12,6 +12,14 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
+/// Vertical stride of one PROVISIONING row, and so of its stock-up target.
+///
+/// 44 is the touch standard (WCAG 2.5.5, Apple, roughly Google's 48dp), and it
+/// is the *stride* that decides it: a hit area grows only halfway toward its
+/// neighbour, so rows packed at 30 cap their targets at 30 however tall the
+/// button is drawn.
+const PROVISION_STRIDE: f32 = 44.0;
+
 pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.55, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
@@ -120,7 +128,10 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut 
 
     // Each provisioning row carries its own stock-up button so filling the
     // stores never means leaving the PREP screen.
-    let stock_btn = |y: f32| Rect::new(content.right() - 200.0, y - 17.0, 194.0, 26.0);
+    // 36 tall on a PROVISION_STRIDE row: the 8px it leaves is what the touch
+    // expansion grows into, 4px each way, so the target reaches the full 44 the
+    // standard asks for. This screen had the room; the CREW posts column did not.
+    let stock_btn = |y: f32| Rect::new(content.right() - 200.0, y - 22.0, 194.0, 36.0);
 
     // Food: need over the whole voyage vs stores, plus the net yearly balance
     // production offsets it by (crew-multiplied). The button buys the shortfall
@@ -156,7 +167,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut 
     if term_button(stock_btn(y), &food_label, food_buy > 0, pointer) {
         actions.push(UiAction::Buy(TradeResource::Food, food_buy));
     }
-    y += 30.0;
+    y += PROVISION_STRIDE;
 
     // Spare parts: yearly upkeep across the voyage vs stores. The button stocks
     // the shortfall at the drydock part price, capped by the treasury.
@@ -187,7 +198,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut 
     if term_button(stock_btn(y), &parts_label, parts_buy > 0, pointer) {
         actions.push(UiAction::BuyParts(parts_buy));
     }
-    y += 30.0;
+    y += PROVISION_STRIDE;
 
     // Fuel: burned only across Travel months; the tank caps at 1.0 and the
     // engine regen tops it up underway, so need can exceed a single tank.
@@ -246,7 +257,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut 
             TextStyle::new(14.0, term::primary()).params(),
         );
         if term_button(
-            Rect::new(boxed.right() - 92.0, boxed.y + 8.0, 84.0, 22.0),
+            Rect::new(boxed.right() - 96.0, boxed.y + 6.0, 88.0, 28.0),
             "DISMISS",
             true,
             pointer,
