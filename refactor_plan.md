@@ -23,7 +23,7 @@ Rules that constrain every split here:
 | 3833 | `src/simulation/event_resolver.rs` | **done** — 14 files, largest 490 |
 | 1841 | `src/simulation/subsystems.rs` | **done** — 7 files, largest 509 |
 | 1653 | `src/simulation/contract.rs` | **done** — 6 files, largest 568 |
-| 1259 | `src/simulation/tick.rs` | pending |
+| 1259 | `src/simulation/tick.rs` | **done** — 7 files, largest 261 |
 | 1178 | `src/state/sim.rs` | pending |
 | 1043 | `src/ui.rs` | pending |
 |  925 | `src/ui/ship_schematic.rs` | pending |
@@ -84,4 +84,7 @@ Planned once the four large ones land, so the shape of the shared helpers is set
   test files (205–509). All 30 tests preserved.
 - **Pass 6** — `simulation/contract.rs` 1653 → `contract.rs` (568, all the code, already
   under the limit) + `tests.rs` (35, fixtures) + four test files (168–418) by which part
-  of a voyage's life they guard. All 35 tests preserved.
+  of a voyage's life they guard. All 32 tests preserved.
+- **Pass 7** — `simulation/tick.rs` 1259 → `tick.rs` (261, the advance loop) + `beats.rs`
+  (103, `fire_due_beat` and the force/clear helpers) + `beats/{threshold,collapse,recovery,
+  scripted,succession}.rs` (84–240), mirroring the pass-4 test layout.
