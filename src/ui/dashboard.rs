@@ -5,8 +5,8 @@ use crate::simulation::ship::RepairKind;
 use crate::state::sim::{GameSpeed, PopulationState};
 use crate::state::Screen;
 use crate::ui::{
-    spec_line, stat_line, status_badge, term, term_button, term_meter, term_meter_toned, term_panel,
-    GaugeIcon, GameplayCtx, MeterTone, UiAction,
+    spec_line, stat_line, status_badge, term, term_button, term_meter, term_meter_toned,
+    term_panel, GameplayCtx, GaugeIcon, MeterTone, UiAction,
 };
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
@@ -389,7 +389,12 @@ fn draw_colony_panel(ctx: &GameplayCtx<'_>, rect: Rect) {
         let gap = 8.0;
         let tw = (card.w - gap * (tiles as f32 - 1.0)) / tiles as f32;
         for (i, fs) in aboard.iter().take(tiles).enumerate() {
-            let tile = Rect::new(card.x + i as f32 * (tw + gap), card.bottom() - row_h, tw, row_h);
+            let tile = Rect::new(
+                card.x + i as f32 * (tw + gap),
+                card.bottom() - row_h,
+                tw,
+                row_h,
+            );
             draw_surface(
                 tile,
                 &SurfaceStyle::new(term::surface_inset()).with_border(1.0, term::faint()),
@@ -429,7 +434,8 @@ fn draw_systems_strip(ctx: &GameplayCtx<'_>, rect: Rect) {
     let sim = ctx.sim;
     let inner = rect.inset(10.0);
 
-    let food_per_year = ctx.data.config.food_per_person_per_year * sim.population.count.max(1) as f32;
+    let food_per_year =
+        ctx.data.config.food_per_person_per_year * sim.population.count.max(1) as f32;
     let food_years = if food_per_year > 0.0 {
         sim.resources.food as f32 / food_per_year
     } else {
@@ -476,7 +482,12 @@ fn draw_systems_strip(ctx: &GameplayCtx<'_>, rect: Rect) {
         (
             GaugeIcon::Maint,
             "MAINTENANCE",
-            if parts_dry { "STORES DRY" } else { "ON SCHEDULE" }.to_owned(),
+            if parts_dry {
+                "STORES DRY"
+            } else {
+                "ON SCHEDULE"
+            }
+            .to_owned(),
             tone(!parts_dry),
         ),
         (
