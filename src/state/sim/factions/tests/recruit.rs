@@ -48,6 +48,7 @@ fn recruiting_a_people_is_gated_and_charges_credits() {
         .iter()
         .any(|f| f.faction_id == newcomer && f.is_aboard()));
 }
+
 #[test]
 fn a_recruited_people_brings_its_signature_dowry() {
     // Content-depth factions round 7: recruiting a people is no longer a bare
@@ -79,6 +80,7 @@ fn a_recruited_people_brings_its_signature_dowry() {
         "the recruit logs the people's signature arrival"
     );
 }
+
 #[test]
 fn taking_a_people_aboard_warms_the_ships_name() {
     // Content-depth factions round 34: the reputation mirror of the round-31 departure penalty.
@@ -109,6 +111,7 @@ fn taking_a_people_aboard_warms_the_ships_name() {
         after - before
     );
 }
+
 #[test]
 fn taking_a_people_aboard_dents_the_ships_cohesion() {
     // Content-depth factions round 35: the cohesion mirror of the round-26 assimilation unity
@@ -139,6 +142,7 @@ fn taking_a_people_aboard_dents_the_ships_cohesion() {
         before - sim.population.unity
     );
 }
+
 #[test]
 fn recruiting_a_people_stirs_the_ships_old_rivalries_and_friendships() {
     // Content-depth factions round 28: taking on a new people is a political act. The
@@ -208,6 +212,7 @@ fn recruiting_a_people_stirs_the_ships_old_rivalries_and_friendships() {
         "the newcomer boards shifted by who it is joining"
     );
 }
+
 #[test]
 fn a_newcomer_boards_wary_of_a_rival_and_glad_of_a_friend() {
     // Content-depth factions round 33: the newcomer's-eye mirror of the round-28 incumbent
@@ -263,6 +268,7 @@ fn a_newcomer_boards_wary_of_a_rival_and_glad_of_a_friend() {
             "a newcomer joining a ship that carries its friend boards gladder ({with_ally} vs {with_neutral})"
         );
 }
+
 #[test]
 fn a_departing_people_takes_the_craft_of_its_tended_module() {
     // Content-depth factions round 20: shedding a people costs more than its
@@ -285,6 +291,7 @@ fn a_departing_people_takes_the_craft_of_its_tended_module() {
         "the tended module lost the departed's expertise (knowledge {after})"
     );
 }
+
 #[test]
 fn a_departure_stirs_the_ships_rivalries_and_friendships() {
     // Content-depth factions round 30: the mirror of the recruitment reactions. When the
@@ -337,6 +344,7 @@ fn a_departure_stirs_the_ships_rivalries_and_friendships() {
         "the ally's grief is exactly the configured amount"
     );
 }
+
 #[test]
 fn a_break_away_marks_the_ships_name_but_a_planetfall_does_not() {
     // Content-depth factions round 31: a people that *breaks away* (Departed) spreads word

@@ -36,6 +36,7 @@ impl SimState {
             }
         }
     }
+
     /// The bright mirror of `apply_subsystem_neglect_sentiment` (content-depth factions round
     /// 29): where a people whose tended module *rots* sours (condition→approval down), a people
     /// whose module the ship keeps *excellent* is pleased (condition→approval up) — its craft
@@ -71,6 +72,7 @@ impl SimState {
             }
         }
     }
+
     /// The bright mirror of `apply_subsystem_neglect_sentiment` (content-depth factions
     /// round 22): where a people whose tended module rots *sours* (r12), a people
     /// *delighted* with its lot tends its module with pride — the makers keeping the
@@ -109,6 +111,7 @@ impl SimState {
             }
         }
     }
+
     /// Move the ship's `unity` by how the aboard peoples stand *to each other*
     /// (content-depth factions round 23): the relationship-side twin of the it100
     /// approval→unity coupling. Where that reads how *content* the peoples are, this
@@ -165,6 +168,7 @@ impl SimState {
             self.population.unity = (self.population.unity + net).clamp(0.0, 1.0);
         }
     }
+
     /// Sour the aboard rivals of any people an event just favored (content-depth
     /// factions round 14): each positive approval gain spills a fraction of its
     /// resentment onto the favored people's aboard rivals, so favoring one people
@@ -206,6 +210,7 @@ impl SimState {
             }
         }
     }
+
     /// Warm the aboard allies of any people an event just favored (content-depth
     /// factions round 17): the positive twin of `apply_rival_approval_spillover`.
     /// Each positive approval gain shares a fraction of its goodwill with the favored
@@ -248,6 +253,7 @@ impl SimState {
             }
         }
     }
+
     /// Warm the aboard rivals of any people an event just *slighted* (content-depth
     /// factions round 32): the schadenfreude mirror the it14 favoritism spillover left
     /// out. Each *negative* approval delta lifts the wounded people's aboard rivals by a
@@ -290,6 +296,7 @@ impl SimState {
             }
         }
     }
+
     /// Sour the aboard allies of any people an event just *slighted* (content-depth
     /// factions round 32): the commiseration mirror the it17 coalition spillover left
     /// out. Each *negative* approval delta drags the wounded people's aboard allies down
@@ -332,6 +339,7 @@ impl SimState {
             }
         }
     }
+
     /// Let the people a charter was *uniquely called to* feel its conclusion (content-depth
     /// charters round 32): each founding people the writ was gated on (`requires_faction_aboard`)
     /// takes pride when the work is seen through and is let down when it is botched. On a
@@ -363,6 +371,7 @@ impl SimState {
             }
         }
     }
+
     /// Drift the ship's reputation by the standing character of whoever runs it
     /// (content-depth factions round 16): the dominant people's `reputation_leanings`
     /// nudge each named trait a little each year, so a ship long-run by a kind people
@@ -388,6 +397,7 @@ impl SimState {
             self.adjust_reputation(&trait_id, lean * per_year);
         }
     }
+
     /// A people grows content or discontent as the ship's *character* honors or affronts its
     /// values (content-depth factions round 27): the reverse of `apply_dominant_reputation_lean`,
     /// and the half of the `reputation_leanings` loop that was missing. Where that lets whoever
@@ -427,6 +437,7 @@ impl SimState {
             self.factions[i].adjust_approval(delta);
         }
     }
+
     /// Shift the smallest aboard faction's approval by `delta`, clamped
     /// (content-depth provisioning round 8): the "who bears the cut" mechanic for
     /// a shortage triage, resolved dynamically so a general rationing beat need

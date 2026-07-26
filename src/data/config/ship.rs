@@ -18,6 +18,7 @@ pub struct HeritageTier {
     #[serde(default)]
     pub tradition: i32,
 }
+
 /// Ship-loadout tunables (PLAN item 3). The installed components' aggregated
 /// stats scale a yearly production bonus and fuel regeneration
 /// (`simulation::ship`).
@@ -82,6 +83,7 @@ pub struct ShipConfig {
     #[serde(default)]
     pub mission_outcome_morale_scale: f32,
 }
+
 /// Per-year population drift over a voyage (PLAN M4.1): a long mission changes
 /// the people, not just the ship. Applied every year in `simulation::tick`,
 /// deterministic (no RNG) and clamped by `PopulationState::apply`. The identity
@@ -134,6 +136,7 @@ pub struct VoyageDrift {
     #[serde(default)]
     pub agriculture_adaptation_resistance: f32,
 }
+
 /// Field-vs-port repair tunables (PLAN M4.3). Underway, `field_repair` patches
 /// a stat by `field_gain` up to `field_ceiling` (never pristine) for
 /// `field_parts_cost` spare parts + `field_minerals_cost` minerals. In port,
@@ -149,6 +152,7 @@ pub struct RepairConfig {
     pub full_minerals_cost: i64,
     pub full_parts_restock: i64,
 }
+
 /// Real-time voyage pacing (real-time loop): while a mission is under way the
 /// month clock auto-advances one month every `seconds_per_month` real seconds,
 /// scaled by the 1×/2×/3× speed selector. A blocked council decision auto-
@@ -162,6 +166,7 @@ pub struct RealTimeConfig {
     pub impact_variance: f32,
     pub impact_min_magnitude_for_range: i64,
 }
+
 /// Gating for fitting a salvaged component underway (PLAN M4.4). At port any
 /// part installs freely; in the black it needs a `field_installable` part, an
 /// engineer at `skill_required`, and `parts_cost` spare parts + `minerals_cost`.
@@ -171,6 +176,7 @@ pub struct FieldInstallConfig {
     pub parts_cost: i64,
     pub minerals_cost: i64,
 }
+
 /// Commission-a-new-ship tunables (PLAN M4.5). Commissioning a hull costs the
 /// hull's own catalog price plus this premium (a whole fresh vessel), fully
 /// refits the ship, and lifts morale/unity — a new ship renews hope. It never
@@ -182,6 +188,7 @@ pub struct CommissionConfig {
     pub hope_morale: f32,
     pub hope_unity: f32,
 }
+
 /// Crew roster tunables (GDD §4 Recruit/Train verbs). One post per
 /// Provisioning + fuel tunables (W4). Fuel is a consumable voyage store burned
 /// during Travel; an empty tank stalls travel and doubles systems decay.

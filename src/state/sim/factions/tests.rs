@@ -21,6 +21,7 @@ fn fs(id: &str, members: u32) -> FactionState {
         mood_band: 0,
     }
 }
+
 fn armed(seed: u64) -> (GameData, SimState, Vec<String>) {
     let data = GameData::load().unwrap();
     let picks = founding_faction_ids(&data);

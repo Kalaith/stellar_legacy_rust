@@ -74,6 +74,7 @@ fn favoring_a_people_sours_its_aboard_rivals() {
         "a slight to a people is not a gift to its rivals"
     );
 }
+
 #[test]
 fn favoring_a_people_warms_its_aboard_allies() {
     // Content-depth factions round 17: the positive twin of the rivalry spillover.
@@ -148,6 +149,7 @@ fn favoring_a_people_warms_its_aboard_allies() {
         "a slight to a people is not a wound to its allies"
     );
 }
+
 #[test]
 fn slighting_a_people_cheers_its_rivals_and_stings_its_allies() {
     // Content-depth factions round 32: the down-swing mirrors the it14/it17 spillovers
@@ -228,6 +230,7 @@ fn slighting_a_people_cheers_its_rivals_and_stings_its_allies() {
         "a favor to a people is not read by the commiseration coupling"
     );
 }
+
 #[test]
 fn a_charters_people_take_pride_in_its_success_and_are_let_down_by_its_failure() {
     // Content-depth charters round 32: the charter→faction pride/letdown coupling. The

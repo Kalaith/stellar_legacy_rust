@@ -46,6 +46,7 @@ fn who_runs_the_ship_bends_its_reputation_over_the_generations() {
     let under_neutral = mercy_after("meridian_accord");
     assert_eq!(under_neutral, 0.5, "an unleaning people touches nothing");
 }
+
 #[test]
 fn the_name_the_ship_earns_warms_or_cools_each_people_toward_it() {
     // Content-depth factions round 27: the reverse of the round-16 lean above, closing
@@ -104,6 +105,7 @@ fn the_name_the_ship_earns_warms_or_cools_each_people_toward_it() {
         "a ship of neutral character warms no one either way"
     );
 }
+
 #[test]
 fn a_content_polity_steadies_the_ship_and_a_resentful_one_frays_it() {
     // Content-depth factions round 15: the faction system's first coupling to
@@ -154,6 +156,7 @@ fn a_content_polity_steadies_the_ship_and_a_resentful_one_frays_it() {
              (content {content} vs resentful {resentful})"
     );
 }
+
 #[test]
 fn a_divided_ship_is_harder_to_govern() {
     // Content-depth factions round 18: governing a divided ship strains its
@@ -219,6 +222,7 @@ fn a_divided_ship_is_harder_to_govern() {
         "an ideologically unified ship's institutions are untouched by the coupling"
     );
 }
+
 #[test]
 fn aboard_rivals_grind_at_cohesion_and_allies_lift_it() {
     // Content-depth factions round 23: the relationship-side twin of the mood→unity
@@ -275,6 +279,7 @@ fn aboard_rivals_grind_at_cohesion_and_allies_lift_it() {
         "a large aboard allied bloc lifts unity ({ally_delta})"
     );
 }
+
 #[test]
 fn a_kept_peacekeeping_corps_cools_the_standing_rivalry() {
     // Content-depth subsystems round 32: the security corps damps the round-23 rival-cohesion
@@ -336,6 +341,7 @@ fn a_kept_peacekeeping_corps_cools_the_standing_rivalry() {
         "a kept corps cools the grind — less unity is lost ({kept} vs {wrecked})"
     );
 }
+
 #[test]
 fn a_delighted_people_keeps_its_module_sharp() {
     // Content-depth factions round 22: the bright mirror of the neglect coupling. A
@@ -395,6 +401,7 @@ fn a_delighted_people_keeps_its_module_sharp() {
         "a people below the proud threshold tends its module no better than duty"
     );
 }
+
 #[test]
 fn a_neglected_module_sours_the_people_who_tend_it() {
     // Content-depth subsystems round 8: the people whose craft is a subsystem
@@ -457,6 +464,7 @@ fn a_neglected_module_sours_the_people_who_tend_it() {
         }
     }
 }
+
 #[test]
 fn a_module_kept_excellent_pleases_the_people_who_tend_it() {
     // Content-depth factions round 29: the bright mirror of the neglect penalty. The people

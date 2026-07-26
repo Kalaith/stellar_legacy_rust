@@ -87,6 +87,7 @@ impl Acquisition {
         matches!(self, Acquisition::MissionReward)
     }
 }
+
 /// Signed per-resource change used by event outcomes, costs, and rewards.
 /// Also doubles as an absolute amount set (e.g. starting resources).
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
@@ -98,6 +99,7 @@ pub struct ResourceDelta {
     pub food: i64,
     pub influence: i64,
 }
+
 /// Per-year production rates for each tracked resource. Initialized with every
 /// key present so colonization/component bonuses always have a slot to land in
 /// (the original web build lost these bonuses to a missing-key bug — GDD §5.1).
@@ -110,6 +112,7 @@ pub struct ProductionRates {
     pub food: f32,
     pub influence: f32,
 }
+
 /// Signed change to ship-condition stats.
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
@@ -119,6 +122,7 @@ pub struct ShipDelta {
     pub fuel: f32,
     pub spare_parts: i32,
 }
+
 /// Signed change to colony-scale population stats.
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
@@ -131,6 +135,7 @@ pub struct PopulationDelta {
     pub adaptation: f32,
     pub cultural_drift: f32,
 }
+
 #[derive(Debug, Clone)]
 pub struct GameData {
     pub config: GameConfig,
@@ -144,6 +149,7 @@ pub struct GameData {
     pub crew_archetypes: Vec<CrewArchetype>,
     pub texture_manifest: Vec<TextureConfig>,
 }
+
 impl GameData {
     pub fn load() -> Result<Self, String> {
         Ok(Self {

@@ -501,6 +501,7 @@ pub struct FlavorConfig {
     #[serde(default)]
     pub homecoming: HashMap<String, Vec<String>>,
 }
+
 impl FlavorConfig {
     /// Deterministic pick from `pool` by rotating index `n`, with `{name}`
     /// substituted. Returns `None` only when the pool is empty.

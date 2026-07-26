@@ -16,6 +16,7 @@ fn founding_splits_population_and_is_deterministic() {
     let b: Vec<_> = again.factions.iter().map(|f| f.members).collect();
     assert_eq!(a, b, "deterministic per (seed, factions)");
 }
+
 #[test]
 fn rebalance_preserves_shares_and_the_sum_invariant() {
     let (_data, mut sim, _picks) = armed(1);
@@ -46,6 +47,7 @@ fn rebalance_preserves_shares_and_the_sum_invariant() {
         );
     }
 }
+
 #[test]
 fn demographic_drift_shifts_the_balance_of_power_over_generations() {
     // Content-depth factions round 11: which people runs the ship is not fixed
@@ -97,6 +99,7 @@ fn demographic_drift_shifts_the_balance_of_power_over_generations() {
         "a fecund launch-minority has become the majority"
     );
 }
+
 #[test]
 fn how_a_people_is_treated_bends_how_it_grows() {
     // Content-depth factions round 13: approval bends demographic growth — the
@@ -144,6 +147,7 @@ fn how_a_people_is_treated_bends_how_it_grows() {
         "approval pushes growth both ways around a neutral baseline"
     );
 }
+
 #[test]
 fn a_near_total_collapse_wipes_the_smallest_faction() {
     let (_data, mut sim, picks) = armed(1);
@@ -161,6 +165,7 @@ fn a_near_total_collapse_wipes_the_smallest_faction() {
         .sum();
     assert_eq!(aboard_sum, 2);
 }
+
 #[test]
 fn a_tiny_drifted_faction_is_assimilated_only_when_drift_is_high() {
     let (data, mut sim, picks) = armed(1);
@@ -193,6 +198,7 @@ fn a_tiny_drifted_faction_is_assimilated_only_when_drift_is_high() {
         "assimilation transfers, never loses, members"
     );
 }
+
 #[test]
 fn faction_loss_removes_the_smallest_but_spares_the_last() {
     let (data, mut sim, picks) = armed(1);
@@ -218,6 +224,7 @@ fn faction_loss_removes_the_smallest_but_spares_the_last() {
     );
     assert_eq!(solo.population.count, 1000);
 }
+
 #[test]
 fn targeted_faction_loss_sheds_the_named_group_not_the_smallest() {
     let (data, mut sim, picks) = armed(1);
@@ -245,6 +252,7 @@ fn targeted_faction_loss_sheds_the_named_group_not_the_smallest() {
         "the last people are never lost"
     );
 }
+
 #[test]
 fn a_people_merging_into_the_majority_consolidates_the_polity() {
     // Content-depth factions round 26: the positive mirror of the departure scar. A
@@ -299,6 +307,7 @@ fn a_people_merging_into_the_majority_consolidates_the_polity() {
         sim.population.unity
     );
 }
+
 #[test]
 fn losing_a_whole_people_scars_the_ships_cohesion() {
     // Content-depth factions round 24: a departure wounds cohesion beyond the bodies

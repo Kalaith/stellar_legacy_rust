@@ -40,6 +40,7 @@ impl SimState {
         }
         self.hull_voice_band = band;
     }
+
     /// Give the ship's *air* a voice (content-depth voice round 23): the second ship-body
     /// voice, the atmosphere twin of the it22 hull (structure) voice, on `life_support`.
     /// When the air crosses *into* a stale band (close and thick, the scrubbers labouring)
@@ -68,6 +69,7 @@ impl SimState {
         }
         self.air_voice_band = band;
     }
+
     /// Give the ship's *drive* a voice (content-depth voice round 27): the third ship-body
     /// voice, the motion twin of the it22 hull (structure) and it23 air (atmosphere) voices, on
     /// `ship.fuel`. When the tanks cross *into* a thin band (running on fumes, the crew
@@ -98,6 +100,7 @@ impl SimState {
         }
         self.fuel_voice_band = band;
     }
+
     /// Give the ship's *headcount* a voice (content-depth voice round 30): the crew growing or
     /// dwindling, read against the founding complement (`starting_population`). The it12
     /// depopulation *beat* reckons when the crew crashes and the hollow ambient colours a
@@ -137,6 +140,7 @@ impl SimState {
         }
         self.crew_size_voice_band = band;
     }
+
     /// Remark when the ship's coffers cross into flush or bare (content-depth voice round 32): the
     /// material-fortune voice, read against `starting_resources.credits` the way the it30 crew-size
     /// voice reads against `starting_population`. When the treasury crosses *into* a flush band (a
@@ -174,6 +178,7 @@ impl SimState {
         }
         self.treasury_voice_band = band;
     }
+
     /// Remark when the ship's power crosses into flush or dark (content-depth voice round 33): the
     /// power-fortune voice, the sibling of the it32 treasury (money) voice, read against absolute
     /// energy lines (energy has no founding-stake reference the way credits do). When the reactors

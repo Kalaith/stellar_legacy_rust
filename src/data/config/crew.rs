@@ -17,6 +17,7 @@ pub struct CrewConfig {
     /// Security-chief unity recovery only applies below this ceiling.
     pub unity_recovery_ceiling: f32,
 }
+
 /// Per-character mortality (real-time loop follow-up: characters age and die).
 /// Aging is a shared "Founding Day" event — everyone gains a year on the last
 /// day of the year, whatever their true birthdate — but *death* is a monthly
@@ -48,6 +49,7 @@ pub struct MortalityConfig {
     /// adult comes of age. Higher fills a depleted line back up faster.
     pub annual_birth_chance: f32,
 }
+
 /// Thresholds and point values for the §5.5 failure-risk formula. Drift and
 /// unity apply to every legacy; the rest gate on the matching legacy's
 /// tracked counters (see `simulation::legacy::failure_risk`).

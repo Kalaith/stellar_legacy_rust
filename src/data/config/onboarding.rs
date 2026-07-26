@@ -10,6 +10,7 @@ pub struct TutorialStep {
     pub label: String,
     pub tip: String,
 }
+
 /// First-voyage tutorial content. Shown only until the Chronicle records a
 /// mission (or the player dismisses it); all text is data, per the hard rule.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -25,12 +26,14 @@ pub struct TutorialConfig {
     /// Ordered pre-launch checklist steps for the PREP screen.
     pub steps: Vec<TutorialStep>,
 }
+
 /// One captioned block of the first-run welcome overlay.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct WelcomeSection {
     pub heading: String,
     pub body: String,
 }
+
 /// First-run welcome overlay content (shown once, gated on a saved flag). All
 /// text is data, per the hard rule; the overlay itself lives in `ui::welcome`.
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -74,6 +74,7 @@ impl SimState {
         }
         wiped
     }
+
     /// Per-generation (content-depth factions round 11): each aboard people's
     /// numbers wax or wane by its `growth_bias`, so the balance of power shifts
     /// over the centuries — a fecund people grows toward the majority, a people
@@ -102,6 +103,7 @@ impl SimState {
             }
         }
     }
+
     /// Remove the smallest Aboard faction from the ship (W7 event-driven loss:
     /// they settled off-ship or departed on their own course). Ties break on the
     /// lexicographically-first id. If only one faction is Aboard this is a
@@ -132,6 +134,7 @@ impl SimState {
 
         self.remove_faction(idx, kind, data);
     }
+
     /// Remove a *named* faction from the ship (content-depth round 3: faction-
     /// specific schism beats). Unlike `apply_faction_loss`, which sheds whoever
     /// is smallest, this loses the faction the event is actually about — but
@@ -157,6 +160,7 @@ impl SimState {
             ),
         }
     }
+
     /// Merge a *named* faction into the largest other aboard (content-depth
     /// round 5: event-driven assimilation, the union counterpart to
     /// `apply_faction_loss_by_id`). Unlike a schism, the people stay — the head
@@ -205,6 +209,7 @@ impl SimState {
              name now."
         ));
     }
+
     /// Shared removal: mark the faction lost, drop its members from the head
     /// count, and log the parting in the flavor of `kind`.
     fn remove_faction(&mut self, idx: usize, kind: FactionLossKind, data: &GameData) {
@@ -312,6 +317,7 @@ impl SimState {
             }
         }
     }
+
     /// On a generation boundary, fold any tiny, drifted faction into the largest
     /// (W7 soft assimilation): once cultural drift is high enough, a faction
     /// whose share has fallen below the threshold loses its name to a larger
@@ -381,6 +387,7 @@ impl SimState {
             ));
         }
     }
+
     /// Recruit a fresh people in drydock (W7): only in port, only when short of
     /// the founding count, only from the untouched pool. Charges credits and
     /// grows the colony. Lost factions never return.

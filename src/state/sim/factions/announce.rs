@@ -46,6 +46,7 @@ impl SimState {
             self.push_log(line);
         }
     }
+
     /// Give the *ship's* overall morale a voice (content-depth voice round 11):
     /// the collective parallel to `announce_faction_moods`. When the whole crew's
     /// morale crosses *into* a heavy or a light band — not every year it sits
@@ -70,6 +71,7 @@ impl SimState {
         }
         self.morale_band = band;
     }
+
     /// Give the ship's *political climate* a voice (content-depth voice round 15):
     /// distinct from the crew's spirits (`announce_ship_mood`) and from any one
     /// people's mood (`announce_faction_moods`), this is the member-weighted mood of
@@ -96,6 +98,7 @@ impl SimState {
         }
         self.polity_mood_band = band;
     }
+
     /// Remark when the ship passes into a new people's hands (content-depth voice round 31): the
     /// first voice keyed not to a stat crossing a band but to a change in *which faction is
     /// dominant* — the largest aboard, the "who runs the ship" that the it10 dilemma odds, the it16
@@ -137,6 +140,7 @@ impl SimState {
             }
         }
     }
+
     /// Give the ship's growing *reputation* a voice (content-depth voice round 16):
     /// the quiet companion to the it109 reputation beat, at a gentler threshold. When
     /// the watched trait crosses *into* a merciful or a feared band, surface one
@@ -173,6 +177,7 @@ impl SimState {
         }
         self.reputation_voice_band = band;
     }
+
     /// Give the ship's *other* name a voice (content-depth voice round 28): the it16 reputation
     /// voice reads only the one watched trait (mercy — merciful vs feared), but the ship earns a
     /// whole character, and this session made `wonder` a load-bearing trait — a name a ship grows
@@ -211,6 +216,7 @@ impl SimState {
         }
         self.wonder_voice_band = band;
     }
+
     /// Give the ship's *third* name a voice (content-depth voice round 29): the last of the
     /// built reputation traits without one, completing the mercy (it16) / wonder (it28) / resolve
     /// voice set. `resolve` is what a ship earns by doing the hard thing and not flinching — the
@@ -249,6 +255,7 @@ impl SimState {
         }
         self.resolve_voice_band = band;
     }
+
     /// Give the ship's *institutions* a voice (content-depth voice round 17): the
     /// governance twin of the morale (`announce_ship_mood`) and polity
     /// (`announce_polity_mood`) voices. Distinct from the crew's spirits and from how
@@ -284,6 +291,7 @@ impl SimState {
         }
         self.stability_voice_band = band;
     }
+
     /// Give the crew's *devotion to the founders' mission* a voice (content-depth voice
     /// round 20): the identity-side twin of the morale (`announce_ship_mood`) and
     /// governance (`announce_stability_mood`) voices, on `legacy_loyalty`. Distinct from
@@ -324,6 +332,7 @@ impl SimState {
         }
         self.loyalty_voice_band = band;
     }
+
     /// Give the crew's *cohesion* a voice (content-depth voice round 21): the fourth
     /// internal-state voice, beside the morale (`announce_ship_mood`), governance
     /// (`announce_stability_mood`), and mission-devotion (`announce_loyalty_mood`) ones,
@@ -360,6 +369,7 @@ impl SimState {
         }
         self.unity_voice_band = band;
     }
+
     /// Give the crew's *physiological* identity a voice (content-depth voice round 25):
     /// the bodily companion to the loyalty voice, on `adaptation`. When the descendants'
     /// bodies cross *into* a shipborn band (longer, leaner, fitted to the ship and no
@@ -394,6 +404,7 @@ impl SimState {
         }
         self.adaptation_voice_band = band;
     }
+
     /// Give the crew's *cultural* identity a voice (content-depth voice round 26): the
     /// cultural companion to the adaptation voice (their bodies), on `cultural_drift`. Where
     /// that reads how far the descendants' *bodies* have left the founders' stock, this reads

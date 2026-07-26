@@ -143,10 +143,12 @@ impl SimState {
             .filter(|&i| self.factions[i].is_aboard())
             .collect()
     }
+
     /// Aboard factions still on the ship.
     pub fn aboard_faction_count(&self) -> u32 {
         self.factions.iter().filter(|f| f.is_aboard()).count() as u32
     }
+
     /// The id of the largest aboard faction — "who runs the ship" for
     /// faction-colored event gating (content-depth iteration). Ties break on id
     /// for determinism. `None` when no faction is aboard.
@@ -161,6 +163,7 @@ impl SimState {
             })
             .map(|f| f.faction_id.as_str())
     }
+
     /// Whether a specific faction is still aboard (for inter-faction friction
     /// event gating).
     pub fn is_faction_aboard(&self, id: &str) -> bool {
@@ -168,6 +171,7 @@ impl SimState {
             .iter()
             .any(|f| f.faction_id == id && f.is_aboard())
     }
+
     /// Faction ids that could still be recruited: known factions that have never
     /// been part of this campaign (chosen or lost). Sorted for a stable menu.
     pub fn recruitable_faction_ids(&self, data: &GameData) -> Vec<String> {
@@ -180,6 +184,7 @@ impl SimState {
         ids.sort();
         ids
     }
+
     /// The member-weighted mean approval of the aboard peoples (content-depth
     /// factions round 15): the ship's overall political mood, so a large content
     /// majority weighs more than a small soured minority. `0.5` (neutral) when no
@@ -199,6 +204,7 @@ impl SimState {
             weighted / total_members as f32
         }
     }
+
     /// The member-weighted ideological *spread* of the aboard peoples (content-depth
     /// factions round 18): the mean absolute deviation of their `ideology` from the
     /// member-weighted mean — how ideologically *divided* the polity is. `0` for a
@@ -228,6 +234,7 @@ impl SimState {
             .sum::<f32>()
             / total
     }
+
     /// The approval of the aboard people that tends `subsystem_id` (content-depth
     /// factions round 12), or `None` if no aboard faction tends it. The upkeep
     /// half of the tended-subsystem coupling: `apply_subsystem_neglect_sentiment`

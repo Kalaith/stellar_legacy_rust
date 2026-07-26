@@ -45,6 +45,7 @@ fn the_ship_remarks_when_its_hull_groans_or_rides_sound() {
     assert_eq!(hull_lines(&sim), 2, "a refit hull rides sound afresh");
     assert_eq!(sim.hull_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_its_air_goes_stale_or_clears() {
     // Content-depth voice round 23: the air (life-support) voice, the atmosphere twin
@@ -88,6 +89,7 @@ fn the_ship_remarks_when_its_air_goes_stale_or_clears() {
     assert_eq!(air_lines(&sim), 2, "cleared air says so afresh");
     assert_eq!(sim.air_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_its_drive_runs_thin_or_full() {
     // Content-depth voice round 27: the drive (fuel) voice, the third ship-body voice, the
@@ -131,6 +133,7 @@ fn the_ship_remarks_when_its_drive_runs_thin_or_full() {
     assert_eq!(drive_lines(&sim), 2, "a refilled drive says so afresh");
     assert_eq!(sim.fuel_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_its_crew_swells_or_thins() {
     // Content-depth voice round 30: the headcount voice. A ship at its founding complement is
@@ -178,6 +181,7 @@ fn the_ship_remarks_when_its_crew_swells_or_thins() {
     assert_eq!(crew_lines(&sim), 2, "a swelling crew says so afresh");
     assert_eq!(sim.crew_size_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_its_coffers_run_flush_or_bare() {
     // Content-depth voice round 32: the treasury voice. A ship at its founding stake is the
@@ -226,6 +230,7 @@ fn the_ship_remarks_when_its_coffers_run_flush_or_bare() {
     assert_eq!(treasury_lines(&sim), 2, "a flush treasury says so afresh");
     assert_eq!(sim.treasury_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_its_reactors_run_flush_or_dark() {
     // Content-depth voice round 33: the power voice, the treasury's energy sibling. A ship at its

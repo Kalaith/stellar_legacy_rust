@@ -50,6 +50,7 @@ fn a_souring_people_says_so_once_not_every_year() {
         "a people won back to contentment says so"
     );
 }
+
 #[test]
 fn the_ships_collective_mood_says_so_once_when_it_turns() {
     // Content-depth voice round 11: the ship-wide morale voice. Crossing into a
@@ -101,6 +102,7 @@ fn the_ships_collective_mood_says_so_once_when_it_turns() {
     assert_eq!(mood_lines(&sim), 2, "the ship lifting says so afresh");
     assert_eq!(sim.morale_band, 1);
 }
+
 #[test]
 fn the_ships_political_climate_says_so_once_when_it_turns() {
     // Content-depth voice round 15: the polity-mood voice. Distinct from the
@@ -141,6 +143,7 @@ fn the_ships_political_climate_says_so_once_when_it_turns() {
     assert_eq!(polity_lines(&sim), 2, "the polity settling says so afresh");
     assert_eq!(sim.polity_mood_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_it_passes_into_new_hands() {
     // Content-depth voice round 31: the ruling-people voice, the first keyed to a change in
@@ -220,6 +223,7 @@ fn the_ship_remarks_when_it_passes_into_new_hands() {
         "staying under the same people is not re-announced"
     );
 }
+
 #[test]
 fn the_ship_remarks_when_its_name_begins_to_mean_something() {
     // Content-depth voice round 16: the reputation voice, the quiet companion to
@@ -263,6 +267,7 @@ fn the_ship_remarks_when_its_name_begins_to_mean_something() {
     assert_eq!(name_lines(&sim), 2, "a feared name says so afresh");
     assert_eq!(sim.reputation_voice_band, -1);
 }
+
 #[test]
 fn the_ship_remarks_when_it_becomes_known_for_wonder_or_incuriosity() {
     // Content-depth voice round 28: the wonder reputation voice, the companion to the mercy
@@ -314,6 +319,7 @@ fn the_ship_remarks_when_it_becomes_known_for_wonder_or_incuriosity() {
     assert_eq!(wonder_lines(&sim), 2, "an incurious name says so afresh");
     assert_eq!(sim.wonder_voice_band, -1);
 }
+
 #[test]
 fn the_ship_remarks_when_it_becomes_known_for_resolve_or_folding() {
     // Content-depth voice round 29: the resolve reputation voice, completing the
@@ -368,6 +374,7 @@ fn the_ship_remarks_when_it_becomes_known_for_resolve_or_folding() {
     assert_eq!(resolve_lines(&sim), 2, "a name for folding says so afresh");
     assert_eq!(sim.resolve_voice_band, -1);
 }
+
 #[test]
 fn the_ship_remarks_when_its_government_slips_or_steadies() {
     // Content-depth voice round 17: the governance voice, the institutional twin of
@@ -415,6 +422,7 @@ fn the_ship_remarks_when_its_government_slips_or_steadies() {
     );
     assert_eq!(sim.stability_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_the_crew_frays_or_pulls_together() {
     // Content-depth voice round 21: the unity (cohesion) voice, the fourth
@@ -458,6 +466,7 @@ fn the_ship_remarks_when_the_crew_frays_or_pulls_together() {
     assert_eq!(unity_lines(&sim), 2, "the crew cohering says so afresh");
     assert_eq!(sim.unity_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_the_founders_fire_gutters_or_flares() {
     // Content-depth voice round 20: the loyalty voice, the identity-side twin of
@@ -510,6 +519,7 @@ fn the_ship_remarks_when_the_founders_fire_gutters_or_flares() {
     );
     assert_eq!(sim.loyalty_voice_band, 1);
 }
+
 #[test]
 fn the_ship_remarks_when_the_crew_turns_shipborn_or_holds_baseline() {
     // Content-depth voice round 25: the adaptation voice, the physiological companion
@@ -557,6 +567,7 @@ fn the_ship_remarks_when_the_crew_turns_shipborn_or_holds_baseline() {
     );
     assert_eq!(sim.adaptation_voice_band, -1);
 }
+
 #[test]
 fn the_ship_remarks_when_the_crew_becomes_a_new_people_or_keeps_the_old_ways() {
     // Content-depth voice round 26: the cultural-drift voice, the cultural companion to

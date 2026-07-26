@@ -399,6 +399,7 @@ pub struct CampaignSkeletonConfig {
     #[serde(default)]
     pub subsystem_beats: Vec<SubsystemBeat>,
 }
+
 /// One subsystem-collapse beat (content-depth campaign skeleton round 17): when the
 /// named module's `condition` first falls to or below `threshold`, a beat is forced
 /// from `family` — the physical-crisis trigger the beat lattice lacked.
