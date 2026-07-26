@@ -18,7 +18,7 @@
       "name": "Light Corvette Refit",
       "description": "A leaner spaceframe conversion. Less room, better bones.",
       "cost": {
-        "credits": 500
+        "credits": 1250
       },
       "stats": {
         "cargo": 100,
@@ -32,7 +32,7 @@
       "name": "Generation Ark Expansion",
       "description": "Hull segments grafted on over decades. A city that flies.",
       "cost": {
-        "credits": 2500,
+        "credits": 6250,
         "minerals": 800
       },
       "stats": {
@@ -46,7 +46,7 @@
       "name": "Rotating Habitat Ring",
       "description": "A grafted-on ring of spun-gravity decks. Room to grow, if you can spin it.",
       "cost": {
-        "credits": 2000,
+        "credits": 5000,
         "minerals": 400
       },
       "stats": {
@@ -60,7 +60,7 @@
       "name": "Armored Prow",
       "description": "A reinforced forward mass. Less hold, but it shrugs off the void's insults.",
       "cost": {
-        "credits": 1500,
+        "credits": 3750,
         "minerals": 600
       },
       "stats": {
@@ -90,7 +90,7 @@
       "name": "Ion Drive",
       "description": "Reliable, efficient, and slower than continental drift. Scavenges enough reaction mass underway to keep a full tank ahead of a steady burn — but never to refill a dry one quickly.",
       "cost": {
-        "credits": 800,
+        "credits": 2000,
         "minerals": 50
       },
       "stats": {
@@ -104,7 +104,7 @@
       "name": "Fusion Torch",
       "description": "Cuts a decade off a crossing, if the fuel holds.",
       "cost": {
-        "credits": 1800,
+        "credits": 4500,
         "minerals": 200
       },
       "stats": {
@@ -117,7 +117,7 @@
       "name": "Ramscoop Array",
       "description": "Harvests fuel in transit. The long-haul choice.",
       "cost": {
-        "credits": 3000,
+        "credits": 7500,
         "minerals": 400,
         "energy": 500
       },
@@ -132,7 +132,7 @@
       "name": "Solar Sail Array",
       "description": "Slow, silent, and it never runs dry near a star.",
       "cost": {
-        "credits": 1200,
+        "credits": 3000,
         "minerals": 100
       },
       "stats": {
@@ -146,7 +146,7 @@
       "name": "Experimental Warp Coil",
       "description": "Folds the distance and the fuel budget in equal measure.",
       "cost": {
-        "credits": 4000,
+        "credits": 10000,
         "minerals": 600,
         "energy": 800
       },
@@ -174,7 +174,7 @@
       "name": "Point Defense Grid",
       "description": "Keeps the debris and the desperate at a distance.",
       "cost": {
-        "credits": 400
+        "credits": 1000
       },
       "stats": {
         "combat": 1
@@ -186,7 +186,7 @@
       "name": "Pulse Cannon",
       "description": "A deterrent with a paper trail.",
       "cost": {
-        "credits": 600
+        "credits": 1500
       },
       "stats": {
         "combat": 3
@@ -198,7 +198,7 @@
       "name": "Mass Driver",
       "description": "Turns spare minerals into diplomacy.",
       "cost": {
-        "credits": 1400,
+        "credits": 3500,
         "minerals": 300
       },
       "stats": {
@@ -211,7 +211,7 @@
       "name": "Flak Screen",
       "description": "A cheap curtain of shrapnel. Discourages the casually hostile.",
       "cost": {
-        "credits": 500
+        "credits": 1250
       },
       "stats": {
         "combat": 2
@@ -223,7 +223,7 @@
       "name": "Spinal Railgun",
       "description": "The whole ship is the gun. Aim by turning.",
       "cost": {
-        "credits": 2200,
+        "credits": 5500,
         "minerals": 500
       },
       "stats": {

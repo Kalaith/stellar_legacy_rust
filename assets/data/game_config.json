@@ -915,7 +915,7 @@
     "minerals_cost": 200
   },
   "commission": {
-    "premium_credits": 3000,
+    "premium_credits": 7500,
     "premium_minerals": 800,
     "hope_morale": 0.15,
     "hope_unity": 0.08

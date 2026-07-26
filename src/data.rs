@@ -4113,4 +4113,66 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn the_best_ship_is_earned_across_many_voyages() {
+        // Economy rebalance (economy_balance_plan.md phase 2): the best ship and
+        // its full kit should cost several successful missions, not one lucky
+        // payday. This pins the whole-catalog credit cost against what a voyage
+        // actually banks — fee, milestones, and the passive drip the crossing
+        // mints, less what the sailing costs — so fees (phase 1) and prices
+        // (phase 2) can never drift apart into trivial wealth or endless grind.
+        let data = GameData::load().unwrap();
+        let config = &data.config;
+        use ship_components::ComponentKind;
+
+        // The full best-buyable kit: the dearest hull (plus the commission
+        // premium a new hull costs), the dearest engine, the dearest weapon,
+        // and every subsystem tier bought up the ladder. Mission-reward relics
+        // carry no price and never enter the reckoning.
+        let dearest = |kind: ComponentKind| {
+            data.ship_components
+                .list(kind)
+                .iter()
+                .map(|c| c.cost.credits)
+                .max()
+                .unwrap_or(0)
+        };
+        let subsystem_ladders: i64 = data
+            .subsystems
+            .iter()
+            .flat_map(|(_, s)| s.tiers.iter())
+            .map(|t| t.cost.credits)
+            .sum();
+        let kit_cost = dearest(ComponentKind::Hull)
+            + config.commission.premium_credits
+            + dearest(ComponentKind::Engine)
+            + dearest(ComponentKind::Weapon)
+            + subsystem_ladders;
+
+        // What a successful charter banks: its fee, its milestone credits, and
+        // the base passive production over the whole crossing, less the voyage's
+        // own provisioning bill (parts beyond the founding stock, plus a tank).
+        let net_incomes: Vec<i64> = data
+            .contracts
+            .iter()
+            .map(|(_, c)| {
+                let milestones: i64 = c.milestones.iter().map(|m| m.reward.credits).sum();
+                let drip = (config.base_production.credits * c.target_duration_years as f32) as i64;
+                let parts_needed = config.parts_upkeep_per_year * c.target_duration_years as i64;
+                let parts_shortfall = (parts_needed - config.starting_spare_parts).max(0);
+                let bill = parts_shortfall * config.provisioning.part_cost_credits
+                    + 100 * config.provisioning.fuel_cost_credits_per_point;
+                c.reward.credits + milestones + drip - bill
+            })
+            .collect();
+        let mean_income = net_incomes.iter().sum::<i64>() / net_incomes.len() as i64;
+
+        let missions = kit_cost as f32 / mean_income as f32;
+        assert!(
+            (4.0..=7.0).contains(&missions),
+            "the full kit costs {kit_cost} cr = {missions:.1} mean-mission incomes ({mean_income} each); \
+             the authored pacing is 4-7 successful voyages"
+        );
+    }
 }
