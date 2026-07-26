@@ -17,7 +17,7 @@ Rules that constrain every split here:
 
 | Lines | File | Status |
 |------:|------|--------|
-| 4339 | `src/state/sim/factions.rs` | pending |
+| 4339 | `src/state/sim/factions.rs` | **done** — 12 files, largest 616 |
 | 4252 | `src/data.rs` | pending |
 | 3856 | `src/simulation/tick/tests.rs` | pending |
 | 3833 | `src/simulation/event_resolver.rs` | pending |
@@ -66,4 +66,6 @@ Planned once the four large ones land, so the shape of the shared helpers is set
 
 ## Log
 
-_(one line per completed pass)_
+- **Pass 1** — `state/sim/factions.rs` 4339 → `factions.rs` (245) + `roster.rs` (521),
+  `sentiment.rs` (451), `announce.rs` (433), `announce/condition.rs` (214), and a
+  `tests/` tree of six files (276–616). All 50 tests preserved, fmt/clippy/test green.
