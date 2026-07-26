@@ -4062,6 +4062,31 @@ mod tests {
             "founding parts {} must cover {starter_years} years of upkeep",
             config.starting_spare_parts
         );
+
+        // Economy rebalance (economy_balance_plan.md phase 3, target T3): after
+        // the phase-2 price hike the founding stake must still put a first
+        // tier-1 upgrade within reach of a new captain — the early game keeps
+        // its tension, but the first improvement is a choice on turn one, not a
+        // wall to save toward. The stake covers the cheapest tier-1 subsystem
+        // plus whatever launching the shortest starter charter costs in credits
+        // (parts beyond the founding stock; the tank starts full).
+        let cheapest_tier1 = data
+            .subsystems
+            .iter()
+            .filter_map(|(_, s)| s.tiers.first())
+            .map(|t| t.cost.credits)
+            .min()
+            .expect("subsystems have at least one purchasable tier");
+        let parts_shortfall = (config.parts_upkeep_per_year * starter_years as i64
+            - config.starting_spare_parts)
+            .max(0);
+        let launch_bill = parts_shortfall * config.provisioning.part_cost_credits;
+        assert!(
+            config.starting_resources.credits >= cheapest_tier1 + launch_bill,
+            "founding stake {} must cover the cheapest tier-1 upgrade ({cheapest_tier1}) plus \
+             the shortest starter charter's launch bill ({launch_bill})",
+            config.starting_resources.credits
+        );
     }
 
     #[test]
