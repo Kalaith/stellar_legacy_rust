@@ -63,9 +63,9 @@ pub struct Game {
     achievements: Achievements,
     notifications: NotificationManager,
     events: EventBus<UiAction>,
-    /// Kept wired for toolkit consistency; this game ships no sprite art
-    /// (GDD §0) so the manifest stays empty.
-    _assets: AssetManager,
+    /// The one piece of bitmap art the game ships: the title plate behind the
+    /// main menu. Everything else is drawn (GDD §0), so the manifest stays tiny.
+    assets: AssetManager,
     /// Legacy ids in stable sorted order for the menu.
     legacy_ids: Vec<String>,
     /// Screen-space phosphor-monitor overlay (scanlines, vignette, flicker),
@@ -179,7 +179,7 @@ impl Game {
             achievements,
             notifications: NotificationManager::new(),
             events: EventBus::new(),
-            _assets: assets,
+            assets,
             legacy_ids,
             crt: CrtOverlay::new(),
             crt_style,
@@ -442,6 +442,7 @@ impl Game {
                     legacy_ids: &self.legacy_ids,
                     chronicle: &self.chronicle,
                     ui: &virtual_ui,
+                    title_art: self.assets.get_texture("title"),
                 }),
                 GameState::Gameplay(gameplay) => ui::draw_gameplay(ui::GameplayCtx {
                     data: &self.data,

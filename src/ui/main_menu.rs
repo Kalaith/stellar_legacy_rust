@@ -3,12 +3,19 @@
 
 use super::*;
 
+/// Left edge of the menu column over the title art, aligned under the wordmark
+/// and clear of the ship's engine glow to its right.
+const TITLE_COLUMN_X: f32 = 98.0;
+
 pub struct MenuCtx<'a> {
     pub data: &'a GameData,
     pub menu: &'a MenuState,
     pub legacy_ids: &'a [String],
     pub chronicle: &'a ChronicleStore,
     pub ui: &'a VirtualUi,
+    /// The title plate drawn behind the main menu, when it loaded. `None` falls
+    /// back to the drawn wordmark, so a missing asset costs art, never a menu.
+    pub title_art: Option<&'a Texture2D>,
 }
 
 pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
@@ -18,52 +25,102 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
     }
 }
 
-/// The title / main-menu screen (real-time loop follow-up): the game title over
+/// The title / main-menu screen (real-time loop follow-up): the title plate over
 /// four options — CONTINUE, NEW GAME, SETTINGS, EXIT. The new-game picker is one
-/// step in from here (NEW GAME).
+/// step in from here (NEW GAME). This is the screen *after* the boot log, which
+/// still plays its own power-on sequence untouched.
+///
+/// With the title art loaded the plate fills the frame and the options sit in a
+/// column under its wordmark, clear of the ship on the right. Without it the
+/// menu falls back to the drawn wordmark and a centered column, so a missing or
+/// failed texture costs the art and nothing else.
 fn draw_main_menu(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
     let mut actions = Vec::new();
     let mouse = ctx.ui.mouse_position();
 
-    draw_text_glow(
-        "STELLAR LEGACY",
-        LOGICAL_WIDTH / 2.0 - 230.0,
-        250.0,
-        TextStyle::new(58.0, term::primary()),
-        0.1,
-        3.0,
-    );
-    draw_text_centered(
-        "// generational starship command //",
-        LOGICAL_WIDTH / 2.0,
-        295.0,
-        TextStyle::new(18.0, term::dim()),
-    );
-
     // A dynasty inheriting a storied Chronicle begins with a head start (§7).
     let heritage = crate::heritage::derive(ctx.chronicle, &ctx.data.config.heritage);
-    if heritage.has_bonus() {
-        draw_text_centered(
-            &format!(
-                "HERITAGE: {} · renown {} · +{} cr / +{} inf / +{} tradition",
-                heritage.tier_name,
-                heritage.renown,
-                heritage.credits,
-                heritage.influence,
-                heritage.tradition
-            ),
-            LOGICAL_WIDTH / 2.0,
-            325.0,
-            TextStyle::new(14.0, term::accent()),
-        );
-    }
 
-    // A single centered column of options, most-common action first.
-    let bw = 300.0;
+    let bw = if ctx.title_art.is_some() {
+        260.0
+    } else {
+        300.0
+    };
     let bh = 46.0;
     let gap = 12.0;
-    let bx = LOGICAL_WIDTH / 2.0 - bw / 2.0;
-    let mut by = 370.0;
+
+    let (bx, mut by) = match ctx.title_art {
+        Some(art) => {
+            draw_texture_ex(
+                art,
+                0.0,
+                0.0,
+                WHITE,
+                DrawTextureParams {
+                    dest_size: Some(vec2(LOGICAL_WIDTH, LOGICAL_HEIGHT)),
+                    ..Default::default()
+                },
+            );
+            // Left column, aligned under the plate's wordmark. The heritage note
+            // wraps to two short lines so it stays inside the column instead of
+            // running across the ship.
+            if heritage.has_bonus() {
+                draw_ui_text_ex(
+                    &format!(
+                        "HERITAGE: {} · renown {}",
+                        heritage.tier_name, heritage.renown
+                    ),
+                    TITLE_COLUMN_X,
+                    400.0,
+                    TextStyle::new(14.0, term::accent()).params(),
+                );
+                draw_ui_text_ex(
+                    &format!(
+                        "+{} cr / +{} inf / +{} tradition",
+                        heritage.credits, heritage.influence, heritage.tradition
+                    ),
+                    TITLE_COLUMN_X,
+                    419.0,
+                    TextStyle::new(14.0, term::accent()).params(),
+                );
+            }
+            (TITLE_COLUMN_X, 444.0)
+        }
+        None => {
+            draw_text_glow(
+                "STELLAR LEGACY",
+                LOGICAL_WIDTH / 2.0 - 230.0,
+                250.0,
+                TextStyle::new(58.0, term::primary()),
+                0.1,
+                3.0,
+            );
+            draw_text_centered(
+                "// generational starship command //",
+                LOGICAL_WIDTH / 2.0,
+                295.0,
+                TextStyle::new(18.0, term::dim()),
+            );
+            if heritage.has_bonus() {
+                draw_text_centered(
+                    &format!(
+                        "HERITAGE: {} · renown {} · +{} cr / +{} inf / +{} tradition",
+                        heritage.tier_name,
+                        heritage.renown,
+                        heritage.credits,
+                        heritage.influence,
+                        heritage.tradition
+                    ),
+                    LOGICAL_WIDTH / 2.0,
+                    325.0,
+                    TextStyle::new(14.0, term::accent()),
+                );
+            }
+            (LOGICAL_WIDTH / 2.0 - bw / 2.0, 370.0)
+        }
+    };
+
+    // A single column of options, most-common action first.
     if term_button(
         Rect::new(bx, by, bw, bh),
         "CONTINUE",
