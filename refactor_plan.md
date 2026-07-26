@@ -22,7 +22,7 @@ Rules that constrain every split here:
 | 3856 | `src/simulation/tick/tests.rs` | **done** — 11 files, largest 593 |
 | 3833 | `src/simulation/event_resolver.rs` | **done** — 14 files, largest 490 |
 | 1841 | `src/simulation/subsystems.rs` | **done** — 7 files, largest 509 |
-| 1653 | `src/simulation/contract.rs` | pending |
+| 1653 | `src/simulation/contract.rs` | **done** — 6 files, largest 568 |
 | 1259 | `src/simulation/tick.rs` | pending |
 | 1178 | `src/state/sim.rs` | pending |
 | 1043 | `src/ui.rs` | pending |
@@ -81,4 +81,7 @@ Planned once the four large ones land, so the shape of the shared helpers is set
   + ten files (106–593) by what the year under test exercises. All 73 tests preserved.
 - **Pass 5** — `simulation/subsystems.rs` 1841 → `subsystems.rs` (135, the buffering and
   softening helpers) + `verbs.rs` (201) + `effects.rs` (432), re-exported flat, and three
-  test files (205–509). All 31 tests preserved.
+  test files (205–509). All 30 tests preserved.
+- **Pass 6** — `simulation/contract.rs` 1653 → `contract.rs` (568, all the code, already
+  under the limit) + `tests.rs` (35, fixtures) + four test files (168–418) by which part
+  of a voyage's life they guard. All 35 tests preserved.
