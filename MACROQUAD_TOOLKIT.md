@@ -140,6 +140,18 @@ if let Some(tex) = assets.get_texture("player") {
 }
 ```
 
+**JPEG is supported.** Macroquad itself compiles `image` with only the `png` and `tga`
+decoders, so `macroquad::load_texture` fails on `.jpg`. The toolkit adds a JPEG decoder and
+routes every load path (`load_texture`, `load_texture_filtered`, `AssetPack::texture`,
+`load_texture_from_pack_or_file`) through `assets::decode_texture_bytes`, which detects JPEG by
+magic bytes and falls back to Macroquad for everything else. Loose files are detected by
+`.jpg`/`.jpeg` extension.
+
+Prefer JPEG for large opaque art — photographic/painterly backgrounds and maps compress
+10x better than lossless PNG, and PNG-in-ZIP saves nothing because the data is already
+deflate-incompressible. **JPEG has no alpha channel**, so keep anything with transparency
+(sprites, UI chrome, icons) as PNG. Verify with an alpha-channel audit before bulk-converting.
+
 ### Camera (`camera` module)
 
 ```rust

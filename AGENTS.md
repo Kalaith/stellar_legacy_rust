@@ -31,6 +31,15 @@ These instructions apply to all Rust game projects in this workspace.
 - After meaningful changes, run `.\publish.ps1` with no parameters from the affected project directory and report whether it passes.
 - If `publish.ps1` is missing, blocked, or fails for an unrelated environment reason, report that clearly instead of substituting an unrequested local run.
 
+## Commit Messages
+
+- Follow the catalog's commit convention, documented in `rust_management/docs/COMMIT_STYLE.md` (relative to the workspace root). It is not copied into game projects — read it there.
+- The shape: the subject narrates the change in the game's own voice and ends with a plain-terms parenthetical tag (subsystem, GDD section, and/or milestone); the body is honest prose covering problem, change, and reasoning.
+- Copy the shape, not another game's metaphors. Each game speaks in its own fiction, and the same technical concept should map to the same fictional term in every commit for that game.
+- A reader who ignores the metaphor and reads only the parenthetical must still know exactly what the commit does. Do not omit the parenthetical, and do not force a metaphor onto a trivial mechanical change.
+- No Conventional-Commits prefixes (`feat:`, `fix:`, `chore:`, `refactor:`).
+- `mytherra` and `stellar_legacy` are the worked exemplars; read either project's `git log` before your first commit in a new game.
+
 ## File Size Rule
 
 - Keep every `.rs` file below 800 lines.
