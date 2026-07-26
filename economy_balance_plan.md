@@ -4,6 +4,27 @@
 
 ---
 
+## Status — COMPLETE
+
+All five phases landed, each as a focused commit with its guarding invariant:
+
+| Phase | Change | Commit subject | Guard test |
+|---|---|---|---|
+| 1 | Charter fees ~3–6× (tiered by renown), milestones ×5 | *A writ now pays what six centuries of dark are worth* | `a_charter_fee_is_worth_the_voyage`, `a_charter_fee_clears_its_provisioning_bill` |
+| 2 | Catalog credit prices ×2.5, commission premium 3,000→7,500 | *No yard sells a legend cheap* | `the_best_ship_is_earned_across_many_voyages` |
+| 3 | Full refit 1,500→4,000 | *A thrashed hull costs real coin at the drydock now* | `a_full_refit_is_a_visible_slice_of_a_fee_but_never_a_wall` |
+| 4 | Founding-affordability floor | *The founding stake still buys a first upgrade…* | extended `a_new_ship_sails_provisioned_for_a_starter_charter` |
+| 5 | End-to-end soak + decisions | *An early campaign flies solvent and earns its name…* | `an_early_campaign_flies_solvent_and_earns_its_renown` |
+
+**Two deferred levers were resolved on Phase-5 evidence, both by holding:**
+
+- **Passive-drip lever (60→45): NOT pulled.** The six-mission autoplay soak shows active play absorbs most surplus in maintenance (training + repair), so the treasury holds steady rather than ballooning — the economy is not too rich, and cutting the drip would risk tipping maintenance-heavy play toward insolvency. Passive production stays at 60 cr/yr.
+- **Heritage grants (Remembered +500 … Mythic +6,000): kept as-is.** They anchor to the (unchanged) founding stake, so a storied dynasty's 5–60% relative head start is preserved; scaling them with the catalog would let meta-progression dominate the founding position. Pinned by `a_heritage_head_start_is_a_boost_not_a_replacement`.
+
+The `part_cost_credits`, `fuel_cost_credits_per_point`, crew/faction recruit costs, and `distress_credit_floor` (an absolute poverty line, not a relative one) were reviewed and left unchanged. Test count grew from 350 → 354; determinism preserved throughout. Not yet run: a live `publish.ps1` build and a manual human playthrough (Phase-5 optional follow-ups).
+
+---
+
 ## The shape of the fix
 
 Two moves, in tension by design:
