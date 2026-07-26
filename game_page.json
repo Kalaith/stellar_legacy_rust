@@ -10,8 +10,16 @@
   ],
   "controls": [
     {
-      "key": "Mouse",
+      "key": "Tap / Click",
       "desc": "All interaction — tabs, buttons, decisions"
+    },
+    {
+      "key": "Drag",
+      "desc": "Scroll the charter board and the ship catalogs"
+    },
+    {
+      "key": "1 - 7",
+      "desc": "Switch tabs; 1 - 9 picks a council option (optional)"
     }
   ],
   "details": [
