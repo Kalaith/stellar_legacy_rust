@@ -20,7 +20,7 @@ Rules that constrain every split here:
 | 4339 | `src/state/sim/factions.rs` | **done** — 12 files, largest 616 |
 | 4252 | `src/data.rs` | **done** — 17 files, largest 546 |
 | 3856 | `src/simulation/tick/tests.rs` | pending |
-| 3833 | `src/simulation/event_resolver.rs` | pending |
+| 3833 | `src/simulation/event_resolver.rs` | **done** — 14 files, largest 490 |
 | 1841 | `src/simulation/subsystems.rs` | pending |
 | 1653 | `src/simulation/contract.rs` | pending |
 | 1259 | `src/simulation/tick.rs` | pending |
@@ -74,3 +74,6 @@ Planned once the four large ones land, so the shape of the shared helpers is set
 - **Pass 2b** — the 2498-line `data/tests.rs` → nine area files (108–516) behind two
   shared fixtures. The two monster tests (821 and 1214 lines) became fourteen named
   tests; all 296 assertions preserved, 354 → 366 tests, all passing.
+- **Pass 3** — `simulation/event_resolver.rs` 3833 → `event_resolver.rs` (181, availability
+  and presentation) + `rolling.rs` (389) + `outcome.rs` (226), re-exported flat, and ten
+  test files (174–490). All 78 tests preserved.
