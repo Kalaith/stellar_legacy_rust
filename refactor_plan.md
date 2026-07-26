@@ -25,7 +25,7 @@ Rules that constrain every split here:
 | 1653 | `src/simulation/contract.rs` | **done** — 6 files, largest 568 |
 | 1259 | `src/simulation/tick.rs` | **done** — 7 files, largest 261 |
 | 1178 | `src/state/sim.rs` | **done** — 6 files, largest 467 |
-| 1043 | `src/ui.rs` | pending |
+| 1043 | `src/ui.rs` | **done** — 4 files, largest 356 |
 |  925 | `src/ui/ship_schematic.rs` | pending |
 |  808 | `src/simulation/tick/economy.rs` | **done** — 8 files, largest 175 |
 
@@ -95,3 +95,6 @@ Planned once the four large ones land, so the shape of the shared helpers is set
   175. The bloat was one 656-line `year_boundary_tick`; it is now a six-call driver over
   `produce`, `morale`, `wear`, `voice`, `generation`, `close`, plus `factors.rs`. The six
   phase bodies reassemble byte-identical to the original, bar four `let config` rebindings.
+- **Pass 10** — `ui.rs` 1043 → `ui.rs` (219, the palette, `UiAction` and the module list)
+  + `widgets.rs` (265), `main_menu.rs` (356) and `shell.rs` (210), following the file's own
+  section banners and re-exported flat.
