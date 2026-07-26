@@ -4,19 +4,25 @@
 use crate::ui::{term, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
-use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
+use macroquad_toolkit::ui::{draw_ui_text_ex, is_fully_visible, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, _pointer: Pointer, _actions: &mut Vec<UiAction>) {
+/// Vertical stride of one Chronicle entry, and the height of the entry itself.
+const ENTRY_STRIDE: f32 = 46.0;
+const ENTRY_H: f32 = 40.0;
+/// Reserved at the panel's right edge for the scrollbar.
+const GUTTER: f32 = 12.0;
+
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, _actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.62, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
-    draw_log(ctx, left);
+    draw_log(ctx, left, pointer);
     draw_milestones(ctx, right);
 }
 
-fn draw_log(ctx: &GameplayCtx<'_>, area: Rect) {
+fn draw_log(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer) {
     term_panel(area, Some("THE CHRONICLE"));
     let content = area.inset(24.0);
-    let mut y = content.y + 46.0;
+    let y = content.y + 46.0;
 
     if ctx.chronicle.entries.is_empty() {
         draw_text_block(
@@ -32,14 +38,36 @@ fn draw_log(ctx: &GameplayCtx<'_>, area: Rect) {
         return;
     }
 
-    for entry in ctx.chronicle.entries.iter().rev().take(9) {
+    // The Chronicle outlives any single save, so it only ever grows — and it
+    // used to show its newest nine and drop the rest without saying so, which
+    // for a record whose whole purpose is to be the long memory is the one
+    // thing it must not do. It scrolls now, oldest still reachable.
+    let view = Rect::new(
+        content.x,
+        y - 14.0,
+        content.w,
+        content.bottom() - (y - 14.0),
+    );
+    let content_h = ctx.chronicle.entries.len() as f32 * ENTRY_STRIDE;
+    let mut scroll = ctx.chronicle_scroll.get();
+    scroll.update_at(view, content_h, pointer.position);
+
+    let mut row_top = view.y - scroll.offset();
+    for entry in ctx.chronicle.entries.iter().rev() {
+        let row = Rect::new(view.x, row_top, view.w - GUTTER, ENTRY_H);
+        row_top += ENTRY_STRIDE;
+        // macroquad has no scissor rect, so cull the partly-scrolled entries
+        // rather than letting them spill past the panel.
+        if !is_fully_visible(row, view) {
+            continue;
+        }
         draw_ui_text_ex(
             &format!(
                 "Y{:03} — {} [{}]",
                 entry.completed_year, entry.contract_name, entry.outcome
             ),
-            content.x,
-            y,
+            row.x,
+            row.y + 14.0,
             TextStyle::new(16.0, term::primary()).params(),
         );
         draw_ui_text_ex(
@@ -51,12 +79,20 @@ fn draw_log(ctx: &GameplayCtx<'_>, area: Rect) {
                 entry.leader_name,
                 entry.score
             ),
-            content.x,
-            y + 18.0,
+            row.x,
+            row.y + 32.0,
             TextStyle::new(13.0, term::dim()).params(),
         );
-        y += 46.0;
     }
+
+    scroll.draw_scrollbar_with(
+        view,
+        content_h,
+        term::surface_inset(),
+        term::dim(),
+        term::primary(),
+    );
+    ctx.chronicle_scroll.set(scroll);
 }
 
 fn draw_milestones(ctx: &GameplayCtx<'_>, area: Rect) {

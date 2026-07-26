@@ -338,7 +338,10 @@ impl Game {
                 );
                 sim.dynasty.generation = 5;
                 sim.month_clock = 120 * 12;
-                for i in 0..5 {
+                // More entries than the panel can hold, so the capture shows the
+                // state the log's scroll exists for rather than a short list that
+                // never reaches it.
+                for i in 0..14 {
                     self.chronicle.record(crate::chronicle::ChronicleEntry {
                         completed_year: 40 + i * 20,
                         contract_name: "Deep Vein Survey: Karst Belt".to_owned(),

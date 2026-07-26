@@ -35,6 +35,12 @@ pub struct GameplayCtx<'a> {
     /// column that overflows (e.g. a mission-reward part added to a full one)
     /// stays reachable. Indexed Hull / Engine / Weapon.
     pub ship_scroll: &'a std::cell::Cell<[macroquad_toolkit::ui::ScrollArea; 3]>,
+    /// Smooth-scroll state for the CREW dynasty roster, so a dynasty larger than
+    /// the panel can be read rather than counted.
+    pub roster_scroll: &'a std::cell::Cell<macroquad_toolkit::ui::ScrollArea>,
+    /// Smooth-scroll state for the CHRONICLE log, which accumulates across
+    /// playthroughs and outlives any single save.
+    pub chronicle_scroll: &'a std::cell::Cell<macroquad_toolkit::ui::ScrollArea>,
     /// SHIP builder sub-tab: `false` = LOADOUT catalog, `true` = MODULES (named
     /// subsystem version ladders). Pure view state, flipped by the on-screen toggle.
     pub ship_modules_tab: &'a std::cell::Cell<bool>,

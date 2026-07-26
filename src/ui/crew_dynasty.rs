@@ -7,7 +7,7 @@ use crate::simulation::legacy::failure_risk;
 use crate::ui::{stat_line, term, term_button, term_panel, GameplayCtx, UiAction};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
-use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
+use macroquad_toolkit::ui::{draw_ui_text_ex, is_fully_visible, RectExt};
 
 /// Height of one SHIP POSTS row, and so of its TRAIN/RECRUIT target.
 ///
@@ -129,17 +129,56 @@ fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &
     }
 }
 
+/// Vertical stride of one roster row.
+const ROSTER_STRIDE: f32 = 38.0;
+/// How much of that stride the row actually occupies: the NAME HEIR button, the
+/// name line and the trait line beneath it. Used to cull a row that would hang
+/// over the panel edge, so it has to cover the descenders of the lower line —
+/// the 2px it leaves the stride is only there to keep neighbouring rows from
+/// touching.
+const ROSTER_ROW_H: f32 = 36.0;
+/// Reserved at the panel's right edge for the scrollbar, so no row sits under it.
+const ROSTER_GUTTER: f32 = 12.0;
+
 fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     term_panel(rect, Some("DYNASTY ROSTER"));
     let content = rect.inset(18.0);
-    let mut y = content.y + 42.0;
 
     let config = &ctx.data.config;
     let mut members: Vec<_> = ctx.sim.dynasty.members.iter().collect();
     members.sort_by(|a, b| b.is_leader.cmp(&a.is_leader).then(b.age.cmp(&a.age)));
 
-    let visible = ((content.h - 42.0) / 38.0).floor() as usize;
-    for member in members.iter().take(visible) {
+    // The roster used to draw whatever fitted and admit to the rest with
+    // "... and 3 more" — which named the people it was hiding without letting
+    // anyone read them, and hid the very rows a heir is chosen from. It scrolls
+    // now, so the panel's height stops deciding who is in the dynasty.
+    let view = Rect::new(
+        content.x,
+        content.y + 26.0,
+        content.w,
+        content.bottom() - (content.y + 26.0),
+    );
+    let row_w = view.w - ROSTER_GUTTER;
+    let content_h = members.len() as f32 * ROSTER_STRIDE;
+    let mut scroll = ctx.roster_scroll.get();
+    scroll.update_at(view, content_h, pointer.position);
+    // A drag down the roster must not also name an heir on the way past.
+    let pointer = if scroll.absorbs_press() {
+        pointer.suppressed()
+    } else {
+        pointer
+    };
+
+    let mut row_top = view.y - scroll.offset();
+    for member in members.iter() {
+        let row = Rect::new(view.x, row_top, row_w, ROSTER_ROW_H);
+        row_top += ROSTER_STRIDE;
+        // macroquad has no scissor rect, so cull the partly-scrolled rows
+        // rather than letting them spill past the panel.
+        if !is_fully_visible(row, view) {
+            continue;
+        }
+        let y = row.y + 16.0;
         let heir_eligible = member.age >= config.heir_min_age && member.age <= config.heir_max_age;
         let designated = ctx.sim.dynasty.designated_heir == Some(member.id);
         let color = if member.is_leader {
@@ -175,7 +214,7 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mu
             && !member.is_leader
             && !designated
             && term_button(
-                Rect::new(content.right() - 96.0, y - 16.0, 90.0, 30.0),
+                Rect::new(row.right() - 90.0, row.y, 90.0, 30.0),
                 "NAME HEIR",
                 true,
                 pointer,
@@ -183,17 +222,16 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mu
         {
             actions.push(UiAction::SelectHeir(member.id));
         }
-        y += 38.0;
     }
 
-    if ctx.sim.dynasty.members.len() > visible {
-        draw_ui_text_ex(
-            &format!("... and {} more", ctx.sim.dynasty.members.len() - visible),
-            content.x,
-            y,
-            TextStyle::new(13.0, term::faint()).params(),
-        );
-    }
+    scroll.draw_scrollbar_with(
+        view,
+        content_h,
+        term::surface_inset(),
+        term::dim(),
+        term::primary(),
+    );
+    ctx.roster_scroll.set(scroll);
 }
 
 fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {

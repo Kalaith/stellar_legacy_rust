@@ -126,6 +126,13 @@ pub struct Game {
     /// (Hull/Engine/Weapon), which overflow once a mission-reward part joins a
     /// full column. One `ScrollArea` per column.
     ship_scroll: Cell<[ScrollArea; 3]>,
+    /// Smooth-scroll state for the CREW dynasty roster. The list used to be
+    /// truncated to whatever fitted the panel, so a dynasty of five showed two
+    /// and told you about the rest.
+    roster_scroll: Cell<ScrollArea>,
+    /// Smooth-scroll state for the CHRONICLE log, which grows across
+    /// playthroughs and long ago outgrew the nine entries it used to show.
+    chronicle_scroll: Cell<ScrollArea>,
     /// SHIP builder sub-tab: `false` = LOADOUT (hull/engine/weapon catalog),
     /// `true` = MODULES (the six subsystems' named version ladders). Pure view
     /// state, flipped by the on-screen toggle.
@@ -204,6 +211,8 @@ impl Game {
             decision_started: 0.0,
             charter_scroll: Cell::new(ScrollArea::new()),
             ship_scroll: Cell::new([ScrollArea::new(); 3]),
+            roster_scroll: Cell::new(ScrollArea::new()),
+            chronicle_scroll: Cell::new(ScrollArea::new()),
             ship_modules_tab: Cell::new(false),
         }
     }
@@ -461,6 +470,8 @@ impl Game {
                     decision_remaining: self.decision_remaining(&gameplay.sim),
                     charter_scroll: &self.charter_scroll,
                     ship_scroll: &self.ship_scroll,
+                    roster_scroll: &self.roster_scroll,
+                    chronicle_scroll: &self.chronicle_scroll,
                     ship_modules_tab: &self.ship_modules_tab,
                 }),
             }
