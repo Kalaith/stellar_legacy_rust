@@ -225,6 +225,58 @@ fn assert_year_invariants(sim: &SimState) {
 mod tests {
     use super::*;
 
+    /// Economy rebalance soak (economy_balance_plan.md phase 5): fly a full early
+    /// campaign — six low-renown charters back to back on one dynasty — and prove
+    /// the repriced economy holds up end to end. Under the maintenance-heavy
+    /// autoplay policy (which spends surplus on training and repair), every
+    /// charter must remain flyable to completion, the dynasty must stay solvent
+    /// and unbroken across all six, and the accrued renown must clear the
+    /// top-tier gate (400) by the end — so a storied ship able to take the great
+    /// charters is earned across a normal early campaign, the prestige ladder
+    /// keeping pace with the credit one rather than either finishing first.
+    #[test]
+    fn an_early_campaign_flies_solvent_and_earns_its_renown() {
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "wanderers",
+            7,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        let seq = [
+            "deep_vein_survey",
+            "tarssen_relief",
+            "coronal_tap",
+            "hollow_fleet",
+            "veiled_expanse_survey",
+            "seedfall",
+        ];
+        let mut renown = 0.0f32;
+        for id in seq {
+            let dur = data.contracts.get(id).unwrap().target_duration_years;
+            let cap = sim.year() + dur + 80;
+            let out = play_mission(&mut sim, &data, id, cap);
+            assert!(
+                out.completed && !out.extinct,
+                "charter '{id}' must stay flyable to completion at the repriced economy \
+                 (completed {}, extinct {}, year {})",
+                out.completed,
+                out.extinct,
+                out.final_year
+            );
+            assert!(
+                sim.resources.credits >= 0,
+                "the dynasty must stay solvent flying '{id}' (credits {})",
+                sim.resources.credits
+            );
+            renown += out.final_score * 100.0;
+        }
+        assert!(
+            renown >= 400.0,
+            "six early charters should earn past the top-tier renown gate (400); reached {renown:.0}"
+        );
+    }
+
     /// Soak test: fly the 340-year Deep Vein Survey end to end under the
     /// autoplay policy. It must conclude with the charter completed and the
     /// dynasty still alive, twelve-plus generations on. Per-year invariants are
