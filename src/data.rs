@@ -4223,4 +4223,30 @@ mod tests {
             slice * 100.0
         );
     }
+
+    #[test]
+    fn a_heritage_head_start_is_a_boost_not_a_replacement() {
+        // Economy rebalance (economy_balance_plan.md phase 3 heritage review): the
+        // rebalance left the founding stake untouched, so a storied dynasty's
+        // credit head start stays anchored to it — a real leg up (the top tier is
+        // a large fraction of the stake) that never eclipses a fresh captain's own
+        // footing. This holds the "boost, not replacement" line against a future
+        // heritage bump or a stake cut, and is why the grants were kept as-is
+        // rather than scaled with the catalog: they ride the (unchanged) stake,
+        // not the (raised) prices.
+        let data = GameData::load().unwrap();
+        let stake = data.config.starting_resources.credits;
+        let top_grant = data
+            .config
+            .heritage
+            .iter()
+            .map(|h| h.credits)
+            .max()
+            .expect("heritage tiers exist");
+        assert!(
+            top_grant > 0 && top_grant < stake,
+            "the richest heritage grant ({top_grant} cr) must be a boost — nonzero, but under the \
+             founding stake ({stake}) so meta-progression never dominates the founding position"
+        );
+    }
 }
