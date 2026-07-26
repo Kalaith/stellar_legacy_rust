@@ -155,11 +155,17 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
     );
 }
 
+/// One chrome button (SAVE / MENU / HELP / DISPLAY) at the right of the tab row.
+const CHROME_BTN_W: f32 = 88.0;
+const CHROME_GAP: f32 = 6.0;
+/// Width the four of them claim from the tab strip.
+const CHROME_W: f32 = CHROME_BTN_W * 4.0 + CHROME_GAP * 3.0;
+
 fn draw_tabs(ctx: &GameplayCtx<'_>, pointer: Pointer, actions: &mut Vec<UiAction>) {
     // The tab set changes with voyage state (real-time loop §5): DRYDOCK + MARKET
     // in port, CONTRACT under way.
     let tabs = Screen::tabs(ctx.sim.contract.is_none());
-    let total_w = LOGICAL_WIDTH - 32.0 - 220.0;
+    let total_w = LOGICAL_WIDTH - 32.0 - CHROME_W - 12.0;
     let tab_w = (total_w - (tabs.len() as f32 - 1.0) * 6.0) / tabs.len() as f32;
     for (i, screen) in tabs.iter().enumerate() {
         let rect = Rect::new(16.0 + i as f32 * (tab_w + 6.0), 80.0, tab_w, 38.0);
@@ -199,20 +205,22 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, pointer: Pointer, actions: &mut Vec<UiAction
         }
     }
 
-    if term_button(
-        Rect::new(LOGICAL_WIDTH - 232.0, 80.0, 104.0, 38.0),
-        "SAVE",
-        true,
-        pointer,
-    ) {
-        actions.push(UiAction::SaveGame);
-    }
-    if term_button(
-        Rect::new(LOGICAL_WIDTH - 120.0, 80.0, 104.0, 38.0),
-        "MENU",
-        true,
-        pointer,
-    ) {
-        actions.push(UiAction::ToMenu);
+    // The chrome row: the two verbs that leave the game, and the two panels that
+    // used to answer only to F1 and F2. A tablet has no function keys, so the
+    // display settings — which carry the council's delegation defaults, not just
+    // the CRT look — and the controls legend were simply unreachable there.
+    for (i, (label, action)) in [
+        ("SAVE", UiAction::SaveGame),
+        ("MENU", UiAction::ToMenu),
+        ("HELP", UiAction::OpenHelp),
+        ("DISPLAY", UiAction::OpenSettings),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let x = LOGICAL_WIDTH - 16.0 - CHROME_W + i as f32 * (CHROME_BTN_W + CHROME_GAP);
+        if term_button(Rect::new(x, 80.0, CHROME_BTN_W, 38.0), label, true, pointer) {
+            actions.push(action);
+        }
     }
 }

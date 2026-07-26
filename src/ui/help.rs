@@ -1,19 +1,23 @@
-//! HELP // CONTROLS overlay (F2): a terminal-style key legend. Read-only —
-//! returns true on the frame the player asks to close it.
+//! HELP // CONTROLS overlay: a terminal-style key legend, opened by F2 or by
+//! the HELP button in the chrome row. Read-only — returns true on the frame the
+//! player asks to close it.
 
 use crate::ui::{term, term_button, term_panel, LOGICAL_HEIGHT, LOGICAL_WIDTH};
 use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
+/// Keyboard shortcuts, every one of which has a control on screen — a tablet
+/// has no function keys, so anything reachable only from this list would be
+/// unreachable there.
 const KEYS: &[(&str, &str)] = &[
     ("1 - 7", "Switch screen tabs"),
     ("SPACE / ENTER", "Advance time at the chosen speed"),
     ("1 - 9", "Choose an option in a council modal"),
-    ("F1", "Display & delegation settings"),
-    ("F2", "This help screen"),
-    ("F10", "Toggle the CRT effect"),
-    ("ESC", "Close an open panel"),
+    ("F1", "Display & delegation settings (DISPLAY)"),
+    ("F2", "This help screen (HELP)"),
+    ("F10", "Toggle the CRT effect (in DISPLAY)"),
+    ("ESC", "Close an open panel (CLOSE)"),
 ];
 
 pub fn draw(pointer: Pointer) -> bool {
@@ -52,7 +56,7 @@ pub fn draw(pointer: Pointer) -> bool {
     }
     y += 8.0;
     draw_ui_text_ex(
-        "Mouse and touch work everywhere too.",
+        "Mouse or finger works everywhere. Drag a list to scroll it.",
         content.x,
         y,
         TextStyle::new(13.0, term::faint()).params(),

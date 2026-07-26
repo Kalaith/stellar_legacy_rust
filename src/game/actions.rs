@@ -89,6 +89,13 @@ impl Game {
                 }
                 None
             }
+            UiAction::OpenHelp => {
+                // The chrome row's way into the F2 overlay, for a screen with
+                // no function keys to press.
+                self.help_open = true;
+                self.settings_open = false;
+                None
+            }
             UiAction::OpenSettings => {
                 // Reuse the shared display/settings overlay (F1) from the menu.
                 self.settings_open = true;

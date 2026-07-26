@@ -183,8 +183,11 @@ pub enum UiAction {
     GoToNewGame,
     /// Step back from the new-game picker to the main menu.
     BackToMainMenu,
-    /// Open the display/settings overlay from the main menu.
+    /// Open the display/settings overlay — from the main menu, or from the
+    /// gameplay chrome row where it is the only way in without an F1 key.
     OpenSettings,
+    /// Open the help/controls overlay from the gameplay chrome row (F2's twin).
+    OpenHelp,
     /// Quit the application from the main menu.
     ExitGame,
     // Global
