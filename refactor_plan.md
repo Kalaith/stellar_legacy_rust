@@ -19,7 +19,7 @@ Rules that constrain every split here:
 |------:|------|--------|
 | 4339 | `src/state/sim/factions.rs` | **done** — 12 files, largest 616 |
 | 4252 | `src/data.rs` | **done** — 17 files, largest 546 |
-| 3856 | `src/simulation/tick/tests.rs` | pending |
+| 3856 | `src/simulation/tick/tests.rs` | **done** — 11 files, largest 593 |
 | 3833 | `src/simulation/event_resolver.rs` | **done** — 14 files, largest 490 |
 | 1841 | `src/simulation/subsystems.rs` | pending |
 | 1653 | `src/simulation/contract.rs` | pending |
@@ -77,3 +77,5 @@ Planned once the four large ones land, so the shape of the shared helpers is set
 - **Pass 3** — `simulation/event_resolver.rs` 3833 → `event_resolver.rs` (181, availability
   and presentation) + `rolling.rs` (389) + `outcome.rs` (226), re-exported flat, and ten
   test files (174–490). All 78 tests preserved.
+- **Pass 4** — `simulation/tick/tests.rs` 3856 → `tests.rs` (60, the three shared fixtures)
+  + ten files (106–593) by what the year under test exercises. All 73 tests preserved.
