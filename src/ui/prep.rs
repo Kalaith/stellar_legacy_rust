@@ -12,18 +12,18 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.55, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
 
-    draw_prep(ctx, left, mouse, actions);
+    draw_prep(ctx, left, pointer, actions);
 
     // Swap column: the charter list, so a different charter can be selected.
     // Cards start below the panel's header band so they never overlap its title.
     term_panel(right, Some("CHOOSE / SWAP CHARTER"));
     let inner = right.inset(18.0);
     let cards = Rect::new(inner.x, inner.y + 28.0, inner.w, inner.h - 28.0);
-    crate::ui::contract_systems::draw_charter_cards(ctx, cards, mouse, actions);
+    crate::ui::contract_systems::draw_charter_cards(ctx, cards, pointer, actions);
 }
 
 /// One `LABEL — have / need` provisioning line, reddened when short.
@@ -46,7 +46,7 @@ fn provision_line(x: f32, y: f32, label: &str, have: i64, need: i64, note: &str)
     );
 }
 
-fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let sim = ctx.sim;
     let Some(id) = sim.selected_charter.as_deref() else {
         return;
@@ -153,7 +153,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<U
     } else {
         format!("+{food_buy} FOOD · {food_cost} CR")
     };
-    if term_button(stock_btn(y), &food_label, food_buy > 0, mouse) {
+    if term_button(stock_btn(y), &food_label, food_buy > 0, pointer) {
         actions.push(UiAction::Buy(TradeResource::Food, food_buy));
     }
     y += 30.0;
@@ -184,7 +184,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<U
     } else {
         format!("+{parts_buy} PARTS · {} CR", parts_buy * part_price)
     };
-    if term_button(stock_btn(y), &parts_label, parts_buy > 0, mouse) {
+    if term_button(stock_btn(y), &parts_label, parts_buy > 0, pointer) {
         actions.push(UiAction::BuyParts(parts_buy));
     }
     y += 30.0;
@@ -249,7 +249,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<U
             Rect::new(boxed.right() - 92.0, boxed.y + 8.0, 84.0, 22.0),
             "DISMISS",
             true,
-            mouse,
+            pointer,
         ) {
             actions.push(UiAction::DismissTutorial);
         }
@@ -299,7 +299,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<U
         Rect::new(content.x, by, bw, 40.0),
         "[ LAUNCH ]",
         true,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::Launch);
     }
@@ -312,7 +312,7 @@ fn draw_prep(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<U
         Rect::new(content.x + bw + 12.0, by, bw, 40.0),
         &refuel_label,
         refuel_missing > 0.0 && sim.resources.credits >= refuel_cost,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::Refuel);
     }

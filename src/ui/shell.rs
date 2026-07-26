@@ -9,7 +9,10 @@ pub struct GameplayCtx<'a> {
     pub screen: Screen,
     pub chronicle: &'a ChronicleStore,
     pub achievements: &'a Achievements,
-    pub ui: &'a VirtualUi,
+    /// This frame's pointer, in logical coordinates — a mouse or a finger,
+    /// asked the same way. Built once in `game.rs` so every control on the
+    /// screen agrees about where it is and whether it just let go.
+    pub pointer: Pointer,
     /// Seconds since the current blocking modal appeared, for the terminal
     /// typewriter reveal. Large/instant when the effect is disabled.
     pub modal_reveal: f32,
@@ -39,17 +42,17 @@ pub struct GameplayCtx<'a> {
 
 pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
     let mut actions = Vec::new();
-    let mouse = ctx.ui.mouse_position();
+    let pointer = ctx.pointer;
 
     // Extinction halts the voyage: a full-screen terminal takeover replaces the
     // normal screens (GDD §7).
     if ctx.sim.dynasty.extinct {
-        game_over::draw(&ctx, mouse, &mut actions);
+        game_over::draw(&ctx, pointer, &mut actions);
         return actions;
     }
 
     draw_header(&ctx);
-    draw_tabs(&ctx, mouse, &mut actions);
+    draw_tabs(&ctx, pointer, &mut actions);
 
     // Fall back to the dashboard if the open tab is not in the current voyage
     // state's set (real-time loop §5) — e.g. an old save resuming on CONTRACT
@@ -63,26 +66,26 @@ pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
 
     let content = Rect::new(16.0, 128.0, LOGICAL_WIDTH - 32.0, LOGICAL_HEIGHT - 144.0);
     match screen {
-        Screen::Dashboard => dashboard::draw(&ctx, content, mouse, &mut actions),
-        Screen::Drydock => contract_systems::draw_drydock(&ctx, content, mouse, &mut actions),
-        Screen::ShipBuilder => ship_builder::draw(&ctx, content, mouse, &mut actions),
-        Screen::Subsystems => subsystems::draw(&ctx, content, mouse, &mut actions),
-        Screen::CrewDynasty => crew_dynasty::draw(&ctx, content, mouse, &mut actions),
+        Screen::Dashboard => dashboard::draw(&ctx, content, pointer, &mut actions),
+        Screen::Drydock => contract_systems::draw_drydock(&ctx, content, pointer, &mut actions),
+        Screen::ShipBuilder => ship_builder::draw(&ctx, content, pointer, &mut actions),
+        Screen::Subsystems => subsystems::draw(&ctx, content, pointer, &mut actions),
+        Screen::CrewDynasty => crew_dynasty::draw(&ctx, content, pointer, &mut actions),
         Screen::Contract => {
-            contract_systems::draw_active_screen(&ctx, content, mouse, &mut actions)
+            contract_systems::draw_active_screen(&ctx, content, pointer, &mut actions)
         }
-        Screen::Market => market::draw(&ctx, content, mouse, &mut actions),
-        Screen::Chronicle => chronicle::draw(&ctx, content, mouse, &mut actions),
+        Screen::Market => market::draw(&ctx, content, pointer, &mut actions),
+        Screen::Chronicle => chronicle::draw(&ctx, content, pointer, &mut actions),
     }
 
     // A pending council decision blocks everything else (GDD §9 step 4):
     // discard screen intents and only accept the modal's.
     if ctx.sim.pending_event.is_some() {
         actions.clear();
-        event_modal::draw(&ctx, mouse, &mut actions);
+        event_modal::draw(&ctx, pointer, &mut actions);
     } else if ctx.sim.pending_dilemma.is_some() {
         actions.clear();
-        event_modal::draw_dilemma(&ctx, mouse, &mut actions);
+        event_modal::draw_dilemma(&ctx, pointer, &mut actions);
     }
 
     actions
@@ -152,7 +155,7 @@ fn draw_header(ctx: &GameplayCtx<'_>) {
     );
 }
 
-fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_tabs(ctx: &GameplayCtx<'_>, pointer: Pointer, actions: &mut Vec<UiAction>) {
     // The tab set changes with voyage state (real-time loop §5): DRYDOCK + MARKET
     // in port, CONTRACT under way.
     let tabs = Screen::tabs(ctx.sim.contract.is_none());
@@ -160,9 +163,14 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
     let tab_w = (total_w - (tabs.len() as f32 - 1.0) * 6.0) / tabs.len() as f32;
     for (i, screen) in tabs.iter().enumerate() {
         let rect = Rect::new(16.0 + i as f32 * (tab_w + 6.0), 80.0, tab_w, 38.0);
+        let hit = touch_area(rect);
+        note_neighbour(rect);
+        note_target(screen.label(), rect);
         let active = *screen == ctx.screen;
-        let fill = if active {
+        let fill = if active || pointer.pressing(hit) {
             term::surface_active()
+        } else if pointer.hovering_over(hit) {
+            term::surface_hover()
         } else {
             term::surface_inset()
         };
@@ -186,7 +194,7 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
             rect.h,
             TextStyle::new(14.0, if active { term::accent() } else { term::dim() }),
         );
-        if !active && rect.contains_point(mouse) && is_mouse_button_released(MouseButton::Left) {
+        if !active && pointer.released_on(hit) {
             actions.push(UiAction::SelectScreen(*screen));
         }
     }
@@ -195,7 +203,7 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         Rect::new(LOGICAL_WIDTH - 232.0, 80.0, 104.0, 38.0),
         "SAVE",
         true,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::SaveGame);
     }
@@ -203,7 +211,7 @@ fn draw_tabs(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         Rect::new(LOGICAL_WIDTH - 120.0, 80.0, 104.0, 38.0),
         "MENU",
         true,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::ToMenu);
     }

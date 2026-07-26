@@ -9,7 +9,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let sim = ctx.sim;
     draw_rectangle(0.0, 0.0, LOGICAL_WIDTH, LOGICAL_HEIGHT, term::bg());
 
@@ -85,7 +85,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
         " "
     };
     let btn = Rect::new(content.x, content.bottom() - 46.0, content.w, 42.0);
-    if term_button(btn, &format!("{caret} RETIRE VOYAGE"), true, mouse) {
+    if term_button(btn, &format!("{caret} RETIRE VOYAGE"), true, pointer) {
         actions.push(UiAction::RetireVoyage);
     }
 }

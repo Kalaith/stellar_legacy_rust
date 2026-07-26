@@ -7,7 +7,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     term_panel(area, Some("COMMODITY EXCHANGE"));
     let content = area.inset(24.0);
     let mut y = content.y + 46.0;
@@ -98,10 +98,10 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         let by = row.y + (row_h - bh) * 0.5;
         let buy_rect = Rect::new(row.right() - 292.0, by, 132.0, bh);
         let sell_rect = Rect::new(row.right() - 146.0, by, 132.0, bh);
-        if term_button(buy_rect, &format!("BUY {lot}"), true, mouse) {
+        if term_button(buy_rect, &format!("BUY {lot}"), true, pointer) {
             actions.push(UiAction::Buy(entry.resource, lot));
         }
-        if term_button(sell_rect, &format!("SELL {lot}"), held >= lot, mouse) {
+        if term_button(sell_rect, &format!("SELL {lot}"), held >= lot, pointer) {
             actions.push(UiAction::Sell(entry.resource, lot));
         }
         y += row_h + 10.0;

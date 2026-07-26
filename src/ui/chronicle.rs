@@ -6,7 +6,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, _mouse: Vec2, _actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, _pointer: Pointer, _actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.62, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
     draw_log(ctx, left);

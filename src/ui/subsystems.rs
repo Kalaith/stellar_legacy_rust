@@ -8,7 +8,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     const GAP: f32 = 12.0;
     let col_w = (area.w - GAP) / 2.0;
     let row_h = (area.h - 2.0 * GAP) / 3.0;
@@ -24,7 +24,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
             col_w,
             row_h,
         );
-        draw_card(ctx, rect, &id, mouse, actions);
+        draw_card(ctx, rect, &id, pointer, actions);
     }
 }
 
@@ -32,7 +32,7 @@ fn draw_card(
     ctx: &GameplayCtx<'_>,
     rect: Rect,
     id: &str,
-    mouse: Vec2,
+    pointer: Pointer,
     actions: &mut Vec<UiAction>,
 ) {
     let (Some(def), Some(state)) = (ctx.data.subsystems.get(id), ctx.sim.subsystems.get(id)) else {
@@ -116,7 +116,7 @@ fn draw_card(
             def.repair_parts_cost, def.repair_minerals_cost
         ),
         repair_ok,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::RepairSubsystem(id.to_owned()));
     }
@@ -137,7 +137,7 @@ fn draw_card(
         Rect::new(content.x + bw + 8.0, by, bw, 22.0),
         &upgrade_label,
         upgrade_ok,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::UpgradeSubsystem(id.to_owned()));
     }
@@ -148,7 +148,7 @@ fn draw_card(
         Rect::new(content.x + 2.0 * (bw + 8.0), by, bw, 22.0),
         &format!("TRAIN ({}cr)", cfg.subsystems.train_cost_credits),
         train_ok,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::TrainSubsystemKnowledge(id.to_owned()));
     }

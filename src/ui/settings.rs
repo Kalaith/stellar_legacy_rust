@@ -25,7 +25,7 @@ pub enum DisplayAction {
 pub fn draw(
     display: &DisplaySettings,
     delegation: &DelegationSettings,
-    mouse: Vec2,
+    pointer: Pointer,
 ) -> Vec<DisplayAction> {
     let mut actions = Vec::new();
 
@@ -54,7 +54,7 @@ pub fn draw(
         content.w,
         "CRT EFFECT",
         display.crt_enabled,
-        mouse,
+        pointer,
         DisplayAction::ToggleCrt,
         &mut actions,
     );
@@ -65,7 +65,7 @@ pub fn draw(
         content.w,
         "SCANLINES",
         display.scanlines,
-        mouse,
+        pointer,
         DisplayAction::ToggleScanlines,
         &mut actions,
     );
@@ -76,7 +76,7 @@ pub fn draw(
         content.w,
         "FLICKER",
         display.flicker,
-        mouse,
+        pointer,
         DisplayAction::ToggleFlicker,
         &mut actions,
     );
@@ -94,7 +94,7 @@ pub fn draw(
         Rect::new(content.right() - bw * 2.0 - 8.0, y, bw, 34.0),
         "AMBER",
         display.phosphor == Phosphor::Amber,
-        mouse,
+        pointer,
     ) {
         actions.push(DisplayAction::SetPhosphor(Phosphor::Amber));
     }
@@ -102,7 +102,7 @@ pub fn draw(
         Rect::new(content.right() - bw, y, bw, 34.0),
         "GREEN",
         display.phosphor == Phosphor::Green,
-        mouse,
+        pointer,
     ) {
         actions.push(DisplayAction::SetPhosphor(Phosphor::Green));
     }
@@ -129,7 +129,7 @@ pub fn draw(
             Rect::new(content.right() - bw, y, bw, 32.0),
             if delegated { "DELEGATED" } else { "COUNCIL" },
             delegated,
-            mouse,
+            pointer,
         ) {
             actions.push(DisplayAction::ToggleDelegationDefault(category));
         }
@@ -148,7 +148,7 @@ pub fn draw(
         Rect::new(content.x, content.bottom() - 44.0, content.w, 40.0),
         "CLOSE",
         true,
-        mouse,
+        pointer,
     ) {
         actions.push(DisplayAction::Close);
     }
@@ -163,7 +163,7 @@ fn toggle_row(
     w: f32,
     label: &str,
     on: bool,
-    mouse: Vec2,
+    pointer: Pointer,
     action: DisplayAction,
     actions: &mut Vec<DisplayAction>,
 ) {
@@ -174,14 +174,17 @@ fn toggle_row(
         TextStyle::new(16.0, term::dim()).params(),
     );
     let rect = Rect::new(x + w - 92.0, y, 92.0, 34.0);
-    if choice_button(rect, if on { "ON" } else { "OFF" }, on, mouse) {
+    if choice_button(rect, if on { "ON" } else { "OFF" }, on, pointer) {
         actions.push(action);
     }
 }
 
 /// A button whose fill/border brightens when it represents the active choice.
-fn choice_button(rect: Rect, label: &str, active: bool, mouse: Vec2) -> bool {
-    let hovered = rect.contains_point(mouse);
+fn choice_button(rect: Rect, label: &str, active: bool, pointer: Pointer) -> bool {
+    let hit = touch_area(rect);
+    note_neighbour(rect);
+    note_target(label, rect);
+    let hovered = pointer.hovering_over(hit) || pointer.pressing(hit);
     let fill = if active {
         term::surface_active()
     } else if hovered {
@@ -208,5 +211,5 @@ fn choice_button(rect: Rect, label: &str, active: bool, mouse: Vec2) -> bool {
         rect.h,
         TextStyle::new(15.0, if active { term::accent() } else { term::dim() }),
     );
-    hovered && is_mouse_button_released(MouseButton::Left)
+    pointer.released_on(hit)
 }

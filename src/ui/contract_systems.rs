@@ -34,13 +34,18 @@ fn reward_hint(reward: &ResourceDelta) -> String {
 /// The DRYDOCK tab (docked only, real-time loop §5): the PREP screen when a
 /// charter is under consideration, else the available-charter board. Never shows
 /// under way — the CONTRACT tab replaces it there.
-pub fn draw_drydock(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw_drydock(
+    ctx: &GameplayCtx<'_>,
+    area: Rect,
+    pointer: Pointer,
+    actions: &mut Vec<UiAction>,
+) {
     if ctx.sim.selected_charter.is_some() {
         // A charter under consideration in port → the PREP screen (W4).
-        crate::ui::prep::draw(ctx, area, mouse, actions);
+        crate::ui::prep::draw(ctx, area, pointer, actions);
     } else {
         // In port, nothing selected → the available-charter list.
-        draw_available(ctx, area, mouse, actions);
+        draw_available(ctx, area, pointer, actions);
     }
 }
 
@@ -49,13 +54,13 @@ pub fn draw_drydock(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mu
 pub fn draw_active_screen(
     ctx: &GameplayCtx<'_>,
     area: Rect,
-    mouse: Vec2,
+    pointer: Pointer,
     actions: &mut Vec<UiAction>,
 ) {
     if ctx.sim.contract.is_some() {
-        draw_active(ctx, area, mouse, actions);
+        draw_active(ctx, area, pointer, actions);
     } else {
-        draw_drydock(ctx, area, mouse, actions);
+        draw_drydock(ctx, area, pointer, actions);
     }
 }
 
@@ -91,7 +96,7 @@ fn draw_phase_timeline(contract: &ActiveContract, rect: Rect) {
     }
 }
 
-fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let contract = ctx.sim.contract.as_ref().unwrap();
     let left = Rect::new(area.x, area.y, area.w * 0.6, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
@@ -208,12 +213,12 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec
             abort,
             "[ TURN BACK ]  ·  pay prorated to the objective banked (0 if none)",
             true,
-            mouse,
+            pointer,
         ) {
             actions.push(UiAction::AbortMission);
         }
     } else {
-        term_button(abort, "— HOMEBOUND —", false, mouse);
+        term_button(abort, "— HOMEBOUND —", false, pointer);
     }
 
     term_panel(right, Some("RELEVANT SYSTEMS"));
@@ -232,7 +237,12 @@ fn draw_active(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec
     );
 }
 
-fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_available(
+    ctx: &GameplayCtx<'_>,
+    area: Rect,
+    pointer: Pointer,
+    actions: &mut Vec<UiAction>,
+) {
     // Between missions the ship is in port — frame the arrival-and-refit beat
     // (PLAN M4.6) above the charter list.
     term_panel(area, Some("IN DRYDOCK // AVAILABLE CHARTERS"));
@@ -306,7 +316,7 @@ fn draw_available(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut 
         content.w,
         content.bottom() - (y + 26.0),
     );
-    draw_charter_cards(ctx, cards, mouse, actions);
+    draw_charter_cards(ctx, cards, pointer, actions);
 }
 
 /// Ellipsis-truncate `text` so it renders within `max_w` at the UI font size.
@@ -465,7 +475,7 @@ fn draw_charter_card(
     entry: &CharterEntry,
     card: Rect,
     compact: bool,
-    mouse: Vec2,
+    pointer: Pointer,
     actions: &mut Vec<UiAction>,
 ) {
     let Some(template) = ctx.data.contracts.get(&entry.id) else {
@@ -473,7 +483,10 @@ fn draw_charter_card(
     };
     let locked = entry.locked;
     let selected = ctx.sim.selected_charter.as_deref() == Some(entry.id.as_str());
-    let hovered = compact && !locked && card.contains_point(mouse);
+    // The whole card is the target in the compact column, so it lights the way a
+    // button does — under a cursor, or under a finger that has committed to it.
+    let live = compact && !locked;
+    let hovered = live && (pointer.hovering_over(card) || pointer.pressing(card));
     let fill = if selected {
         term::surface_active()
     } else if hovered {
@@ -534,7 +547,7 @@ fn draw_charter_card(
             card.y + 62.0,
             TextStyle::new(11.0, status_color).params(),
         );
-        if hovered && is_mouse_button_released(MouseButton::Left) {
+        if live && pointer.released_on(card) {
             actions.push(UiAction::SelectCharter(entry.id.clone()));
         }
         return;
@@ -564,10 +577,10 @@ fn draw_charter_card(
     );
     let btn = Rect::new(card.right() - 170.0, card.y + 24.0, 156.0, 30.0);
     if locked {
-        term_button(btn, &entry.lock_label, false, mouse);
+        term_button(btn, &entry.lock_label, false, pointer);
     } else {
         let label = if selected { "SELECTED" } else { "SELECT" };
-        if term_button(btn, label, true, mouse) {
+        if term_button(btn, label, true, pointer) {
             actions.push(UiAction::SelectCharter(entry.id.clone()));
         }
     }
@@ -582,7 +595,7 @@ fn draw_charter_card(
 pub(crate) fn draw_charter_cards(
     ctx: &GameplayCtx<'_>,
     area: Rect,
-    mouse: Vec2,
+    pointer: Pointer,
     actions: &mut Vec<UiAction>,
 ) {
     const GAP: f32 = 16.0;
@@ -613,7 +626,14 @@ pub(crate) fn draw_charter_cards(
         .sum();
 
     let mut scroll = ctx.charter_scroll.get();
-    scroll.update_at(area, content_h, mouse);
+    scroll.update_at(area, content_h, pointer.position);
+    // A swipe down the board is how it is read on a tablet, and it must not also
+    // pick the charter it happens to lift over.
+    let pointer = if scroll.absorbs_press() {
+        pointer.suppressed()
+    } else {
+        pointer
+    };
     let mut y = area.y - scroll.offset();
 
     for (objective, entries) in &groups {
@@ -634,7 +654,7 @@ pub(crate) fn draw_charter_cards(
             // Cull partially-scrolled cards so panel edges stay clean (macroquad
             // has no scissor rect).
             if is_fully_visible(card, area) {
-                draw_charter_card(ctx, entry, card, compact, mouse, actions);
+                draw_charter_card(ctx, entry, card, compact, pointer, actions);
             }
         }
         y += entries.len().div_ceil(2) as f32 * ROW_STRIDE + GROUP_GAP;

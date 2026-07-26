@@ -12,7 +12,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     // Reserve a full-width instrument strip along the bottom (the mockup's
     // systems readout); the three panels share the space above it.
     let strip_h = 64.0;
@@ -21,7 +21,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
     let mid = Rect::new(area.x + 392.0, area.y, 380.0, panels_h);
     let right = Rect::new(area.x + 784.0, area.y, area.w - 784.0, panels_h);
 
-    draw_ship_panel(ctx, left, mouse, actions);
+    draw_ship_panel(ctx, left, pointer, actions);
     draw_colony_panel(ctx, mid);
     draw_log_panel(ctx, right);
     draw_systems_strip(
@@ -30,7 +30,12 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
     );
 }
 
-fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_ship_panel(
+    ctx: &GameplayCtx<'_>,
+    rect: Rect,
+    pointer: Pointer,
+    actions: &mut Vec<UiAction>,
+) {
     term_panel(rect, Some("SHIP STATUS"));
     let content = rect.inset(20.0);
     let mut y = content.y + 40.0;
@@ -185,7 +190,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
             repair.field_parts_cost, repair.field_minerals_cost
         ),
         field_affordable(sim.ship.hull_integrity),
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::FieldRepair(RepairKind::Hull));
     }
@@ -197,7 +202,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
             repair.field_parts_cost, repair.field_minerals_cost
         ),
         field_affordable(sim.ship.life_support),
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::FieldRepair(RepairKind::LifeSupport));
     }
@@ -217,7 +222,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
         Rect::new(content.x, y, content.w, 24.0),
         &full_label,
         full_ok,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::FullRepair);
     }
@@ -253,7 +258,7 @@ fn draw_ship_panel(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut
         } else {
             step.label().to_owned()
         };
-        if term_button(r, &label, underway, mouse) {
+        if term_button(r, &label, underway, pointer) {
             actions.push(UiAction::SetSpeed(*step));
         }
     }

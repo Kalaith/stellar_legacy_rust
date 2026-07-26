@@ -22,7 +22,7 @@ use macroquad_toolkit::notifications::{
     NotificationAnchor, NotificationManager, NotificationRenderConfig,
 };
 use macroquad_toolkit::prelude::{begin_virtual_ui_frame, end_virtual_ui_frame};
-use macroquad_toolkit::ui::ScrollArea;
+use macroquad_toolkit::ui::{end_frame_neighbours, Pointer, ScrollArea};
 use std::cell::Cell;
 
 /// True on the frame the number key for a 0-based list index (1..=9) is pressed.
@@ -431,6 +431,10 @@ impl Game {
         let show_boot = !self.boot.is_done() && matches!(self.state, GameState::Menu(_));
 
         let virtual_ui = begin_virtual_ui_frame(ui::LOGICAL_WIDTH, ui::LOGICAL_HEIGHT);
+        // One pointer for the whole frame, in logical coordinates — a mouse or a
+        // finger, read the same way. Built here rather than per screen so every
+        // control agrees about where it is and whether it just let go.
+        let pointer = Pointer::read(|p| virtual_ui.screen_to_ui(p));
         let actions = if show_boot {
             self.boot.draw();
             Vec::new()
@@ -441,7 +445,7 @@ impl Game {
                     menu,
                     legacy_ids: &self.legacy_ids,
                     chronicle: &self.chronicle,
-                    ui: &virtual_ui,
+                    pointer,
                     title_art: self.assets.get_texture("title"),
                 }),
                 GameState::Gameplay(gameplay) => ui::draw_gameplay(ui::GameplayCtx {
@@ -450,7 +454,7 @@ impl Game {
                     screen: gameplay.screen,
                     chronicle: &self.chronicle,
                     achievements: &self.achievements,
-                    ui: &virtual_ui,
+                    pointer,
                     modal_reveal,
                     log_reveal,
                     run_clock: self.run_clock_for(&gameplay.sim),
@@ -464,19 +468,20 @@ impl Game {
 
         // The F1/F2 panels float above everything and capture their own input.
         let display_actions = if self.settings_open {
-            ui::settings::draw(
-                &self.display,
-                &self.delegation_defaults,
-                virtual_ui.mouse_position(),
-            )
+            ui::settings::draw(&self.display, &self.delegation_defaults, pointer)
         } else {
             Vec::new()
         };
-        let help_close = self.help_open && ui::help::draw(virtual_ui.mouse_position());
+        let help_close = self.help_open && ui::help::draw(pointer);
         // First-run welcome overlay, above the menu only; its button dismisses it.
         let welcome_dismiss = self.welcome_open
             && matches!(self.state, GameState::Menu(_))
-            && ui::welcome::draw(&self.data.config.welcome, virtual_ui.mouse_position());
+            && ui::welcome::draw(&self.data.config.welcome, pointer);
+        // Roll this frame's controls into next frame's hit-area growth limits.
+        // Every button grows toward the 44px touch standard only as far as its
+        // neighbours allow, and the neighbours are whatever drew last frame — so
+        // this has to happen once, after everything has drawn.
+        end_frame_neighbours();
         end_virtual_ui_frame();
 
         // While a panel or the welcome overlay is open, swallow the underlying

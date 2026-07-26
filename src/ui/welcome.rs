@@ -12,7 +12,7 @@ use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_text_block, draw_ui_text_ex, RectExt};
 
 /// Draw the overlay. Returns true when the player clicks the dismiss button.
-pub fn draw(welcome: &WelcomeConfig, mouse: Vec2) -> bool {
+pub fn draw(welcome: &WelcomeConfig, pointer: Pointer) -> bool {
     // Dim the menu behind the briefing.
     draw_rectangle(
         0.0,
@@ -76,6 +76,6 @@ pub fn draw(welcome: &WelcomeConfig, mouse: Vec2) -> bool {
         Rect::new(content.x, content.bottom() - 44.0, content.w, 40.0),
         &welcome.dismiss_label,
         true,
-        mouse,
+        pointer,
     )
 }

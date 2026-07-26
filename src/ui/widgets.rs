@@ -23,10 +23,26 @@ pub fn term_panel(rect: Rect, title: Option<&str>) {
     }
 }
 
-pub fn term_button(rect: Rect, label: &str, enabled: bool, mouse: Vec2) -> bool {
-    let hovered = enabled && rect.contains_point(mouse);
+/// The one button every screen presses.
+///
+/// The hit area is grown to the touch standard where its neighbours allow
+/// ([`touch_area`]), so a 22-pixel verb row is still reachable by a finger
+/// without the layout being redrawn around it. What is *lit* is the drawn rect —
+/// growing the highlight would make buttons appear to overlap.
+///
+/// Lit on hover, which a finger never does: a control that only responds to a
+/// cursor is a control a touch player never sees react, so the press state is
+/// what carries the feedback there.
+pub fn term_button(rect: Rect, label: &str, enabled: bool, pointer: Pointer) -> bool {
+    let hit = touch_area(rect);
+    note_neighbour(rect);
+    note_target(label, rect);
+    let hovered = enabled && pointer.hovering_over(hit);
+    let pressing = enabled && pointer.pressing(hit);
     let fill = if !enabled {
         term::surface_disabled()
+    } else if pressing {
+        term::surface_active()
     } else if hovered {
         term::surface_hover()
     } else {
@@ -49,7 +65,7 @@ pub fn term_button(rect: Rect, label: &str, enabled: bool, mouse: Vec2) -> bool 
             },
         ),
     );
-    hovered && is_mouse_button_released(MouseButton::Left)
+    enabled && pointer.released_on(hit)
 }
 
 /// Which end of a meter is the dangerous one, for the critical-red highlight.

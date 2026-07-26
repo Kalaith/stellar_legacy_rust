@@ -9,7 +9,7 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let left = Rect::new(area.x, area.y, area.w * 0.55, area.h);
     let right = Rect::new(left.right() + 12.0, area.y, area.w - left.w - 12.0, area.h);
     // Posts is sized to exactly one row per archetype — as a fixed ratio its
@@ -24,15 +24,15 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
         left.h - roster.h - posts.h - 16.0,
     );
 
-    draw_roster(ctx, roster, mouse, actions);
-    draw_posts(ctx, posts, mouse, actions);
-    draw_factions(ctx, factions, mouse, actions);
-    draw_council(ctx, right, mouse, actions);
+    draw_roster(ctx, roster, pointer, actions);
+    draw_posts(ctx, posts, pointer, actions);
+    draw_factions(ctx, factions, pointer, actions);
+    draw_council(ctx, right, pointer, actions);
 }
 
 /// Factions aboard (W7): name, members, share, status. Lost factions dim out.
 /// In drydock, when short of the founding count, offers to recruit a new people.
-fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     term_panel(rect, Some("PEOPLES ABOARD"));
     let content = rect.inset(16.0);
     let mut y = content.y + 34.0;
@@ -89,7 +89,7 @@ fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut V
                     cfg.recruit_group_cost_credits
                 ),
                 sim.resources.credits >= cfg.recruit_group_cost_credits,
-                mouse,
+                pointer,
             ) {
                 actions.push(UiAction::RecruitFactionGroup(id.clone()));
             }
@@ -113,7 +113,7 @@ fn draw_factions(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut V
     }
 }
 
-fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     term_panel(rect, Some("DYNASTY ROSTER"));
     let content = rect.inset(18.0);
     let mut y = content.y + 42.0;
@@ -162,7 +162,7 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec
                 Rect::new(content.right() - 96.0, y - 14.0, 90.0, 26.0),
                 "NAME HEIR",
                 true,
-                mouse,
+                pointer,
             )
         {
             actions.push(UiAction::SelectHeir(member.id));
@@ -180,7 +180,7 @@ fn draw_roster(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec
     }
 }
 
-fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     term_panel(rect, Some("SHIP POSTS"));
     let content = rect.inset(18.0);
     let mut y = content.y + 30.0;
@@ -207,7 +207,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<
                         format!("TRAIN ({} CR)", crew_cfg.train_cost_credits)
                     },
                     !maxed,
-                    mouse,
+                    pointer,
                 ) {
                     actions.push(UiAction::TrainCrew(archetype.id.clone()));
                 }
@@ -223,7 +223,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<
                     Rect::new(content.right() - 150.0, y - 14.0, 144.0, 24.0),
                     &format!("RECRUIT ({} CR)", crew_cfg.recruit_cost_credits),
                     ctx.sim.resources.credits >= crew_cfg.recruit_cost_credits,
-                    mouse,
+                    pointer,
                 ) {
                     actions.push(UiAction::RecruitCrew(archetype.id.clone()));
                 }
@@ -233,7 +233,7 @@ fn draw_posts(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<
     }
 }
 
-fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     term_panel(rect, Some("COUNCIL & DELEGATION"));
     let content = rect.inset(18.0);
     let mut y = content.y + 42.0;
@@ -283,7 +283,7 @@ fn draw_council(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Ve
             Rect::new(content.x, y, content.w, 34.0),
             &label,
             true,
-            mouse,
+            pointer,
         ) {
             actions.push(UiAction::ToggleDelegation(category));
         }

@@ -16,7 +16,7 @@ const KEYS: &[(&str, &str)] = &[
     ("ESC", "Close an open panel"),
 ];
 
-pub fn draw(mouse: Vec2) -> bool {
+pub fn draw(pointer: Pointer) -> bool {
     draw_rectangle(
         0.0,
         0.0,
@@ -52,7 +52,7 @@ pub fn draw(mouse: Vec2) -> bool {
     }
     y += 8.0;
     draw_ui_text_ex(
-        "The mouse works everywhere too.",
+        "Mouse and touch work everywhere too.",
         content.x,
         y,
         TextStyle::new(13.0, term::faint()).params(),
@@ -62,6 +62,6 @@ pub fn draw(mouse: Vec2) -> bool {
         Rect::new(content.x, content.bottom() - 44.0, content.w, 40.0),
         "CLOSE",
         true,
-        mouse,
+        pointer,
     )
 }

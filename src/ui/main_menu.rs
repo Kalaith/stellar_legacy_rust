@@ -12,7 +12,10 @@ pub struct MenuCtx<'a> {
     pub menu: &'a MenuState,
     pub legacy_ids: &'a [String],
     pub chronicle: &'a ChronicleStore,
-    pub ui: &'a VirtualUi,
+    /// This frame's pointer, in logical coordinates — a mouse or a finger,
+    /// asked the same way. Built once in `game.rs` so every control on the
+    /// screen agrees about where it is and whether it just let go.
+    pub pointer: Pointer,
     /// The title plate drawn behind the main menu, when it loaded. `None` falls
     /// back to the drawn wordmark, so a missing asset costs art, never a menu.
     pub title_art: Option<&'a Texture2D>,
@@ -36,7 +39,7 @@ pub fn draw_menu(ctx: MenuCtx<'_>) -> Vec<UiAction> {
 /// failed texture costs the art and nothing else.
 fn draw_main_menu(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
     let mut actions = Vec::new();
-    let mouse = ctx.ui.mouse_position();
+    let pointer = ctx.pointer;
 
     // A dynasty inheriting a storied Chronicle begins with a head start (§7).
     let heritage = crate::heritage::derive(ctx.chronicle, &ctx.data.config.heritage);
@@ -125,20 +128,20 @@ fn draw_main_menu(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
         Rect::new(bx, by, bw, bh),
         "CONTINUE",
         ctx.menu.save_exists,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::ContinueGame);
     }
     by += bh + gap;
-    if term_button(Rect::new(bx, by, bw, bh), "NEW GAME", true, mouse) {
+    if term_button(Rect::new(bx, by, bw, bh), "NEW GAME", true, pointer) {
         actions.push(UiAction::GoToNewGame);
     }
     by += bh + gap;
-    if term_button(Rect::new(bx, by, bw, bh), "SETTINGS", true, mouse) {
+    if term_button(Rect::new(bx, by, bw, bh), "SETTINGS", true, pointer) {
         actions.push(UiAction::OpenSettings);
     }
     by += bh + gap;
-    if term_button(Rect::new(bx, by, bw, bh), "EXIT GAME", true, mouse) {
+    if term_button(Rect::new(bx, by, bw, bh), "EXIT GAME", true, pointer) {
         actions.push(UiAction::ExitGame);
     }
 
@@ -149,7 +152,7 @@ fn draw_main_menu(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
 /// the main menu via NEW GAME. BEGIN VOYAGE launches; BACK returns to the menu.
 fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
     let mut actions = Vec::new();
-    let mouse = ctx.ui.mouse_position();
+    let pointer = ctx.pointer;
 
     draw_text_glow(
         "STELLAR LEGACY",
@@ -255,7 +258,7 @@ fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
             2.0,
             term::dim(),
         );
-        if rect.contains_point(mouse) && is_mouse_button_released(MouseButton::Left) {
+        if pointer.released_on(rect) {
             actions.push(UiAction::SelectLegacy(i));
         }
         y += 70.0;
@@ -360,7 +363,7 @@ fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
             rect.y + 36.0,
             TextStyle::new(11.0, term::dim()).params(),
         );
-        if rect.contains_point(mouse) && is_mouse_button_released(MouseButton::Left) {
+        if pointer.released_on(rect) {
             actions.push(UiAction::ToggleFaction(id.clone()));
         }
         fy += 50.0;
@@ -373,7 +376,7 @@ fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
         Rect::new(content.x, by, btn_w, 44.0),
         "BEGIN VOYAGE [ENTER]",
         chosen == starting,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::StartNewGame);
     }
@@ -381,7 +384,7 @@ fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
         Rect::new(content.x + btn_w + 10.0, by, btn_w, 44.0),
         "BACK [ESC]",
         true,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::BackToMainMenu);
     }
@@ -389,7 +392,7 @@ fn draw_new_game(ctx: &MenuCtx<'_>) -> Vec<UiAction> {
         Rect::new(content.x + (btn_w + 10.0) * 2.0, by, btn_w, 44.0),
         "DELETE SAVE",
         ctx.menu.save_exists,
-        mouse,
+        pointer,
     ) {
         actions.push(UiAction::DeleteSave);
     }

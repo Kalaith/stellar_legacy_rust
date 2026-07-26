@@ -10,7 +10,7 @@ use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt};
 /// Characters-per-second for the terminal reveal of modal body text.
 const REVEAL_CPS: f32 = 55.0;
 
-pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let Some(pending) = &ctx.sim.pending_event else {
         return;
     };
@@ -83,7 +83,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
             Rect::new(card.right() - 244.0, card.y + 18.0, 230.0, 56.0),
             &format!("[{}] {}", shown + 1, outcome.label.to_uppercase()),
             true,
-            mouse,
+            pointer,
         ) {
             actions.push(UiAction::ResolveEvent(i));
         }
@@ -93,7 +93,7 @@ pub fn draw(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
 
 /// Blocking legacy-dilemma modal. Options show their success odds up front —
 /// the roll is honest, so the interface is too (Pillar 3).
-pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw_dilemma(ctx: &GameplayCtx<'_>, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let Some(dilemma) = pending_dilemma_def(ctx.sim, ctx.data) else {
         return;
     };
@@ -175,7 +175,7 @@ pub fn draw_dilemma(ctx: &GameplayCtx<'_>, mouse: Vec2, actions: &mut Vec<UiActi
             Rect::new(card.right() - 244.0, card.y + 18.0, 230.0, 56.0),
             &format!("[{}] {}", i + 1, option.label.to_uppercase()),
             true,
-            mouse,
+            pointer,
         ) {
             actions.push(UiAction::ResolveDilemma(i));
         }

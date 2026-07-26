@@ -7,12 +7,12 @@ use macroquad::prelude::*;
 use macroquad_toolkit::prelude::*;
 use macroquad_toolkit::ui::{draw_ui_text_ex, is_fully_visible, RectExt};
 
-pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     // Under way the SHIP tab is a status readout, not a shipyard (real-time loop
     // §5): installed modules, current integrity, and the boosts/debuffs in force.
     // Buying, commissioning, and refits wait for the drydock.
     if ctx.sim.contract.is_some() {
-        draw_underway(ctx, area, mouse, actions);
+        draw_underway(ctx, area, pointer, actions);
         return;
     }
 
@@ -23,11 +23,13 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
     const SEG_H: f32 = 30.0;
     for (i, label) in ["LOADOUT", "MODULES"].iter().enumerate() {
         let seg = Rect::new(area.x + i as f32 * (SEG_W + 8.0), area.y, SEG_W, SEG_H);
+        let hit = touch_area(seg);
+        note_neighbour(seg);
+        note_target(label, seg);
         let active = (i == 1) == modules;
-        let hovered = seg.contains_point(mouse);
-        let fill = if active {
+        let fill = if active || pointer.pressing(hit) {
             term::surface_active()
-        } else if hovered {
+        } else if pointer.hovering_over(hit) {
             term::surface_hover()
         } else {
             term::surface()
@@ -51,21 +53,21 @@ pub fn draw(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<Ui
             seg.h,
             TextStyle::new(15.0, if active { term::accent() } else { term::dim() }),
         );
-        if hovered && is_mouse_button_released(MouseButton::Left) {
+        if pointer.released_on(hit) {
             ctx.ship_modules_tab.set(i == 1);
         }
     }
     let body = Rect::new(area.x, area.y + SEG_H + 10.0, area.w, area.h - SEG_H - 10.0);
     if modules {
-        draw_modules(ctx, body, mouse, actions);
+        draw_modules(ctx, body, pointer, actions);
     } else {
-        draw_loadout(ctx, body, mouse, actions);
+        draw_loadout(ctx, body, pointer, actions);
     }
 }
 
 /// The LOADOUT catalog: hull / engine / weapon columns, each scrolling when it
 /// overflows (a full column plus a found mission-reward part is one card too tall).
-fn draw_loadout(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_loadout(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     let columns = [
         (ComponentKind::Hull, "HULLS"),
         (ComponentKind::Engine, "ENGINES"),
@@ -108,7 +110,13 @@ fn draw_loadout(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Ve
         let card_w = view.w - GUTTER;
         let content_h = cards.len() as f32 * STRIDE;
         let scroll = &mut scrolls[i];
-        scroll.update_at(view, content_h, mouse);
+        scroll.update_at(view, content_h, pointer.position);
+        // A swipe down a catalog column must not also buy the part it lifts over.
+        let pointer = if scroll.absorbs_press() {
+            pointer.suppressed()
+        } else {
+            pointer
+        };
 
         let mut y = view.y - scroll.offset();
         for component in cards {
@@ -116,7 +124,7 @@ fn draw_loadout(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Ve
             // Cull partially-scrolled cards so none spills past the panel.
             if is_fully_visible(card, view) {
                 let installed = is_installed(ctx, *kind, &component.id);
-                draw_component_card(ctx, card, component, installed, mouse, *kind, actions);
+                draw_component_card(ctx, card, component, installed, pointer, *kind, actions);
             }
             y += STRIDE;
         }
@@ -135,7 +143,7 @@ fn draw_loadout(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Ve
 /// lists the module's versions bottom-to-top — those already passed, the one
 /// fitted now, and the next one up as an INSTALL (drydock purchase). Buying emits
 /// the same `UpgradeSubsystem` action the Subsystems tab uses.
-fn draw_modules(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_modules(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     const GAP: f32 = 12.0;
     let col_w = (area.w - GAP) / 2.0;
     let row_h = (area.h - 2.0 * GAP) / 3.0;
@@ -151,7 +159,7 @@ fn draw_modules(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Ve
             col_w,
             row_h,
         );
-        draw_module_ladder(ctx, rect, &id, mouse, actions);
+        draw_module_ladder(ctx, rect, &id, pointer, actions);
     }
 }
 
@@ -160,7 +168,7 @@ fn draw_module_ladder(
     ctx: &GameplayCtx<'_>,
     rect: Rect,
     id: &str,
-    mouse: Vec2,
+    pointer: Pointer,
     actions: &mut Vec<UiAction>,
 ) {
     let (Some(def), Some(state)) = (ctx.data.subsystems.get(id), ctx.sim.subsystems.get(id)) else {
@@ -219,7 +227,7 @@ fn draw_module_ladder(
                     // A voyage has recovered this version — fit it free (the mission
                     // was the price), distinct from a bought upgrade.
                     let label = format!("INSTALL {name} · RECOVERED");
-                    if term_button(row, &label, true, mouse) {
+                    if term_button(row, &label, true, pointer) {
                         actions.push(UiAction::InstallFitting(id.to_owned()));
                     }
                 } else {
@@ -249,7 +257,7 @@ fn draw_module_ladder(
                 let affordable = ctx.sim.resources.credits >= cost.credits
                     && ctx.sim.resources.minerals >= cost.minerals;
                 let label = format!("INSTALL {name} · {}", bits.join(" + "));
-                if term_button(row, &label, affordable, mouse) {
+                if term_button(row, &label, affordable, pointer) {
                     actions.push(UiAction::UpgradeSubsystem(id.to_owned()));
                 }
             }
@@ -271,7 +279,7 @@ fn draw_module_ladder(
 /// to anything that changes mid-mission. A left rail carries the overview and the
 /// one interactive under-way job — field-fitting salvaged parts. No
 /// purchase/commission; those are drydock work.
-fn draw_underway(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_underway(ctx: &GameplayCtx<'_>, area: Rect, pointer: Pointer, actions: &mut Vec<UiAction>) {
     const GAP: f32 = 12.0;
     let left_w = 296.0;
     let left = Rect::new(area.x, area.y, left_w, area.h);
@@ -311,7 +319,7 @@ fn draw_underway(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut V
     draw_field_ops(
         ctx,
         Rect::new(left.x, left.y + rail_h + GAP, left.w, rail_h),
-        mouse,
+        pointer,
         actions,
     );
 }
@@ -384,7 +392,12 @@ fn draw_overview(ctx: &GameplayCtx<'_>, rect: Rect, schematic: &ship_schematic::
 
 /// Field ops (PLAN M4.4): the salvage hold and its under-way field-install
 /// buttons — the one loadout change the black permits, gated by crew and stores.
-fn draw_field_ops(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut Vec<UiAction>) {
+fn draw_field_ops(
+    ctx: &GameplayCtx<'_>,
+    rect: Rect,
+    pointer: Pointer,
+    actions: &mut Vec<UiAction>,
+) {
     term_panel(rect, Some("FIELD OPS · SALVAGE HOLD"));
     let c = rect.inset(16.0);
     if ctx.sim.ship.salvage.is_empty() {
@@ -416,7 +429,7 @@ fn draw_field_ops(ctx: &GameplayCtx<'_>, rect: Rect, mouse: Vec2, actions: &mut 
             InstallEligibility::NeedsConsumables => (false, format!("{name} · NEEDS PARTS")),
             _ => (false, format!("{name} · UNAVAILABLE")),
         };
-        if term_button(Rect::new(c.x, y, c.w, 26.0), &label, enabled, mouse) {
+        if term_button(Rect::new(c.x, y, c.w, 26.0), &label, enabled, pointer) {
             actions.push(UiAction::InstallSalvage(id.clone()));
         }
         y += 32.0;
@@ -459,7 +472,7 @@ fn draw_component_card(
     rect: Rect,
     component: &ShipComponent,
     installed: bool,
-    mouse: Vec2,
+    pointer: Pointer,
     kind: ComponentKind,
     actions: &mut Vec<UiAction>,
 ) {
@@ -559,7 +572,7 @@ fn draw_component_card(
             InstallEligibility::NeedsConsumables => (false, "SALVAGED · NEEDS PARTS"),
             InstallEligibility::NotSalvaged => (false, "SALVAGED"),
         };
-        if term_button(btn, label, enabled, mouse) {
+        if term_button(btn, label, enabled, pointer) {
             actions.push(UiAction::InstallSalvage(component.id.clone()));
         }
     } else if kind == ComponentKind::Hull {
@@ -582,7 +595,7 @@ fn draw_component_card(
         let affordable = in_port
             && ctx.sim.resources.credits >= total_credits
             && ctx.sim.resources.minerals >= total_minerals;
-        if term_button(btn, &label, affordable, mouse) {
+        if term_button(btn, &label, affordable, pointer) {
             actions.push(UiAction::CommissionShip(component.id.clone()));
         }
     } else {
@@ -603,7 +616,7 @@ fn draw_component_card(
             influence: -cost.influence,
         };
         let affordable = in_port && ctx.sim.resources.can_afford(&negated);
-        if term_button(btn, &label, affordable, mouse) {
+        if term_button(btn, &label, affordable, pointer) {
             actions.push(UiAction::PurchaseComponent(kind, component.id.clone()));
         }
     }

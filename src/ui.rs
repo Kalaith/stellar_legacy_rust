@@ -35,7 +35,9 @@ use crate::state::{MenuState, Screen};
 use macroquad::prelude::*;
 use macroquad_toolkit::achievements::Achievements;
 use macroquad_toolkit::prelude::*;
-use macroquad_toolkit::ui::{draw_ui_text_ex, RectExt, VirtualUi};
+use macroquad_toolkit::ui::{
+    draw_ui_text_ex, note_neighbour, note_target, touch_area, Pointer, RectExt,
+};
 
 pub const LOGICAL_WIDTH: f32 = 1280.0;
 pub const LOGICAL_HEIGHT: f32 = 720.0;
