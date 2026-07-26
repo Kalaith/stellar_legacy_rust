@@ -905,7 +905,7 @@
     "field_gain": 0.12,
     "field_parts_cost": 4,
     "field_minerals_cost": 150,
-    "full_credits_cost": 1500,
+    "full_credits_cost": 4000,
     "full_minerals_cost": 500,
     "full_parts_restock": 60
   },

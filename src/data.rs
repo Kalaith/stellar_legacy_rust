@@ -4175,4 +4175,27 @@ mod tests {
              the authored pacing is 4-7 successful voyages"
         );
     }
+
+    #[test]
+    fn a_full_refit_is_a_visible_slice_of_a_fee_but_never_a_wall() {
+        // Economy rebalance (economy_balance_plan.md phase 3): a battered return
+        // should cost real coin — a full refit is the sink that makes thrashing
+        // the ship matter — but never so much that even the leanest fee cannot
+        // cover the way home. Pinned as a band against the cheapest charter fee.
+        let data = GameData::load().unwrap();
+        let refit = data.config.repair.full_credits_cost;
+        let cheapest_fee = data
+            .contracts
+            .iter()
+            .map(|(_, c)| c.reward.credits)
+            .min()
+            .expect("at least one charter");
+        let slice = refit as f32 / cheapest_fee as f32;
+        assert!(
+            (0.10..=0.50).contains(&slice),
+            "a full refit ({refit} cr) is {:.0}% of the leanest fee ({cheapest_fee}); \
+             the sink should be a felt 10-50%, visible but never a wall",
+            slice * 100.0
+        );
+    }
 }
