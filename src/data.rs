@@ -4063,4 +4063,54 @@ mod tests {
             config.starting_spare_parts
         );
     }
+
+    #[test]
+    fn a_charter_fee_is_worth_the_voyage() {
+        // Economy rebalance (economy_balance_plan.md phase 1): the fee is the
+        // story. Every charter's credit fee sits in an authored band per
+        // voyage-year — above the passive drip's shadow, below a blank check —
+        // and the ladder climbs with the renown gate: founding writs pay modestly,
+        // the storied ones pay like the legends they are.
+        let data = GameData::load().unwrap();
+        for (id, c) in data.contracts.iter() {
+            let per_year = c.reward.credits as f32 / c.target_duration_years as f32;
+            assert!(
+                (35.0..=100.0).contains(&per_year),
+                "charter '{id}' pays {per_year:.1} cr/voyage-year; the authored band is 35-100"
+            );
+            if c.min_renown == 0 {
+                assert!(
+                    per_year <= 50.0,
+                    "founding charter '{id}' pays {per_year:.1} cr/yr; renown-0 writs stay at or under 50"
+                );
+            }
+            if c.min_renown >= 400 {
+                assert!(
+                    per_year >= 80.0,
+                    "storied charter '{id}' pays {per_year:.1} cr/yr; renown-400 writs pay 80+"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn a_charter_fee_clears_its_provisioning_bill() {
+        // Economy rebalance (economy_balance_plan.md phase 1): a writ must pay
+        // for the sailing several times over. The bill estimated here is what
+        // the voyage itself costs the treasury — the spare parts consumed beyond
+        // the founding stock, and a full tank — so a mission is never a wash.
+        let data = GameData::load().unwrap();
+        let config = &data.config;
+        for (id, c) in data.contracts.iter() {
+            let parts_needed = config.parts_upkeep_per_year * c.target_duration_years as i64;
+            let parts_shortfall = (parts_needed - config.starting_spare_parts).max(0);
+            let bill = parts_shortfall * config.provisioning.part_cost_credits
+                + 100 * config.provisioning.fuel_cost_credits_per_point;
+            assert!(
+                c.reward.credits >= 3 * bill,
+                "charter '{id}' fee {} must be at least 3x its provisioning bill {bill}",
+                c.reward.credits
+            );
+        }
+    }
 }

@@ -82,7 +82,7 @@
    "succession_crisis"
   ],
   "reward": {
-   "credits": 8000,
+   "credits": 31500,
    "influence": 120
   },
   "min_renown": 250,
@@ -178,7 +178,7 @@
    "equipment_failure"
   ],
   "reward": {
-   "credits": 6000,
+   "credits": 13500,
    "minerals": 1500
   },
   "min_renown": 0,
@@ -283,7 +283,7 @@
    "morale_collapse"
   ],
   "reward": {
-   "credits": 5000,
+   "credits": 20000,
    "influence": 260
   },
   "min_renown": 100,
@@ -332,7 +332,7 @@
     "progress_threshold": 0.85,
     "reward": {
      "influence": 90,
-     "credits": 500
+     "credits": 2500
     }
    },
    {
@@ -377,7 +377,7 @@
    "moral_injury"
   ],
   "reward": {
-   "credits": 4000,
+   "credits": 12000,
    "influence": 340
   },
   "min_renown": 0,
@@ -466,7 +466,7 @@
    "radiation_creep"
   ],
   "reward": {
-   "credits": 5500,
+   "credits": 13000,
    "energy": 2000
   },
   "min_renown": 0,
@@ -563,7 +563,7 @@
    "hull_breach"
   ],
   "reward": {
-   "credits": 7000,
+   "credits": 23000,
    "influence": 150
   },
   "min_renown": 100,
@@ -613,7 +613,7 @@
     "name": "Verge beacon lit",
     "progress_threshold": 0.8,
     "reward": {
-     "credits": 400
+     "credits": 2000
     }
    },
    {
@@ -658,7 +658,7 @@
    "supply_shortfall"
   ],
   "reward": {
-   "credits": 5200,
+   "credits": 28000,
    "influence": 210
   },
   "min_renown": 250,
@@ -713,7 +713,7 @@
     "name": "Last holdout recovered",
     "progress_threshold": 0.85,
     "reward": {
-     "credits": 450
+     "credits": 2250
     }
    },
    {
@@ -758,7 +758,7 @@
    "moral_injury"
   ],
   "reward": {
-   "credits": 3800,
+   "credits": 12500,
    "influence": 320
   },
   "min_renown": 0,
@@ -823,7 +823,7 @@
     "name": "The lane runs quiet",
     "progress_threshold": 0.85,
     "reward": {
-     "credits": 600
+     "credits": 3000
     }
    },
    {
@@ -868,7 +868,7 @@
    "navigation_error"
   ],
   "reward": {
-   "credits": 6000,
+   "credits": 21000,
    "influence": 300
   },
   "tags": [
@@ -923,7 +923,7 @@
     "name": "The rim reached and read",
     "progress_threshold": 0.75,
     "reward": {
-     "credits": 800,
+     "credits": 4000,
      "influence": 100
     }
    },
@@ -970,7 +970,7 @@
    "supply_shortfall"
   ],
   "reward": {
-   "credits": 9000,
+   "credits": 54000,
    "influence": 500
   },
   "tags": [
@@ -1064,7 +1064,7 @@
    "succession_crisis"
   ],
   "reward": {
-   "credits": 9000,
+   "credits": 26500,
    "minerals": 600
   },
   "min_renown": 100,
@@ -1157,7 +1157,7 @@
    "succession_crisis"
   ],
   "reward": {
-   "credits": 8500,
+   "credits": 32000,
    "influence": 160
   },
   "min_renown": 250,
@@ -1266,7 +1266,7 @@
    "succession_crisis"
   ],
   "reward": {
-   "credits": 9500,
+   "credits": 24000,
    "influence": 140
   },
   "min_renown": 100,
@@ -1368,7 +1368,7 @@
    "the_endless_haul"
   ],
   "reward": {
-   "credits": 8200,
+   "credits": 25000,
    "minerals": 2400,
    "influence": 260
   },
@@ -1422,7 +1422,7 @@
     "name": "The structure resolves — arrival at last",
     "progress_threshold": 0.75,
     "reward": {
-     "credits": 500
+     "credits": 2500
     }
    },
    {
@@ -1467,7 +1467,7 @@
    "the_turnback"
   ],
   "reward": {
-   "credits": 9000,
+   "credits": 43000,
    "influence": 420
   },
   "min_renown": 400,
@@ -1519,7 +1519,7 @@
     "name": "The dying core read at last",
     "progress_threshold": 0.9,
     "reward": {
-     "credits": 500
+     "credits": 2500
     }
    },
    {
@@ -1564,7 +1564,7 @@
    "instrument_blindness"
   ],
   "reward": {
-   "credits": 8600,
+   "credits": 24500,
    "influence": 360
   },
   "min_renown": 250,
@@ -1634,7 +1634,7 @@
     "name": "The last shore cleared that could be",
     "progress_threshold": 0.9,
     "reward": {
-     "credits": 400
+     "credits": 2000
     }
    },
    {
@@ -1679,7 +1679,7 @@
    "the_last_window"
   ],
   "reward": {
-   "credits": 7200,
+   "credits": 26000,
    "influence": 520
   },
   "min_renown": 200,
@@ -1784,7 +1784,7 @@
    "cultural_drift"
   ],
   "reward": {
-   "credits": 7200,
+   "credits": 23000,
    "influence": 180,
    "food": 2000
   },
@@ -1851,7 +1851,7 @@
     "name": "First refinery lit",
     "progress_threshold": 0.4,
     "reward": {
-     "credits": 80
+     "credits": 400
     }
    },
    {
@@ -1901,7 +1901,7 @@
    "famine"
   ],
   "reward": {
-   "credits": 9000,
+   "credits": 22000,
    "minerals": 1500,
    "influence": 120
   },
@@ -2022,7 +2022,7 @@
    "cultural_drift"
   ],
   "reward": {
-   "credits": 5200,
+   "credits": 22000,
    "influence": 320
   },
   "min_renown": 100,
@@ -2106,7 +2106,7 @@
     "name": "First assets stripped",
     "progress_threshold": 0.4,
     "reward": {
-     "credits": 100
+     "credits": 500
     }
    },
    {
@@ -2155,7 +2155,7 @@
    "succession_crisis"
   ],
   "reward": {
-   "credits": 9500,
+   "credits": 25000,
    "minerals": 1200
   },
   "min_renown": 100,
@@ -2203,7 +2203,7 @@
   "name": "The Ark Charter: Ten Thousand Sleepers",
   "objective": "colonization",
   "forbidden_consequence": [
-    "broke_a_sanctuary_trust"
+   "broke_a_sanctuary_trust"
   ],
   "description": "Ten thousand colonists sleep frozen in the holds — a whole world's founding population, entrusted to this ship to carry across three centuries of dark to a waiting shore. They cannot be replaced and they cannot be woken early. The cold banks will fail here and there no matter how well they are tended, and the dark will take its share; the charter does not ask that none be lost, only that as many as possible arrive alive. Everything the ship does for three hundred years is, in the end, in service of a number that can only ever go down.",
   "target_duration_years": 320,
@@ -2250,7 +2250,7 @@
    }
   ],
   "reward": {
-   "credits": 7200,
+   "credits": 14500,
    "influence": 260
   },
   "min_renown": 40,
