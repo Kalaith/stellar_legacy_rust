@@ -24,7 +24,7 @@ Rules that constrain every split here:
 | 1841 | `src/simulation/subsystems.rs` | **done** — 7 files, largest 509 |
 | 1653 | `src/simulation/contract.rs` | **done** — 6 files, largest 568 |
 | 1259 | `src/simulation/tick.rs` | **done** — 7 files, largest 261 |
-| 1178 | `src/state/sim.rs` | pending |
+| 1178 | `src/state/sim.rs` | **done** — 6 files, largest 467 |
 | 1043 | `src/ui.rs` | pending |
 |  925 | `src/ui/ship_schematic.rs` | pending |
 |  808 | `src/simulation/tick/economy.rs` | pending |
@@ -88,3 +88,6 @@ Planned once the four large ones land, so the shape of the shared helpers is set
 - **Pass 7** — `simulation/tick.rs` 1259 → `tick.rs` (261, the advance loop) + `beats.rs`
   (103, `fire_due_beat` and the force/clear helpers) + `beats/{threshold,collapse,recovery,
   scripted,succession}.rs` (84–240), mirroring the pass-4 test layout.
+- **Pass 8** — `state/sim.rs` 1178 → `sim.rs` (467, the `SimState` struct, its clock/log
+  accessors and the tests) + `pools.rs` (94), `dynasty.rs` (191), `market.rs` (103),
+  `session.rs` (120) and `campaign.rs` (242, `new_campaign`), re-exported flat.
