@@ -640,6 +640,12 @@ pub(crate) fn draw_charter_cards(
         y += entries.len().div_ceil(2) as f32 * ROW_STRIDE + GROUP_GAP;
     }
 
-    scroll.draw_scrollbar(area, content_h);
+    scroll.draw_scrollbar_with(
+        area,
+        content_h,
+        term::surface_inset(),
+        term::dim(),
+        term::primary(),
+    );
     ctx.charter_scroll.set(scroll);
 }

@@ -120,7 +120,13 @@ fn draw_loadout(ctx: &GameplayCtx<'_>, area: Rect, mouse: Vec2, actions: &mut Ve
             }
             y += STRIDE;
         }
-        scroll.draw_scrollbar(view, content_h);
+        scroll.draw_scrollbar_with(
+            view,
+            content_h,
+            term::surface_inset(),
+            term::dim(),
+            term::primary(),
+        );
     }
     ctx.ship_scroll.set(scrolls);
 }
