@@ -1,7 +1,7 @@
 //! Tests for the advance loop and the economic year — split out of `tick.rs`
 //! to keep it under the size limit.
 
-use super::economy::{
+use super::economy::factors::{
     apply_voyage_drift, energy_production_factor, influence_governance_factor, quiet_ambient_pool,
 };
 use super::*;

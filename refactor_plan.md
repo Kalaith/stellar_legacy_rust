@@ -27,7 +27,7 @@ Rules that constrain every split here:
 | 1178 | `src/state/sim.rs` | **done** — 6 files, largest 467 |
 | 1043 | `src/ui.rs` | pending |
 |  925 | `src/ui/ship_schematic.rs` | pending |
-|  808 | `src/simulation/tick/economy.rs` | pending |
+|  808 | `src/simulation/tick/economy.rs` | **done** — 8 files, largest 175 |
 
 ## Planned cuts
 
@@ -91,3 +91,7 @@ Planned once the four large ones land, so the shape of the shared helpers is set
 - **Pass 8** — `state/sim.rs` 1178 → `sim.rs` (467, the `SimState` struct, its clock/log
   accessors and the tests) + `pools.rs` (94), `dynasty.rs` (191), `market.rs` (103),
   `session.rs` (120) and `campaign.rs` (242, `new_campaign`), re-exported flat.
+- **Pass 9** — `simulation/tick/economy.rs` 808 → an eight-file `economy/` tree, largest
+  175. The bloat was one 656-line `year_boundary_tick`; it is now a six-call driver over
+  `produce`, `morale`, `wear`, `voice`, `generation`, `close`, plus `factors.rs`. The six
+  phase bodies reassemble byte-identical to the original, bar four `let config` rebindings.
