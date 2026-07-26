@@ -21,7 +21,7 @@ Rules that constrain every split here:
 | 4252 | `src/data.rs` | **done** — 17 files, largest 546 |
 | 3856 | `src/simulation/tick/tests.rs` | **done** — 11 files, largest 593 |
 | 3833 | `src/simulation/event_resolver.rs` | **done** — 14 files, largest 490 |
-| 1841 | `src/simulation/subsystems.rs` | pending |
+| 1841 | `src/simulation/subsystems.rs` | **done** — 7 files, largest 509 |
 | 1653 | `src/simulation/contract.rs` | pending |
 | 1259 | `src/simulation/tick.rs` | pending |
 | 1178 | `src/state/sim.rs` | pending |
@@ -79,3 +79,6 @@ Planned once the four large ones land, so the shape of the shared helpers is set
   test files (174–490). All 78 tests preserved.
 - **Pass 4** — `simulation/tick/tests.rs` 3856 → `tests.rs` (60, the three shared fixtures)
   + ten files (106–593) by what the year under test exercises. All 73 tests preserved.
+- **Pass 5** — `simulation/subsystems.rs` 1841 → `subsystems.rs` (135, the buffering and
+  softening helpers) + `verbs.rs` (201) + `effects.rs` (432), re-exported flat, and three
+  test files (205–509). All 31 tests preserved.
