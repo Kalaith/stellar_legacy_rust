@@ -18,7 +18,7 @@ Rules that constrain every split here:
 | Lines | File | Status |
 |------:|------|--------|
 | 4339 | `src/state/sim/factions.rs` | **done** — 12 files, largest 616 |
-| 4252 | `src/data.rs` | pending |
+| 4252 | `src/data.rs` | **done** — 17 files, largest 546 |
 | 3856 | `src/simulation/tick/tests.rs` | pending |
 | 3833 | `src/simulation/event_resolver.rs` | pending |
 | 1841 | `src/simulation/subsystems.rs` | pending |
@@ -69,3 +69,8 @@ Planned once the four large ones land, so the shape of the shared helpers is set
 - **Pass 1** — `state/sim/factions.rs` 4339 → `factions.rs` (245) + `roster.rs` (521),
   `sentiment.rs` (451), `announce.rs` (433), `announce/condition.rs` (214), and a
   `tests/` tree of six files (276–616). All 50 tests preserved, fmt/clippy/test green.
+- **Pass 2a** — `data.rs` 4252 → `data.rs` (194) + `config.rs` (316) +
+  `config/{ship,flavor,campaign,crew,onboarding}.rs` (42–546), re-exported flat.
+- **Pass 2b** — the 2498-line `data/tests.rs` → nine area files (108–516) behind two
+  shared fixtures. The two monster tests (821 and 1214 lines) became fourteen named
+  tests; all 296 assertions preserved, 354 → 366 tests, all passing.
