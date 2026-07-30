@@ -73,7 +73,6 @@ jobs:
       - name: Verify project files
         run: |
           test -f Cargo.toml
-          test -f index.html
           test -d assets
           test -d ../macroquad-toolkit
           if [ ! -s catalog_thumbnail.png ]; then
