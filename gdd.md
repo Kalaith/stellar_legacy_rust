@@ -214,7 +214,8 @@ refit economy that gives past success somewhere to go.*
   the floor/cap can be measured and felt; the mission must be sized so even brisk play at 3×
   cannot clear it in under ~30 minutes.
 
-See PLAN.md "M4 — The Voyage-and-Return Refit Loop" for the code-grounded build order.
+The voyage-and-return refit loop this describes is built; see `content_depth.md` for the
+standing direction of further deepening passes.
 
 ---
 

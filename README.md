@@ -5,7 +5,11 @@ council of a generation ship — captains age out, heirs inherit, and every prom
 the ship makes will be kept (or broken) by someone else's grandchildren.
 
 - **Design:** `gdd.md` (authoritative — pillars, systems, formulas, milestones)
-- **Handoff / roadmap:** `PLAN.md` (what's built, what's next, conventions)
+- **Content direction:** `content_depth.md` (the standing north star for deepening
+  passes — hard rules, established mechanics, depth axes, quality bars)
+- **Event authoring:** `event_design_notes.md` (families × complications × outcomes,
+  phase pools, gating house rules)
+- **Open work:** `TODO.md`
 - Port of the web original `game_apps/stellar_legacy/` (React/PHP); all game rules
   now live in a deterministic Rust simulation, saves are local toolkit slots.
 

@@ -1,8 +1,6 @@
 # Event-System Design Notes
 
-*Living content-authoring reference (W6). Distilled from `plan.md` and the raw
-brainstorm in `event_notes.md`. `event_notes.md` remains the unstructured idea
-catalogue; **this** file is the working map from those ideas onto the shipped
+*Living content-authoring reference: the working map onto the shipped
 `family × phase × gate` system. All event content lives under `assets/events/`,
 **one file per family** (`assets/events/<family>.json`, e.g. `comedy.json`),
 merged into one registry at load with a duplicate-id guard; add a new event to
@@ -74,29 +72,8 @@ Phase pools (mechanics — the code table in `skeleton.rs`; the families are con
   autoplay's dumb first-choice policy keeps the mission on-course; they are the deliberate,
   dramatic branch.
 
-## Per-family inventory (live)
 
-`total: 72 templates` — every family at or above the 6-template floor.
+## Current inventory
 
-| Family | Templates | Gated / phased beats |
-| --- | --- | --- |
-| `exploration_first_contact` | 7 | the_lodestar (Travel) |
-| `diplomacy` | 6 | — |
-| `engineering` | 9 | — |
-| `biology_medical` | 6 | — |
-| `science_anomaly` | 6 | singularity_whisper (drift 0.3) |
-| `survival` | 6 | garden_world, fuel_skim, crop_blight (phased) |
-| `mystery` | 6 | — |
-| `comedy` | 6 | — |
-| `ethics` | 6 | — |
-| `legacy_drift` | 14 | returning_signal, last_photograph, the_faith, home_silence, the_schism_deepens |
-
-## Placeholders / follow-ups
-
-- Flavor placeholders renamed to in-universe names as authored (Tribbles → **Lobites**,
-  `lobites`). No Tribbles flavor remains.
-- Families are at the structural floor (≥6); deepening any family toward the 10-template cap,
-  and adding more Operation-phase objective-specific beats (mining hazards, colony setup),
-  is future content work, not structure.
-- An onboard-AI keeper-of-memory `legacy_drift` arc is sketched in `event_notes.md` and not yet
-  authored — a natural next beat.
+The per-family template counts and the schema features in use are tracked in the
+baseline table in `content_depth.md`; keep that one current rather than a second copy here.
