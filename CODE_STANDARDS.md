@@ -75,6 +75,7 @@ Each module/subdirectory owns a single conceptual domain:
 - Soft limit: 600 lines
 - Hard limit: 800 lines for every `.rs` file
 - If a file grows beyond this, split by responsibility.
+- **Limits count non-test lines only.** A `#[cfg(test)] mod tests` block does not count toward the target, the soft limit, or the hard limit. The limit exists to catch files that have taken on too many responsibilities; a test module is one cohesive block you scroll past once, and it is compiled out of release and WASM builds entirely. See §11.3 for when to move it to its own file anyway.
 
 ### 2.3 Module Source Filenames
 - Use Rust's named module source filenames: `foo.rs` for `mod foo;`, and `foo/bar.rs` for `mod bar;` inside `foo.rs`.
@@ -345,6 +346,27 @@ Focus tests on:
 - Tests should read like rules  
 - Avoid complex setups  
 - If a test is hard to write, the code is probably too tangled.
+
+### 11.3 Test Placement
+Unit tests live in the crate, next to the code they cover — as an inline `#[cfg(test)] mod tests` block at the bottom of the file. This is the Rust convention, it keeps `use super::*` access to private items, and it adds no compile units.
+
+**Do not move unit tests to a `tests/` directory.** Files under `tests/` are integration tests: each one compiles and links as a separate crate, and it can only reach the crate's *public* API. Most games here are binary crates with no `lib.rs`, so `tests/` cannot import them at all, and widening visibility purely to satisfy a test layout works against §2.1's cross-domain rules. Reserve `tests/` for genuine end-to-end or balance harnesses that exercise a lib target's public surface.
+
+**When a test module dominates its file, extract it to a child module** — not to `tests/`:
+
+```rust
+// src/simulation.rs
+#[cfg(test)]
+mod tests;          // -> src/simulation/tests.rs
+```
+
+This keeps `use super::*` and same-crate access while getting the bulk out of the parent file. It follows the named-module rule in §2.3, so use `foo/tests.rs`, never `foo/tests/mod.rs`.
+
+Extract when either holds:
+- the test module exceeds ~300 lines, or
+- it is more than half the file
+
+Below that, leave tests inline. A 40-line test block under a 200-line module is idiomatic and moving it costs a file and an indirection for no gain.
 
 ## 12. Final Rule
 
