@@ -225,7 +225,7 @@ fn assert_year_invariants(sim: &SimState) {
 mod tests {
     use super::*;
 
-    /// Economy rebalance soak (economy_balance_plan.md phase 5): fly a full early
+    /// Economy rebalance soak (phase 5): fly a full early
     /// campaign — six low-renown charters back to back on one dynasty — and prove
     /// the repriced economy holds up end to end. Under the maintenance-heavy
     /// autoplay policy (which spends surplus on training and repair), every

@@ -30,7 +30,7 @@ fn a_new_ship_sails_provisioned_for_a_starter_charter() {
         config.starting_spare_parts
     );
 
-    // Economy rebalance (economy_balance_plan.md phase 3, target T3): after
+    // Economy rebalance (phase 3, target T3): after
     // the phase-2 price hike the founding stake must still put a first
     // tier-1 upgrade within reach of a new captain — the early game keeps
     // its tension, but the first improvement is a choice on turn one, not a
@@ -57,7 +57,7 @@ fn a_new_ship_sails_provisioned_for_a_starter_charter() {
 
 #[test]
 fn a_charter_fee_is_worth_the_voyage() {
-    // Economy rebalance (economy_balance_plan.md phase 1): the fee is the
+    // Economy rebalance (phase 1): the fee is the
     // story. Every charter's credit fee sits in an authored band per
     // voyage-year — above the passive drip's shadow, below a blank check —
     // and the ladder climbs with the renown gate: founding writs pay modestly,
@@ -86,7 +86,7 @@ fn a_charter_fee_is_worth_the_voyage() {
 
 #[test]
 fn a_charter_fee_clears_its_provisioning_bill() {
-    // Economy rebalance (economy_balance_plan.md phase 1): a writ must pay
+    // Economy rebalance (phase 1): a writ must pay
     // for the sailing several times over. The bill estimated here is what
     // the voyage itself costs the treasury — the spare parts consumed beyond
     // the founding stock, and a full tank — so a mission is never a wash.
@@ -107,7 +107,7 @@ fn a_charter_fee_clears_its_provisioning_bill() {
 
 #[test]
 fn the_best_ship_is_earned_across_many_voyages() {
-    // Economy rebalance (economy_balance_plan.md phase 2): the best ship and
+    // Economy rebalance (phase 2): the best ship and
     // its full kit should cost several successful missions, not one lucky
     // payday. This pins the whole-catalog credit cost against what a voyage
     // actually banks — fee, milestones, and the passive drip the crossing
@@ -169,7 +169,7 @@ fn the_best_ship_is_earned_across_many_voyages() {
 
 #[test]
 fn a_full_refit_is_a_visible_slice_of_a_fee_but_never_a_wall() {
-    // Economy rebalance (economy_balance_plan.md phase 3): a battered return
+    // Economy rebalance (phase 3): a battered return
     // should cost real coin — a full refit is the sink that makes thrashing
     // the ship matter — but never so much that even the leanest fee cannot
     // cover the way home. Pinned as a band against the cheapest charter fee.
@@ -192,7 +192,7 @@ fn a_full_refit_is_a_visible_slice_of_a_fee_but_never_a_wall() {
 
 #[test]
 fn a_heritage_head_start_is_a_boost_not_a_replacement() {
-    // Economy rebalance (economy_balance_plan.md phase 3 heritage review): the
+    // Economy rebalance (phase 3 heritage review): the
     // rebalance left the founding stake untouched, so a storied dynasty's
     // credit head start stays anchored to it — a real leg up (the top tier is
     // a large fraction of the stake) that never eclipses a fresh captain's own
