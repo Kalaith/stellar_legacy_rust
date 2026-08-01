@@ -30,10 +30,6 @@ the discrete open items left behind by finished workstreams.
 
 ## Event content
 
-- Finish the Operation-leg objective coverage: `mining`, `colony`, `survey` and
-  `salvage` now have on-station events whose choices move the tally, but the
-  **rescue/`relief`** and **diplomacy** legs still have no objective-biting content
-  of their own.
 - Add distinctive charter-family scoring or milestone behaviour so charters do not
   mainly feel like different routes through the same four success metrics. Preserve
   the existing Ark-style objective-specific metric as the model.

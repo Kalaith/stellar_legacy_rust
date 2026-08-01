@@ -1623,5 +1623,459 @@
     "log": "The ship repudiated a debt its dead had signed and sent the collectors away empty, keeping its holds and losing its word — a hull a long stretch of the dark would now name as one that does not pay what it owes, whoever it was that owed."
    }
   ]
+ },
+ {
+  "id": "the_manifest_runs_long",
+  "category": "immediate_crisis",
+  "title": "The Manifest Runs Long",
+  "description": "The lift manifest was drawn up by people who had a berth count and no view of the ramp. At the ramp there are four thousand more than the count, and they are not a mob — they queued, they brought their manifest cards, and the cards are real. Somebody at the far end of this decided which of them would be on the list, and did not come here to explain it. The charter is graded in souls recovered. The ship is rated in air.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "relief"
+  ],
+  "outcomes": [
+   {
+    "id": "lift_the_manifest_as_written",
+    "label": "Lift the manifest as written",
+    "description": "The list is the list. Board the named, close the ramp on schedule, and carry the number the ship was rated to carry. It is the answer nobody has to defend and nobody wants to give.",
+    "population_delta": {
+     "morale": -0.04,
+     "stability": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.02
+     }
+    ],
+    "objective_progress_delta": 0.05,
+    "log": "The ramp closed on the number the manifest named, and the ship lifted with its rated load and a clean legal position. The officers who worked the ramp were rotated off it afterwards at their own request, all of them, without any of them being asked why."
+   },
+   {
+    "id": "overload_the_decks",
+    "label": "Take everyone who can stand",
+    "description": "Open the cargo rings, hot-bunk the transit decks, and lift four thousand people the ship has no rating to carry. Every one of them counts to the charter. Every one of them breathes.",
+    "ship_delta": {
+     "life_support": -0.07
+    },
+    "resource_delta": {
+     "food": -400
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "unity": -0.04
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.07
+     }
+    ],
+    "objective_progress_delta": 0.12,
+    "long_term_consequences": [
+     "overloaded_the_decks"
+    ],
+    "schedule_followup": {
+     "template_id": "the_crowded_years",
+     "delay_years": 18
+    },
+    "log": "The ship took everyone who could stand, and lifted at a mass and a mouth-count nobody had ever rated it for. The scrubbers ran hot from the first hour. The charter's tally has never looked better and the habitat's margins have never looked worse, and both of those facts will still be true in a generation."
+   },
+   {
+    "id": "hold_the_line_at_the_ramp",
+    "label": "Hold the line at the ramp",
+    "description": "Post the watch, close the ramp early, and lift clean. An overloaded ship recovers nobody at all; the arithmetic is not cruel, only fixed. Somebody still has to stand at the bottom of the ramp and say so out loud.",
+    "population_delta": {
+     "morale": -0.07,
+     "unity": -0.03,
+     "stability": 0.04
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.09
+     }
+    ],
+    "objective_progress_delta": 0.05,
+    "long_term_consequences": [
+     "turned_them_away"
+    ],
+    "log": "The watch held the ramp and the ship lifted clean and legal and early, and the recordings of the last twenty minutes at the bottom of that ramp are in the archive, unsealed, because the council of the day insisted they be kept. The dark heard about it. It usually does."
+   },
+   {
+    "id": "re_rate_the_scrubbers",
+    "label": "Re-rate the plant and lift heavy",
+    "description": "The habitat crew know exactly what the plant will bear, because they maintain it rather than read its placard: run the loops at surge, stage the cargo rings as bunkage, and carry an overload the ship can actually sustain. Only a crew that kept its life-support expertise can name that number honestly.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "life_support_habitat",
+       "at_least": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "credits": -320,
+     "energy": -180
+    },
+    "population_delta": {
+     "morale": 0.05,
+     "unity": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.05
+     }
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "knowledge": 0.05
+     }
+    ],
+    "objective_progress_delta": 0.09,
+    "log": "The habitat crew re-rated the plant on the ramp in ninety minutes, named a number three thousand above the placard and not one soul above what the loops would truly bear, and the ship lifted heavy and stable. It is the difference between a placard and a person who understands the machine, and on that day it was worth three thousand lives."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_manifest_on_a_hungry_ship",
+    "min_lean_food_years": 5,
+    "description_add": "The purser puts a single sheet in front of the council before anyone speaks. Five years of short commons; the stores as they stand; the ration curve with four thousand added to the divisor. She does not recommend anything. She does not have to.",
+    "resource_delta": {
+     "food": -200
+    },
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "Whatever was decided was decided over the purser's sheet, and the ship's own people did the arithmetic on their own portions while the ramp was still open."
+   },
+   {
+    "id": "a_feared_hull_closes_the_ramp",
+    "max_reputation": [
+     {
+      "id": "mercy",
+      "threshold": 0.3
+     }
+    ],
+    "applies_to_outcomes": [
+     "hold_the_line_at_the_ramp"
+    ],
+    "description_add": "The queue at the ramp is already thinner than the manifest count. Word of which hull was coming reached this site a week ahead of the hull, and a great many people made other arrangements rather than stand in front of it.",
+    "population_delta": {
+     "morale": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.03
+     }
+    ],
+    "log": "The line held easily, because it had been half-abandoned before the ship even made orbit. A name does the work of a watch detail, eventually, and costs about what you would expect."
+   }
+  ]
+ },
+ {
+  "id": "the_crowded_years",
+  "category": "generational_challenge",
+  "title": "The Crowded Years",
+  "description": "Eighteen years since the lift, and the ship has never come back down to its rating. The cargo rings are still bunkage. Children have been born in them who have never slept anywhere else, and who are counted in a column of the charter's paperwork that has no word for what they are — not crew, not cargo, not passengers, recovered. The scrubbers have been on surge for two decades. Something has to be decided about the shape of this ship.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "build_out_the_cold_rings",
+    "label": "Build out the cold rings",
+    "description": "Stop pretending it is temporary. Open the sealed outer rings, run heat and air and water to them properly, and give the crowding somewhere to be. A decade of work and most of a treasury.",
+    "resource_delta": {
+     "credits": -450,
+     "energy": -250,
+     "minerals": -120
+    },
+    "ship_delta": {
+     "life_support": 0.05
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "stability": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": 0.07
+     }
+    ],
+    "long_term_consequences": [
+     "opened_the_cold_rings"
+    ],
+    "log": "The outer rings came out of cold storage after two centuries dark, and a decade of work and most of a treasury turned a bunkage crisis into simply a larger ship. The plant came off surge for the first time since the lift. The rings smell of new sealant and old dust and are, by common agreement, the ugliest habitable volume aboard."
+   },
+   {
+    "id": "hold_the_crowding",
+    "label": "Hold the crowding",
+    "description": "The ship has borne it for eighteen years and can bear it further. Spend nothing, build nothing, and let the arrangement that was going to be temporary become the arrangement. The plant will hold. Most things hold.",
+    "population_delta": {
+     "morale": -0.07,
+     "unity": -0.06,
+     "stability": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "life_support_habitat",
+      "condition": -0.07
+     },
+     {
+      "id": "medical_bay",
+      "condition": -0.05
+     }
+    ],
+    "long_term_consequences": [
+     "the_long_crowding"
+    ],
+    "log": "Nothing was built and nothing was spent, and the temporary arrangement quietly finished becoming permanent. The plant held, at a cost paid slowly out of its own condition and the infirmary's; the decks sorted themselves into the bunked and the berthed; and a ship that had done a magnificent thing eighteen years earlier went on being a worse place to live because of it."
+   },
+   {
+    "id": "they_are_crew_now",
+    "label": "Enroll them",
+    "description": "There is a word for four thousand people who have lived aboard for eighteen years and raised children here, and it is not recovered. Strike the column, open the muster, and enroll them — berths, duties, votes, names in the roll. Only a ship whose own people already think of themselves as the merciful kind will carry the vote.",
+    "requires": {
+     "min_reputation": [
+      {
+       "id": "mercy",
+       "threshold": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "credits": -280,
+     "food": -300
+    },
+    "population_delta": {
+     "count": 180,
+     "morale": 0.06,
+     "unity": 0.07,
+     "adaptation": 0.03,
+     "cultural_drift": 0.05
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.06
+     }
+    ],
+    "long_term_consequences": [
+     "the_rescued_enrolled"
+    ],
+    "log": "The muster was opened and four thousand people stopped being a column in the paperwork. They came aboard the roll with their own trades and their own calendar and their own dead, and the ship that admitted them was a different ship by the following generation — larger, louder, further from its founders, and no longer carrying anyone it had not agreed to carry."
+   }
+  ]
+ },
+ {
+  "id": "the_clause_they_will_not_sign",
+  "category": "mission_milestone",
+  "title": "The Clause They Will Not Sign",
+  "description": "Nineteen months of residency and the accord is finished but for one instrument: the standing right of transit through the host's inner reaches, which the charter treats as the whole point and the hosts' assembly treats as the one thing it has left to refuse. Their negotiator is apologetic and immovable and, the ship's people increasingly suspect, under instruction to be exactly that. The tally the charter grades is souls sustained, and the aid convoys run through the reaches or they do not run.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "inhabited"
+  ],
+  "outcomes": [
+   {
+    "id": "sign_the_narrow_accord",
+    "label": "Sign the narrow accord",
+    "description": "Take the agreement that is on the table. Transit by petition, convoy by convoy, at the hosts' convenience. It works, slowly, and it leaves the relationship intact for whoever holds this residency in fifty years.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "stability": 0.04
+    },
+    "objective_progress_delta": 0.04,
+    "log": "The narrow accord was signed and the convoys began running by petition, one at a time, at a pace that satisfied nobody and offended no one. The ship's negotiators recorded in the margin that they considered it a poor instrument and the best available, in that order."
+   },
+   {
+    "id": "press_for_the_whole_charter",
+    "label": "Press for the whole charter",
+    "description": "Hold the line the charter drew. Suspend the aid flights, sit at the table, and let the hosts' assembly discover what a residency looks like when the ship stops being obliging. It is a hard thing to do to people the charter exists to keep alive.",
+    "resource_delta": {
+     "influence": -60
+    },
+    "population_delta": {
+     "morale": -0.04,
+     "stability": -0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": 0.08
+     }
+    ],
+    "objective_progress_delta": 0.09,
+    "long_term_consequences": [
+     "pressed_the_accord"
+    ],
+    "log": "The ship stopped being obliging for eleven weeks, and the assembly signed the transit instrument entire on the twelfth. The convoys now run on standing right at four times the old rate. The hosts' negotiator, when he signed, said the ship had learned something about his assembly, and that his assembly had learned something about the ship, and that he was not certain either was a gift."
+   },
+   {
+    "id": "withdraw_the_clause",
+    "label": "Withdraw the clause",
+    "description": "The hosts have been asked to give up something they were never going to give up, by people who will leave in a decade. Strike the transit instrument, take the goodwill that comes of striking it, and run the aid the long way around.",
+    "resource_delta": {
+     "influence": 30
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "resolve",
+      "delta": -0.07
+     }
+    ],
+    "objective_progress_delta": -0.05,
+    "long_term_consequences": [
+     "folded_at_the_table"
+    ],
+    "log": "The ship struck its own clause, and the assembly's relief was genuine and the goodwill real and the convoys now run the long way, at a cost in months and fuel that the tally will feel for the rest of the residency. The hosts consider this ship reasonable. Several other parties, watching, drew a different word from the same act."
+   },
+   {
+    "id": "draft_the_third_instrument",
+    "label": "Draft a third instrument",
+    "description": "The Accord's advocates see what both sides have missed: the assembly cannot grant a standing right, but nothing forbids it from *delegating* one to a joint body it seats half of. Draft the third instrument, and let both parties win the argument they were actually having.",
+    "requires": {
+     "requires_dominant_faction": "meridian_accord"
+    },
+    "resource_delta": {
+     "influence": -35,
+     "credits": -150
+    },
+    "population_delta": {
+     "stability": 0.06,
+     "unity": 0.03
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "meridian_accord",
+      "delta": 0.08
+     }
+    ],
+    "objective_progress_delta": 0.07,
+    "long_term_consequences": [
+     "the_third_instrument"
+    ],
+    "log": "The Accord's advocates spent a month drafting an instrument that granted nobody anything and gave both parties what they wanted, and the assembly ratified it without ever having to say it had conceded. The convoys run under a joint authority that will outlast the residency, the ship, and quite possibly the charter — which is what the Meridian Accord's people mean when they say a good instrument is a kind of monument."
+   }
+  ]
+ },
+ {
+  "id": "the_convoy_that_will_not_wait",
+  "category": "immediate_crisis",
+  "title": "The Convoy That Will Not Wait",
+  "description": "Two convoys, one escort. The freighters at the near mark are loaded, insured and prepared to sail on schedule whether or not anything is covering them; the slower hulls at the far mark are carrying the thing that made this patrol worth a charter and cannot make the passage alone. The patrol's tally counts convoys escorted, and counts them the same.",
+  "requires_decision": true,
+  "family": "diplomacy",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "patrol"
+  ],
+  "outcomes": [
+   {
+    "id": "escort_at_the_convoy_speed",
+    "label": "Take them in turn",
+    "description": "One escort, one convoy, in order. Run the near mark through, come about, and collect the slow hulls late. Nobody is abandoned and the schedule is a fiction from the first hour.",
+    "ship_delta": {
+     "fuel": -0.05,
+     "hull_integrity": -0.02
+    },
+    "population_delta": {
+     "stability": 0.02
+    },
+    "objective_progress_delta": 0.06,
+    "log": "The escort ran both marks in sequence and burned a season's margin doing it. Both convoys made harbour. Neither made schedule, and the underwriters at the far end had opinions about that which the patrol's officers read with some interest and no regret."
+   },
+   {
+    "id": "split_the_escort",
+    "label": "Split the escort",
+    "description": "Divide the flight, cover both marks at half strength, and double the tally in one passage. Half an escort is a deterrent right up until it is tested.",
+    "ship_delta": {
+     "hull_integrity": -0.07
+    },
+    "population_delta": {
+     "count": -12,
+     "morale": -0.04
+    },
+    "objective_progress_delta": 0.11,
+    "long_term_consequences": [
+     "split_the_escort"
+    ],
+    "log": "The flight split and both convoys made the passage, and the tally took its best single entry of the charter. The far element was tested on the third day by people who could count, and the ship carries the scoring along its dorsal spine and twelve names it did not carry before."
+   },
+   {
+    "id": "run_the_picket_wide",
+    "label": "Run the picket wide",
+    "description": "The watch officers can hold both marks without dividing the flight: run a wide picket off the transit corridor, cover the near convoy from standoff, and be positioned to fall back on the slow hulls. It asks for a corps that has kept its craft rather than merely its numbers.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "security",
+       "at_least": 0.6
+      }
+     ]
+    },
+    "ship_delta": {
+     "fuel": -0.04
+    },
+    "resource_delta": {
+     "credits": -140
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "knowledge": 0.05
+     }
+    ],
+    "objective_progress_delta": 0.08,
+    "log": "The corps ran a wide picket off the corridor and held both marks from standoff without once dividing the flight, which is the kind of manoeuvre that looks like nothing happened. Nothing happened. Both convoys made harbour on schedule and the watch officers were quietly insufferable about it for a year."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_convoy_and_a_hollow_corps",
+    "condition_below": [
+     {
+      "id": "security",
+      "below": 0.4
+     }
+    ],
+    "description_add": "The corps is not what its establishment says it is. Two of the flight's hulls are unserviceable, the standing watch is being kept by people covering two billets each, and the officer briefing the council keeps saying nominally.",
+    "population_delta": {
+     "morale": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "security",
+      "condition": -0.04
+     }
+    ],
+    "log": "Whatever was decided was executed by a corps running on paper strength, and it came back from the marks further from its establishment than it left — the standing cost of asking a hollow watch to do a full watch's work."
+   }
+  ]
  }
 ]

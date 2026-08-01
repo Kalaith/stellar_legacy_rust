@@ -174,7 +174,15 @@ fn every_objective_family_has_operation_content_that_moves_the_tally() {
     use crate::data::contracts::ContractPhase;
     let data = GameData::load().unwrap();
     // The tag each objective family is recognised by on the charter board.
-    for tag in ["mining", "colony", "survey", "salvage"] {
+    for tag in [
+        "mining",
+        "colony",
+        "survey",
+        "salvage",
+        "relief",
+        "patrol",
+        "inhabited",
+    ] {
         let tag = tag.to_string();
         assert!(
             data.contracts.iter().any(|(_, c)| c.tags.contains(&tag)),
