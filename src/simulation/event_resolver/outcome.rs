@@ -103,6 +103,18 @@ pub fn apply_outcome(
         outcome.log.clone()
     };
     sim.push_log(text);
+    // The council's own answers are the voyage's most-worth-remembering beats,
+    // so the homecoming can show the player what they decided a century ago.
+    // Only events that actually asked count — an auto-resolved incident was
+    // something that happened to the ship, not something it chose.
+    if template.requires_decision {
+        crate::simulation::debrief::remember(
+            sim,
+            data,
+            crate::state::sim::debrief::HighlightKind::Decision,
+            format!("{} — {}", template.title, outcome.label),
+        );
+    }
     // An outcome may turn the mission for home early (W2) — the outcome's own
     // deltas carry the flavor; this just bends the voyage onto its return leg.
     if outcome.force_return {

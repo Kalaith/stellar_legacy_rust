@@ -11,6 +11,7 @@ use std::collections::HashMap;
 
 pub mod campaign;
 pub mod contract;
+pub mod debrief;
 pub mod dynasty;
 pub mod factions;
 pub mod market;
@@ -360,6 +361,12 @@ pub struct SimState {
     /// Ship subsystems keyed by catalog id (W5): tier, condition, knowledge.
     #[serde(default)]
     pub subsystems: HashMap<String, subsystems::SubsystemState>,
+    /// The sealed homecoming report, set when a charter concludes and cleared
+    /// when the player dismisses the debrief screen. Serialized so a quit
+    /// mid-read comes back to it — a voyage's only summary should not be lost
+    /// to closing the window.
+    #[serde(default)]
+    pub debrief: Option<debrief::VoyageDebrief>,
     pub log: Vec<LogEntry>,
 }
 
@@ -463,5 +470,53 @@ mod tests {
         let back: SimState = serde_json::from_str(&json).unwrap();
         assert_eq!(back.dynasty.members.len(), sim.dynasty.members.len());
         assert_eq!(back.legacy.legacy_id, "wanderers");
+        // The reign roster is part of the saved state — a campaign that loses it
+        // loses every captaincy before the sitting one.
+        assert_eq!(back.dynasty.reigns.len(), sim.dynasty.reigns.len());
+        assert_eq!(back.dynasty.reigns[0].name, sim.dynasty.reigns[0].name);
+    }
+
+    #[test]
+    fn an_unread_homecoming_survives_a_save_and_load() {
+        // The debrief is a full-screen takeover the player dismisses by hand.
+        // Quitting while it is up and loading back must return to it — a
+        // voyage's only summary should not be lost to closing the window.
+        let data = GameData::load().unwrap();
+        let mut sim = SimState::new_campaign(
+            &data,
+            "preservers",
+            11,
+            &crate::state::sim::founding_faction_ids(&data),
+        );
+        sim.debrief = Some(debrief::VoyageDebrief {
+            contract_name: "Salvage Writ: The Long Tow".to_owned(),
+            outcome: "Partial".to_owned(),
+            score: 0.62,
+            duration_years: 450,
+            highlights: vec![debrief::VoyageHighlight {
+                year: 22,
+                month: 7,
+                kind: debrief::HighlightKind::Milestone,
+                text: "Departure burn complete".to_owned(),
+            }],
+            commanders: vec![sim.dynasty.reigns[0].clone()],
+            ..Default::default()
+        });
+
+        let json = serde_json::to_string(&sim).unwrap();
+        let back: SimState = serde_json::from_str(&json).unwrap();
+        let report = back.debrief.expect("the unread report came back");
+        assert_eq!(report.contract_name, "Salvage Writ: The Long Tow");
+        assert_eq!(report.outcome, "Partial");
+        assert_eq!(report.duration_years, 450);
+        assert_eq!(report.highlights.len(), 1);
+        assert_eq!(report.highlights[0].kind, debrief::HighlightKind::Milestone);
+        assert_eq!(report.commanders.len(), 1);
+
+        // …and a filed report stays filed.
+        sim.debrief = None;
+        let json = serde_json::to_string(&sim).unwrap();
+        let back: SimState = serde_json::from_str(&json).unwrap();
+        assert!(back.debrief.is_none());
     }
 }

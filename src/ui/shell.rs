@@ -41,6 +41,11 @@ pub struct GameplayCtx<'a> {
     /// Smooth-scroll state for the CHRONICLE log, which accumulates across
     /// playthroughs and outlives any single save.
     pub chronicle_scroll: &'a std::cell::Cell<macroquad_toolkit::ui::ScrollArea>,
+    /// Smooth-scroll state for the homecoming debrief's chain-of-command list —
+    /// a long charter passes through more captains than the panel holds.
+    pub debrief_commanders_scroll: &'a std::cell::Cell<macroquad_toolkit::ui::ScrollArea>,
+    /// Smooth-scroll state for the homecoming debrief's voyage log.
+    pub debrief_log_scroll: &'a std::cell::Cell<macroquad_toolkit::ui::ScrollArea>,
     /// SHIP builder sub-tab: `false` = LOADOUT catalog, `true` = MODULES (named
     /// subsystem version ladders). Pure view state, flipped by the on-screen toggle.
     pub ship_modules_tab: &'a std::cell::Cell<bool>,
@@ -54,6 +59,15 @@ pub fn draw_gameplay(ctx: GameplayCtx<'_>) -> Vec<UiAction> {
     // normal screens (GDD §7).
     if ctx.sim.dynasty.extinct {
         game_over::draw(&ctx, pointer, &mut actions);
+        return actions;
+    }
+
+    // A charter that just concluded takes the screen the way extinction does —
+    // the homecoming is the run's climax, and it used to pass by as two lines in
+    // a log that scrolls. Reading it is the only thing on offer until the player
+    // files the report.
+    if ctx.sim.debrief.is_some() {
+        debrief::draw(&ctx, pointer, &mut actions);
         return actions;
     }
 

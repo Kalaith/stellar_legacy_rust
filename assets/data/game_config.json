@@ -960,5 +960,6 @@
     "impact_min_magnitude_for_range": 20
   },
   "fixed_seed": null,
-  "log_limit": 200
+  "log_limit": 200,
+  "voyage_highlight_limit": 120
 }

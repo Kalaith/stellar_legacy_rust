@@ -313,4 +313,9 @@ pub struct GameConfig {
     /// new dynasty's accumulated Chronicle renown clears grants its bonus.
     pub heritage: Vec<HeritageTier>,
     pub log_limit: usize,
+    /// How many voyage beats a single charter remembers for its homecoming
+    /// debrief. Unlike `log_limit` this bounds a per-voyage list that is
+    /// snapshotted and then dropped, so it can be generous; past the cap the
+    /// oldest beats fall away.
+    pub voyage_highlight_limit: usize,
 }

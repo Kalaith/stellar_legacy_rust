@@ -127,6 +127,7 @@ impl SimState {
             fat_food_years: 0,
             factions: factions::build_founding_factions(faction_ids, config.starting_population),
             subsystems: subsystems::build_founding_subsystems(data),
+            debrief: None,
             log: Vec::new(),
         };
         // Record the launch morale's band so the ship's hopeful starting spirits

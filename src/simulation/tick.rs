@@ -15,7 +15,9 @@ mod tests;
 use crate::data::contracts::ContractPhase;
 use crate::data::GameData;
 use crate::simulation::contract::SuccessLevel;
+use crate::simulation::debrief::remember;
 use crate::simulation::{contract, event_resolver, mortality, ship, subsystems};
+use crate::state::sim::debrief::HighlightKind;
 use crate::state::sim::SimState;
 
 use beats::*;
@@ -202,6 +204,10 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
             pool[sim.log.len() % pool.len()].replace("{milestone}", milestone)
         };
         sim.push_log(line);
+        // …and remember it for the homecoming, in the charter's own words
+        // rather than the pooled flavor line, so the debrief's timeline reads
+        // as a list of marks rather than a second helping of prose.
+        remember(sim, data, HighlightKind::Milestone, milestone.clone());
     }
     if let Some(phase) = progress.phase_changed {
         let occurrence = sim
@@ -213,6 +219,7 @@ fn month_of_contract(sim: &mut SimState, data: &GameData, report: &mut TickRepor
             phase,
             occurrence,
         ));
+        remember(sim, data, HighlightKind::Phase, phase.label().to_owned());
         report.phase_changed = Some(phase);
     }
     if let Some(result) = progress.completed {

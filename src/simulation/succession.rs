@@ -23,10 +23,18 @@ pub fn eligible_heir_exists(dynasty: &Dynasty, config: &GameConfig) -> bool {
 /// highest-leadership member in the ideal heir band, and failing that the best of
 /// whoever remains — a ship is never left without a captain while anyone lives.
 /// Returns the new leader's name (if any member remained) and whether the dynasty
-/// is now extinct (no members at all).
-pub fn install_successor(dynasty: &mut Dynasty, config: &GameConfig) -> (Option<String>, bool) {
+/// is now extinct (no members at all). `year` stamps the handoff into the reign
+/// roster, which outlives the living members the way the chair itself does.
+pub fn install_successor(
+    dynasty: &mut Dynasty,
+    config: &GameConfig,
+    year: u32,
+) -> (Option<String>, bool) {
     // A handoff starts a new reign (content-depth campaign skeleton round 19).
     dynasty.leader_reign_years = 0;
+    // Close the outgoing captaincy before the seat is cleared — after the loop
+    // below there is no way to tell who was sitting in it.
+    dynasty.end_reign(year);
     dynasty.long_reign_marked = false;
     for member in &mut dynasty.members {
         member.is_leader = false;
@@ -66,6 +74,7 @@ pub fn install_successor(dynasty: &mut Dynasty, config: &GameConfig) -> (Option<
     match heir_index {
         Some(i) => {
             dynasty.members[i].is_leader = true;
+            dynasty.begin_reign(year);
             (Some(dynasty.members[i].name.clone()), false)
         }
         None => {
@@ -107,7 +116,8 @@ mod tests {
         for member in &mut sim.dynasty.members {
             member.is_leader = false;
         }
-        let (new_leader, extinct) = install_successor(&mut sim.dynasty, &data.config);
+        let year = sim.year();
+        let (new_leader, extinct) = install_successor(&mut sim.dynasty, &data.config, year);
         assert!(!extinct, "the founding dynasty is not extinct");
         assert!(new_leader.is_some(), "a founding heir stands ready");
         let leader = sim.dynasty.leader().expect("a leader was installed");
@@ -143,7 +153,8 @@ mod tests {
             .expect("founding dynasty has eligible members");
         sim.dynasty.designated_heir = Some(weakest);
 
-        let (new_leader, _) = install_successor(&mut sim.dynasty, &data.config);
+        let year = sim.year();
+        let (new_leader, _) = install_successor(&mut sim.dynasty, &data.config, year);
         assert!(new_leader.is_some());
         assert_eq!(
             sim.dynasty.leader().map(|l| l.id),

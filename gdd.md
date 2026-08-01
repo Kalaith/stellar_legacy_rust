@@ -483,6 +483,7 @@ on loop, not to invent new systems.
 | Contract & Systems | Active contract progress/milestones, relevant systems for the current journey (replaces the original's sprawling 50-system galaxy map, §0) | `GridLayout`, progress meters |
 | Market | Buy/sell the 4 tradeable resources with price trend | `TextStyle`, simple table layout |
 | Event/Decision modal | Resolve a triggered event or dilemma; shows outcome preview | `NotificationManager` / modal surface |
+| Homecoming debrief | Full-screen takeover on contract conclusion: authored outcome prose, the pay actually banked, the scorecard behind the band, every captain the voyage passed through, and the voyage log (marks, legs, council decisions). The success counterpart to the extinction takeover | `ScrollArea`, `term_bar`, panels |
 | Chronicle & Heritage | End-of-playthrough summary, Heritage modifier selection for a new save | `ScrollTabs`, `TextStyle` |
 | Pause/Settings | Time-advance pace, delegation toggles, save/load | `VirtualUi` |
 
@@ -495,8 +496,18 @@ Interaction flow (mirrors `realmseed/gdd.md`'s numbered turn structure):
 4. If the event needs a decision, the modal opens and blocks further advancement until
    resolved (or handled by a delegated advisor, which logs the outcome without
    blocking).
-5. On contract completion, flow moves to Chronicle for the summary, then back to
-   Dashboard for the next contract.
+5. On contract completion, the Homecoming debrief takes the screen — the run's climax
+   is read, not scrolled past — and filing the report lands the ship on the Drydock
+   board for its next charter. The Chronicle keeps the across-playthrough record.
+
+The debrief is built from state captured *while the voyage runs*, not read back
+afterwards: the ship's log is trimmed to `log_limit` and `sim.contract` is cleared on
+conclusion, so a 450-year charter would otherwise have forgotten its own departure by
+the time it docks. Notable beats accrue onto the active contract
+(`ActiveContract::highlights`, capped by `voyage_highlight_limit`, giving up council
+decisions before marks and legs so the whole voyage stays represented), captaincies
+accrue onto `Dynasty::reigns`, and conclusion seals a `VoyageDebrief` snapshot that
+outlives both. The report is serialized, so quitting mid-read returns to it.
 
 ---
 

@@ -279,6 +279,10 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
         objective_cargo_scaling: template.objective_cargo_scaling,
         preserve_objective: template.preserve_objective,
         preserve_attrition_per_year: template.preserve_attrition_per_year,
+        // The voyage has not happened yet; the homecoming window opens here.
+        highlights: Vec::new(),
+        began_year: sim.year(),
+        began_generation: sim.dynasty.generation,
     }
 }
 

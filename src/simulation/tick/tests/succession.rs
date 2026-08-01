@@ -49,6 +49,67 @@ fn characters_age_die_and_the_line_renews_over_a_long_voyage() {
 }
 
 #[test]
+fn every_captaincy_of_a_long_voyage_is_kept_on_the_reign_roster() {
+    // The homecoming debrief names every commander a voyage passed through, and
+    // neither surviving record can supply them: the dynasty holds only the
+    // living, and the ship's log is trimmed to `log_limit`. The roster is the
+    // one place a century-old captaincy survives.
+    let (data, mut sim) = provisioned(3, 1.0);
+    let founder = sim.dynasty.leader().unwrap().name.clone();
+    assert_eq!(
+        sim.dynasty.reigns.len(),
+        1,
+        "the founding captain opens the roster"
+    );
+    assert_eq!(sim.dynasty.reigns[0].name, founder);
+
+    for _ in 0..(120 * 12) {
+        sim.pending_event = None;
+        sim.pending_dilemma = None;
+        advance_months(&mut sim, &data, 1);
+        if sim.dynasty.extinct {
+            break;
+        }
+    }
+
+    let reigns = &sim.dynasty.reigns;
+    assert!(
+        reigns.len() > 1,
+        "120 years of mortality passed the chair on at least once"
+    );
+    assert_eq!(
+        reigns[0].name, founder,
+        "the founder stays first on the list"
+    );
+    // The roster is a chain, not a set of loose entries: each captaincy is
+    // closed where the next one opens, and only the sitting one is open.
+    for pair in reigns.windows(2) {
+        let (earlier, later) = (&pair[0], &pair[1]);
+        assert_eq!(
+            earlier.ended_year,
+            Some(later.began_year),
+            "each reign closes where its successor opens"
+        );
+    }
+    for closed in &reigns[..reigns.len() - 1] {
+        assert!(closed.ended_year.is_some(), "a passed-on chair is closed");
+    }
+    let sitting = reigns.last().unwrap();
+    assert_eq!(
+        sitting.ended_year.is_none(),
+        !sim.dynasty.extinct,
+        "the last reign is open only while someone still sits in the chair"
+    );
+    if !sim.dynasty.extinct {
+        assert_eq!(
+            sitting.name,
+            sim.dynasty.leader().unwrap().name,
+            "the open reign names the captain now in the chair"
+        );
+    }
+}
+
+#[test]
 fn an_enduring_reign_earns_a_long_reign_beat_once() {
     // Content-depth campaign skeleton round 19: a leader who beats the odds of
     // continuous mortality and holds the chair for `long_reign_years` earns a beat,
@@ -77,7 +138,8 @@ fn an_enduring_reign_earns_a_long_reign_beat_once() {
     );
 
     // A fresh succession re-arms it for the next reign.
-    crate::simulation::succession::install_successor(&mut sim.dynasty, &data.config);
+    let year = sim.year();
+    crate::simulation::succession::install_successor(&mut sim.dynasty, &data.config, year);
     assert!(
         !sim.dynasty.long_reign_marked && sim.dynasty.leader_reign_years == 0,
         "a handoff starts a new, unmarked reign"

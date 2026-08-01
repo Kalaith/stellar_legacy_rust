@@ -206,9 +206,64 @@ pub struct ActiveContract {
     /// (round 23), copied at launch.
     #[serde(default)]
     pub preserve_attrition_per_year: f32,
+    /// The beats this voyage will be remembered by, captured as they happen and
+    /// snapshotted into the homecoming debrief. Kept here rather than read back
+    /// out of `sim.log` because the log is trimmed to `log_limit` — a long
+    /// crossing has forgotten its own departure by the time it docks.
+    #[serde(default)]
+    pub highlights: Vec<super::debrief::VoyageHighlight>,
+    /// Campaign year the charter launched, so the debrief can name the window
+    /// it ran over without back-computing it from a month count that a fuel
+    /// stall may have stretched.
+    #[serde(default)]
+    pub began_year: u32,
+    /// Dynasty generation at launch, against which the homecoming counts how
+    /// many turned over under way.
+    #[serde(default)]
+    pub began_generation: u32,
 }
 
 impl ActiveContract {
+    /// Remember a beat, oldest first. The list is capped so a 450-year charter
+    /// cannot grow the save without bound.
+    ///
+    /// What falls away when it is full matters more than it looks. Dropping the
+    /// oldest outright would have left the debrief of a full-length charter
+    /// showing only its final decade — the departure, the halfway beacon, and
+    /// the first dozen captaincies all gone. So the structural beats (marks,
+    /// legs, chairs) are kept in preference to council decisions: they are few,
+    /// they are spread across the whole voyage, and together they are its
+    /// skeleton. Decisions are many, so they are what gives way, oldest first.
+    pub fn push_highlight(
+        &mut self,
+        year: u32,
+        month: u32,
+        kind: super::debrief::HighlightKind,
+        text: impl Into<String>,
+        limit: usize,
+    ) {
+        use super::debrief::HighlightKind as Kind;
+        self.highlights.push(super::debrief::VoyageHighlight {
+            year,
+            month,
+            kind,
+            text: text.into(),
+        });
+        if limit == 0 {
+            return;
+        }
+        while self.highlights.len() > limit {
+            // Give up the oldest council decision; failing that (a voyage of
+            // nothing but structure), the oldest beat of any kind.
+            let victim = self
+                .highlights
+                .iter()
+                .position(|h| h.kind == Kind::Decision)
+                .unwrap_or(0);
+            self.highlights.remove(victim);
+        }
+    }
+
     /// Total contract length in months.
     pub fn total_months(&self) -> u32 {
         self.target_duration_years * 12

@@ -133,6 +133,13 @@ pub struct Game {
     /// Smooth-scroll state for the CHRONICLE log, which grows across
     /// playthroughs and long ago outgrew the nine entries it used to show.
     chronicle_scroll: Cell<ScrollArea>,
+    /// Smooth-scroll state for the homecoming debrief's chain-of-command list:
+    /// a century-long charter can pass through more captains than the panel
+    /// holds, and the point of the list is that none of them is dropped.
+    debrief_commanders_scroll: Cell<ScrollArea>,
+    /// Smooth-scroll state for the homecoming debrief's voyage log, which holds
+    /// up to `voyage_highlight_limit` remembered beats.
+    debrief_log_scroll: Cell<ScrollArea>,
     /// SHIP builder sub-tab: `false` = LOADOUT (hull/engine/weapon catalog),
     /// `true` = MODULES (the six subsystems' named version ladders). Pure view
     /// state, flipped by the on-screen toggle.
@@ -213,6 +220,8 @@ impl Game {
             ship_scroll: Cell::new([ScrollArea::new(); 3]),
             roster_scroll: Cell::new(ScrollArea::new()),
             chronicle_scroll: Cell::new(ScrollArea::new()),
+            debrief_commanders_scroll: Cell::new(ScrollArea::new()),
+            debrief_log_scroll: Cell::new(ScrollArea::new()),
             ship_modules_tab: Cell::new(false),
         }
     }
@@ -472,6 +481,8 @@ impl Game {
                     ship_scroll: &self.ship_scroll,
                     roster_scroll: &self.roster_scroll,
                     chronicle_scroll: &self.chronicle_scroll,
+                    debrief_commanders_scroll: &self.debrief_commanders_scroll,
+                    debrief_log_scroll: &self.debrief_log_scroll,
                     ship_modules_tab: &self.ship_modules_tab,
                 }),
             }

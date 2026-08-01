@@ -212,7 +212,8 @@ pub fn monthly_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport
     if leader_gone
         || (leader_retired && succession::eligible_heir_exists(&sim.dynasty, &data.config))
     {
-        let (new_leader, _) = succession::install_successor(&mut sim.dynasty, &data.config);
+        let year = sim.year();
+        let (new_leader, _) = succession::install_successor(&mut sim.dynasty, &data.config, year);
         if let Some(name) = new_leader {
             let idx = sim.dynasty.next_member_id as usize; // varies per handoff
             if let Some(line) =
@@ -220,6 +221,12 @@ pub fn monthly_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport
             {
                 sim.push_log(line);
             }
+            // Deliberately *not* remembered as a voyage-log beat: the debrief's
+            // chain-of-command column already names every captain a charter
+            // passed through, with the generation, years held, and temperament
+            // this line has no room for. A 450-year charter changes captains
+            // twenty-odd times, and logging each one crowded the council's own
+            // decisions — the log's unique content — out of the record.
         }
     }
 
@@ -227,6 +234,10 @@ pub fn monthly_tick(sim: &mut SimState, data: &GameData, report: &mut TickReport
     // once, on the crossing into extinction.
     if sim.dynasty.members.is_empty() && !sim.dynasty.extinct {
         sim.dynasty.extinct = true;
+        // Seal the last captaincy: the roster is a record of who held the chair,
+        // and an open-ended final reign would read as still sitting.
+        let year = sim.year();
+        sim.dynasty.end_reign(year);
         let line = FlavorConfig::line_with_name(&data.config.flavor.extinction, 0, "")
             .unwrap_or_else(|| "The dynasty has no heirs. The line ends here.".to_owned());
         sim.push_log(line);

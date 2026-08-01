@@ -8,6 +8,7 @@ pub mod chronicle;
 pub mod contract_systems;
 pub mod crew_dynasty;
 pub mod dashboard;
+pub mod debrief;
 pub mod event_modal;
 pub mod game_over;
 pub mod help;
@@ -194,6 +195,9 @@ pub enum UiAction {
     SaveGame,
     ToMenu,
     RetireVoyage,
+    /// Dismiss the homecoming debrief: clear the sealed report and hand the
+    /// ship back to the drydock board for its next charter.
+    FileReport,
     SelectScreen(Screen),
     // Gameplay verbs (GDD §4)
     /// Set the real-time auto-advance rate / pause (real-time loop §1).
