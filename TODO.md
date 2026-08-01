@@ -30,11 +30,10 @@ the discrete open items left behind by finished workstreams.
 
 ## Event content
 
-- Add more Operation-phase objective-specific beats (mining hazards, colony setup,
-  survey complications); the on-station leg is thinner than Travel.
-- Give each objective family at least one authored Operation arc that changes more than
-  flavour: objective progress, subsystem condition, faction standing, reputation, or
-  a later milestone should be affected by the player's decisions.
+- Finish the Operation-leg objective coverage: `mining`, `colony`, `survey` and
+  `salvage` now have on-station events whose choices move the tally, but the
+  **rescue/`relief`** and **diplomacy** legs still have no objective-biting content
+  of their own.
 - Add distinctive charter-family scoring or milestone behaviour so charters do not
   mainly feel like different routes through the same four success metrics. Preserve
   the existing Ark-style objective-specific metric as the model.

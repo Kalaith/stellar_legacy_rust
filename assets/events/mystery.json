@@ -660,5 +660,274 @@
     "log": "The ship refused to see itself through alien eyes and kept its own account of who it was — a memory of the founding warmer and less true than the strangers' version, and the ship's, and held all the tighter for the refusing."
    }
   ]
+ },
+ {
+  "id": "the_wreck_is_not_empty",
+  "category": "legacy_moment",
+  "title": "The Wreck Is Not Empty",
+  "description": "Three days into cutting the derelict's spine, a recovery crew opens a sealed ring and finds the reason it was sealed. They are all still here — nine hundred of them, arranged with care by whoever was last able to arrange anything, in a compartment somebody chose to make tidy before the air went. The charter's tally counts recovered mass. It does not have a column for this.",
+  "requires_decision": true,
+  "family": "mystery",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "salvage"
+  ],
+  "outcomes": [
+   {
+    "id": "record_and_recover",
+    "label": "Record them, then work around them",
+    "description": "Photograph and name what can be named, seal the ring against the cutting, and take the rest of the ship. The dead keep their compartment; the charter gets everything else.",
+    "population_delta": {
+     "morale": -0.02,
+     "stability": 0.02
+    },
+    "objective_progress_delta": 0.04,
+    "log": "The ring was recorded, named where names survived, and welded shut against the cutting torches. The crews worked the rest of the hull for a season with that compartment at their backs, and were quieter at meals than the tally would suggest."
+   },
+   {
+    "id": "strip_it_clean",
+    "label": "Strip it clean",
+    "description": "Mass is mass. The compartment is the densest structure left in the wreck and the charter is measured in tonnes, not in scruples. Cut it with the rest and enter it in the tally.",
+    "population_delta": {
+     "morale": -0.06,
+     "unity": -0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": -0.07
+     }
+    ],
+    "objective_progress_delta": 0.09,
+    "long_term_consequences": [
+     "stripped_the_graves"
+    ],
+    "log": "The ring went into the holds with the rest of the hull, and the tally had its best month of the charter. The crews who did the cutting asked afterwards for a different rotation, and the story travelled — a hull that will cut a grave for tonnage is a specific kind of hull, and the dark now knows this one by that name."
+   },
+   {
+    "id": "seal_it_as_a_grave",
+    "label": "Leave the wreck as a grave",
+    "description": "Take nothing further. Log the derelict's position, register it as a burial, and cut the charter short of its number rather than short of itself. Somebody arranged them tidily before the end, and that was a message.",
+    "population_delta": {
+     "morale": 0.06,
+     "unity": 0.04,
+     "legacy_loyalty": 0.03
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.08
+     }
+    ],
+    "objective_progress_delta": -0.08,
+    "long_term_consequences": [
+     "honored_the_wreck"
+    ],
+    "log": "The ship pulled its torches out of a dead vessel it had every legal right to eat, registered the position as a grave, and went home light. The charter was paid short. The crews, who had expected to argue about it, found they mostly did not want to."
+   },
+   {
+    "id": "carry_them_home",
+    "label": "Carry their record home",
+    "description": "This ship's name travels ahead of it, and it is a name the dead's people will believe. Recover the derelict's log and roll intact, work the rest of the hull, and deliver nine hundred names to whoever is still waiting on them. Only a hull already known for mercy will be trusted with that errand.",
+    "requires": {
+     "min_reputation": [
+      {
+       "id": "mercy",
+       "threshold": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "influence": 40
+    },
+    "population_delta": {
+     "morale": 0.04,
+     "unity": 0.03,
+     "stability": 0.02
+    },
+    "reputation_deltas": [
+     {
+      "id": "mercy",
+      "delta": 0.05
+     }
+    ],
+    "objective_progress_delta": 0.03,
+    "log": "The ship cut the hull and carried the roll — nine hundred names, a ship's log, and the position of a sealed ring — and handed all of it to people who had spent a generation not knowing. It made the charter's number and something else besides, and the something else is what got repeated at every station the ship put in at afterwards."
+   }
+  ],
+  "complications": [
+   {
+    "id": "a_feared_hull_does_not_hesitate",
+    "max_reputation": [
+     {
+      "id": "mercy",
+      "threshold": 0.3
+     }
+    ],
+    "applies_to_outcomes": [
+     "strip_it_clean"
+    ],
+    "description_add": "There is no argument on the recovery deck. This crew has done work like this before under this flag, and the only question anybody raises is which torch head cuts the sealed ring fastest.",
+    "population_delta": {
+     "morale": -0.03
+    },
+    "log": "Nobody objected, which the ship's officers noted and did not examine, and the ring was open inside an hour. A crew stops finding this difficult at some point. That point was some time ago."
+   },
+   {
+    "id": "the_wreck_and_a_hungry_ship",
+    "min_lean_food_years": 8,
+    "description_add": "The recovery crews have been on short commons for eight years and the derelict's stores rings are intact. Whatever is decided about the dead, there is a separate and less dignified argument going on about their preserves.",
+    "resource_delta": {
+     "food": 250
+    },
+    "population_delta": {
+     "morale": -0.02
+    },
+    "log": "The ship took the dead vessel's stores whatever else it decided, because eight years of thin rations settle that kind of question in advance, and the crews ate well for a while off a larder nobody had wanted to inherit."
+   }
+  ]
+ },
+ {
+  "id": "the_null_result",
+  "category": "mission_milestone",
+  "title": "The Null Result",
+  "description": "The survey grid is two-thirds flown and the volume is empty. Not sparse — empty: no bodies above the detection floor, no resonance, no debris, nothing but a clean hydrogen background across four hundred thousand cubic units of charted nothing. The instruments check out. The finding is real, and it is the least saleable result in the charter's catalogue.",
+  "requires_decision": true,
+  "family": "mystery",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "survey"
+  ],
+  "outcomes": [
+   {
+    "id": "log_the_negative",
+    "label": "Log the negative and fly the rest",
+    "description": "A void charted is a void nobody has to cross blind again. Enter the emptiness as the finding it is, finish the grid honestly, and let the assessors think what they like of the number.",
+    "population_delta": {
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "objective_progress_delta": 0.03,
+    "log": "The ship filed the emptiness as a result, flew out the remaining grid at the same careful spacing, and came away with a chart whose chief virtue is that it is true. The archive gained a volume; the tally gained very little."
+   },
+   {
+    "id": "pad_the_survey",
+    "label": "Pad the return",
+    "description": "Loosen the detection floor, promote the noise, and let the marginal contacts stand as contacts. A grid this empty grades as a failed charter, and the people who set the target were not out here to see it.",
+    "population_delta": {
+     "stability": -0.03,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.06
+     }
+    ],
+    "objective_progress_delta": 0.1,
+    "long_term_consequences": [
+     "padded_survey"
+    ],
+    "schedule_followup": {
+     "template_id": "the_survey_is_re_flown",
+     "delay_years": 25
+    },
+    "log": "The detection floor came down, the noise was promoted to contacts, and the charter's tally recovered handsomely inside a month. The survey officers who signed it were careful to sign it jointly, which is the kind of caution that tells you what a crew privately thinks of a decision."
+   },
+   {
+    "id": "re_grid_at_finer_resolution",
+    "label": "Re-grid at finer resolution",
+    "description": "An empty volume at this spacing may be a populated one at half of it. The archive's own methods can re-plan the grid from the negative — expensive in fuel and months, and the only route to a real number. It takes a school that still teaches its instruments.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "education_culture",
+       "at_least": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "credits": -220,
+     "energy": -120
+    },
+    "population_delta": {
+     "morale": -0.02,
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.07
+     }
+    ],
+    "objective_progress_delta": 0.07,
+    "log": "The grid was re-planned at half the spacing off the strength of the negative itself, and the finer pass turned up what the coarse one had flown straight past — small, cold, and real. The archive's teaching paid for its own upkeep in a single quarter, which is an argument the education board has been waiting a century to be able to make."
+   }
+  ]
+ },
+ {
+  "id": "the_survey_is_re_flown",
+  "category": "generational_challenge",
+  "title": "The Survey Is Re-Flown",
+  "description": "A quarter-century on, another hull flies the same volume — a routine confirmation pass, the kind nobody expects to matter. Their grid comes back empty, exactly as empty as it always was, and their filing politely notes a discrepancy with a prior survey of record. The prior survey of record is this ship's. The people who loosened that detection floor are dead. Their signatures are not.",
+  "requires_decision": true,
+  "family": "mystery",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "own_the_correction",
+    "label": "Own it and file the correction",
+    "description": "Withdraw the contacts, publish the original instrument logs, and put the ship's name to the correction before anybody has to ask for it. It costs standing. It costs less than being made to.",
+    "resource_delta": {
+     "influence": -40,
+     "credits": -150
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.05
+     }
+    ],
+    "long_term_consequences": [
+     "corrected_the_record"
+    ],
+    "log": "The council withdrew a survey its own great-grandparents had signed, published the raw instrument logs beside the withdrawal, and took the loss of standing without argument. The archive filed the whole exchange as a teaching case. It has been taught ever since, which was rather the point."
+   },
+   {
+    "id": "dispute_the_re_flight",
+    "label": "Dispute their pass",
+    "description": "Instruments differ; spacings differ; a quarter-century differs. Contest the confirmation on method, defend the signatures of people who cannot defend themselves, and let the matter sit unresolved in the registries where unresolved things are quietly believed by nobody.",
+    "resource_delta": {
+     "influence": -20
+    },
+    "population_delta": {
+     "stability": -0.05,
+     "unity": -0.02
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "meridian_accord",
+      "delta": -0.1
+     }
+    ],
+    "long_term_consequences": [
+     "disputed_the_re_flight"
+    ],
+    "log": "The ship contested the pass on method and defended its dead, and the registries recorded a dispute that will now never be settled by anyone with an interest in settling it. The Meridian Accord's advocates, who had to argue it, made clear they were arguing a position and not a case, and thought less of the council for the distinction."
+   }
+  ]
  }
 ]

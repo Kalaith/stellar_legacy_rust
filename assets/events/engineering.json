@@ -1749,5 +1749,203 @@
     "log": "Under the Steel Covenant the seized works came back not restored but reborn — the makers handing over a mechanism better than any the founders drew, and taking, in the doing of it, a visible pride that ran through the whole engineering deck and left the bay itself the sharper for the work."
    }
   ]
+ },
+ {
+  "id": "the_fractured_face",
+  "category": "immediate_crisis",
+  "title": "The Fractured Face",
+  "description": "The seam the charter names runs behind a shelf the long-range survey called sound. The working face calls it otherwise: a fault plane the width of the gallery, crazed through with old shock fractures, holding up eleven thousand tonnes of hanging wall over the only route to the ore. The shift boss will not send anyone under it without a ruling, and the tally does not move while nobody is under it.",
+  "requires_decision": true,
+  "family": "engineering",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "mining"
+  ],
+  "outcomes": [
+   {
+    "id": "shore_the_shelf",
+    "label": "Shore it properly",
+    "description": "Stop cutting. Set props, pin the fault plane, and do not resume until the hanging wall is held by something other than optimism. Weeks the tally will not get back.",
+    "resource_delta": {
+     "credits": -200,
+     "minerals": -40
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "stability": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.03
+     }
+    ],
+    "objective_progress_delta": -0.05,
+    "log": "The face was shored to the shift boss's satisfaction before another gram came out of it, and the tally sat still for six weeks while the crews set props no assessor would ever see. Nobody was hurt, which is the kind of result that leaves no evidence."
+   },
+   {
+    "id": "cut_through_fast",
+    "label": "Cut through fast",
+    "description": "The fault will hold for a while. Run double shifts, take the ore before the ground decides otherwise, and be out from under the hanging wall before it matters. The tally will leap. The gallery is the wager.",
+    "population_delta": {
+     "count": -14,
+     "morale": -0.05,
+     "unity": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.08
+     }
+    ],
+    "objective_progress_delta": 0.09,
+    "long_term_consequences": [
+     "cut_the_fast_seam"
+    ],
+    "schedule_followup": {
+     "template_id": "the_assay_comes_back",
+     "delay_years": 12
+    },
+    "log": "The crews went in hard and came out with a season's ore in eleven weeks, and the hanging wall came down behind them, mostly behind them. The tally leapt. The muster was read short at the next roll, and the names on it were the ones who had been sent in first because they were the fastest."
+   },
+   {
+    "id": "read_the_rock",
+    "label": "Read the rock and take the branch",
+    "description": "The bay's own geologists can see what the survey could not: the fault is a boundary, and there is a branch seam running clean on the far side of it. Drive a new heading around the hanging wall entirely. Only a crew that has kept its expertise can find the second route.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "engineering_bay",
+       "at_least": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "credits": -120
+    },
+    "population_delta": {
+     "morale": 0.04
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.04
+     }
+    ],
+    "objective_progress_delta": 0.06,
+    "log": "The bay's geologists read the fault as a boundary rather than an obstacle, drove a fresh heading around the far side of it, and struck the branch seam clean in nineteen days. Nobody worked under the hanging wall at all. The founders paid for that expertise a century ago and it came back, in one afternoon's reading, at several times the price."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_face_on_a_failing_bay",
+    "condition_below": [
+     {
+      "id": "engineering_bay",
+      "below": 0.4
+     }
+    ],
+    "description_add": "The cutting gear is its own hazard now: two of the four heading machines run hot and one will not hold a straight bore, so whatever is decided will be done with tools that are themselves part of the fault report.",
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": -0.04
+     }
+    ],
+    "log": "The work was done with failing gear, and the gear came out of it worse — the bay paying, as it always does, for being asked to cut rock with machines it can no longer properly maintain."
+   },
+   {
+    "id": "the_third_shelf",
+    "min_prior_occurrences": 1,
+    "description_add": "The shift boss notes, flatly, that this is not the first fractured face this charter — the whole formation is like this, and the ship has been treating each shelf as a surprise. The crews have started making their own private rules about which headings they will enter.",
+    "population_delta": {
+     "morale": -0.04,
+     "unity": -0.03
+    },
+    "log": "It was the same fault for the third time, and the crews had stopped waiting for the council to be surprised by it. Discipline underground is now a negotiation, conducted shift by shift, out of earshot of the bridge."
+   }
+  ]
+ },
+ {
+  "id": "the_assay_comes_back",
+  "category": "mission_milestone",
+  "title": "The Assay Comes Back",
+  "description": "The grading run on the fast-cut gallery finishes twelve years late, because nobody was in a hurry to run it. The ore from those eleven weeks is shot through with the shattered country rock the crews took along with the seam — it was never sorted, because sorting is what the weeks they skipped were for. Graded honestly, a third of that tally is gravel.",
+  "requires_decision": true,
+  "family": "engineering",
+  "scheduled_only": true,
+  "outcomes": [
+   {
+    "id": "re_run_the_grade",
+    "label": "Re-mill it and grade it honest",
+    "description": "Put the hold through the mills again, sort what can be sorted, and write the tally down to what the ore actually is. The charter is owed a number that means something.",
+    "resource_delta": {
+     "credits": -250,
+     "energy": -150
+    },
+    "population_delta": {
+     "stability": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "knowledge": 0.05
+     }
+    ],
+    "objective_progress_delta": -0.02,
+    "log": "The hold went back through the mills and the tally went down to the truth, which cost the ship a season's power and the pleasant memory of a record quarter. The bay learned more about grading shattered ore in that re-mill than in the whole decade before it."
+   },
+   {
+    "id": "ship_it_as_graded",
+    "label": "Ship it as first graded",
+    "description": "The tally was entered years ago and the assessors are a lifetime away. Seal the holds, keep the number, and let whoever opens them at the far end form their own opinion of the ship that filled them.",
+    "population_delta": {
+     "morale": -0.02
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "steel_covenant",
+      "delta": -0.1
+     }
+    ],
+    "long_term_consequences": [
+     "short_graded_cargo"
+    ],
+    "log": "The holds were sealed on the number as first entered and the matter was not raised again at council. The Steel Covenant raised it elsewhere, at length: to the makers, a false grade is not a clever economy but a lie told in the one language they consider sacred, and they remembered which council had told it."
+   },
+   {
+    "id": "the_makers_recut",
+    "label": "Let the makers recut it",
+    "description": "The Covenant's answer, and only the Covenant's: shattered ore is not spoiled ore, it is unfinished work. Give the forges the hold and the power and they will sort, sinter and remake it into something that grades better than the seam did.",
+    "requires": {
+     "requires_dominant_faction": "steel_covenant"
+    },
+    "resource_delta": {
+     "energy": -300,
+     "credits": -150
+    },
+    "population_delta": {
+     "morale": 0.03,
+     "unity": 0.03
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "steel_covenant",
+      "delta": 0.08
+     }
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "engineering_bay",
+      "condition": 0.05,
+      "knowledge": 0.06
+     }
+    ],
+    "objective_progress_delta": 0.04,
+    "log": "The Covenant took the shattered hold as an insult to be answered rather than a loss to be written down, and gave it back sintered, sorted and grading above the seam it came from. It cost a season of the ship's power. The makers considered the ship to have finally understood something about them, and the forges have run warmer toward the bridge ever since."
+   }
+  ]
  }
 ]

@@ -164,3 +164,30 @@ fn every_event_category_is_well_represented() {
         data.events.len()
     );
 }
+
+/// The on-station leg is where the charter's *work* happens, so every objective
+/// family the contract pool defines must have Operation content that touches the
+/// tally rather than only flavouring it. A family with no such event leaves its
+/// missions playing out as a Travel voyage with a waiting period bolted on.
+#[test]
+fn every_objective_family_has_operation_content_that_moves_the_tally() {
+    use crate::data::contracts::ContractPhase;
+    let data = GameData::load().unwrap();
+    // The tag each objective family is recognised by on the charter board.
+    for tag in ["mining", "colony", "survey", "salvage"] {
+        let tag = tag.to_string();
+        assert!(
+            data.contracts.iter().any(|(_, c)| c.tags.contains(&tag)),
+            "no charter carries the objective tag '{tag}'"
+        );
+        let biting = data.events.iter().filter(|(_, e)| {
+            e.phases.contains(&ContractPhase::Operation)
+                && e.requires_charter_tag.contains(&tag)
+                && e.outcomes.iter().any(|o| o.objective_progress_delta != 0.0)
+        });
+        assert!(
+            biting.count() > 0,
+            "objective family '{tag}' has no Operation event whose choices move the objective"
+        );
+    }
+}

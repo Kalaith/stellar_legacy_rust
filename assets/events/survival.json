@@ -2170,5 +2170,116 @@
     "log": "The ship stopped fighting the stillness and settled into the long drift, a becalmed people learning to live aboard a vessel that had, for a while, ceased to be going anywhere — and finding, to its own surprise, that a home does not have to be moving to be a home."
    }
   ]
+ },
+ {
+  "id": "the_first_winter_ashore",
+  "category": "immediate_crisis",
+  "title": "The First Winter Ashore",
+  "description": "The landing parties have eleven weeks before the axis tilts and the site's long cold closes over them, and three things that all need doing first: permanent shelter, the seed ground broken, and the shuttle field laid. Two can be finished. The settlement officer wants a decision from the ship rather than from the weather, because the weather has already made one.",
+  "requires_decision": true,
+  "family": "survival",
+  "phases": [
+   "operation"
+  ],
+  "requires_charter_tag": [
+   "colony"
+  ],
+  "outcomes": [
+   {
+    "id": "winter_in_the_lander_shells",
+    "label": "Winter in the lander shells",
+    "description": "Build nothing permanent. Bank the landers, run the heaters off the ship's grid, and spend the cold season alive and idle. Everything ashore waits for spring, including the tally.",
+    "resource_delta": {
+     "energy": -200
+    },
+    "population_delta": {
+     "morale": -0.04,
+     "unity": 0.02
+    },
+    "objective_progress_delta": -0.04,
+    "log": "The parties wintered in the lander shells on ship's power, four to a berth for nineteen weeks, and came out in spring with nothing built, nothing planted, and nobody buried. The settlement officer entered it in the log as a season lost, which the people who lived through it considered an ungenerous way to describe it."
+   },
+   {
+    "id": "raise_the_permanent_hall",
+    "label": "Raise the hall before the cold",
+    "description": "Everything into shelter. Work the crews through the last light of the season and put up a hall that will still be standing in a century — and take the losses that come of building in weather that is already turning.",
+    "population_delta": {
+     "count": -20,
+     "morale": 0.05,
+     "unity": 0.05,
+     "stability": 0.03
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "hearth_union",
+      "delta": 0.08
+     }
+    ],
+    "objective_progress_delta": 0.08,
+    "log": "The hall went up in eleven weeks against a closing sky, and the crews who raised it lost people to the cold and the falls and one collapse of green timber. It stood. It is still standing. The Hearth Union set the first long table in it before the roof was finished, on the grounds that a hall is not a building until somebody has eaten in it."
+   },
+   {
+    "id": "plant_before_you_build",
+    "label": "Break the seed ground first",
+    "description": "Shelter can be improvised; a growing season cannot. Put the whole party into breaking and conditioning the seed ground while the soil still takes a blade, and winter rough. Only a crew whose agronomists still know their craft can read this ground well enough to gamble on it.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "agriculture",
+       "at_least": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "food": 300
+    },
+    "population_delta": {
+     "count": -8,
+     "morale": -0.03,
+     "adaptation": 0.03
+    },
+    "faction_approval_deltas": [
+     {
+      "id": "verdant_kin",
+      "delta": 0.09
+     }
+    ],
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "knowledge": 0.05
+     }
+    ],
+    "objective_progress_delta": 0.05,
+    "log": "The agronomists read the ground, judged the frost line, and put every hand into breaking soil while the party still slept in tents. It was a miserable winter and the first harvest came in a full year ahead of schedule, feeding the settlement out of its own dirt before the hall that would shelter it had a roof. The Verdant Kin have told this story at every planting since."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_first_winter_on_short_commons",
+    "min_lean_food_years": 5,
+    "description_add": "The ship above cannot feed this. Five years of thin rations mean the landing parties came down carrying what they will eat, and the arithmetic of the season is being done in portions rather than in weeks.",
+    "population_delta": {
+     "morale": -0.04,
+     "count": -6
+    },
+    "log": "The season was rationed from the first day and the parties went into the cold already thin, which is how a survivable winter becomes a costly one and a costly one becomes a story the settlement tells about its founders."
+   },
+   {
+    "id": "the_first_winter_under_the_kin",
+    "requires_dominant_faction": "verdant_kin",
+    "description_add": "The Verdant Kin run this ship, and their settlement officers came down with a doctrine already written: nothing is a colony until something is growing in it. The debate ashore is not really about the season at all.",
+    "population_delta": {
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "agriculture",
+      "condition": 0.03
+     }
+    ],
+    "log": "Under the Kin the season was argued as a matter of doctrine rather than logistics, and whatever else was decided, a seed frame went into the ground before the first snow — because to these people a landing that plants nothing is not a landing at all."
+   }
+  ]
  }
 ]
