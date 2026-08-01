@@ -241,3 +241,67 @@ fn every_event_gate_names_something_real() {
         }
     }
 }
+
+/// The keeper-of-memory arc: the ship's archive engine is the one custodian that
+/// outlives every generation, so its arc must stay a *fork with two reckonings*
+/// rather than a chain of isolated beats. The petition's two mandates each promise
+/// a payoff decades out; each payoff is gated to its own branch; and the terminal
+/// beat is reachable only from the branch that let the record stand.
+#[test]
+fn the_stewards_arc_forks_and_both_branches_pay_off() {
+    let data = GameData::load().unwrap();
+    let petition = data
+        .events
+        .get("the_stewards_petition")
+        .expect("the steward arc's entry event");
+    // Every branch that hands the record's fate to the engine or to the letter
+    // must schedule its own reckoning; the supervised branch buys its way out.
+    let scheduled: std::collections::HashMap<&str, &str> = petition
+        .outcomes
+        .iter()
+        .filter_map(|o| {
+            o.schedule_followup
+                .as_ref()
+                .map(|f| (o.id.as_str(), f.template_id.as_str()))
+        })
+        .collect();
+    assert_eq!(
+        scheduled.get("grant_the_mandate"),
+        Some(&"the_stewards_edit"),
+        "the mandate branch must promise the edit reckoning"
+    );
+    assert_eq!(
+        scheduled.get("bind_to_the_letter"),
+        Some(&"the_unread_years"),
+        "the binding branch must promise the unread-archive reckoning"
+    );
+    // Each payoff is walled off to the branch that earned it, so a ship never
+    // meets the reckoning for a choice it did not make.
+    for (payoff, gate) in [
+        ("the_stewards_edit", "steward_mandate"),
+        ("the_unread_years", "steward_bound"),
+    ] {
+        let e = data.events.get(payoff).expect("steward arc payoff");
+        assert!(
+            e.requires_consequence.iter().any(|c| c == gate),
+            "'{payoff}' must be gated on '{gate}'"
+        );
+    }
+    // The terminal beat only exists for a ship that let the smoothing stand, and
+    // only once the people have drifted far enough for it to cost them something.
+    let terminal = data
+        .events
+        .get("what_the_steward_remembers")
+        .expect("the steward arc's terminal beat");
+    assert!(
+        terminal
+            .requires_consequence
+            .iter()
+            .any(|c| c == "record_smoothed"),
+        "the terminal beat must follow the smoothed record"
+    );
+    assert!(
+        terminal.min_cultural_drift > 0.0 && terminal.min_generation > 0,
+        "the terminal beat is century-scale content and must be gated as such"
+    );
+}

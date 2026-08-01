@@ -3,6 +3,24 @@
 Standing direction for content passes lives in `content_depth.md`; this file holds only
 the discrete open items left behind by finished workstreams.
 
+## Release gate
+
+- Fix the stale onboarding copy: the welcome screen still says SPACE / ENTER advances
+  time, but the current voyage uses real-time auto-advance with Pause / 1x / 2x / 3x.
+- Fix the stale help copy for the same control mismatch.
+- Replace the static active-charter systems panel (`ORIGIN: Home Berth`, `WAYPOINT:
+  deep transit`, `DESTINATION: per charter`) with the active charter's actual origin,
+  operation site, destination, objective subsystem, and next milestone.
+- Synchronise `gdd.md` and `content_depth.md` with the current real-time loop, event
+  count, contract count, Heritage behaviour, and interaction flow before publishing.
+- Complete a fresh renown-0 charter by hand, then run `publish.ps1` from this project
+  directory once the release changes are stable.
+
+## Audio pass
+
+- Add a restrained underway ambience and a small set of high-value cues: UI click,
+  council decision alert, event resolution, phase transition, homecoming, and gameover.
+
 ## Ship schematic (underway view)
 
 - Sharpen the barge vs ark silhouettes — both read as full-bulge hulls today.
@@ -12,10 +30,23 @@ the discrete open items left behind by finished workstreams.
 
 ## Event content
 
-- Author the onboard-AI keeper-of-memory `legacy_drift` arc — the ship's machine
-  memory as custodian (or quiet editor) of centuries of record.
 - Add more Operation-phase objective-specific beats (mining hazards, colony setup,
   survey complications); the on-station leg is thinner than Travel.
+- Give each objective family at least one authored Operation arc that changes more than
+  flavour: objective progress, subsystem condition, faction standing, reputation, or
+  a later milestone should be affected by the player's decisions.
+- Add distinctive charter-family scoring or milestone behaviour so charters do not
+  mainly feel like different routes through the same four success metrics. Preserve
+  the existing Ark-style objective-specific metric as the model.
+- Prefer a small number of 2–4 event consequence chains over another large batch of
+  isolated two-choice events. Target a few strong chains per objective family and
+  additional legacy/faction chains for replay value.
+
+## Meta-progression
+
+- Decide whether Heritage is intentionally an automatic renown-tier head start or a
+  player choice. If it remains automatic, update the GDD and store-facing copy; if the
+  promised modifier selection is desired, implement the choice before calling it done.
 
 ## Verification
 

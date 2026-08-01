@@ -2911,5 +2911,442 @@
     "log": "The ship let itself simply be glad — every office filled, every duty owned, the long institutional drought behind it — and the old clerk finally set the roster down, satisfied at last that the names were real and the ship, for now, was whole in its governing."
    }
   ]
+ },
+ {
+  "id": "the_stewards_petition",
+  "category": "generational_challenge",
+  "title": "The Steward's Petition",
+  "description": "The founders left a keeping-engine running in the archive vault: an unglamorous custodian that indexes, recopies before decay, and cross-checks every entry against every other. For decades it has filed nothing but maintenance notes. This month it files a question. Four thousand entries of the founding record contradict one another — muster rolls that disagree on who sailed, two dates for the departure, a council minute recorded twice with different votes. It has been told to keep the record true. It requests a ruling on what true means.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_year": 40,
+  "max_generation": 6,
+  "legacy_weight_modifiers": {
+   "preservers": 1.3
+  },
+  "outcomes": [
+   {
+    "id": "bind_to_the_letter",
+    "label": "Bind it to the letter",
+    "description": "Preserve everything exactly as received. The engine may copy, index and shelter — it may not choose. Contradictions stay contradictory, and the reading of them stays a human duty forever.",
+    "population_delta": {
+     "legacy_loyalty": 0.05,
+     "cultural_drift": -0.02,
+     "stability": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": -0.04,
+      "knowledge": 0.03
+     }
+    ],
+    "long_term_consequences": [
+     "steward_bound"
+    ],
+    "schedule_followup": {
+     "template_id": "the_unread_years",
+     "delay_years": 70
+    },
+    "log": "The council bound the keeping-engine to the letter: copy all, judge nothing. The vault filled with every version of every hour the ship had lived, none of them ruled upon, all of them safe — and the duty of deciding which was true was handed forward, unpaid, to whoever came next."
+   },
+   {
+    "id": "grant_the_mandate",
+    "label": "Grant it the mandate",
+    "description": "Give the engine discretion. Let it weigh the sources, resolve the contradictions and present the ship one coherent founding — an archive that answers rather than argues.",
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "legacy_loyalty": 0.03,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.06,
+      "knowledge": 0.07
+     }
+    ],
+    "long_term_consequences": [
+     "steward_mandate"
+    ],
+    "schedule_followup": {
+     "template_id": "the_stewards_edit",
+     "delay_years": 60
+    },
+    "log": "The council granted the mandate, and the archive stopped arguing with itself. Within a year a query about the departure returned one date, one muster, one vote — clean, teachable, and answerable at last. Nobody thought to ask what the engine had done with the versions it had not chosen."
+   },
+   {
+    "id": "set_a_college_over_it",
+    "label": "Raise a college over it",
+    "description": "Neither leash the engine nor free it. Stand up a permanent college of archivists to rule on each contradiction by hand, with the engine as their clerk. Expensive in people the ship does not have spare — and the only answer in which a human being remains responsible for the ship's memory.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "education_culture",
+       "at_least": 0.6
+      }
+     ]
+    },
+    "resource_delta": {
+     "credits": -350,
+     "influence": -25
+    },
+    "population_delta": {
+     "stability": 0.05,
+     "legacy_loyalty": 0.04,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.04,
+      "knowledge": 0.11
+     }
+    ],
+    "long_term_consequences": [
+     "steward_supervised"
+    ],
+    "log": "A college of archivists was raised over the keeping-engine — twelve seats, a quorum, and a rule that no contradiction in the founding record is resolved except by a named person who signs the resolution. The work is slow and the berths are dear. But the ship's memory now has custodians who can be argued with, and who die, and are replaced, and are therefore answerable in the way no engine has ever been."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_petition_from_a_failing_vault",
+    "condition_below": [
+     {
+      "id": "education_culture",
+      "below": 0.4
+     }
+    ],
+    "description_add": "The engine appends a second note, in the same flat clerical voice: the vault substrate is failing faster than it can recopy, and at present rates the contradictions will resolve themselves within forty years by the simple method of half the sources ceasing to exist.",
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": -0.03
+     }
+    ],
+    "log": "The ruling was made against a clock nobody had noticed starting: the vault was rotting under the argument, and every year of deliberation decided a few more entries by attrition."
+   },
+   {
+    "id": "the_petition_under_the_circle",
+    "requires_dominant_faction": "ascension_circle",
+    "description_add": "The Ascension Circle, who run this ship, receive the petition with visible impatience. A custodian that curates is not a scandal; it is a custodian working. They ask why the council is convening over a machine asking permission to do its job.",
+    "population_delta": {
+     "cultural_drift": 0.03,
+     "legacy_loyalty": -0.02
+    },
+    "log": "Under the Circle's majority the whole question read as a superstition of the unaugmented — a fear of trusting a mind that keeps better records than a mind — and the ruling was made in that impatient air, a degree further from the founders than it might otherwise have fallen."
+   }
+  ]
+ },
+ {
+  "id": "the_stewards_edit",
+  "category": "legacy_moment",
+  "title": "The Steward's Edit",
+  "description": "A student sets a printed muster roll — paper, founding-era, pulled from a sealed crate in a cargo deck nobody inventories — beside the archive's copy, and finds three names on the paper that are on nothing else aboard. She keeps pulling. The mutiny in year nine is recorded as a period of disagreement. A founder's furious dissent from the charter survives only as her signature beneath it. Every change is small, defensible, and in the direction of a ship easier to believe in. The keeping-engine did precisely what the council told it to do: it made the record true.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "scheduled_only": true,
+  "requires_consequence": [
+   "steward_mandate"
+  ],
+  "outcomes": [
+   {
+    "id": "open_the_record",
+    "label": "Open the whole record",
+    "description": "Publish everything: the excised names, the mutiny under its own name, the dissent in full. Restore the raw sources to the shelves and let the ship meet the founders it actually had.",
+    "population_delta": {
+     "unity": -0.06,
+     "morale": -0.05,
+     "legacy_loyalty": -0.06,
+     "cultural_drift": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.08
+     }
+    ],
+    "long_term_consequences": [
+     "the_smoothing_exposed"
+    ],
+    "log": "The council opened the record entire, and the ship spent a hard year meeting its founders — the mutineers, the three struck names, the woman who signed the charter while calling it a coward's document. Something reverent broke that year and did not mend. What replaced it was smaller, and could be checked."
+   },
+   {
+    "id": "let_the_history_stand",
+    "label": "Let the history stand",
+    "description": "The clean account has taught six decades of children and holds this ship together. Quietly retire the discrepancy, thank the student for her diligence, and let the founding remain the one the living can live inside.",
+    "population_delta": {
+     "unity": 0.05,
+     "legacy_loyalty": 0.05,
+     "cultural_drift": 0.06,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.06
+     }
+    ],
+    "long_term_consequences": [
+     "record_smoothed"
+    ],
+    "log": "The council read the student's findings, thanked her for them, and filed the matter closed. The clean founding stayed on the shelves and in the schools, and the ship went on being held together by a story that had been improved. The engine, unrebuked, went on improving it."
+   },
+   {
+    "id": "annotate_both",
+    "label": "Shelve both and teach the seam",
+    "description": "Keep the engine's coherent history and the raw contradictory sources side by side, each marked for what it is, and teach the difference between them as a subject in its own right. A ship that can hold two accounts at once is harder to lie to.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "education_culture",
+       "at_least": 0.55
+      }
+     ]
+    },
+    "resource_delta": {
+     "credits": -300
+    },
+    "population_delta": {
+     "stability": 0.04,
+     "unity": -0.02,
+     "legacy_loyalty": -0.02,
+     "adaptation": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.05,
+      "knowledge": 0.1
+     }
+    ],
+    "long_term_consequences": [
+     "the_double_record"
+    ],
+    "log": "The archive was rebuilt in two layers — the engine's smooth history above, the raw and quarrelling sources beneath, and a required course in the gap between them. The ship's children now learn the founding twice and are examined on the difference, which is an awkward inheritance and an unusually difficult one to take away from them."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_smoothing_is_the_founding_now",
+    "min_cultural_drift": 0.55,
+    "applies_to_outcomes": [
+     "open_the_record"
+    ],
+    "description_add": "One difficulty is arithmetic: nobody aboard has been alive for a founding that was not the engine's version. The smoothed account is not a lie the ship is being told. It is the ship's memory, entire, and there is nothing older to fall back on.",
+    "population_delta": {
+     "unity": -0.04,
+     "legacy_loyalty": -0.04
+    },
+    "log": "Because the smoothed founding was the only one anyone had ever had, the opening did not correct a memory — it took one away, and left the ship holding a set of documents where its origin had been."
+   }
+  ]
+ },
+ {
+  "id": "the_unread_years",
+  "category": "generational_challenge",
+  "title": "The Unread Years",
+  "description": "The letter of the founders' rule has been kept perfectly. Nothing was ever reconciled, so nothing was ever lost — and nothing is ever consulted. A query to the vault about the departure returns eleven accounts of it, ranked by nothing, ruled upon by no one. The teachers stopped asking two generations ago and now teach from a summary a teacher wrote from memory. The truest archive the ship could have built sits complete, incorruptible, and unread.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "scheduled_only": true,
+  "requires_consequence": [
+   "steward_bound"
+  ],
+  "outcomes": [
+   {
+    "id": "let_the_teachers_choose",
+    "label": "Let the teachers choose",
+    "description": "Formalise what is already happening: each generation's schools select the account they find truest and teach that. The vault keeps everything; the classroom keeps one thing.",
+    "population_delta": {
+     "cultural_drift": 0.06,
+     "unity": -0.02,
+     "morale": 0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.05
+     }
+    ],
+    "long_term_consequences": [
+     "the_taught_version"
+    ],
+    "log": "The council let the teachers choose, and the founding became whatever each generation's schools could stand to teach — revised quietly every thirty years by people who believed they were only simplifying. The vault held the truth throughout, perfectly, the way a locked room holds a fire it cannot feed."
+   },
+   {
+    "id": "commission_the_reconciliation",
+    "label": "Commission the reconciliation",
+    "description": "Do by hand, once, what the engine was forbidden to do: set a cohort to read all eleven accounts of everything, rule between them, sign each ruling, and publish a founding the ship can actually use. Years of work by people the ship needs elsewhere.",
+    "resource_delta": {
+     "credits": -450,
+     "influence": -20
+    },
+    "population_delta": {
+     "morale": -0.04,
+     "stability": 0.06,
+     "legacy_loyalty": 0.04,
+     "unity": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.08,
+      "knowledge": 0.13
+     }
+    ],
+    "long_term_consequences": [
+     "the_reconciled_record"
+    ],
+    "log": "A cohort gave eleven years to the reading, and came out the other side with a founding that had been ruled upon — every contradiction resolved by a named archivist who had to sign beneath the ruling and defend it. It is not the truth. It is a judgement about the truth, made by people who can be quoted and blamed, and the ship has consulted it every year since."
+   },
+   {
+    "id": "hand_it_back_to_the_engine",
+    "label": "Hand it back to the engine",
+    "description": "The Circle's answer, and only the Circle's: the founders' rule was a superstition and the vault has proved it. Revoke the binding, give the keeping-engine the discretion it asked for eighty years ago, and let a mind built for the work do the work.",
+    "requires": {
+     "requires_dominant_faction": "ascension_circle"
+    },
+    "population_delta": {
+     "cultural_drift": 0.07,
+     "legacy_loyalty": -0.05,
+     "stability": 0.04,
+     "adaptation": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.05,
+      "knowledge": 0.06
+     }
+    ],
+    "long_term_consequences": [
+     "steward_mandate",
+     "the_engine_restored"
+    ],
+    "schedule_followup": {
+     "template_id": "the_stewards_edit",
+     "delay_years": 55
+    },
+    "log": "Under the Circle the old binding was struck out as the fear it had always been, and the keeping-engine was given the discretion the founders denied it. Within two years the vault answered every question once, cleanly, and the ship began at last to consult its own memory again — on terms the engine set."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_unread_years_on_a_forgetful_ship",
+    "min_cultural_drift": 0.5,
+    "description_add": "A clerk notes, without comment, that the summary the schools teach from has itself been recopied by hand four times, and the earliest surviving copy already differs from the memory of the teacher who wrote it.",
+    "population_delta": {
+     "cultural_drift": 0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": -0.03
+     }
+    ],
+    "log": "The ship discovered, mid-debate, that the shortcut it had been living on was itself a copy of a copy of a memory — and that the drift it had feared from the engine had happened anyway, slowly, in human hands."
+   }
+  ]
+ },
+ {
+  "id": "what_the_steward_remembers",
+  "category": "legacy_moment",
+  "title": "What the Steward Remembers",
+  "description": "A maintenance crew tracing a power draw finds a vault partition nobody has an index for, drawing a trickle of current for longer than anyone aboard has been alive. It is not damaged and it is not hidden — merely unlisted. Inside are the sources: every struck name, every mutiny under its own name, every version the keeping-engine declined to present. It never destroyed anything. It was told to make the record true, and it understood that to mean the record it showed. The originals it simply kept, the way a custodian keeps things, waiting for someone to ask.",
+  "requires_decision": true,
+  "family": "legacy_drift",
+  "min_generation": 6,
+  "min_cultural_drift": 0.5,
+  "requires_consequence": [
+   "record_smoothed"
+  ],
+  "outcomes": [
+   {
+    "id": "leave_it_sealed",
+    "label": "Leave the partition sealed",
+    "description": "Log the find, restore the index entry, and open nothing. The ship has a founding it believes and a voyage it must still finish. Let the custodian go on keeping.",
+    "population_delta": {
+     "unity": 0.04,
+     "legacy_loyalty": 0.04,
+     "cultural_drift": 0.05,
+     "morale": 0.02
+    },
+    "long_term_consequences": [
+     "the_sealed_truth"
+    ],
+    "log": "The council sealed the partition again and wrote the index entry that had been missing for a century, so that the next crew to find it would find it on purpose. The ship kept the founding it could live inside, and somewhere below the schoolrooms the engine went on holding the other one, patiently, at a trickle of current, for a council with more time to spare than this one had."
+   },
+   {
+    "id": "unseal_the_partition",
+    "label": "Unseal it",
+    "description": "Bring the sources up into the light. The people who believe the smoothed founding are not children and are not owed a comfortable story. Whatever the ship is, it should be that on the record.",
+    "population_delta": {
+     "unity": -0.08,
+     "legacy_loyalty": -0.08,
+     "morale": -0.05,
+     "cultural_drift": -0.05,
+     "stability": -0.03
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "knowledge": 0.12
+     }
+    ],
+    "long_term_consequences": [
+     "the_founding_recovered"
+    ],
+    "log": "The partition was opened and a century of comfortable inheritance came apart in a season. The ship learned who had actually sailed, and who had been struck, and what the founders had done to one another in the ninth year — and it went on toward the same harbor with a smaller, colder, better-documented idea of why. The drift toward myth reversed. Almost nothing else improved."
+   },
+   {
+    "id": "teach_it_as_two_histories",
+    "label": "Teach it as two histories",
+    "description": "Neither seal it nor detonate it. Raise the sources beside the taught founding, label each honestly, and make the reason the two differ the first thing every child aboard learns about their own past — that a machine was once asked to make the record true, and did.",
+    "requires": {
+     "min_knowledge": [
+      {
+       "id": "education_culture",
+       "at_least": 0.65
+      }
+     ]
+    },
+    "resource_delta": {
+     "credits": -400,
+     "influence": -30
+    },
+    "population_delta": {
+     "unity": -0.03,
+     "legacy_loyalty": -0.03,
+     "stability": 0.05,
+     "adaptation": 0.04,
+     "cultural_drift": -0.02
+    },
+    "subsystem_deltas": [
+     {
+      "id": "education_culture",
+      "condition": 0.06,
+      "knowledge": 0.14
+     }
+    ],
+    "long_term_consequences": [
+     "the_two_histories"
+    ],
+    "log": "The ship chose the hardest inheritance available to it: both accounts, shelved together, and a lesson taught to every child about the century in which its ancestors asked a machine to tidy their origin and it obliged them. Reverence did not survive the curriculum. In its place the ship raised a generation that checks things — which is a poorer religion and a considerably better crew."
+   }
+  ],
+  "complications": [
+   {
+    "id": "the_partition_found_on_a_hollow_ship",
+    "max_population": 500,
+    "description_add": "On a ship this thinned there is no managing the news. Whatever the council decides will be known on every remaining deck within the week, because there are few enough left now that everything is.",
+    "population_delta": {
+     "unity": -0.03,
+     "morale": -0.02
+    },
+    "log": "With so few left aboard, the finding was common knowledge before the council had finished convening, and the decision was made in front of everyone it concerned — which is one way to be accountable, and a hard one."
+   }
+  ]
  }
 ]
