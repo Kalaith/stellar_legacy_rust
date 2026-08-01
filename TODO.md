@@ -30,9 +30,6 @@ the discrete open items left behind by finished workstreams.
 
 ## Event content
 
-- Add distinctive charter-family scoring or milestone behaviour so charters do not
-  mainly feel like different routes through the same four success metrics. Preserve
-  the existing Ark-style objective-specific metric as the model.
 - Prefer a small number of 2–4 event consequence chains over another large batch of
   isolated two-choice events. Target a few strong chains per objective family and
   additional legacy/faction chains for replay value.

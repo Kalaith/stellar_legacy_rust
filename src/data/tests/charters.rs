@@ -258,3 +258,74 @@ fn every_charter_names_real_families_deeds_and_gates() {
         );
     }
 }
+
+/// Charter-family scoring (content-depth charters round 35): every charter's
+/// scorecard must sum to 1.0 and must carry exactly one *family* metric — the
+/// signature grade its objective family is judged on beyond the four universal
+/// ones. Without it the whole board is four routes through the same scorecard.
+#[test]
+fn every_charter_is_graded_on_something_its_family_alone_is_graded_on() {
+    use crate::data::contracts::{ContractObjective, MetricKind};
+    let data = GameData::load().unwrap();
+    // The signature grade each objective family answers to.
+    let expected = |objective: ContractObjective| match objective {
+        ContractObjective::Exploration => MetricKind::KnowledgeRetained,
+        ContractObjective::Mining | ContractObjective::Salvage => MetricKind::ShipCondition,
+        ContractObjective::Rescue | ContractObjective::Diplomacy => MetricKind::Reputation,
+        ContractObjective::Colonization => MetricKind::FoundersCovenant,
+    };
+    // The traits some outcome can actually move, so a reputation grade is never
+    // pinned to a name the ship has no way of earning.
+    let rep_produced: std::collections::HashSet<&String> = data
+        .events
+        .iter()
+        .flat_map(|(_, e)| e.outcomes.iter())
+        .flat_map(|o| o.reputation_deltas.iter().map(|r| &r.id))
+        .collect();
+
+    for (id, c) in data.contracts.iter() {
+        let sum: f32 = c.success_metrics.iter().map(|m| m.weight).sum();
+        assert!(
+            (sum - 1.0).abs() < 1e-4,
+            "charter '{id}' scorecard weights sum to {sum}, not 1.0"
+        );
+        let want = expected(c.objective);
+        let family: Vec<_> = c
+            .success_metrics
+            .iter()
+            .filter(|m| {
+                !matches!(
+                    m.kind,
+                    MetricKind::PopulationSurvival
+                        | MetricKind::MissionCompletion
+                        | MetricKind::ResourceEfficiency
+                        | MetricKind::SocialCohesion
+                )
+            })
+            .collect();
+        assert_eq!(
+            family.len(),
+            1,
+            "charter '{id}' should carry exactly one family metric, has {}",
+            family.len()
+        );
+        let metric = family[0];
+        assert_eq!(
+            metric.kind, want,
+            "charter '{id}' is a {:?} writ and must be graded on {want:?}",
+            c.objective
+        );
+        assert!(
+            metric.weight > 0.0 && metric.target > 0.0,
+            "charter '{id}' family metric '{}' must actually count",
+            metric.id
+        );
+        if metric.kind == MetricKind::Reputation {
+            assert!(
+                rep_produced.contains(&metric.trait_id),
+                "charter '{id}' grades reputation '{}' no outcome nudges",
+                metric.trait_id
+            );
+        }
+    }
+}

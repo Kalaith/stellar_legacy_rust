@@ -14,6 +14,11 @@ pub struct MetricState {
     pub weight: f32,
     pub target: f32,
     pub current: f32,
+    /// The reputation trait a `Reputation` metric grades (content-depth charters
+    /// round 35); empty for every other kind. Defaulted so a save written before
+    /// the family metrics landed loads unchanged.
+    #[serde(default)]
+    pub trait_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

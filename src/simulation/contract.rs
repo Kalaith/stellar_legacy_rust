@@ -227,6 +227,7 @@ pub fn start_contract(template: &ContractTemplate, sim: &SimState) -> ActiveCont
                 weight: m.weight,
                 target: m.target,
                 current: 0.0,
+                trait_id: m.trait_id.clone(),
             })
             .collect(),
         milestones: template
@@ -303,6 +304,27 @@ pub fn advance_contract(
 ) -> ContractProgress {
     let population_count = sim.population.count;
     let unity = sim.population.unity;
+    // The family metrics (content-depth charters round 35) read state the four
+    // universal ones never did — the craft the ship kept, the hull it kept, the name
+    // it earned, the covenant it still holds. Sampled here, before the mutable
+    // contract borrow, exactly as `unity` is.
+    let hull = sim.ship.hull_integrity;
+    let legacy_loyalty = sim.population.legacy_loyalty;
+    let mean_knowledge = if sim.subsystems.is_empty() {
+        1.0
+    } else {
+        sim.subsystems.values().map(|s| s.knowledge).sum::<f32>() / sim.subsystems.len() as f32
+    };
+    // A charter that names the module its work leans on is graded on *that* craft;
+    // one that leans on nothing is graded on the ship's learning as a whole.
+    let objective_knowledge = sim
+        .contract
+        .as_ref()
+        .filter(|c| !c.objective_subsystem.is_empty())
+        .and_then(|c| sim.subsystems.get(&c.objective_subsystem))
+        .map_or(mean_knowledge, |s| s.knowledge);
+    // Reputation is keyed per metric, so the whole map has to come along.
+    let reputation = sim.reputation.clone();
     let food_ok = sim.resources.food >= config.low_food_threshold;
     let energy_ok = sim.resources.energy >= config.low_energy_threshold;
     let progress_per_speed = config.ship.contract_progress_per_speed;
@@ -447,6 +469,13 @@ pub fn advance_contract(
                 // month drags the score down for the rest of the contract.
                 MetricKind::ResourceEfficiency => upkeep_health,
                 MetricKind::SocialCohesion => unity,
+                // The four family metrics (content-depth charters round 35): one
+                // signature grade per objective family, so a charter is not four
+                // routes through the same scorecard.
+                MetricKind::KnowledgeRetained => objective_knowledge,
+                MetricKind::ShipCondition => hull,
+                MetricKind::Reputation => reputation.get(&metric.trait_id).copied().unwrap_or(0.5),
+                MetricKind::FoundersCovenant => legacy_loyalty,
             };
         }
 

@@ -62,6 +62,30 @@ pub enum MetricKind {
     MissionCompletion,
     ResourceEfficiency,
     SocialCohesion,
+    /// The craft the ship still carries (content-depth charters round 35): the
+    /// `objective_subsystem`'s institutional knowledge if the charter names one,
+    /// else the mean across every module. The **survey/exploration** family's
+    /// signature grade — a charting run is worth what the ship *learned and kept*,
+    /// not merely the grid it flew, so a survey flown by a crew that let its
+    /// instrument-teaching lapse comes home worth less than its tally says.
+    KnowledgeRetained,
+    /// The hull that comes home (content-depth charters round 35): `hull_integrity`
+    /// at conclusion. The **mining/salvage** family's signature grade — industrial
+    /// work is measured against the ship it was done with, so a charter that made
+    /// its tonnage by cutting the ship to pieces around it scores as what it was.
+    ShipCondition,
+    /// The name the ship comes home with (content-depth charters round 35): the
+    /// graded reputation trait named by `MetricDef::trait_id`. The
+    /// **rescue/diplomacy** family's signature grade — a relief writ or a residency
+    /// is judged on standing as much as on souls, so how the ship treated people on
+    /// the way to its number is part of the number.
+    Reputation,
+    /// The founders' charter, still held (content-depth charters round 35):
+    /// `legacy_loyalty` at conclusion. The **colonization** family's signature grade
+    /// — a settlement is founded to carry something forward, so a colony planted by
+    /// a people who no longer hold what they were sent to plant scores short,
+    /// distinct from `SocialCohesion`'s question of whether they hold *together*.
+    FoundersCovenant,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -72,6 +96,12 @@ pub struct MetricDef {
     /// Weights across a template's metrics should sum to 1.0.
     pub weight: f32,
     pub target: f32,
+    /// The graded reputation trait a `Reputation` metric measures (content-depth
+    /// charters round 35). Ignored by every other kind; an unset trait reads the
+    /// neutral 0.5, so a mis-typed id grades as an indifferent name rather than a
+    /// zero.
+    #[serde(default)]
+    pub trait_id: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

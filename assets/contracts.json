@@ -51,29 +51,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.35,
+    "weight": 0.29,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "covenant_held",
+    "kind": "founders_covenant",
+    "name": "Founding charter held",
+    "weight": 0.15,
+    "target": 0.5
    }
   ],
   "failure_risks": [
@@ -148,29 +155,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.85
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.4,
+    "weight": 0.34,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.75
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.5
+   },
+   {
+    "id": "hull_brought_home",
+    "kind": "ship_condition",
+    "name": "Hull brought home",
+    "weight": 0.15,
+    "target": 0.7
    }
   ],
   "failure_risks": [
@@ -252,28 +266,35 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.8
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.45,
+    "weight": 0.38,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
+    "target": 0.55
+   },
+   {
+    "id": "charts_kept",
+    "kind": "knowledge_retained",
+    "name": "Charts kept",
+    "weight": 0.15,
     "target": 0.55
    }
   ],
@@ -346,29 +367,37 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.4,
+    "weight": 0.33,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.1,
+    "weight": 0.09,
     "target": 0.6
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "name_brought_home",
+    "kind": "reputation",
+    "name": "Name brought home",
+    "weight": 0.15,
+    "target": 0.6,
+    "trait_id": "mercy"
    }
   ],
   "failure_risks": [
@@ -436,29 +465,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.85
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.4,
+    "weight": 0.34,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.75
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.5
+   },
+   {
+    "id": "hull_brought_home",
+    "kind": "ship_condition",
+    "name": "Hull brought home",
+    "weight": 0.15,
+    "target": 0.7
    }
   ],
   "failure_risks": [
@@ -532,29 +568,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.35,
+    "weight": 0.29,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "covenant_held",
+    "kind": "founders_covenant",
+    "name": "Founding charter held",
+    "weight": 0.15,
+    "target": 0.5
    }
   ],
   "failure_risks": [
@@ -627,27 +670,34 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.8
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.45,
+    "weight": 0.38,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
+    "weight": 0.13,
+    "target": 0.55
+   },
+   {
+    "id": "charts_kept",
+    "kind": "knowledge_retained",
+    "name": "Charts kept",
     "weight": 0.15,
     "target": 0.55
    }
@@ -727,29 +777,37 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.4,
+    "weight": 0.33,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.1,
+    "weight": 0.09,
     "target": 0.6
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "name_brought_home",
+    "kind": "reputation",
+    "name": "Name brought home",
+    "weight": 0.15,
+    "target": 0.6,
+    "trait_id": "mercy"
    }
   ],
   "failure_risks": [
@@ -837,29 +895,37 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 0.85
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.35,
+    "weight": 0.29,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.65
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "name_brought_home",
+    "kind": "reputation",
+    "name": "Name brought home",
+    "weight": 0.15,
+    "target": 0.6,
+    "trait_id": "mercy"
    }
   ],
   "failure_risks": [
@@ -938,28 +1004,35 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.8
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.45,
+    "weight": 0.38,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.1,
+    "weight": 0.09,
     "target": 0.65
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
+    "target": 0.55
+   },
+   {
+    "id": "charts_kept",
+    "kind": "knowledge_retained",
+    "name": "Charts kept",
+    "weight": 0.15,
     "target": 0.55
    }
   ],
@@ -1033,29 +1106,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "hull_brought_home",
+    "kind": "ship_condition",
+    "name": "Hull brought home",
+    "weight": 0.15,
+    "target": 0.7
    }
   ],
   "failure_risks": [
@@ -1126,29 +1206,37 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.3,
+    "weight": 0.25,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 0.65
+   },
+   {
+    "id": "standing_at_the_table",
+    "kind": "reputation",
+    "name": "Standing at the table",
+    "weight": 0.15,
+    "target": 0.6,
+    "trait_id": "mercy"
    }
   ],
   "failure_risks": [
@@ -1235,29 +1323,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.35,
+    "weight": 0.3,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "charts_kept",
+    "kind": "knowledge_retained",
+    "name": "Charts kept",
+    "weight": 0.15,
+    "target": 0.55
    }
   ],
   "failure_risks": [
@@ -1337,29 +1432,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.35,
+    "weight": 0.29,
     "target": 0.85
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 0.6
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.6
+   },
+   {
+    "id": "hull_brought_home",
+    "kind": "ship_condition",
+    "name": "Hull brought home",
+    "weight": 0.15,
+    "target": 0.7
    }
   ],
   "failure_risks": [
@@ -1436,29 +1538,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.4,
+    "weight": 0.34,
     "target": 0.8
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.6
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "charts_kept",
+    "kind": "knowledge_retained",
+    "name": "Charts kept",
+    "weight": 0.15,
+    "target": 0.55
    }
   ],
   "failure_risks": [
@@ -1533,29 +1642,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.35,
+    "weight": 0.29,
     "target": 0.85
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.6
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "charts_kept",
+    "kind": "knowledge_retained",
+    "name": "Charts kept",
+    "weight": 0.15,
+    "target": 0.55
    }
   ],
   "failure_risks": [
@@ -1648,29 +1764,37 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 0.85
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Souls carried",
-    "weight": 0.35,
+    "weight": 0.29,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.1,
+    "weight": 0.09,
     "target": 0.6
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.6
+   },
+   {
+    "id": "name_brought_home",
+    "kind": "reputation",
+    "name": "Name brought home",
+    "weight": 0.15,
+    "target": 0.6,
+    "trait_id": "mercy"
    }
   ],
   "failure_risks": [
@@ -1753,29 +1877,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.4,
+    "weight": 0.34,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "covenant_held",
+    "kind": "founders_covenant",
+    "name": "Founding charter held",
+    "weight": 0.15,
+    "target": 0.5
    }
   ],
   "failure_risks": [
@@ -1870,29 +2001,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.25,
+    "weight": 0.21,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.4,
+    "weight": 0.34,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.6
+   },
+   {
+    "id": "covenant_held",
+    "kind": "founders_covenant",
+    "name": "Founding charter held",
+    "weight": 0.15,
+    "target": 0.5
    }
   ],
   "failure_risks": [
@@ -1991,29 +2129,37 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.35,
+    "weight": 0.29,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "name_brought_home",
+    "kind": "reputation",
+    "name": "Name brought home",
+    "weight": 0.15,
+    "target": 0.6,
+    "trait_id": "mercy"
    }
   ],
   "failure_risks": [
@@ -2125,29 +2271,36 @@
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Population survival",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.9
    },
    {
     "id": "mission_completion",
     "kind": "mission_completion",
     "name": "Mission completion",
-    "weight": 0.45,
+    "weight": 0.38,
     "target": 1.0
    },
    {
     "id": "resource_efficiency",
     "kind": "resource_efficiency",
     "name": "Resource efficiency",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.7
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.15,
+    "weight": 0.13,
     "target": 0.6
+   },
+   {
+    "id": "hull_brought_home",
+    "kind": "ship_condition",
+    "name": "Hull brought home",
+    "weight": 0.15,
+    "target": 0.7
    }
   ],
   "failure_risks": [
@@ -2231,22 +2384,29 @@
     "id": "sleepers_delivered",
     "kind": "mission_completion",
     "name": "Sleepers delivered alive",
-    "weight": 0.5,
+    "weight": 0.42,
     "target": 0.8
    },
    {
     "id": "population_survival",
     "kind": "population_survival",
     "name": "Crew survival",
-    "weight": 0.3,
+    "weight": 0.26,
     "target": 0.9
    },
    {
     "id": "social_cohesion",
     "kind": "social_cohesion",
     "name": "Social cohesion",
-    "weight": 0.2,
+    "weight": 0.17,
     "target": 0.6
+   },
+   {
+    "id": "covenant_held",
+    "kind": "founders_covenant",
+    "name": "Founding charter held",
+    "weight": 0.15,
+    "target": 0.5
    }
   ],
   "reward": {

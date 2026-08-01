@@ -235,3 +235,63 @@ fn a_ships_name_bends_what_a_charter_pays() {
         "a charter that names no trait pays flat"
     );
 }
+
+/// Charter-family scoring (content-depth charters round 35): the four family
+/// metrics must read the ship's live state, not sit at zero. A grade that never
+/// moves is a label, and the whole point is that a relief writ and a mining writ
+/// are answering different questions at the debrief.
+#[test]
+fn the_family_metrics_grade_what_their_family_is_actually_judged_on() {
+    let current = |sim: &crate::state::sim::SimState, id: &str| {
+        sim.contract
+            .as_ref()
+            .unwrap()
+            .metrics
+            .iter()
+            .find(|m| m.id == id)
+            .unwrap_or_else(|| panic!("charter carries the '{id}' grade"))
+            .current
+    };
+
+    // A relief writ is graded on the name the ship comes home with.
+    let (data, mut sim) = armed(11, "tarssen_relief");
+    sim.reputation.insert("mercy".to_owned(), 0.82);
+    advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
+    assert!(
+        (current(&sim, "name_brought_home") - 0.82).abs() < 1e-6,
+        "a merciful hull's relief writ grades on that mercy"
+    );
+
+    // A mining writ is graded on the hull it did the work with.
+    let (data, mut sim) = armed(12, "deep_vein_survey");
+    sim.ship.hull_integrity = 0.41;
+    advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
+    assert!(
+        (current(&sim, "hull_brought_home") - 0.41).abs() < 1e-6,
+        "tonnage made by cutting the ship apart grades as what it was"
+    );
+
+    // A colony writ is graded on the covenant its settlers still hold.
+    let (data, mut sim) = armed(13, "founding_colony");
+    sim.population.legacy_loyalty = 0.23;
+    advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
+    assert!(
+        (current(&sim, "covenant_held") - 0.23).abs() < 1e-6,
+        "a colony planted by people who let the charter go scores short"
+    );
+
+    // A survey writ is graded on the craft it kept — the module its work leans
+    // on when the charter names one.
+    let (data, mut sim) = armed(14, "the_sunward_dive");
+    let leaned_on = sim.contract.as_ref().unwrap().objective_subsystem.clone();
+    assert_eq!(
+        leaned_on, "education_culture",
+        "the dive leans on the archive"
+    );
+    sim.subsystems.get_mut(&leaned_on).unwrap().knowledge = 0.36;
+    advance_contract(&mut sim, &data.config, 0, 0, 0, 0);
+    assert!(
+        (current(&sim, "charts_kept") - 0.36).abs() < 1e-6,
+        "a survey flown by a crew that let its teaching lapse comes home worth less"
+    );
+}

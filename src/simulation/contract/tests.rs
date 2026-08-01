@@ -18,6 +18,7 @@ fn metric(weight: f32, target: f32, current: f32) -> MetricState {
         weight,
         target,
         current,
+        trait_id: String::new(),
     }
 }
 
